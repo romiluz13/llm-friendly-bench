@@ -1,0 +1,161 @@
+{
+  "benchmark_fixture": [
+    {
+      "fixture_version": "ast-bench-v1-fraud-manual-review-hold",
+      "suite_id": "ast-bench-v1",
+      "task_id": "fraud-manual-review-hold",
+      "generated_at": "2026-06-18T12:00:00.000Z"
+    }
+  ],
+  "accounts": [
+    {
+      "account_id": "acct-fraud-manu",
+      "name": "Order Account 4",
+      "tier": "enterprise",
+      "region": "NA"
+    }
+  ],
+  "account_contracts": [
+    {
+      "contract_id": "ctr-acct-fraud-manu",
+      "account_id": "acct-fraud-manu",
+      "renewal_date": "2026-09-30",
+      "arr_cents": 7200000,
+      "support_plan": "platinum"
+    }
+  ],
+  "contacts": [
+    {
+      "contact_id": "ct-acct-fraud-manu-ops",
+      "account_id": "acct-fraud-manu",
+      "role": "Operations",
+      "email": "ops-acct-fraud-manu@example.test"
+    },
+    {
+      "contact_id": "ct-acct-fraud-manu-finance",
+      "account_id": "acct-fraud-manu",
+      "role": "Finance",
+      "email": "finance-acct-fraud-manu@example.test"
+    }
+  ],
+  "workflow_requests": [
+    {
+      "request_id": "order-fraud-manual",
+      "task_id": "fraud-manual-review-hold",
+      "account_id": "acct-fraud-manu",
+      "title": "Fraud/manual-review hold",
+      "primary_entity": "order",
+      "expected_outcome": "Manual review hold active with risk evidence, review owners, and portal-safe status.",
+      "next_step": "Operations owner review by 16:00",
+      "customer_message": "Fraud/manual-review hold is being handled by Operations, Support, Finance, Logistics."
+    }
+  ],
+  "workflow_request_owner_groups": [
+    {
+      "request_id": "order-fraud-manual",
+      "owner_group": "Operations",
+      "group_order": 1
+    },
+    {
+      "request_id": "order-fraud-manual",
+      "owner_group": "Support",
+      "group_order": 2
+    },
+    {
+      "request_id": "order-fraud-manual",
+      "owner_group": "Finance",
+      "group_order": 3
+    },
+    {
+      "request_id": "order-fraud-manual",
+      "owner_group": "Logistics",
+      "group_order": 4
+    }
+  ],
+  "workflow_request_risk_signals": [
+    {
+      "request_id": "order-fraud-manual",
+      "signal_name": "fraud",
+      "detail": "Fraud/manual-review hold signal 1: fraud",
+      "signal_order": 1
+    },
+    {
+      "request_id": "order-fraud-manual",
+      "signal_name": "manual",
+      "detail": "Fraud/manual-review hold signal 2: manual",
+      "signal_order": 2
+    },
+    {
+      "request_id": "order-fraud-manual",
+      "signal_name": "review",
+      "detail": "Fraud/manual-review hold signal 3: review",
+      "signal_order": 3
+    },
+    {
+      "request_id": "order-fraud-manual",
+      "signal_name": "enterprise account",
+      "detail": "Fraud/manual-review hold signal 4: enterprise account",
+      "signal_order": 4
+    },
+    {
+      "request_id": "order-fraud-manual",
+      "signal_name": "open customer impact",
+      "detail": "Fraud/manual-review hold signal 5: open customer impact",
+      "signal_order": 5
+    },
+    {
+      "request_id": "order-fraud-manual",
+      "signal_name": "audit required",
+      "detail": "Fraud/manual-review hold signal 6: audit required",
+      "signal_order": 6
+    }
+  ],
+  "activities": [
+    {
+      "activity_id": "act-fraud-manual-review-hold-1",
+      "account_id": "acct-fraud-manu",
+      "subject_id": "order-fraud-manual",
+      "summary": "Fraud/manual-review hold signal 1: fraud",
+      "occurred_at": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-fraud-manual-review-hold-2",
+      "account_id": "acct-fraud-manu",
+      "subject_id": "order-fraud-manual",
+      "summary": "Fraud/manual-review hold signal 2: manual",
+      "occurred_at": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-fraud-manual-review-hold-3",
+      "account_id": "acct-fraud-manu",
+      "subject_id": "order-fraud-manual",
+      "summary": "Fraud/manual-review hold signal 3: review",
+      "occurred_at": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-fraud-manual-review-hold-4",
+      "account_id": "acct-fraud-manu",
+      "subject_id": "order-fraud-manual",
+      "summary": "Fraud/manual-review hold signal 4: enterprise account",
+      "occurred_at": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-fraud-manual-review-hold-5",
+      "account_id": "acct-fraud-manu",
+      "subject_id": "order-fraud-manual",
+      "summary": "Fraud/manual-review hold signal 5: open customer impact",
+      "occurred_at": "2026-06-14T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-fraud-manual-review-hold-6",
+      "account_id": "acct-fraud-manu",
+      "subject_id": "order-fraud-manual",
+      "summary": "Fraud/manual-review hold signal 6: audit required",
+      "occurred_at": "2026-06-15T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

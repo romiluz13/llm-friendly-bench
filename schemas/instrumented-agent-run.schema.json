@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mongodb.local/sql-hidden-cost/instrumented-agent-run.schema.json",
+  "title": "Instrumented Agent Run",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "runId",
+    "lane",
+    "agent",
+    "scenario",
+    "status",
+    "startedAt",
+    "finishedAt",
+    "artifacts",
+    "metrics"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "runId": { "type": "string" },
+    "lane": { "type": "string", "enum": ["mongo", "postgres"] },
+    "agent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "cliVersion", "mode"],
+      "properties": {
+        "name": { "type": "string" },
+        "cliVersion": { "type": "string" },
+        "mode": { "type": "string" },
+        "model": { "type": "string" }
+      }
+    },
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fixtureVersion", "orderId", "taskPrompt"],
+      "properties": {
+        "fixtureVersion": { "type": "string" },
+        "orderId": { "type": "string" },
+        "taskPrompt": { "type": "string" }
+      }
+    },
+    "status": { "type": "string", "enum": ["prepared", "running", "passed", "failed"] },
+    "startedAt": { "type": "string" },
+    "finishedAt": { "type": "string" },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "elapsedMs",
+        "transcriptBytes",
+        "estimatedTranscriptTokens",
+        "diffBytes",
+        "filesChanged",
+        "testStatus",
+        "retrySignals"
+      ],
+      "properties": {
+        "elapsedMs": { "type": "integer", "minimum": 0 },
+        "transcriptBytes": { "type": "integer", "minimum": 0 },
+        "estimatedTranscriptTokens": { "type": "integer", "minimum": 0 },
+        "diffBytes": { "type": "integer", "minimum": 0 },
+        "filesChanged": { "type": "integer", "minimum": 0 },
+        "testStatus": { "type": "string" },
+        "retrySignals": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

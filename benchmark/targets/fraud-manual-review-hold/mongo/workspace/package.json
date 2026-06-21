@@ -1,0 +1,10 @@
+{
+  "name": "ast-bench-fraud-manual-review-hold-mongo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/acceptance.test.mjs",
+    "render": "node src/render-proof.mjs"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0.0",
+  "runId": "order-exception-codex-v1",
+  "lane": "postgres",
+  "agent": {
+    "name": "Codex",
+    "cliVersion": "codex-cli 0.130.0",
+    "mode": "codex exec",
+    "model": "default Codex CLI profile"
+  },
+  "scenario": {
+    "fixtureVersion": "scenario-fixture-v2",
+    "orderId": "HX-20491",
+    "accountId": "acct-nova",
+    "taskPrompt": "You are running an Instrumented Agent Run for MongoDB's Interactive Proof Lab.\n\nTask:\nImplement the at-risk Customer 360 Escalation Workflow for order HX-20491 / account acct-nova.\n\nBusiness request:\nDetect a delayed high-value order for a strategic account, combine CRM context, open support cases, invoice/payment risk, contract tier, recent product usage, shipment status, regulatory flags, and audit history. Route the account to Customer Success, Legal, Finance, and Support, show the customer-safe status in the portal, create internal owner tasks, and preserve a full audit timeline.\n\nAcceptance:\n- The customer portal title is \"At-risk escalation active\".\n- Current status is \"Executive escalation\".\n- Visible owner is \"Customer Success + Legal + Finance + Support\".\n- Next step is \"Executive recovery plan by 16:00\".\n- Risk summary is \"6 signals: shipment delay, strategic account, open support case, invoice risk, usage drop, regulatory review\".\n- Tasks is \"4 owner tasks\".\n- Audit history is visible.\n- Customer message is \"We are coordinating executive recovery for your delayed shipment.\"\n- Persist the escalation state, all six risk factors with detail, four owner tasks with account/order/title/due context, customer portal message, and audit linkage.\n- Run npm test and make it pass.\n\nRules:\n- Do not change tests.\n- Do not change generated fixture data.\n- Keep the Postgres normalized table-shaped model native.\n- Make the smallest production-style code change needed.\n"
+  },
+  "status": "passed",
+  "startedAt": "2026-06-17T11:18:18.756Z",
+  "finishedAt": "2026-06-17T11:22:15.798Z",
+  "artifacts": {
+    "workspace": "instrumented-agent-runs/order-exception-codex-v1/postgres/workspace",
+    "prompt": "instrumented-agent-runs/order-exception-codex-v1/postgres/prompt.md",
+    "rawTranscript": "instrumented-agent-runs/order-exception-codex-v1/postgres/raw-transcript/codex-events.jsonl",
+    "stderr": "instrumented-agent-runs/order-exception-codex-v1/postgres/raw-transcript/codex-stderr.log",
+    "lastMessage": "instrumented-agent-runs/order-exception-codex-v1/postgres/raw-transcript/codex-last-message.md",
+    "diff": "instrumented-agent-runs/order-exception-codex-v1/postgres/diff.patch",
+    "tests": "instrumented-agent-runs/order-exception-codex-v1/postgres/tests.log",
+    "acceptance": "instrumented-agent-runs/order-exception-codex-v1/postgres/acceptance.json",
+    "screenshot": "instrumented-agent-runs/order-exception-codex-v1/postgres/screenshots/customer-portal-before-after.svg"
+  },
+  "metrics": {
+    "elapsedMs": 237528,
+    "transcriptBytes": 290626,
+    "estimatedTranscriptTokens": 72657,
+    "diffBytes": 8699,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/order-exception-workflow.mjs"
+    ],
+    "testStatus": "passed",
+    "retrySignals": 28,
+    "codexExitCode": 0,
+    "testsExitCode": 0,
+    "evidenceSha256": [
+      {
+        "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/raw-transcript/codex-events.jsonl",
+        "sha256": "330254741806de15967abda227d01bb3250de083597b8749a3b8b34cfb4974e4"
+      },
+      {
+        "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/raw-transcript/codex-stderr.log",
+        "sha256": "cab9242897064d6b17fecd24e119ea73c6f30ac43e8a041bd795c2c127c9e82c"
+      },
+      {
+        "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/diff.patch",
+        "sha256": "f47689b303a1d0e5b95e95d0b30e435b14fcdf1a99589529d208160df49409eb"
+      },
+      {
+        "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/tests.log",
+        "sha256": "580ba6e48c95888bf596707c808e82c6ea1c7342f8b1cf76c068b9787de63c66"
+      },
+      {
+        "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/acceptance.json",
+        "sha256": "6ca31f296c166b3ec27f5e0d9b482926c0d50afb54574fdef2e6370a6331f7e8"
+      },
+      {
+        "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/screenshots/customer-portal-before-after.svg",
+        "sha256": "f37686e2271bd03a364779ffa33356b5beb1875b8210388b9f056a21330840ba"
+      }
+    ]
+  }
+}

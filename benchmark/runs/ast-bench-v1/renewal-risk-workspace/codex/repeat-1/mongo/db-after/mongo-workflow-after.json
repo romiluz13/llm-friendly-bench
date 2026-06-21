@@ -1,0 +1,25 @@
+{
+  "lane": "mongo",
+  "before": {
+    "taskId": "renewal-risk-workspace",
+    "title": "Renewal-risk workspace",
+    "status": "Needs work",
+    "owner": "Unassigned",
+    "nextStep": "Waiting for workflow",
+    "riskSummary": "Risk not scored",
+    "tasks": "0 owner tasks",
+    "history": "Not visible",
+    "customerMessage": "No customer-safe message"
+  },
+  "after": {
+    "taskId": "renewal-risk-workspace",
+    "title": "Renewal-risk workspace",
+    "status": "Renewal risk workspace active with owner tasks, customer-safe next step, and persisted risk factors.",
+    "owner": "Customer Success + Support + Finance + Executive Sponsor",
+    "nextStep": "Customer Success owner review by 16:00",
+    "riskSummary": "6 signals: renewal, risk, workspace, enterprise account, open customer impact, audit required",
+    "tasks": "4 owner tasks",
+    "history": "Audit visible",
+    "customerMessage": "Renewal-risk workspace is being handled by Customer Success, Support, Finance, Executive Sponsor."
+  }
+}

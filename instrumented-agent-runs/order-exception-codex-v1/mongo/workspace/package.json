@@ -1,0 +1,10 @@
+{
+  "name": "customer-360-escalation-mongo-target",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/customer-360-escalation.test.mjs",
+    "render": "node src/render-portal.mjs"
+  }
+}

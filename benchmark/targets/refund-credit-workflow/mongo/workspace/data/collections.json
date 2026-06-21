@@ -1,0 +1,136 @@
+{
+  "benchmark_fixture": {
+    "_id": "ast-bench-v1-refund-credit-workflow",
+    "suiteId": "ast-bench-v1",
+    "taskId": "refund-credit-workflow",
+    "generatedAt": "2026-06-18T12:00:00.000Z"
+  },
+  "accounts": [
+    {
+      "_id": "acct-refund-cre",
+      "name": "Order Account 2",
+      "tier": "enterprise",
+      "region": "NA",
+      "contract": {
+        "contractId": "ctr-acct-refund-cre",
+        "renewalDate": "2026-09-30",
+        "arrCents": 7200000,
+        "supportPlan": "platinum"
+      },
+      "contacts": [
+        {
+          "contactId": "ct-acct-refund-cre-ops",
+          "role": "Operations",
+          "email": "ops-acct-refund-cre@example.test"
+        },
+        {
+          "contactId": "ct-acct-refund-cre-finance",
+          "role": "Finance",
+          "email": "finance-acct-refund-cre@example.test"
+        }
+      ],
+      "context": {
+        "healthScore": 68,
+        "usageTrend": "down",
+        "openCases": 2,
+        "invoiceRisk": "medium",
+        "complianceFlags": [
+          "customer-visible-audit"
+        ]
+      }
+    }
+  ],
+  "workflow_requests": [
+    {
+      "_id": "order-refund-credi",
+      "taskId": "refund-credit-workflow",
+      "accountId": "acct-refund-cre",
+      "title": "Refund and credit workflow",
+      "primaryEntity": "order",
+      "businessPrompt": "Add a refund and credit approval workflow for a delayed order with invoice impact, payment history, customer tier, support case, and finance approval requirements.",
+      "expectedOutcome": "Credit approval ready with finance task, customer-safe message, and accounting audit trail.",
+      "ownerGroups": [
+        "Operations",
+        "Support",
+        "Finance",
+        "Logistics"
+      ],
+      "riskSignals": [
+        {
+          "name": "refund",
+          "detail": "Refund and credit workflow signal 1: refund"
+        },
+        {
+          "name": "credit",
+          "detail": "Refund and credit workflow signal 2: credit"
+        },
+        {
+          "name": "workflow",
+          "detail": "Refund and credit workflow signal 3: workflow"
+        },
+        {
+          "name": "enterprise account",
+          "detail": "Refund and credit workflow signal 4: enterprise account"
+        },
+        {
+          "name": "open customer impact",
+          "detail": "Refund and credit workflow signal 5: open customer impact"
+        },
+        {
+          "name": "audit required",
+          "detail": "Refund and credit workflow signal 6: audit required"
+        }
+      ],
+      "nextStep": "Operations owner review by 16:00",
+      "customerMessage": "Refund and credit workflow is being handled by Operations, Support, Finance, Logistics."
+    }
+  ],
+  "activities": [
+    {
+      "_id": "act-refund-credit-workflow-1",
+      "accountId": "acct-refund-cre",
+      "subjectId": "order-refund-credi",
+      "summary": "Refund and credit workflow signal 1: refund",
+      "occurredAt": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "_id": "act-refund-credit-workflow-2",
+      "accountId": "acct-refund-cre",
+      "subjectId": "order-refund-credi",
+      "summary": "Refund and credit workflow signal 2: credit",
+      "occurredAt": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "_id": "act-refund-credit-workflow-3",
+      "accountId": "acct-refund-cre",
+      "subjectId": "order-refund-credi",
+      "summary": "Refund and credit workflow signal 3: workflow",
+      "occurredAt": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "_id": "act-refund-credit-workflow-4",
+      "accountId": "acct-refund-cre",
+      "subjectId": "order-refund-credi",
+      "summary": "Refund and credit workflow signal 4: enterprise account",
+      "occurredAt": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "_id": "act-refund-credit-workflow-5",
+      "accountId": "acct-refund-cre",
+      "subjectId": "order-refund-credi",
+      "summary": "Refund and credit workflow signal 5: open customer impact",
+      "occurredAt": "2026-06-14T10:00:00.000Z"
+    },
+    {
+      "_id": "act-refund-credit-workflow-6",
+      "accountId": "acct-refund-cre",
+      "subjectId": "order-refund-credi",
+      "summary": "Refund and credit workflow signal 6: audit required",
+      "occurredAt": "2026-06-15T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

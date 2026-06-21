@@ -1,0 +1,161 @@
+{
+  "benchmark_fixture": [
+    {
+      "fixture_version": "ast-bench-v1-payment-risk-hold-release",
+      "suite_id": "ast-bench-v1",
+      "task_id": "payment-risk-hold-release",
+      "generated_at": "2026-06-18T12:00:00.000Z"
+    }
+  ],
+  "accounts": [
+    {
+      "account_id": "acct-payment-ri",
+      "name": "Billing Account 2",
+      "tier": "enterprise",
+      "region": "NA"
+    }
+  ],
+  "account_contracts": [
+    {
+      "contract_id": "ctr-acct-payment-ri",
+      "account_id": "acct-payment-ri",
+      "renewal_date": "2026-09-30",
+      "arr_cents": 7200000,
+      "support_plan": "platinum"
+    }
+  ],
+  "contacts": [
+    {
+      "contact_id": "ct-acct-payment-ri-ops",
+      "account_id": "acct-payment-ri",
+      "role": "Operations",
+      "email": "ops-acct-payment-ri@example.test"
+    },
+    {
+      "contact_id": "ct-acct-payment-ri-finance",
+      "account_id": "acct-payment-ri",
+      "role": "Finance",
+      "email": "finance-acct-payment-ri@example.test"
+    }
+  ],
+  "workflow_requests": [
+    {
+      "request_id": "invoice-payment-risk",
+      "task_id": "payment-risk-hold-release",
+      "account_id": "acct-payment-ri",
+      "title": "Payment-risk hold release",
+      "primary_entity": "invoice",
+      "expected_outcome": "Hold release review active with finance/legal owners and customer-safe next step.",
+      "next_step": "Finance owner review by 16:00",
+      "customer_message": "Payment-risk hold release is being handled by Finance, Customer Success, Legal, Operations."
+    }
+  ],
+  "workflow_request_owner_groups": [
+    {
+      "request_id": "invoice-payment-risk",
+      "owner_group": "Finance",
+      "group_order": 1
+    },
+    {
+      "request_id": "invoice-payment-risk",
+      "owner_group": "Customer Success",
+      "group_order": 2
+    },
+    {
+      "request_id": "invoice-payment-risk",
+      "owner_group": "Legal",
+      "group_order": 3
+    },
+    {
+      "request_id": "invoice-payment-risk",
+      "owner_group": "Operations",
+      "group_order": 4
+    }
+  ],
+  "workflow_request_risk_signals": [
+    {
+      "request_id": "invoice-payment-risk",
+      "signal_name": "payment",
+      "detail": "Payment-risk hold release signal 1: payment",
+      "signal_order": 1
+    },
+    {
+      "request_id": "invoice-payment-risk",
+      "signal_name": "risk",
+      "detail": "Payment-risk hold release signal 2: risk",
+      "signal_order": 2
+    },
+    {
+      "request_id": "invoice-payment-risk",
+      "signal_name": "hold",
+      "detail": "Payment-risk hold release signal 3: hold",
+      "signal_order": 3
+    },
+    {
+      "request_id": "invoice-payment-risk",
+      "signal_name": "enterprise account",
+      "detail": "Payment-risk hold release signal 4: enterprise account",
+      "signal_order": 4
+    },
+    {
+      "request_id": "invoice-payment-risk",
+      "signal_name": "open customer impact",
+      "detail": "Payment-risk hold release signal 5: open customer impact",
+      "signal_order": 5
+    },
+    {
+      "request_id": "invoice-payment-risk",
+      "signal_name": "audit required",
+      "detail": "Payment-risk hold release signal 6: audit required",
+      "signal_order": 6
+    }
+  ],
+  "activities": [
+    {
+      "activity_id": "act-payment-risk-hold-release-1",
+      "account_id": "acct-payment-ri",
+      "subject_id": "invoice-payment-risk",
+      "summary": "Payment-risk hold release signal 1: payment",
+      "occurred_at": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-payment-risk-hold-release-2",
+      "account_id": "acct-payment-ri",
+      "subject_id": "invoice-payment-risk",
+      "summary": "Payment-risk hold release signal 2: risk",
+      "occurred_at": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-payment-risk-hold-release-3",
+      "account_id": "acct-payment-ri",
+      "subject_id": "invoice-payment-risk",
+      "summary": "Payment-risk hold release signal 3: hold",
+      "occurred_at": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-payment-risk-hold-release-4",
+      "account_id": "acct-payment-ri",
+      "subject_id": "invoice-payment-risk",
+      "summary": "Payment-risk hold release signal 4: enterprise account",
+      "occurred_at": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-payment-risk-hold-release-5",
+      "account_id": "acct-payment-ri",
+      "subject_id": "invoice-payment-risk",
+      "summary": "Payment-risk hold release signal 5: open customer impact",
+      "occurred_at": "2026-06-14T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-payment-risk-hold-release-6",
+      "account_id": "acct-payment-ri",
+      "subject_id": "invoice-payment-risk",
+      "summary": "Payment-risk hold release signal 6: audit required",
+      "occurred_at": "2026-06-15T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

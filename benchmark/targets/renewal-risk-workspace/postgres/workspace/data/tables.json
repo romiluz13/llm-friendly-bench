@@ -1,0 +1,161 @@
+{
+  "benchmark_fixture": [
+    {
+      "fixture_version": "ast-bench-v1-renewal-risk-workspace",
+      "suite_id": "ast-bench-v1",
+      "task_id": "renewal-risk-workspace",
+      "generated_at": "2026-06-18T12:00:00.000Z"
+    }
+  ],
+  "accounts": [
+    {
+      "account_id": "acct-renewal-ri",
+      "name": "Customer 360 Account 2",
+      "tier": "enterprise",
+      "region": "NA"
+    }
+  ],
+  "account_contracts": [
+    {
+      "contract_id": "ctr-acct-renewal-ri",
+      "account_id": "acct-renewal-ri",
+      "renewal_date": "2026-09-30",
+      "arr_cents": 7200000,
+      "support_plan": "platinum"
+    }
+  ],
+  "contacts": [
+    {
+      "contact_id": "ct-acct-renewal-ri-ops",
+      "account_id": "acct-renewal-ri",
+      "role": "Operations",
+      "email": "ops-acct-renewal-ri@example.test"
+    },
+    {
+      "contact_id": "ct-acct-renewal-ri-finance",
+      "account_id": "acct-renewal-ri",
+      "role": "Finance",
+      "email": "finance-acct-renewal-ri@example.test"
+    }
+  ],
+  "workflow_requests": [
+    {
+      "request_id": "account-renewal-risk",
+      "task_id": "renewal-risk-workspace",
+      "account_id": "acct-renewal-ri",
+      "title": "Renewal-risk workspace",
+      "primary_entity": "account",
+      "expected_outcome": "Renewal risk workspace active with owner tasks, customer-safe next step, and persisted risk factors.",
+      "next_step": "Customer Success owner review by 16:00",
+      "customer_message": "Renewal-risk workspace is being handled by Customer Success, Support, Finance, Executive Sponsor."
+    }
+  ],
+  "workflow_request_owner_groups": [
+    {
+      "request_id": "account-renewal-risk",
+      "owner_group": "Customer Success",
+      "group_order": 1
+    },
+    {
+      "request_id": "account-renewal-risk",
+      "owner_group": "Support",
+      "group_order": 2
+    },
+    {
+      "request_id": "account-renewal-risk",
+      "owner_group": "Finance",
+      "group_order": 3
+    },
+    {
+      "request_id": "account-renewal-risk",
+      "owner_group": "Executive Sponsor",
+      "group_order": 4
+    }
+  ],
+  "workflow_request_risk_signals": [
+    {
+      "request_id": "account-renewal-risk",
+      "signal_name": "renewal",
+      "detail": "Renewal-risk workspace signal 1: renewal",
+      "signal_order": 1
+    },
+    {
+      "request_id": "account-renewal-risk",
+      "signal_name": "risk",
+      "detail": "Renewal-risk workspace signal 2: risk",
+      "signal_order": 2
+    },
+    {
+      "request_id": "account-renewal-risk",
+      "signal_name": "workspace",
+      "detail": "Renewal-risk workspace signal 3: workspace",
+      "signal_order": 3
+    },
+    {
+      "request_id": "account-renewal-risk",
+      "signal_name": "enterprise account",
+      "detail": "Renewal-risk workspace signal 4: enterprise account",
+      "signal_order": 4
+    },
+    {
+      "request_id": "account-renewal-risk",
+      "signal_name": "open customer impact",
+      "detail": "Renewal-risk workspace signal 5: open customer impact",
+      "signal_order": 5
+    },
+    {
+      "request_id": "account-renewal-risk",
+      "signal_name": "audit required",
+      "detail": "Renewal-risk workspace signal 6: audit required",
+      "signal_order": 6
+    }
+  ],
+  "activities": [
+    {
+      "activity_id": "act-renewal-risk-workspace-1",
+      "account_id": "acct-renewal-ri",
+      "subject_id": "account-renewal-risk",
+      "summary": "Renewal-risk workspace signal 1: renewal",
+      "occurred_at": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-renewal-risk-workspace-2",
+      "account_id": "acct-renewal-ri",
+      "subject_id": "account-renewal-risk",
+      "summary": "Renewal-risk workspace signal 2: risk",
+      "occurred_at": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-renewal-risk-workspace-3",
+      "account_id": "acct-renewal-ri",
+      "subject_id": "account-renewal-risk",
+      "summary": "Renewal-risk workspace signal 3: workspace",
+      "occurred_at": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-renewal-risk-workspace-4",
+      "account_id": "acct-renewal-ri",
+      "subject_id": "account-renewal-risk",
+      "summary": "Renewal-risk workspace signal 4: enterprise account",
+      "occurred_at": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-renewal-risk-workspace-5",
+      "account_id": "acct-renewal-ri",
+      "subject_id": "account-renewal-risk",
+      "summary": "Renewal-risk workspace signal 5: open customer impact",
+      "occurred_at": "2026-06-14T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-renewal-risk-workspace-6",
+      "account_id": "acct-renewal-ri",
+      "subject_id": "account-renewal-risk",
+      "summary": "Renewal-risk workspace signal 6: audit required",
+      "occurred_at": "2026-06-15T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

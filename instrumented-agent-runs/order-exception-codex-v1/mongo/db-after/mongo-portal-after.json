@@ -1,0 +1,31 @@
+{
+  "lane": "mongo",
+  "before": {
+    "orderId": "HX-20491",
+    "accountId": "acct-nova",
+    "accountName": "Nova Retail Group",
+    "caseId": "case-nova-77",
+    "title": "Shipment delayed",
+    "status": "delayed",
+    "owner": "Unassigned",
+    "nextStep": "Contact support",
+    "history": "Not visible",
+    "riskSummary": "Risk not scored",
+    "tasks": "0 owner tasks",
+    "customerMessage": "Contact support"
+  },
+  "after": {
+    "orderId": "HX-20491",
+    "accountId": "acct-nova",
+    "accountName": "Nova Retail Group",
+    "caseId": "case-nova-77",
+    "title": "At-risk escalation active",
+    "status": "Executive escalation",
+    "owner": "Customer Success + Legal + Finance + Support",
+    "nextStep": "Executive recovery plan by 16:00",
+    "history": "Audit visible",
+    "riskSummary": "6 signals: shipment delay, strategic account, open support case, invoice risk, usage drop, regulatory review",
+    "tasks": "4 owner tasks",
+    "customerMessage": "We are coordinating executive recovery for your delayed shipment."
+  }
+}

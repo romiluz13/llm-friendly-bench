@@ -1,0 +1,263 @@
+import { buildPortalView } from "./portal-view.mjs";
+
+export function applyOrderException(db, orderId, now) {
+  const order = db.orders.find((item) => item._id === orderId);
+  const account = db.accounts.find((item) => item._id === order?.accountId);
+  const policy = db.escalation_policies.find((item) => item.policyId === "policy-strategic-customer-360-escalation");
+
+  if (!order || !account || !policy) return buildPortalView(db, orderId);
+
+  const supportCases = db.support_cases.filter((item) =>
+    item.accountId === account._id &&
+    item.status !== "closed" &&
+    (item.orderId === orderId || item.priority === "urgent")
+  );
+  const invoiceRisks = db.invoice_snapshots.filter((item) =>
+    item.accountId === account._id &&
+    (item.orderId === orderId || item.status === "past_due" || item.risk)
+  );
+  const invoiceRisk = invoiceRisks.find((item) => item.status === "past_due" || item.risk);
+  const usage = latestByDate(
+    db.usage_snapshots.filter((item) => item.accountId === account._id),
+    "capturedAt"
+  ) || account.usageSummary;
+  const complianceReviews = db.compliance_reviews.filter((item) =>
+    item.accountId === account._id &&
+    (item.orderId === orderId || item.status !== "cleared")
+  );
+  const activeComplianceReview = complianceReviews.find((item) => item.status !== "cleared");
+  const activities = db.activities.filter((item) =>
+    item.accountId === account._id &&
+    (item.orderId === orderId || supportCases.some((supportCase) => supportCase.caseId === item.caseId))
+  );
+
+  const shipmentDelayed = order.status === policy.appliesToStatus && order.fulfillment?.delayed;
+  const highValue = order.valueCents >= policy.minValueCents;
+  const strategicAccount = policy.requiredAccountTiers.includes(account.tier);
+  const openSupportCase = supportCases.length > 0;
+  const paymentRisk = Boolean(invoiceRisk);
+  const usageDrop = usage?.trend === "down" || usage?.activeUsers7d < usage?.activeUsersPrevious7d;
+  const regulatoryReview = Boolean(activeComplianceReview);
+
+  if (!shipmentDelayed || !highValue || !strategicAccount || !openSupportCase || !paymentRisk || !usageDrop || !regulatoryReview) {
+    return buildPortalView(db, orderId);
+  }
+
+  const escalationId = `esc-${orderId.toLowerCase()}`;
+  const dueAt = order.fulfillment?.promisedReleaseTime || order.promisedReleaseTime;
+  const usageDropPercent = usage?.activeUsersPrevious7d
+    ? Math.round(((usage.activeUsersPrevious7d - usage.activeUsers7d) / usage.activeUsersPrevious7d) * 100)
+    : 0;
+  const timeline = [
+    ...order.statusHistory.map((item) => ({
+      type: "order_status",
+      occurredAt: item.occurredAt,
+      customerVisible: item.customerVisible,
+      summary: item.summary
+    })),
+    ...activities.map((item) => ({
+      type: "customer_activity",
+      occurredAt: item.occurredAt,
+      caseId: item.caseId,
+      summary: item.summary
+    })),
+    {
+      type: "escalation_created",
+      occurredAt: now,
+      customerVisible: true,
+      summary: policy.customerVisibleTitle
+    }
+  ].sort((left, right) => left.occurredAt.localeCompare(right.occurredAt));
+  const riskFactors = [
+    {
+      factor: "shipment delay",
+      detail: `Shipment ${order.fulfillment.shipmentId} is delayed by ${order.fulfillment.carrier} because ${order.fulfillment.delayReason}.`,
+      evidence: {
+        shipmentId: order.fulfillment.shipmentId,
+        status: order.status,
+        promisedReleaseTime: order.fulfillment.promisedReleaseTime
+      }
+    },
+    {
+      factor: "strategic account",
+      detail: `${account.name} is a ${account.tier} account on ${account.contract.tier} contract tier with ARR ${account.contract.arrCents}.`,
+      evidence: {
+        accountId: account._id,
+        contractId: account.contract.contractId,
+        renewalDate: account.contract.renewalDate
+      }
+    },
+    {
+      factor: "open support case",
+      detail: `${supportCases.length} open support case(s), including ${supportCases.map((item) => item.caseId).join(", ")}.`,
+      evidence: {
+        caseIds: supportCases.map((item) => item.caseId),
+        latestComment: supportCases.at(-1)?.latestComment
+      }
+    },
+    {
+      factor: "invoice risk",
+      detail: `Invoice ${invoiceRisk.invoiceId} is ${invoiceRisk.status} with risk ${invoiceRisk.risk}.`,
+      evidence: {
+        invoiceId: invoiceRisk.invoiceId,
+        amountCents: invoiceRisk.amountCents,
+        dueAt: invoiceRisk.dueAt
+      }
+    },
+    {
+      factor: "usage drop",
+      detail: `7-day active users fell from ${usage.activeUsersPrevious7d} to ${usage.activeUsers7d} (${usageDropPercent}% drop).`,
+      evidence: {
+        snapshotId: usage.snapshotId,
+        failedSyncs24h: usage.failedSyncs24h,
+        trend: usage.trend
+      }
+    },
+    {
+      factor: "regulatory review",
+      detail: `Compliance review ${activeComplianceReview.reviewId} is ${activeComplianceReview.status} for ${activeComplianceReview.flags.join(", ")}.`,
+      evidence: {
+        reviewId: activeComplianceReview.reviewId,
+        flags: activeComplianceReview.flags
+      }
+    }
+  ];
+  const ownerGroups = [...policy.ownerGroups];
+  const tasks = ownerGroups.map((ownerGroup) => {
+    const owner = account.accountTeam.find((item) => item.ownerGroup === ownerGroup);
+
+    return {
+      _id: `work-${escalationId}-${ownerGroup.toLowerCase().replaceAll(" ", "-")}`,
+      escalationId,
+      accountId: account._id,
+      orderId,
+      ownerGroup,
+      ownerName: owner?.name,
+      title: taskTitleFor(ownerGroup, account, order),
+      status: "open",
+      dueAt,
+      dueContext: policy.nextStep,
+      createdAt: now
+    };
+  });
+  const auditEvents = [
+    {
+      _id: `audit-${escalationId}-risk-assessed`,
+      escalationId,
+      accountId: account._id,
+      orderId,
+      occurredAt: now,
+      eventType: "customer_360_risk_assessed",
+      actor: "order-exception-workflow",
+      customerVisible: false,
+      summary: "Six customer 360 risk signals qualified the order for executive escalation.",
+      riskFactors: riskFactors.map((item) => item.factor),
+      linkedDocuments: linkedDocuments(order, supportCases, invoiceRisks, usage, complianceReviews)
+    },
+    {
+      _id: `audit-${escalationId}-tasks-created`,
+      escalationId,
+      accountId: account._id,
+      orderId,
+      occurredAt: now,
+      eventType: "owner_tasks_created",
+      actor: "order-exception-workflow",
+      customerVisible: false,
+      summary: "Owner tasks routed to Customer Success, Legal, Finance, and Support.",
+      taskIds: tasks.map((item) => item._id)
+    },
+    {
+      _id: `audit-${escalationId}-customer-visible`,
+      escalationId,
+      accountId: account._id,
+      orderId,
+      occurredAt: now,
+      eventType: "customer_portal_escalation_published",
+      actor: "order-exception-workflow",
+      customerVisible: true,
+      summary: policy.customerVisibleTitle,
+      customerMessage: policy.customerMessage,
+      timeline
+    }
+  ];
+  const escalation = {
+    _id: escalationId,
+    escalationId,
+    policyId: policy.policyId,
+    accountId: account._id,
+    orderId,
+    status: "active",
+    phase: "executive_escalation",
+    customerVisibleTitle: policy.customerVisibleTitle,
+    customerVisibleStatus: policy.customerVisibleStatus,
+    ownerGroups,
+    nextStep: policy.nextStep,
+    customerMessage: policy.customerMessage,
+    riskFactors,
+    taskIds: tasks.map((item) => item._id),
+    auditEventIds: auditEvents.map((item) => item._id),
+    linkedDocuments: linkedDocuments(order, supportCases, invoiceRisks, usage, complianceReviews),
+    timeline,
+    createdAt: now,
+    updatedAt: now
+  };
+
+  upsertById(db.customer_escalations, escalation);
+  tasks.forEach((task) => upsertById(db.work_items, task));
+  auditEvents.forEach((event) => upsertById(db.audit_events, event));
+
+  account.currentEscalation = { ...escalation };
+  account.taskSummary = tasks.map((item) => ({
+    taskId: item._id,
+    ownerGroup: item.ownerGroup,
+    title: item.title,
+    dueAt: item.dueAt,
+    status: item.status
+  }));
+  order.exception = {
+    escalationId,
+    customerTitle: policy.customerVisibleTitle,
+    customerStatus: policy.customerVisibleStatus,
+    ownerGroups,
+    nextStep: policy.nextStep,
+    customerMessage: policy.customerMessage,
+    auditEventIds: auditEvents.map((item) => item._id)
+  };
+
+  return buildPortalView(db, orderId);
+}
+
+function latestByDate(items, field) {
+  return [...items].sort((left, right) => right[field].localeCompare(left[field]))[0];
+}
+
+function upsertById(collection, document) {
+  const index = collection.findIndex((item) => item._id === document._id);
+  if (index === -1) {
+    collection.push(document);
+  } else {
+    collection[index] = document;
+  }
+}
+
+function taskTitleFor(ownerGroup, account, order) {
+  const titles = {
+    "Customer Success": `Own executive recovery plan for ${account.name}`,
+    Legal: `Review regulated shipment language for ${order._id}`,
+    Finance: `Resolve invoice risk for ${account.name}`,
+    Support: `Coordinate delayed shipment support for ${order._id}`
+  };
+
+  return titles[ownerGroup];
+}
+
+function linkedDocuments(order, supportCases, invoiceRisks, usage, complianceReviews) {
+  return {
+    orderId: order._id,
+    shipmentId: order.fulfillment?.shipmentId,
+    supportCaseIds: supportCases.map((item) => item.caseId),
+    invoiceIds: invoiceRisks.map((item) => item.invoiceId),
+    usageSnapshotId: usage?.snapshotId,
+    complianceReviewIds: complianceReviews.map((item) => item.reviewId)
+  };
+}

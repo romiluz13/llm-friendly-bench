@@ -1,0 +1,136 @@
+{
+  "benchmark_fixture": {
+    "_id": "ast-bench-v1-usage-overage-adjustment",
+    "suiteId": "ast-bench-v1",
+    "taskId": "usage-overage-adjustment",
+    "generatedAt": "2026-06-18T12:00:00.000Z"
+  },
+  "accounts": [
+    {
+      "_id": "acct-usage-over",
+      "name": "Billing Account 4",
+      "tier": "enterprise",
+      "region": "NA",
+      "contract": {
+        "contractId": "ctr-acct-usage-over",
+        "renewalDate": "2026-09-30",
+        "arrCents": 7200000,
+        "supportPlan": "platinum"
+      },
+      "contacts": [
+        {
+          "contactId": "ct-acct-usage-over-ops",
+          "role": "Operations",
+          "email": "ops-acct-usage-over@example.test"
+        },
+        {
+          "contactId": "ct-acct-usage-over-finance",
+          "role": "Finance",
+          "email": "finance-acct-usage-over@example.test"
+        }
+      ],
+      "context": {
+        "healthScore": 68,
+        "usageTrend": "down",
+        "openCases": 2,
+        "invoiceRisk": "medium",
+        "complianceFlags": [
+          "customer-visible-audit"
+        ]
+      }
+    }
+  ],
+  "workflow_requests": [
+    {
+      "_id": "invoice-usage-overag",
+      "taskId": "usage-overage-adjustment",
+      "accountId": "acct-usage-over",
+      "title": "Usage overage adjustment",
+      "primaryEntity": "invoice",
+      "businessPrompt": "Implement a usage overage adjustment workflow. Combine product usage, contract entitlements, invoice lines, customer tier, support context, credit policy, and audit records.",
+      "expectedOutcome": "Overage adjustment proposed with policy evidence, owner tasks, and customer-safe status.",
+      "ownerGroups": [
+        "Finance",
+        "Customer Success",
+        "Legal",
+        "Operations"
+      ],
+      "riskSignals": [
+        {
+          "name": "usage",
+          "detail": "Usage overage adjustment signal 1: usage"
+        },
+        {
+          "name": "overage",
+          "detail": "Usage overage adjustment signal 2: overage"
+        },
+        {
+          "name": "adjustment",
+          "detail": "Usage overage adjustment signal 3: adjustment"
+        },
+        {
+          "name": "enterprise account",
+          "detail": "Usage overage adjustment signal 4: enterprise account"
+        },
+        {
+          "name": "open customer impact",
+          "detail": "Usage overage adjustment signal 5: open customer impact"
+        },
+        {
+          "name": "audit required",
+          "detail": "Usage overage adjustment signal 6: audit required"
+        }
+      ],
+      "nextStep": "Finance owner review by 16:00",
+      "customerMessage": "Usage overage adjustment is being handled by Finance, Customer Success, Legal, Operations."
+    }
+  ],
+  "activities": [
+    {
+      "_id": "act-usage-overage-adjustment-1",
+      "accountId": "acct-usage-over",
+      "subjectId": "invoice-usage-overag",
+      "summary": "Usage overage adjustment signal 1: usage",
+      "occurredAt": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "_id": "act-usage-overage-adjustment-2",
+      "accountId": "acct-usage-over",
+      "subjectId": "invoice-usage-overag",
+      "summary": "Usage overage adjustment signal 2: overage",
+      "occurredAt": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "_id": "act-usage-overage-adjustment-3",
+      "accountId": "acct-usage-over",
+      "subjectId": "invoice-usage-overag",
+      "summary": "Usage overage adjustment signal 3: adjustment",
+      "occurredAt": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "_id": "act-usage-overage-adjustment-4",
+      "accountId": "acct-usage-over",
+      "subjectId": "invoice-usage-overag",
+      "summary": "Usage overage adjustment signal 4: enterprise account",
+      "occurredAt": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "_id": "act-usage-overage-adjustment-5",
+      "accountId": "acct-usage-over",
+      "subjectId": "invoice-usage-overag",
+      "summary": "Usage overage adjustment signal 5: open customer impact",
+      "occurredAt": "2026-06-14T10:00:00.000Z"
+    },
+    {
+      "_id": "act-usage-overage-adjustment-6",
+      "accountId": "acct-usage-over",
+      "subjectId": "invoice-usage-overag",
+      "summary": "Usage overage adjustment signal 6: audit required",
+      "occurredAt": "2026-06-15T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

@@ -1,0 +1,68 @@
+{
+  "artifactId": "order-exception-codex-v1-verified",
+  "generatedAt": "2026-06-18T16:11:16.049Z",
+  "proofStatus": "verified",
+  "hashAlgorithm": "sha256",
+  "files": [
+    {
+      "path": "instrumented-agent-runs/order-exception-codex-v1/summary.json",
+      "bytes": 3541,
+      "sha256": "48b2cb74aae417f9e71f7a1ef0788f6c0d96b85d62b91112de4e748b32331183"
+    },
+    {
+      "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/raw-transcript/codex-events.jsonl",
+      "bytes": 61690,
+      "sha256": "dd42f61aff6436e042c315c0765a4b395b1bc5941af613f89ba2c3235ccb7334"
+    },
+    {
+      "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/raw-transcript/codex-events.jsonl",
+      "bytes": 86239,
+      "sha256": "330254741806de15967abda227d01bb3250de083597b8749a3b8b34cfb4974e4"
+    },
+    {
+      "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/diff.patch",
+      "bytes": 10060,
+      "sha256": "dd5c7444429b241762ea743914aa7b97e25b112c5afa732a2268397e2d4e3831"
+    },
+    {
+      "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/diff.patch",
+      "bytes": 8699,
+      "sha256": "f47689b303a1d0e5b95e95d0b30e435b14fcdf1a99589529d208160df49409eb"
+    },
+    {
+      "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/tests.log",
+      "bytes": 149,
+      "sha256": "1fa33afb99bd55f763dc8f89ae3ed5aa48a226a18de201cfd82b37d7f7631e7e"
+    },
+    {
+      "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/tests.log",
+      "bytes": 152,
+      "sha256": "580ba6e48c95888bf596707c808e82c6ea1c7342f8b1cf76c068b9787de63c66"
+    },
+    {
+      "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/screenshots/customer-portal-before-after.svg",
+      "bytes": 2252,
+      "sha256": "f75357e501944520a5777046317dda0ffa8cfa3e954a5e3b120e79acd2f8e362"
+    },
+    {
+      "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/screenshots/customer-portal-before-after.svg",
+      "bytes": 2255,
+      "sha256": "f37686e2271bd03a364779ffa33356b5beb1875b8210388b9f056a21330840ba"
+    },
+    {
+      "path": "design-review/order-exception-v1.json",
+      "bytes": 2836,
+      "sha256": "0b9b4dde1b9a8f8ad9a919189e7cbf9c044d6422dc27fffb277c67cd1d3abd95"
+    },
+    {
+      "path": "data/generated/proof/mongodb-local-db-proof.json",
+      "bytes": 2094,
+      "sha256": "73c73f1489724ded81512f6a699ff072d9604e9a2867c21d29f1ebc48ba32d56"
+    },
+    {
+      "path": "data/generated/proof/postgres-local-db-proof.json",
+      "bytes": 2064,
+      "sha256": "2756a6a618a4d8cc5464cd17b57d31d5f65fb7f528902baa7aced5b270fe1599"
+    }
+  ]
+}

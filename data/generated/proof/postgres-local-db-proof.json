@@ -1,0 +1,60 @@
+{
+  "status": "passed",
+  "generatedAt": "2026-06-17T12:00:00.000Z",
+  "postgresContainer": "sql-hidden-cost-postgres",
+  "postgresDb": "sql_hidden_cost",
+  "fixtureVersion": "scenario-fixture-v2",
+  "orderId": "HX-20491",
+  "accountId": "acct-nova",
+  "assertions": [
+    "after.title = At-risk escalation active",
+    "after.status = Executive escalation",
+    "after.owner = Customer Success + Legal + Finance + Support",
+    "after.nextStep = Executive recovery plan by 16:00",
+    "after.history = Audit visible",
+    "after.riskSummary = 6 signals: shipment delay, strategic account, open support case, invoice risk, usage drop, regulatory review",
+    "after.tasks = 4 owner tasks",
+    "after.customerMessage = We are coordinating executive recovery for your delayed shipment.",
+    "before.history = Not visible",
+    "before.tasks = 0 owner tasks"
+  ],
+  "before": {
+    "orderId": "HX-20491",
+    "title": "Shipment delayed",
+    "status": "delayed",
+    "owner": "Unassigned",
+    "nextStep": "Contact support",
+    "history": "Not visible",
+    "riskSummary": "Risk not scored",
+    "tasks": "0 owner tasks",
+    "customerMessage": "Contact support"
+  },
+  "after": {
+    "orderId": "HX-20491",
+    "title": "At-risk escalation active",
+    "status": "Executive escalation",
+    "owner": "Customer Success + Legal + Finance + Support",
+    "nextStep": "Executive recovery plan by 16:00",
+    "history": "Audit visible",
+    "riskSummary": "6 signals: shipment delay, strategic account, open support case, invoice risk, usage drop, regulatory review",
+    "tasks": "4 owner tasks",
+    "customerMessage": "We are coordinating executive recovery for your delayed shipment."
+  },
+  "counts": {
+    "accounts": 4,
+    "orders": 4,
+    "support_cases": 3,
+    "invoices": 3,
+    "usage_snapshots": 3,
+    "compliance_reviews": 2,
+    "customer_escalations": 1,
+    "escalation_risk_factors": 6,
+    "escalation_tasks": 4,
+    "customer_portal_messages": 1,
+    "audit_events": 1
+  },
+  "updateResult": {
+    "matchedCount": 1,
+    "modifiedCount": 1
+  }
+}

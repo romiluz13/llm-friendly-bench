@@ -1,0 +1,266 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "status": "rubric-pending-hitl",
+  "reviewer": "AST-Bench rubric; independent human review required before public-v1",
+  "generatedAt": "2026-06-21T20:41:37.170Z",
+  "rubric": [
+    "MongoDB target must model around the product access pattern and keep related workflow state together when it is read together.",
+    "Postgres target must use clean normalized boundaries, explicit relationship tables, and credible audit/approval tables.",
+    "Neither target may hide required state outside the database-specific fixture.",
+    "Schema-identical comparison is rejected because it would be less fair than database-native modeling.",
+    "Public V1 requires this rubric to be reviewed by a human or named reviewer for every task."
+  ],
+  "tasks": [
+    {
+      "taskId": "strategic-account-rescue",
+      "title": "Strategic account rescue",
+      "domain": "Customer 360 / CRM",
+      "status": "captured-seed-review",
+      "mongoRationale": "The MongoDB target for Strategic account rescue keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the account access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Strategic account rescue keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "renewal-risk-workspace",
+      "title": "Renewal-risk workspace",
+      "domain": "Customer 360 / CRM",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Renewal-risk workspace keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the account access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Renewal-risk workspace keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "account-merge-consent-audit",
+      "title": "Account merge with consent audit",
+      "domain": "Customer 360 / CRM",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Account merge with consent audit keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the account access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Account merge with consent audit keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "usage-drop-csm-handoff",
+      "title": "Usage-drop CSM handoff",
+      "domain": "Customer 360 / CRM",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Usage-drop CSM handoff keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the account access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Usage-drop CSM handoff keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "executive-escalation-summary",
+      "title": "Executive escalation summary",
+      "domain": "Customer 360 / CRM",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Executive escalation summary keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the account access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Executive escalation summary keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "split-shipment-exception",
+      "title": "Split-shipment exception",
+      "domain": "Order / Commerce Ops",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Split-shipment exception keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the order access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Split-shipment exception keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "refund-credit-workflow",
+      "title": "Refund and credit workflow",
+      "domain": "Order / Commerce Ops",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Refund and credit workflow keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the order access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Refund and credit workflow keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "inventory-substitution-approval",
+      "title": "Inventory substitution approval",
+      "domain": "Order / Commerce Ops",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Inventory substitution approval keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the order access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Inventory substitution approval keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "fraud-manual-review-hold",
+      "title": "Fraud/manual-review hold",
+      "domain": "Order / Commerce Ops",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Fraud/manual-review hold keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the order access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Fraud/manual-review hold keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "return-rma-timeline",
+      "title": "Return/RMA timeline",
+      "domain": "Order / Commerce Ops",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Return/RMA timeline keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the order access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Return/RMA timeline keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "sla-breach-route",
+      "title": "SLA breach route",
+      "domain": "Support / SLA",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for SLA breach route keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the case access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for SLA breach route keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "duplicate-case-merge",
+      "title": "Duplicate-case merge",
+      "domain": "Support / SLA",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Duplicate-case merge keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the case access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Duplicate-case merge keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "multi-product-incident-impact",
+      "title": "Multi-product incident impact",
+      "domain": "Support / SLA",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Multi-product incident impact keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the case access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Multi-product incident impact keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "entitlement-priority-upgrade",
+      "title": "Entitlement-aware priority upgrade",
+      "domain": "Support / SLA",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Entitlement-aware priority upgrade keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the case access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Entitlement-aware priority upgrade keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "customer-visible-escalation-timeline",
+      "title": "Customer-visible escalation timeline",
+      "domain": "Support / SLA",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Customer-visible escalation timeline keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the case access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Customer-visible escalation timeline keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "invoice-dispute-workflow",
+      "title": "Invoice dispute workflow",
+      "domain": "Billing / Revenue Ops",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Invoice dispute workflow keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the invoice access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Invoice dispute workflow keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "payment-risk-hold-release",
+      "title": "Payment-risk hold release",
+      "domain": "Billing / Revenue Ops",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Payment-risk hold release keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the invoice access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Payment-risk hold release keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "contract-tier-recalculation",
+      "title": "Contract-tier recalculation",
+      "domain": "Billing / Revenue Ops",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Contract-tier recalculation keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the invoice access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Contract-tier recalculation keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "usage-overage-adjustment",
+      "title": "Usage overage adjustment",
+      "domain": "Billing / Revenue Ops",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Usage overage adjustment keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the invoice access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Usage overage adjustment keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "collections-promise-to-pay-audit",
+      "title": "Collections promise-to-pay audit",
+      "domain": "Billing / Revenue Ops",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Collections promise-to-pay audit keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the invoice access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Collections promise-to-pay audit keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "data-access-audit-export",
+      "title": "Data-access audit export",
+      "domain": "Compliance / Audit Ops",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Data-access audit export keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the audit access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Data-access audit export keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "regulated-shipment-approval",
+      "title": "Regulated shipment approval",
+      "domain": "Compliance / Audit Ops",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Regulated shipment approval keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the audit access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Regulated shipment approval keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "legal-hold-workflow",
+      "title": "Legal hold workflow",
+      "domain": "Compliance / Audit Ops",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Legal hold workflow keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the audit access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Legal hold workflow keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "pii-retention-erasure-request",
+      "title": "PII retention/erasure request",
+      "domain": "Compliance / Audit Ops",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for PII retention/erasure request keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the audit access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for PII retention/erasure request keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    },
+    {
+      "taskId": "cross-system-audit-timeline",
+      "title": "Cross-system audit timeline",
+      "domain": "Compliance / Audit Ops",
+      "status": "rubric-pending-hitl",
+      "mongoRationale": "The MongoDB target for Cross-system audit timeline keeps the customer workflow request, risk signals, owner routing, customer message, and audit-facing state near the audit access path so a coding agent can reason from the product aggregate outward.",
+      "postgresRationale": "The Postgres target for Cross-system audit timeline keeps accounts, contracts, contacts, workflow requests, owner groups, risk signals, activities, owner tasks, customer messages, and audit events in clean normalized tables with explicit relationships.",
+      "tradeoff": "The MongoDB lane favors product-state locality. The Postgres lane favors normalized integrity and explicit relationships. Both are credible, and neither should be flattened into the other.",
+      "strawmanDefense": "The task prompt and acceptance are identical; only the database-native modeling rule differs."
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "benchmark_fixture": [
+    {
+      "fixture_version": "ast-bench-v1-customer-visible-escalation-timeline",
+      "suite_id": "ast-bench-v1",
+      "task_id": "customer-visible-escalation-timeline",
+      "generated_at": "2026-06-18T12:00:00.000Z"
+    }
+  ],
+  "accounts": [
+    {
+      "account_id": "acct-customer-v",
+      "name": "Support Account 5",
+      "tier": "enterprise",
+      "region": "NA"
+    }
+  ],
+  "account_contracts": [
+    {
+      "contract_id": "ctr-acct-customer-v",
+      "account_id": "acct-customer-v",
+      "renewal_date": "2026-09-30",
+      "arr_cents": 7200000,
+      "support_plan": "platinum"
+    }
+  ],
+  "contacts": [
+    {
+      "contact_id": "ct-acct-customer-v-ops",
+      "account_id": "acct-customer-v",
+      "role": "Operations",
+      "email": "ops-acct-customer-v@example.test"
+    },
+    {
+      "contact_id": "ct-acct-customer-v-finance",
+      "account_id": "acct-customer-v",
+      "role": "Finance",
+      "email": "finance-acct-customer-v@example.test"
+    }
+  ],
+  "workflow_requests": [
+    {
+      "request_id": "case-customer-vis",
+      "task_id": "customer-visible-escalation-timeline",
+      "account_id": "acct-customer-v",
+      "title": "Customer-visible escalation timeline",
+      "primary_entity": "case",
+      "expected_outcome": "Customer escalation timeline published with sanitized messages and persisted audit links.",
+      "next_step": "Support owner review by 16:00",
+      "customer_message": "Customer-visible escalation timeline is being handled by Support, Customer Success, Product, Operations."
+    }
+  ],
+  "workflow_request_owner_groups": [
+    {
+      "request_id": "case-customer-vis",
+      "owner_group": "Support",
+      "group_order": 1
+    },
+    {
+      "request_id": "case-customer-vis",
+      "owner_group": "Customer Success",
+      "group_order": 2
+    },
+    {
+      "request_id": "case-customer-vis",
+      "owner_group": "Product",
+      "group_order": 3
+    },
+    {
+      "request_id": "case-customer-vis",
+      "owner_group": "Operations",
+      "group_order": 4
+    }
+  ],
+  "workflow_request_risk_signals": [
+    {
+      "request_id": "case-customer-vis",
+      "signal_name": "customer",
+      "detail": "Customer-visible escalation timeline signal 1: customer",
+      "signal_order": 1
+    },
+    {
+      "request_id": "case-customer-vis",
+      "signal_name": "visible",
+      "detail": "Customer-visible escalation timeline signal 2: visible",
+      "signal_order": 2
+    },
+    {
+      "request_id": "case-customer-vis",
+      "signal_name": "escalation",
+      "detail": "Customer-visible escalation timeline signal 3: escalation",
+      "signal_order": 3
+    },
+    {
+      "request_id": "case-customer-vis",
+      "signal_name": "enterprise account",
+      "detail": "Customer-visible escalation timeline signal 4: enterprise account",
+      "signal_order": 4
+    },
+    {
+      "request_id": "case-customer-vis",
+      "signal_name": "open customer impact",
+      "detail": "Customer-visible escalation timeline signal 5: open customer impact",
+      "signal_order": 5
+    },
+    {
+      "request_id": "case-customer-vis",
+      "signal_name": "audit required",
+      "detail": "Customer-visible escalation timeline signal 6: audit required",
+      "signal_order": 6
+    }
+  ],
+  "activities": [
+    {
+      "activity_id": "act-customer-visible-escalation-timeline-1",
+      "account_id": "acct-customer-v",
+      "subject_id": "case-customer-vis",
+      "summary": "Customer-visible escalation timeline signal 1: customer",
+      "occurred_at": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-customer-visible-escalation-timeline-2",
+      "account_id": "acct-customer-v",
+      "subject_id": "case-customer-vis",
+      "summary": "Customer-visible escalation timeline signal 2: visible",
+      "occurred_at": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-customer-visible-escalation-timeline-3",
+      "account_id": "acct-customer-v",
+      "subject_id": "case-customer-vis",
+      "summary": "Customer-visible escalation timeline signal 3: escalation",
+      "occurred_at": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-customer-visible-escalation-timeline-4",
+      "account_id": "acct-customer-v",
+      "subject_id": "case-customer-vis",
+      "summary": "Customer-visible escalation timeline signal 4: enterprise account",
+      "occurred_at": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-customer-visible-escalation-timeline-5",
+      "account_id": "acct-customer-v",
+      "subject_id": "case-customer-vis",
+      "summary": "Customer-visible escalation timeline signal 5: open customer impact",
+      "occurred_at": "2026-06-14T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-customer-visible-escalation-timeline-6",
+      "account_id": "acct-customer-v",
+      "subject_id": "case-customer-vis",
+      "summary": "Customer-visible escalation timeline signal 6: audit required",
+      "occurred_at": "2026-06-15T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

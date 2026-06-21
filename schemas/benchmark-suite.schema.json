@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mongodb.local/sql-hidden-cost/benchmark-suite.schema.json",
+  "title": "AST-Bench Suite",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "suiteId",
+    "title",
+    "claimStance",
+    "dataPolicy",
+    "requiredLaneRuns",
+    "repeatsPerCell",
+    "promotionTiers",
+    "lanes",
+    "agents",
+    "fairnessRules",
+    "domains"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "suiteId": { "type": "string" },
+    "title": { "type": "string" },
+    "claimStance": { "const": "benchmark-first" },
+    "dataPolicy": { "type": "string" },
+    "requiredLaneRuns": { "type": "integer", "minimum": 2 },
+    "repeatsPerCell": { "type": "integer", "minimum": 1 },
+    "promotionTiers": { "type": "array", "minItems": 3 },
+    "lanes": { "type": "array", "minItems": 2 },
+    "agents": { "type": "array", "minItems": 1 },
+    "fairnessRules": { "type": "array", "minItems": 1 },
+    "domains": { "type": "array", "minItems": 1 }
+  },
+  "additionalProperties": true
+}

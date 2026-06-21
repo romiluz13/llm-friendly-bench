@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mongodb.local/sql-hidden-cost/benchmark-public-bundle.schema.json",
+  "title": "AST-Bench Public Bundle",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "suiteId",
+    "status",
+    "headline",
+    "progress",
+    "currentSeed",
+    "tasks",
+    "agents",
+    "evidenceClaims",
+    "costModel",
+    "caveats"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "suiteId": { "type": "string" },
+    "status": { "enum": ["case-study", "pilot", "public-v1"] },
+    "headline": { "type": "string" },
+    "progress": { "type": "object" },
+    "currentSeed": { "type": "object" },
+    "tasks": { "type": "array" },
+    "agents": { "type": "array" },
+    "evidenceClaims": { "type": "array" },
+    "costModel": { "type": "object" },
+    "caveats": { "type": "array" }
+  },
+  "additionalProperties": true
+}

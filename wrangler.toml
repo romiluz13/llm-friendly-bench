@@ -1,0 +1,2 @@
+name = "llm-friendly-bench"
+pages_build_output_dir = "prototypes/lab-console"

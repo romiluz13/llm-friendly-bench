@@ -1,0 +1,161 @@
+{
+  "benchmark_fixture": [
+    {
+      "fixture_version": "ast-bench-v1-regulated-shipment-approval",
+      "suite_id": "ast-bench-v1",
+      "task_id": "regulated-shipment-approval",
+      "generated_at": "2026-06-18T12:00:00.000Z"
+    }
+  ],
+  "accounts": [
+    {
+      "account_id": "acct-regulated-",
+      "name": "Compliance Account 2",
+      "tier": "enterprise",
+      "region": "NA"
+    }
+  ],
+  "account_contracts": [
+    {
+      "contract_id": "ctr-acct-regulated-",
+      "account_id": "acct-regulated-",
+      "renewal_date": "2026-09-30",
+      "arr_cents": 7200000,
+      "support_plan": "platinum"
+    }
+  ],
+  "contacts": [
+    {
+      "contact_id": "ct-acct-regulated--ops",
+      "account_id": "acct-regulated-",
+      "role": "Operations",
+      "email": "ops-acct-regulated-@example.test"
+    },
+    {
+      "contact_id": "ct-acct-regulated--finance",
+      "account_id": "acct-regulated-",
+      "role": "Finance",
+      "email": "finance-acct-regulated-@example.test"
+    }
+  ],
+  "workflow_requests": [
+    {
+      "request_id": "audit-regulated-sh",
+      "task_id": "regulated-shipment-approval",
+      "account_id": "acct-regulated-",
+      "title": "Regulated shipment approval",
+      "primary_entity": "audit",
+      "expected_outcome": "Regulated shipment approval active with compliance owners and portal-safe status.",
+      "next_step": "Compliance owner review by 16:00",
+      "customer_message": "Regulated shipment approval is being handled by Compliance, Legal, Security, Operations."
+    }
+  ],
+  "workflow_request_owner_groups": [
+    {
+      "request_id": "audit-regulated-sh",
+      "owner_group": "Compliance",
+      "group_order": 1
+    },
+    {
+      "request_id": "audit-regulated-sh",
+      "owner_group": "Legal",
+      "group_order": 2
+    },
+    {
+      "request_id": "audit-regulated-sh",
+      "owner_group": "Security",
+      "group_order": 3
+    },
+    {
+      "request_id": "audit-regulated-sh",
+      "owner_group": "Operations",
+      "group_order": 4
+    }
+  ],
+  "workflow_request_risk_signals": [
+    {
+      "request_id": "audit-regulated-sh",
+      "signal_name": "regulated",
+      "detail": "Regulated shipment approval signal 1: regulated",
+      "signal_order": 1
+    },
+    {
+      "request_id": "audit-regulated-sh",
+      "signal_name": "shipment",
+      "detail": "Regulated shipment approval signal 2: shipment",
+      "signal_order": 2
+    },
+    {
+      "request_id": "audit-regulated-sh",
+      "signal_name": "approval",
+      "detail": "Regulated shipment approval signal 3: approval",
+      "signal_order": 3
+    },
+    {
+      "request_id": "audit-regulated-sh",
+      "signal_name": "enterprise account",
+      "detail": "Regulated shipment approval signal 4: enterprise account",
+      "signal_order": 4
+    },
+    {
+      "request_id": "audit-regulated-sh",
+      "signal_name": "open customer impact",
+      "detail": "Regulated shipment approval signal 5: open customer impact",
+      "signal_order": 5
+    },
+    {
+      "request_id": "audit-regulated-sh",
+      "signal_name": "audit required",
+      "detail": "Regulated shipment approval signal 6: audit required",
+      "signal_order": 6
+    }
+  ],
+  "activities": [
+    {
+      "activity_id": "act-regulated-shipment-approval-1",
+      "account_id": "acct-regulated-",
+      "subject_id": "audit-regulated-sh",
+      "summary": "Regulated shipment approval signal 1: regulated",
+      "occurred_at": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-regulated-shipment-approval-2",
+      "account_id": "acct-regulated-",
+      "subject_id": "audit-regulated-sh",
+      "summary": "Regulated shipment approval signal 2: shipment",
+      "occurred_at": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-regulated-shipment-approval-3",
+      "account_id": "acct-regulated-",
+      "subject_id": "audit-regulated-sh",
+      "summary": "Regulated shipment approval signal 3: approval",
+      "occurred_at": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-regulated-shipment-approval-4",
+      "account_id": "acct-regulated-",
+      "subject_id": "audit-regulated-sh",
+      "summary": "Regulated shipment approval signal 4: enterprise account",
+      "occurred_at": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-regulated-shipment-approval-5",
+      "account_id": "acct-regulated-",
+      "subject_id": "audit-regulated-sh",
+      "summary": "Regulated shipment approval signal 5: open customer impact",
+      "occurred_at": "2026-06-14T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-regulated-shipment-approval-6",
+      "account_id": "acct-regulated-",
+      "subject_id": "audit-regulated-sh",
+      "summary": "Regulated shipment approval signal 6: audit required",
+      "occurred_at": "2026-06-15T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

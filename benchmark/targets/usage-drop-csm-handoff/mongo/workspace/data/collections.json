@@ -1,0 +1,136 @@
+{
+  "benchmark_fixture": {
+    "_id": "ast-bench-v1-usage-drop-csm-handoff",
+    "suiteId": "ast-bench-v1",
+    "taskId": "usage-drop-csm-handoff",
+    "generatedAt": "2026-06-18T12:00:00.000Z"
+  },
+  "accounts": [
+    {
+      "_id": "acct-usage-drop",
+      "name": "Customer 360 Account 4",
+      "tier": "enterprise",
+      "region": "NA",
+      "contract": {
+        "contractId": "ctr-acct-usage-drop",
+        "renewalDate": "2026-09-30",
+        "arrCents": 7200000,
+        "supportPlan": "platinum"
+      },
+      "contacts": [
+        {
+          "contactId": "ct-acct-usage-drop-ops",
+          "role": "Operations",
+          "email": "ops-acct-usage-drop@example.test"
+        },
+        {
+          "contactId": "ct-acct-usage-drop-finance",
+          "role": "Finance",
+          "email": "finance-acct-usage-drop@example.test"
+        }
+      ],
+      "context": {
+        "healthScore": 68,
+        "usageTrend": "down",
+        "openCases": 2,
+        "invoiceRisk": "medium",
+        "complianceFlags": [
+          "customer-visible-audit"
+        ]
+      }
+    }
+  ],
+  "workflow_requests": [
+    {
+      "_id": "account-usage-drop-c",
+      "taskId": "usage-drop-csm-handoff",
+      "accountId": "acct-usage-drop",
+      "title": "Usage-drop CSM handoff",
+      "primaryEntity": "account",
+      "businessPrompt": "Create a Customer Success handoff when a strategic account shows product usage drop, open support cases, renewal pressure, and executive sponsor risk. Persist owner tasks and customer-safe summary.",
+      "expectedOutcome": "CSM handoff active with risk evidence, owners, due dates, and activity timeline.",
+      "ownerGroups": [
+        "Customer Success",
+        "Support",
+        "Finance",
+        "Executive Sponsor"
+      ],
+      "riskSignals": [
+        {
+          "name": "usage",
+          "detail": "Usage-drop CSM handoff signal 1: usage"
+        },
+        {
+          "name": "drop",
+          "detail": "Usage-drop CSM handoff signal 2: drop"
+        },
+        {
+          "name": "handoff",
+          "detail": "Usage-drop CSM handoff signal 3: handoff"
+        },
+        {
+          "name": "enterprise account",
+          "detail": "Usage-drop CSM handoff signal 4: enterprise account"
+        },
+        {
+          "name": "open customer impact",
+          "detail": "Usage-drop CSM handoff signal 5: open customer impact"
+        },
+        {
+          "name": "audit required",
+          "detail": "Usage-drop CSM handoff signal 6: audit required"
+        }
+      ],
+      "nextStep": "Customer Success owner review by 16:00",
+      "customerMessage": "Usage-drop CSM handoff is being handled by Customer Success, Support, Finance, Executive Sponsor."
+    }
+  ],
+  "activities": [
+    {
+      "_id": "act-usage-drop-csm-handoff-1",
+      "accountId": "acct-usage-drop",
+      "subjectId": "account-usage-drop-c",
+      "summary": "Usage-drop CSM handoff signal 1: usage",
+      "occurredAt": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "_id": "act-usage-drop-csm-handoff-2",
+      "accountId": "acct-usage-drop",
+      "subjectId": "account-usage-drop-c",
+      "summary": "Usage-drop CSM handoff signal 2: drop",
+      "occurredAt": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "_id": "act-usage-drop-csm-handoff-3",
+      "accountId": "acct-usage-drop",
+      "subjectId": "account-usage-drop-c",
+      "summary": "Usage-drop CSM handoff signal 3: handoff",
+      "occurredAt": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "_id": "act-usage-drop-csm-handoff-4",
+      "accountId": "acct-usage-drop",
+      "subjectId": "account-usage-drop-c",
+      "summary": "Usage-drop CSM handoff signal 4: enterprise account",
+      "occurredAt": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "_id": "act-usage-drop-csm-handoff-5",
+      "accountId": "acct-usage-drop",
+      "subjectId": "account-usage-drop-c",
+      "summary": "Usage-drop CSM handoff signal 5: open customer impact",
+      "occurredAt": "2026-06-14T10:00:00.000Z"
+    },
+    {
+      "_id": "act-usage-drop-csm-handoff-6",
+      "accountId": "acct-usage-drop",
+      "subjectId": "account-usage-drop-c",
+      "summary": "Usage-drop CSM handoff signal 6: audit required",
+      "occurredAt": "2026-06-15T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

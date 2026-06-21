@@ -1,0 +1,136 @@
+{
+  "benchmark_fixture": {
+    "_id": "ast-bench-v1-pii-retention-erasure-request",
+    "suiteId": "ast-bench-v1",
+    "taskId": "pii-retention-erasure-request",
+    "generatedAt": "2026-06-18T12:00:00.000Z"
+  },
+  "accounts": [
+    {
+      "_id": "acct-pii-retent",
+      "name": "Compliance Account 4",
+      "tier": "enterprise",
+      "region": "NA",
+      "contract": {
+        "contractId": "ctr-acct-pii-retent",
+        "renewalDate": "2026-09-30",
+        "arrCents": 7200000,
+        "supportPlan": "platinum"
+      },
+      "contacts": [
+        {
+          "contactId": "ct-acct-pii-retent-ops",
+          "role": "Operations",
+          "email": "ops-acct-pii-retent@example.test"
+        },
+        {
+          "contactId": "ct-acct-pii-retent-finance",
+          "role": "Finance",
+          "email": "finance-acct-pii-retent@example.test"
+        }
+      ],
+      "context": {
+        "healthScore": 68,
+        "usageTrend": "down",
+        "openCases": 2,
+        "invoiceRisk": "medium",
+        "complianceFlags": [
+          "customer-visible-audit"
+        ]
+      }
+    }
+  ],
+  "workflow_requests": [
+    {
+      "_id": "audit-pii-retentio",
+      "taskId": "pii-retention-erasure-request",
+      "accountId": "acct-pii-retent",
+      "title": "PII retention/erasure request",
+      "primaryEntity": "audit",
+      "businessPrompt": "Implement a PII retention and erasure request workflow that identifies customer records across contacts, accounts, cases, orders, invoices, activities, consent preferences, and audit exceptions.",
+      "expectedOutcome": "Privacy request staged with retention exceptions, owner tasks, and audit-safe result.",
+      "ownerGroups": [
+        "Compliance",
+        "Legal",
+        "Security",
+        "Operations"
+      ],
+      "riskSignals": [
+        {
+          "name": "retention",
+          "detail": "PII retention/erasure request signal 1: retention"
+        },
+        {
+          "name": "erasure",
+          "detail": "PII retention/erasure request signal 2: erasure"
+        },
+        {
+          "name": "request",
+          "detail": "PII retention/erasure request signal 3: request"
+        },
+        {
+          "name": "enterprise account",
+          "detail": "PII retention/erasure request signal 4: enterprise account"
+        },
+        {
+          "name": "open customer impact",
+          "detail": "PII retention/erasure request signal 5: open customer impact"
+        },
+        {
+          "name": "audit required",
+          "detail": "PII retention/erasure request signal 6: audit required"
+        }
+      ],
+      "nextStep": "Compliance owner review by 16:00",
+      "customerMessage": "PII retention/erasure request is being handled by Compliance, Legal, Security, Operations."
+    }
+  ],
+  "activities": [
+    {
+      "_id": "act-pii-retention-erasure-request-1",
+      "accountId": "acct-pii-retent",
+      "subjectId": "audit-pii-retentio",
+      "summary": "PII retention/erasure request signal 1: retention",
+      "occurredAt": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "_id": "act-pii-retention-erasure-request-2",
+      "accountId": "acct-pii-retent",
+      "subjectId": "audit-pii-retentio",
+      "summary": "PII retention/erasure request signal 2: erasure",
+      "occurredAt": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "_id": "act-pii-retention-erasure-request-3",
+      "accountId": "acct-pii-retent",
+      "subjectId": "audit-pii-retentio",
+      "summary": "PII retention/erasure request signal 3: request",
+      "occurredAt": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "_id": "act-pii-retention-erasure-request-4",
+      "accountId": "acct-pii-retent",
+      "subjectId": "audit-pii-retentio",
+      "summary": "PII retention/erasure request signal 4: enterprise account",
+      "occurredAt": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "_id": "act-pii-retention-erasure-request-5",
+      "accountId": "acct-pii-retent",
+      "subjectId": "audit-pii-retentio",
+      "summary": "PII retention/erasure request signal 5: open customer impact",
+      "occurredAt": "2026-06-14T10:00:00.000Z"
+    },
+    {
+      "_id": "act-pii-retention-erasure-request-6",
+      "accountId": "acct-pii-retent",
+      "subjectId": "audit-pii-retentio",
+      "summary": "PII retention/erasure request signal 6: audit required",
+      "occurredAt": "2026-06-15T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

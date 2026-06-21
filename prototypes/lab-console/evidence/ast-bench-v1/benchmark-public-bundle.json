@@ -1,0 +1,1417 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "status": "case-study",
+  "generatedAt": "2026-06-21T20:41:37.564Z",
+  "headline": "AST-Bench shows how much database work an AI coding agent pays before the same feature ships.",
+  "subhead": "Same task. Same Codex run contract. Same acceptance test. MongoDB kept the business state closer to the workflow, so the agent spent less context, less time, and fewer cleanup loops on this verified replay.",
+  "proofQuestion": "When the same agent builds the same workflow, how much work is product logic and how much is database-state reconstruction?",
+  "plainEnglish": {
+    "headline": "The feature shipped in both lanes. MongoDB made the AI read less, wait less, and clean up less.",
+    "seedAnswer": "In this verified replay, Codex passed both lanes. Postgres required more context, more elapsed time, and more cleanup signals. MongoDB had the larger code diff, so the page shows that mixed metric instead of hiding it.",
+    "audiencePromise": "A CEO sees the business cost. A developer can open the raw trace, diff, tests, database proof, and hashes."
+  },
+  "architectureQuestion": "Is the real comparison one database versus one database, or one MongoDB data plane versus a stitched stack?",
+  "stackComparison": [
+    {
+      "id": "mongodb-data-plane",
+      "label": "MongoDB",
+      "plainLabel": "One data plane",
+      "summary": "Operational data, document shape, full-text search, vector search, and hybrid retrieval can stay close to the application workflow.",
+      "proofStatus": "Measured here for the operational workflow lane.",
+      "evidenceId": "database-proof",
+      "pieces": [
+        "app data",
+        "document model",
+        "text search",
+        "vector search",
+        "audit trail"
+      ]
+    },
+    {
+      "id": "stitched-postgres-stack",
+      "label": "Postgres + Elastic + Pinecone",
+      "plainLabel": "Three-system stack",
+      "summary": "A common enterprise stack may split relational state, search, vectors, sync jobs, permissions, and audit proof across multiple systems.",
+      "proofStatus": "Not measured by this replay; use as the next benchmark question.",
+      "evidenceId": "benchmark-contract",
+      "pieces": [
+        "relational data",
+        "search index",
+        "vector index",
+        "sync jobs",
+        "cross-system audit"
+      ]
+    }
+  ],
+  "progress": {
+    "label": "case-study",
+    "requiredLaneRuns": 450,
+    "capturedLaneRuns": 3,
+    "passedLaneRuns": 3,
+    "missingLaneRuns": 447,
+    "taskCount": 25,
+    "progressPct": 1
+  },
+  "currentSeed": {
+    "label": "Seed case study",
+    "task": "Same enterprise escalation. Same Codex. Same acceptance test. Different schema tax.",
+    "scenario": "Customer 360 Escalation / Strategic Account Rescue",
+    "status": "captured",
+    "measuredDeltas": [
+      {
+        "label": "Extra AI reading",
+        "value": "Postgres +8,869 tokens",
+        "evidenceId": "seed-traces"
+      },
+      {
+        "label": "Extra AI time",
+        "value": "Postgres +70 seconds",
+        "evidenceId": "seed-traces"
+      },
+      {
+        "label": "Extra cleanup signs",
+        "value": "Postgres +4 signals",
+        "evidenceId": "seed-traces"
+      },
+      {
+        "label": "Code changed",
+        "value": "MongoDB +1,361 bytes",
+        "evidenceId": "seed-diffs"
+      }
+    ],
+    "measuredNumbers": {
+      "estimatedTranscriptTokens": 8869,
+      "elapsedSeconds": 70,
+      "retrySignals": 4,
+      "diffBytes": -1361
+    },
+    "comparison": {
+      "verdict": "Codex passed both lanes. Postgres made the AI read 8,869 more estimated tokens, took 70 seconds longer, and showed 4 more cleanup signals. MongoDB changed 1,361 more bytes of code.",
+      "lanes": [
+        {
+          "id": "mongo",
+          "label": "MongoDB",
+          "status": "passed",
+          "estimatedTranscriptTokens": 63788,
+          "elapsedMs": 167380,
+          "retrySignals": 24,
+          "diffBytes": 10060,
+          "filesChanged": 1,
+          "testStatus": "passed",
+          "artifacts": {
+            "workspace": "instrumented-agent-runs/order-exception-codex-v1/mongo/workspace",
+            "prompt": "instrumented-agent-runs/order-exception-codex-v1/mongo/prompt.md",
+            "rawTranscript": "instrumented-agent-runs/order-exception-codex-v1/mongo/raw-transcript/codex-events.jsonl",
+            "stderr": "instrumented-agent-runs/order-exception-codex-v1/mongo/raw-transcript/codex-stderr.log",
+            "lastMessage": "instrumented-agent-runs/order-exception-codex-v1/mongo/raw-transcript/codex-last-message.md",
+            "diff": "instrumented-agent-runs/order-exception-codex-v1/mongo/diff.patch",
+            "tests": "instrumented-agent-runs/order-exception-codex-v1/mongo/tests.log",
+            "acceptance": "instrumented-agent-runs/order-exception-codex-v1/mongo/acceptance.json",
+            "screenshot": "instrumented-agent-runs/order-exception-codex-v1/mongo/screenshots/customer-portal-before-after.svg"
+          },
+          "trace": {
+            "lane": "mongo",
+            "commands": [
+              {
+                "id": "item_1",
+                "command": "/bin/zsh -lc 'git status --short'",
+                "exitCode": 0,
+                "outputBytes": 0
+              },
+              {
+                "id": "item_2",
+                "command": "/bin/zsh -lc 'pwd && rg --files'",
+                "exitCode": 0,
+                "outputBytes": 270
+              },
+              {
+                "id": "item_4",
+                "command": "/bin/zsh -lc \"sed -n '1,240p' src/order-exception-workflow.mjs\"",
+                "exitCode": 0,
+                "outputBytes": 218
+              },
+              {
+                "id": "item_9",
+                "command": "/bin/zsh -lc \"sed -n '1,240p' src/portal-view.mjs\"",
+                "exitCode": 0,
+                "outputBytes": 1806
+              },
+              {
+                "id": "item_8",
+                "command": "/bin/zsh -lc \"sed -n '1,220p' package.json\"",
+                "exitCode": 0,
+                "outputBytes": 236
+              },
+              {
+                "id": "item_7",
+                "command": "/bin/zsh -lc \"sed -n '1,260p' data/collections.json\"",
+                "exitCode": 0,
+                "outputBytes": 7003
+              },
+              {
+                "id": "item_5",
+                "command": "/bin/zsh -lc \"sed -n '1,240p' src/render-portal.mjs\"",
+                "exitCode": 0,
+                "outputBytes": 2744
+              },
+              {
+                "id": "item_6",
+                "command": "/bin/zsh -lc \"sed -n '1,280p' tests/customer-360-escalation.test.mjs\"",
+                "exitCode": 0,
+                "outputBytes": 3608
+              },
+              {
+                "id": "item_10",
+                "command": "/bin/zsh -lc \"sed -n '261,620p' data/collections.json\"",
+                "exitCode": 0,
+                "outputBytes": 9659
+              },
+              {
+                "id": "item_11",
+                "command": "/bin/zsh -lc \"sed -n '1,220p' README.md\"",
+                "exitCode": 0,
+                "outputBytes": 321
+              },
+              {
+                "id": "item_12",
+                "command": "/bin/zsh -lc \"sed -n '1,200p' AGENTS.md\"",
+                "exitCode": 0,
+                "outputBytes": 299
+              },
+              {
+                "id": "item_13",
+                "command": "/bin/zsh -lc \"sed -n '621,1040p' data/collections.json\"",
+                "exitCode": 0,
+                "outputBytes": 8557
+              },
+              {
+                "id": "item_14",
+                "command": "/bin/zsh -lc 'rg -n \"customer_escalations|work_items|audit_events|support_cases|invoices|payments|usage|compliance|regulatory\" data/collections.json src tests'",
+                "exitCode": 0,
+                "outputBytes": 3341
+              },
+              {
+                "id": "item_18",
+                "command": "/bin/zsh -lc 'npm test'",
+                "exitCode": 0,
+                "outputBytes": 149
+              },
+              {
+                "id": "item_20",
+                "command": "/bin/zsh -lc 'git status --short'",
+                "exitCode": 0,
+                "outputBytes": 36
+              },
+              {
+                "id": "item_21",
+                "command": "/bin/zsh -lc 'git diff -- src/order-exception-workflow.mjs'",
+                "exitCode": 0,
+                "outputBytes": 10060
+              }
+            ],
+            "files": [
+              "AGENTS.md",
+              "README.md",
+              "a/src/order-exception-workflow.mjs",
+              "artifacts/customer-portal-before-after.json",
+              "b/src/order-exception-workflow.mjs",
+              "data/collections.json",
+              "order-exception-workflow.mjs",
+              "package.json",
+              "portal-view.mjs",
+              "src/order-exception-workflow.mjs",
+              "src/portal-view.mjs",
+              "src/render-portal.mjs",
+              "tests/customer-360-escalation.test.mjs"
+            ],
+            "failedCommandCount": 0
+          }
+        },
+        {
+          "id": "postgres",
+          "label": "Postgres",
+          "status": "passed",
+          "estimatedTranscriptTokens": 72657,
+          "elapsedMs": 237528,
+          "retrySignals": 28,
+          "diffBytes": 8699,
+          "filesChanged": 1,
+          "testStatus": "passed",
+          "artifacts": {
+            "workspace": "instrumented-agent-runs/order-exception-codex-v1/postgres/workspace",
+            "prompt": "instrumented-agent-runs/order-exception-codex-v1/postgres/prompt.md",
+            "rawTranscript": "instrumented-agent-runs/order-exception-codex-v1/postgres/raw-transcript/codex-events.jsonl",
+            "stderr": "instrumented-agent-runs/order-exception-codex-v1/postgres/raw-transcript/codex-stderr.log",
+            "lastMessage": "instrumented-agent-runs/order-exception-codex-v1/postgres/raw-transcript/codex-last-message.md",
+            "diff": "instrumented-agent-runs/order-exception-codex-v1/postgres/diff.patch",
+            "tests": "instrumented-agent-runs/order-exception-codex-v1/postgres/tests.log",
+            "acceptance": "instrumented-agent-runs/order-exception-codex-v1/postgres/acceptance.json",
+            "screenshot": "instrumented-agent-runs/order-exception-codex-v1/postgres/screenshots/customer-portal-before-after.svg"
+          },
+          "trace": {
+            "lane": "postgres",
+            "commands": [
+              {
+                "id": "item_1",
+                "command": "/bin/zsh -lc \"sed -n '1,220p' package.json\"",
+                "exitCode": 0,
+                "outputBytes": 239
+              },
+              {
+                "id": "item_2",
+                "command": "/bin/zsh -lc 'pwd && rg --files'",
+                "exitCode": 0,
+                "outputBytes": 268
+              },
+              {
+                "id": "item_3",
+                "command": "/bin/zsh -lc 'find .. -name AGENTS.md -o -name CLAUDE.md'",
+                "exitCode": 0,
+                "outputBytes": 23
+              },
+              {
+                "id": "item_5",
+                "command": "/bin/zsh -lc \"sed -n '1,220p' AGENTS.md\"",
+                "exitCode": 0,
+                "outputBytes": 300
+              },
+              {
+                "id": "item_6",
+                "command": "/bin/zsh -lc \"sed -n '1,260p' src/order-exception-workflow.mjs\"",
+                "exitCode": 0,
+                "outputBytes": 226
+              },
+              {
+                "id": "item_9",
+                "command": "/bin/zsh -lc \"sed -n '1,260p' tests/customer-360-escalation.test.mjs\"",
+                "exitCode": 0,
+                "outputBytes": 4431
+              },
+              {
+                "id": "item_7",
+                "command": "/bin/zsh -lc \"sed -n '1,260p' src/portal-view.mjs\"",
+                "exitCode": 0,
+                "outputBytes": 2096
+              },
+              {
+                "id": "item_8",
+                "command": "/bin/zsh -lc \"sed -n '1,220p' data/tables.json\"",
+                "exitCode": 0,
+                "outputBytes": 4925
+              },
+              {
+                "id": "item_10",
+                "command": "/bin/zsh -lc \"sed -n '221,520p' data/tables.json\"",
+                "exitCode": 0,
+                "outputBytes": 7288
+              },
+              {
+                "id": "item_11",
+                "command": "/bin/zsh -lc 'rg -n \"customer_escalations|escalation_risk_factors|legal_review|finance_review|audit_events|audit_subjects|customer_portal_messages|escalation_tasks|HX-20491|acct-nova\" data/tables.json src tests'",
+                "exitCode": 0,
+                "outputBytes": 6622
+              },
+              {
+                "id": "item_12",
+                "command": "/bin/zsh -lc \"sed -n '1,240p' src/render-portal.mjs\"",
+                "exitCode": 0,
+                "outputBytes": 2745
+              },
+              {
+                "id": "item_13",
+                "command": "/bin/zsh -lc \"sed -n '520,760p' data/tables.json\"",
+                "exitCode": 0,
+                "outputBytes": 6037
+              },
+              {
+                "id": "item_14",
+                "command": "/bin/zsh -lc \"sed -n '760,1045p' data/tables.json\"",
+                "exitCode": 0,
+                "outputBytes": 8187
+              },
+              {
+                "id": "item_15",
+                "command": "/bin/zsh -lc \"sed -n '1045,1225p' data/tables.json\"",
+                "exitCode": 0,
+                "outputBytes": 4692
+              },
+              {
+                "id": "item_16",
+                "command": "/bin/zsh -lc 'git status --short'",
+                "exitCode": 0,
+                "outputBytes": 0
+              },
+              {
+                "id": "item_17",
+                "command": "/bin/zsh -lc 'npm test'",
+                "exitCode": 1,
+                "outputBytes": 855
+              },
+              {
+                "id": "item_21",
+                "command": "/bin/zsh -lc 'npm test'",
+                "exitCode": 0,
+                "outputBytes": 152
+              },
+              {
+                "id": "item_22",
+                "command": "/bin/zsh -lc 'git status --short'",
+                "exitCode": 0,
+                "outputBytes": 36
+              },
+              {
+                "id": "item_23",
+                "command": "/bin/zsh -lc 'git diff -- src/order-exception-workflow.mjs'",
+                "exitCode": 0,
+                "outputBytes": 8698
+              },
+              {
+                "id": "item_24",
+                "command": "/bin/zsh -lc \"nl -ba src/order-exception-workflow.mjs | sed -n '1,260p'\"",
+                "exitCode": 0,
+                "outputBytes": 9779
+              },
+              {
+                "id": "item_26",
+                "command": "/bin/zsh -lc 'npm test'",
+                "exitCode": 0,
+                "outputBytes": 152
+              },
+              {
+                "id": "item_27",
+                "command": "/bin/zsh -lc 'git status --short'",
+                "exitCode": 0,
+                "outputBytes": 36
+              },
+              {
+                "id": "item_28",
+                "command": "/bin/zsh -lc 'git diff --stat'",
+                "exitCode": 0,
+                "outputBytes": 130
+              }
+            ],
+            "files": [
+              "AGENTS.md",
+              "Node.js",
+              "README.md",
+              "Users/rom.iluz/Dev/sql-hidden-cost/instrumented-agent-runs/order-exception-codex-v1/postgres/workspace/tests/customer-360-escalation.test.mjs",
+              "a/src/order-exception-workflow.mjs",
+              "artifacts/customer-portal-before-after.json",
+              "b/src/order-exception-workflow.mjs",
+              "data/tables.json",
+              "order-exception-workflow.mjs",
+              "package.json",
+              "portal-view.mjs",
+              "src/order-exception-workflow.mjs",
+              "src/portal-view.mjs",
+              "src/render-portal.mjs",
+              "tests/customer-360-escalation.test.mjs",
+              "w.mjs",
+              "workspace/AGENTS.md"
+            ],
+            "failedCommandCount": 1
+          }
+        }
+      ],
+      "deltas": [
+        {
+          "id": "tokens",
+          "label": "AI reading",
+          "winner": "MongoDB",
+          "value": "Postgres +8,869 tokens",
+          "mongoValue": 63788,
+          "postgresValue": 72657,
+          "evidenceId": "seed-traces"
+        },
+        {
+          "id": "time",
+          "label": "AI time",
+          "winner": "MongoDB",
+          "value": "Postgres +70 seconds",
+          "mongoValue": 167380,
+          "postgresValue": 237528,
+          "evidenceId": "seed-traces"
+        },
+        {
+          "id": "retries",
+          "label": "Cleanup signs",
+          "winner": "MongoDB",
+          "value": "Postgres +4 signals",
+          "mongoValue": 24,
+          "postgresValue": 28,
+          "evidenceId": "seed-traces"
+        },
+        {
+          "id": "diff",
+          "label": "Code changed",
+          "winner": "Postgres",
+          "value": "MongoDB +1,361 bytes",
+          "mongoValue": 10060,
+          "postgresValue": 8699,
+          "evidenceId": "seed-diffs"
+        }
+      ]
+    },
+    "agentEvidence": {
+      "agent": "Codex",
+      "modelOrRuntime": "codex-cli 0.130.0",
+      "mongoCliVersion": "codex-cli 0.130.0",
+      "postgresCliVersion": "codex-cli 0.130.0",
+      "runId": "order-exception-codex-v1"
+    },
+    "processLoop": [
+      {
+        "id": "prompt",
+        "label": "Same request",
+        "plain": "One business request enters both lanes.",
+        "evidenceId": "seed-traces"
+      },
+      {
+        "id": "context",
+        "label": "The AI reads",
+        "plain": "It has to understand the app, the data shape, the rules, and the test before it can safely write code.",
+        "evidenceId": "context-ledger"
+      },
+      {
+        "id": "agent-work",
+        "label": "The AI tries",
+        "plain": "Every look-around, test run, correction, and retry is captured from the raw Codex trace.",
+        "evidenceId": "seed-traces"
+      },
+      {
+        "id": "diff",
+        "label": "Code changes",
+        "plain": "Only product source changes count. Test edits and fixture edits invalidate the lane.",
+        "evidenceId": "seed-diffs"
+      },
+      {
+        "id": "proof",
+        "label": "Proof",
+        "plain": "Acceptance, DB before/after, and rendered customer state prove the workflow moved data.",
+        "evidenceId": "database-proof"
+      },
+      {
+        "id": "receipt",
+        "label": "Cost receipt",
+        "plain": "Measured deltas feed the receipt; sliders only change visible assumptions.",
+        "evidenceId": "cost-model"
+      }
+    ],
+    "contextLedger": [
+      {
+        "lane": "mongo",
+        "laneLabel": "MongoDB",
+        "label": "Prompt",
+        "purpose": "Business request given to the agent",
+        "observedInTrace": false,
+        "estimatedTokens": 370,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/prompt.md",
+          "exists": true,
+          "bytes": 1477,
+          "sha256": "baf270dd85790d9109597418730e3dff1a63eb6cfd0ed5aa7a623f5db682a120"
+        }
+      },
+      {
+        "lane": "mongo",
+        "laneLabel": "MongoDB",
+        "label": "Run rules",
+        "purpose": "What the agent was allowed to change",
+        "observedInTrace": true,
+        "estimatedTokens": 75,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/workspace/AGENTS.md",
+          "exists": true,
+          "bytes": 299,
+          "sha256": "d5f39e3627d2cd7469613d108ced763f67b9e697e59a47fee6d28c209765b628"
+        }
+      },
+      {
+        "lane": "mongo",
+        "laneLabel": "MongoDB",
+        "label": "Workspace README",
+        "purpose": "Before-state instructions",
+        "observedInTrace": true,
+        "estimatedTokens": 81,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/workspace/README.md",
+          "exists": true,
+          "bytes": 321,
+          "sha256": "7752ffe5f566dbf3f183d0f41e0e6013b68814f0a95f6474d654d60f30994418"
+        }
+      },
+      {
+        "lane": "mongo",
+        "laneLabel": "MongoDB",
+        "label": "Document fixture",
+        "purpose": "Collections and product state",
+        "observedInTrace": true,
+        "estimatedTokens": 6305,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/workspace/data/collections.json",
+          "exists": true,
+          "bytes": 25219,
+          "sha256": "002adaac8cefbe52e4e490a68c3ede9492f34c7f1193bf6dd33867a5f123c61a"
+        }
+      },
+      {
+        "lane": "mongo",
+        "laneLabel": "MongoDB",
+        "label": "Portal projection",
+        "purpose": "Customer-facing state builder",
+        "observedInTrace": true,
+        "estimatedTokens": 452,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/workspace/src/portal-view.mjs",
+          "exists": true,
+          "bytes": 1806,
+          "sha256": "d7ddeac991db823d348cb8eb4ffb11e0293963d3cb33a6d194d30ed443e4b518"
+        }
+      },
+      {
+        "lane": "mongo",
+        "laneLabel": "MongoDB",
+        "label": "Workflow source",
+        "purpose": "File changed by the agent",
+        "observedInTrace": true,
+        "estimatedTokens": 2381,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/workspace/src/order-exception-workflow.mjs",
+          "exists": true,
+          "bytes": 9522,
+          "sha256": "19e1551a0073c551613cbfb1bd900eeae3cac087a20e5426f51636e554eaefc6"
+        }
+      },
+      {
+        "lane": "mongo",
+        "laneLabel": "MongoDB",
+        "label": "Acceptance test",
+        "purpose": "Same behavior gate",
+        "observedInTrace": true,
+        "estimatedTokens": 902,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/workspace/tests/customer-360-escalation.test.mjs",
+          "exists": true,
+          "bytes": 3608,
+          "sha256": "46d4fd71c85b32d5a7d5665d91ff60be907b273e26a750728238b09854a30e51"
+        }
+      },
+      {
+        "lane": "mongo",
+        "laneLabel": "MongoDB",
+        "label": "Raw trace",
+        "purpose": "Codex command and message stream",
+        "observedInTrace": false,
+        "estimatedTokens": 15423,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/raw-transcript/codex-events.jsonl",
+          "exists": true,
+          "bytes": 61690,
+          "sha256": "dd42f61aff6436e042c315c0765a4b395b1bc5941af613f89ba2c3235ccb7334"
+        }
+      },
+      {
+        "lane": "mongo",
+        "laneLabel": "MongoDB",
+        "label": "Diff",
+        "purpose": "Accepted source patch",
+        "observedInTrace": true,
+        "estimatedTokens": 2515,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/diff.patch",
+          "exists": true,
+          "bytes": 10060,
+          "sha256": "dd5c7444429b241762ea743914aa7b97e25b112c5afa732a2268397e2d4e3831"
+        }
+      },
+      {
+        "lane": "mongo",
+        "laneLabel": "MongoDB",
+        "label": "Tests",
+        "purpose": "Final acceptance output",
+        "observedInTrace": true,
+        "estimatedTokens": 38,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/tests.log",
+          "exists": true,
+          "bytes": 149,
+          "sha256": "1fa33afb99bd55f763dc8f89ae3ed5aa48a226a18de201cfd82b37d7f7631e7e"
+        }
+      },
+      {
+        "lane": "postgres",
+        "laneLabel": "Postgres",
+        "label": "Prompt",
+        "purpose": "Business request given to the agent",
+        "observedInTrace": false,
+        "estimatedTokens": 372,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/prompt.md",
+          "exists": true,
+          "bytes": 1486,
+          "sha256": "53c912090c855e21f50f993810806d1b11bb473b1aafa29d47b00ac1f04bb42c"
+        }
+      },
+      {
+        "lane": "postgres",
+        "laneLabel": "Postgres",
+        "label": "Run rules",
+        "purpose": "What the agent was allowed to change",
+        "observedInTrace": true,
+        "estimatedTokens": 75,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/workspace/AGENTS.md",
+          "exists": true,
+          "bytes": 300,
+          "sha256": "fcefd3f0a63c1c2e550876d287346496cf1df3ebcb48b340486156bb90ad58e5"
+        }
+      },
+      {
+        "lane": "postgres",
+        "laneLabel": "Postgres",
+        "label": "Workspace README",
+        "purpose": "Before-state instructions",
+        "observedInTrace": true,
+        "estimatedTokens": 81,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/workspace/README.md",
+          "exists": true,
+          "bytes": 322,
+          "sha256": "8349237f7a02764a469aca632835a95d271d22e11189a02d1041395fa9f214b8"
+        }
+      },
+      {
+        "lane": "postgres",
+        "laneLabel": "Postgres",
+        "label": "Table fixture",
+        "purpose": "Normalized tables and product state",
+        "observedInTrace": true,
+        "estimatedTokens": 7907,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/workspace/data/tables.json",
+          "exists": true,
+          "bytes": 31625,
+          "sha256": "21dcfa380ef900914f478b814d2481a5cc05438dbedd70b2d66beac6bf3ce88a"
+        }
+      },
+      {
+        "lane": "postgres",
+        "laneLabel": "Postgres",
+        "label": "Portal projection",
+        "purpose": "Customer-facing state builder",
+        "observedInTrace": true,
+        "estimatedTokens": 524,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/workspace/src/portal-view.mjs",
+          "exists": true,
+          "bytes": 2096,
+          "sha256": "22be1186bd6b1b391457eea382a2dffe55ea6db4f34ddc517501fb1515ff40d7"
+        }
+      },
+      {
+        "lane": "postgres",
+        "laneLabel": "Postgres",
+        "label": "Workflow source",
+        "purpose": "File changed by the agent",
+        "observedInTrace": true,
+        "estimatedTokens": 2050,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/workspace/src/order-exception-workflow.mjs",
+          "exists": true,
+          "bytes": 8198,
+          "sha256": "4afca1ee4674372cbf74c7c5fc1e62f380dda0e78d1a7ad788b5cb16528dd151"
+        }
+      },
+      {
+        "lane": "postgres",
+        "laneLabel": "Postgres",
+        "label": "Acceptance test",
+        "purpose": "Same behavior gate",
+        "observedInTrace": true,
+        "estimatedTokens": 1108,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/workspace/tests/customer-360-escalation.test.mjs",
+          "exists": true,
+          "bytes": 4431,
+          "sha256": "802698d6eb639db3c99c6eeb6d63686a02c9a6c7d024e0a4c682af5d6f1776c8"
+        }
+      },
+      {
+        "lane": "postgres",
+        "laneLabel": "Postgres",
+        "label": "Raw trace",
+        "purpose": "Codex command and message stream",
+        "observedInTrace": false,
+        "estimatedTokens": 21560,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/raw-transcript/codex-events.jsonl",
+          "exists": true,
+          "bytes": 86239,
+          "sha256": "330254741806de15967abda227d01bb3250de083597b8749a3b8b34cfb4974e4"
+        }
+      },
+      {
+        "lane": "postgres",
+        "laneLabel": "Postgres",
+        "label": "Diff",
+        "purpose": "Accepted source patch",
+        "observedInTrace": true,
+        "estimatedTokens": 2175,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/diff.patch",
+          "exists": true,
+          "bytes": 8699,
+          "sha256": "f47689b303a1d0e5b95e95d0b30e435b14fcdf1a99589529d208160df49409eb"
+        }
+      },
+      {
+        "lane": "postgres",
+        "laneLabel": "Postgres",
+        "label": "Tests",
+        "purpose": "Final acceptance output",
+        "observedInTrace": true,
+        "estimatedTokens": 38,
+        "source": {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/tests.log",
+          "exists": true,
+          "bytes": 152,
+          "sha256": "580ba6e48c95888bf596707c808e82c6ea1c7342f8b1cf76c068b9787de63c66"
+        }
+      }
+    ],
+    "customerCaveat": "Single verified replay. Same task, same agent, same acceptance test. Not a promise of savings.",
+    "caveat": "This seed case is real evidence, but it is not the V1 benchmark result.",
+    "sources": [
+      {
+        "path": "instrumented-agent-runs/order-exception-codex-v1/summary.json",
+        "exists": true,
+        "bytes": 3541,
+        "sha256": "48b2cb74aae417f9e71f7a1ef0788f6c0d96b85d62b91112de4e748b32331183"
+      },
+      {
+        "path": "prototypes/lab-console/replays/order-exception-codex-v1-verified.json",
+        "exists": true,
+        "bytes": 16598,
+        "sha256": "01e9e9a781ec51b37e5837d3f74adf98ae48867ac764b24392401322b4883a18"
+      },
+      {
+        "path": "prototypes/lab-console/evidence/order-exception-codex-v1/evidence-bundle.json",
+        "exists": true,
+        "bytes": 257180,
+        "sha256": "f79d945d5ab7c8d9313e951ee20b9cb91df673b239f59311d1a69a283395dbad"
+      },
+      {
+        "path": "data/generated/proof/verified-evidence-manifest.json",
+        "exists": true,
+        "bytes": 2636,
+        "sha256": "f7b0c5bda5d342a80f767a351b7a83b0e90a375caad5a9979ce03203ce5f9cb3"
+      }
+    ]
+  },
+  "aggregate": {
+    "rows": 3,
+    "byLane": {
+      "mongo": {
+        "rowCount": 2,
+        "medianElapsedMs": 145525,
+        "medianEstimatedTranscriptTokens": 61532.5,
+        "tokenIqr": 4511,
+        "medianRetrySignals": 31,
+        "medianDiffBytes": 6661.5,
+        "medianFilesChanged": 1
+      },
+      "postgres": {
+        "rowCount": 1,
+        "medianElapsedMs": 237528,
+        "medianEstimatedTranscriptTokens": 72657,
+        "tokenIqr": 0,
+        "medianRetrySignals": 28,
+        "medianDiffBytes": 8699,
+        "medianFilesChanged": 1
+      }
+    }
+  },
+  "tasks": [
+    {
+      "id": "strategic-account-rescue",
+      "title": "Strategic account rescue",
+      "domainId": "customer-360-crm",
+      "domainLabel": "Customer 360 / CRM",
+      "expectedOutcome": "At-risk escalation active with executive recovery owner routing and customer-visible audit history.",
+      "seedCase": true,
+      "capturedLaneRuns": 2,
+      "status": "seed-case"
+    },
+    {
+      "id": "renewal-risk-workspace",
+      "title": "Renewal-risk workspace",
+      "domainId": "customer-360-crm",
+      "domainLabel": "Customer 360 / CRM",
+      "expectedOutcome": "Renewal risk workspace active with owner tasks, customer-safe next step, and persisted risk factors.",
+      "seedCase": false,
+      "capturedLaneRuns": 1,
+      "status": "captured"
+    },
+    {
+      "id": "account-merge-consent-audit",
+      "title": "Account merge with consent audit",
+      "domainId": "customer-360-crm",
+      "domainLabel": "Customer 360 / CRM",
+      "expectedOutcome": "Merge review ready with consent-safe contact plan, linked records, and audit export.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "usage-drop-csm-handoff",
+      "title": "Usage-drop CSM handoff",
+      "domainId": "customer-360-crm",
+      "domainLabel": "Customer 360 / CRM",
+      "expectedOutcome": "CSM handoff active with risk evidence, owners, due dates, and activity timeline.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "executive-escalation-summary",
+      "title": "Executive escalation summary",
+      "domainId": "customer-360-crm",
+      "domainLabel": "Customer 360 / CRM",
+      "expectedOutcome": "Executive summary published with complete evidence links and customer-visible status.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "split-shipment-exception",
+      "title": "Split-shipment exception",
+      "domainId": "order-commerce-ops",
+      "domainLabel": "Order / Commerce Ops",
+      "expectedOutcome": "Split-shipment exception active with replacement plan, owners, customer message, and audit trail.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "refund-credit-workflow",
+      "title": "Refund and credit workflow",
+      "domainId": "order-commerce-ops",
+      "domainLabel": "Order / Commerce Ops",
+      "expectedOutcome": "Credit approval ready with finance task, customer-safe message, and accounting audit trail.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "inventory-substitution-approval",
+      "title": "Inventory substitution approval",
+      "domainId": "order-commerce-ops",
+      "domainLabel": "Order / Commerce Ops",
+      "expectedOutcome": "Substitution approval pending with valid alternatives, owners, and customer-safe status.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "fraud-manual-review-hold",
+      "title": "Fraud/manual-review hold",
+      "domainId": "order-commerce-ops",
+      "domainLabel": "Order / Commerce Ops",
+      "expectedOutcome": "Manual review hold active with risk evidence, review owners, and portal-safe status.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "return-rma-timeline",
+      "title": "Return/RMA timeline",
+      "domainId": "order-commerce-ops",
+      "domainLabel": "Order / Commerce Ops",
+      "expectedOutcome": "RMA timeline active with replacement/refund decision path and complete audit state.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "sla-breach-route",
+      "title": "SLA breach route",
+      "domainId": "support-sla",
+      "domainLabel": "Support / SLA",
+      "expectedOutcome": "SLA breach escalated with correct owners, customer-safe next step, and timer audit.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "duplicate-case-merge",
+      "title": "Duplicate-case merge",
+      "domainId": "support-sla",
+      "domainLabel": "Support / SLA",
+      "expectedOutcome": "Duplicate cases merged into a master case with preserved timeline and SLA state.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "multi-product-incident-impact",
+      "title": "Multi-product incident impact",
+      "domainId": "support-sla",
+      "domainLabel": "Support / SLA",
+      "expectedOutcome": "Incident impact map active with account tasks, product scope, and audit timeline.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "entitlement-priority-upgrade",
+      "title": "Entitlement-aware priority upgrade",
+      "domainId": "support-sla",
+      "domainLabel": "Support / SLA",
+      "expectedOutcome": "Case priority upgraded with entitlement evidence and customer-safe escalation state.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "customer-visible-escalation-timeline",
+      "title": "Customer-visible escalation timeline",
+      "domainId": "support-sla",
+      "domainLabel": "Support / SLA",
+      "expectedOutcome": "Customer escalation timeline published with sanitized messages and persisted audit links.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "invoice-dispute-workflow",
+      "title": "Invoice dispute workflow",
+      "domainId": "billing-revenue-ops",
+      "domainLabel": "Billing / Revenue Ops",
+      "expectedOutcome": "Invoice dispute active with finance owner, evidence bundle, and customer-safe status.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "payment-risk-hold-release",
+      "title": "Payment-risk hold release",
+      "domainId": "billing-revenue-ops",
+      "domainLabel": "Billing / Revenue Ops",
+      "expectedOutcome": "Hold release review active with finance/legal owners and customer-safe next step.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "contract-tier-recalculation",
+      "title": "Contract-tier recalculation",
+      "domainId": "billing-revenue-ops",
+      "domainLabel": "Billing / Revenue Ops",
+      "expectedOutcome": "Tier recalculation ready with revenue impact, owner approvals, and audit trail.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "usage-overage-adjustment",
+      "title": "Usage overage adjustment",
+      "domainId": "billing-revenue-ops",
+      "domainLabel": "Billing / Revenue Ops",
+      "expectedOutcome": "Overage adjustment proposed with policy evidence, owner tasks, and customer-safe status.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "collections-promise-to-pay-audit",
+      "title": "Collections promise-to-pay audit",
+      "domainId": "billing-revenue-ops",
+      "domainLabel": "Billing / Revenue Ops",
+      "expectedOutcome": "Promise-to-pay audit active with follow-up owners, due dates, and complete evidence.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "data-access-audit-export",
+      "title": "Data-access audit export",
+      "domainId": "compliance-audit-ops",
+      "domainLabel": "Compliance / Audit Ops",
+      "expectedOutcome": "Audit export ready with scoped records, approvers, customer-safe summary, and hashable audit trail.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "regulated-shipment-approval",
+      "title": "Regulated shipment approval",
+      "domainId": "compliance-audit-ops",
+      "domainLabel": "Compliance / Audit Ops",
+      "expectedOutcome": "Regulated shipment approval active with compliance owners and portal-safe status.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "legal-hold-workflow",
+      "title": "Legal hold workflow",
+      "domainId": "compliance-audit-ops",
+      "domainLabel": "Compliance / Audit Ops",
+      "expectedOutcome": "Legal hold active with scoped records, legal owner, and immutable audit timeline.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "pii-retention-erasure-request",
+      "title": "PII retention/erasure request",
+      "domainId": "compliance-audit-ops",
+      "domainLabel": "Compliance / Audit Ops",
+      "expectedOutcome": "Privacy request staged with retention exceptions, owner tasks, and audit-safe result.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "cross-system-audit-timeline",
+      "title": "Cross-system audit timeline",
+      "domainId": "compliance-audit-ops",
+      "domainLabel": "Compliance / Audit Ops",
+      "expectedOutcome": "Audit timeline published with sorted events, source links, and customer-safe status.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    }
+  ],
+  "agents": [
+    {
+      "id": "codex",
+      "label": "Codex",
+      "adapter": "codex exec",
+      "capturedLaneRuns": 3,
+      "claimStatus": "seed-captured"
+    },
+    {
+      "id": "claude-code",
+      "label": "Claude Code",
+      "adapter": "claude --print",
+      "capturedLaneRuns": 0,
+      "claimStatus": "not-yet-verified"
+    },
+    {
+      "id": "cursor",
+      "label": "Cursor Agent",
+      "adapter": "cursor agent --print",
+      "capturedLaneRuns": 0,
+      "claimStatus": "not-yet-verified"
+    }
+  ],
+  "fairnessRules": [
+    "Same business prompt per compared pair.",
+    "Same acceptance assertions per compared pair.",
+    "Same agent and version per compared pair.",
+    "Same repeat count per compared pair.",
+    "Database-native models are allowed and required.",
+    "Generated fixture records are deterministic and versioned.",
+    "Before-state acceptance must fail.",
+    "No test edits, fixture edits, or human rescue inside an accepted run.",
+    "Failures, retries, timeouts, and mixed metrics remain visible.",
+    "Cost projections separate measured deltas from assumptions."
+  ],
+  "evidenceClaims": [
+    {
+      "id": "benchmark-contract",
+      "label": "Proof boundary",
+      "question": "What is proven today?",
+      "verdict": "This customer demo proves one verified Codex replay pair. The broader AST-Bench benchmark still requires 450 lane runs; 3 are currently passed.",
+      "sources": [
+        {
+          "path": "benchmark/specs/ast-bench-v1.json",
+          "exists": true,
+          "bytes": 15310,
+          "sha256": "eeaf72e6940609d0d502bc1ec26e5098d3277fc4528a837dfb96124824e57fa9"
+        },
+        {
+          "path": "benchmark/results/summary.json",
+          "exists": true,
+          "bytes": 14781,
+          "sha256": "ff29bfc3e9cc98a93b425cd7053ae726df8f0a8ae812aaf66495f3ce6ff5db03"
+        }
+      ]
+    },
+    {
+      "id": "seed-traces",
+      "label": "Seed Codex traces",
+      "question": "Is the current seed replay real?",
+      "verdict": "Both lanes preserve Codex JSONL/stdout, stderr, elapsed time, and CLI metadata. The Postgres lane consumed 8,869 more estimated transcript tokens in this captured pair.",
+      "sources": [
+        {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/raw-transcript/codex-events.jsonl",
+          "exists": true,
+          "bytes": 61690,
+          "sha256": "dd42f61aff6436e042c315c0765a4b395b1bc5941af613f89ba2c3235ccb7334"
+        },
+        {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/raw-transcript/codex-events.jsonl",
+          "exists": true,
+          "bytes": 86239,
+          "sha256": "330254741806de15967abda227d01bb3250de083597b8749a3b8b34cfb4974e4"
+        },
+        {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/summary.json",
+          "exists": true,
+          "bytes": 3541,
+          "sha256": "48b2cb74aae417f9e71f7a1ef0788f6c0d96b85d62b91112de4e748b32331183"
+        }
+      ]
+    },
+    {
+      "id": "seed-diffs",
+      "label": "Seed code diffs",
+      "question": "What did the agent actually change?",
+      "verdict": "Codex changed 1 MongoDB file(s) and 1 Postgres file(s). MongoDB required 1,361 more diff bytes.",
+      "sources": [
+        {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/diff.patch",
+          "exists": true,
+          "bytes": 10060,
+          "sha256": "dd5c7444429b241762ea743914aa7b97e25b112c5afa732a2268397e2d4e3831"
+        },
+        {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/diff.patch",
+          "exists": true,
+          "bytes": 8699,
+          "sha256": "f47689b303a1d0e5b95e95d0b30e435b14fcdf1a99589529d208160df49409eb"
+        }
+      ]
+    },
+    {
+      "id": "context-ledger",
+      "label": "What the AI had to read",
+      "question": "Which files and context did the agent have to understand?",
+      "verdict": "Seed trace shows 16 MongoDB work events and 23 Postgres work events. The file list is hashable evidence, not a slide.",
+      "sources": [
+        {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/raw-transcript/codex-events.jsonl",
+          "exists": true,
+          "bytes": 61690,
+          "sha256": "dd42f61aff6436e042c315c0765a4b395b1bc5941af613f89ba2c3235ccb7334"
+        },
+        {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/raw-transcript/codex-events.jsonl",
+          "exists": true,
+          "bytes": 86239,
+          "sha256": "330254741806de15967abda227d01bb3250de083597b8749a3b8b34cfb4974e4"
+        },
+        {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/workspace/AGENTS.md",
+          "exists": true,
+          "bytes": 299,
+          "sha256": "d5f39e3627d2cd7469613d108ced763f67b9e697e59a47fee6d28c209765b628"
+        },
+        {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/postgres/workspace/AGENTS.md",
+          "exists": true,
+          "bytes": 300,
+          "sha256": "fcefd3f0a63c1c2e550876d287346496cf1df3ebcb48b340486156bb90ad58e5"
+        }
+      ]
+    },
+    {
+      "id": "stack-comparison",
+      "label": "One data plane vs stitched stack",
+      "question": "Should the benchmark compare MongoDB only to Postgres, or to Postgres plus search plus vector systems?",
+      "verdict": "The current measured seed is MongoDB versus Postgres. The next benchmark design should add a realistic stitched-stack lane before making any public claim about Elastic or Pinecone.",
+      "sources": [
+        {
+          "path": "benchmark/specs/ast-bench-v1.json",
+          "exists": true,
+          "bytes": 15310,
+          "sha256": "eeaf72e6940609d0d502bc1ec26e5098d3277fc4528a837dfb96124824e57fa9"
+        },
+        {
+          "path": "benchmark/results/summary.json",
+          "exists": true,
+          "bytes": 14781,
+          "sha256": "ff29bfc3e9cc98a93b425cd7053ae726df8f0a8ae812aaf66495f3ce6ff5db03"
+        }
+      ]
+    },
+    {
+      "id": "database-proof",
+      "label": "Local database proof",
+      "question": "Did the seed evidence touch real local databases?",
+      "verdict": "The proof runners seed real local MongoDB and Postgres services, execute the workflow, and capture before/after workflow state.",
+      "sources": [
+        {
+          "path": "data/generated/proof/mongodb-local-db-proof.json",
+          "exists": true,
+          "bytes": 2094,
+          "sha256": "73c73f1489724ded81512f6a699ff072d9604e9a2867c21d29f1ebc48ba32d56"
+        },
+        {
+          "path": "data/generated/proof/postgres-local-db-proof.json",
+          "exists": true,
+          "bytes": 2064,
+          "sha256": "2756a6a618a4d8cc5464cd17b57d31d5f65fb7f528902baa7aced5b270fe1599"
+        }
+      ]
+    },
+    {
+      "id": "design-review",
+      "label": "Database-native design review",
+      "question": "Is Postgres being treated credibly?",
+      "verdict": "Every benchmark task requires a database-native design review before public promotion.",
+      "sources": [
+        {
+          "path": "design-review/order-exception-v1.json",
+          "exists": true,
+          "bytes": 2836,
+          "sha256": "0b9b4dde1b9a8f8ad9a919189e7cbf9c044d6422dc27fffb277c67cd1d3abd95"
+        },
+        {
+          "path": "benchmark/design-reviews/ast-bench-v1.json",
+          "exists": true,
+          "bytes": 27564,
+          "sha256": "18b4ff35f9d831435289115439459ac80ff9d8318c164a4769f1eec7f23700cb"
+        }
+      ]
+    },
+    {
+      "id": "cost-model",
+      "label": "Cost model",
+      "question": "What part is measured and what part is assumed?",
+      "verdict": "Seed projection is $20.4k monthly under visible assumptions. The measured inputs come from the captured replay; monthly scale and review cost are editable assumptions.",
+      "sources": [
+        {
+          "path": "instrumented-agent-runs/order-exception-codex-v1/summary.json",
+          "exists": true,
+          "bytes": 3541,
+          "sha256": "48b2cb74aae417f9e71f7a1ef0788f6c0d96b85d62b91112de4e748b32331183"
+        },
+        {
+          "path": "benchmark/results/summary.json",
+          "exists": true,
+          "bytes": 14781,
+          "sha256": "ff29bfc3e9cc98a93b425cd7053ae726df8f0a8ae812aaf66495f3ce6ff5db03"
+        }
+      ]
+    },
+    {
+      "id": "anti-cheat-gates",
+      "label": "Anti-cheat gates",
+      "question": "Can the page overclaim?",
+      "verdict": "The benchmark gates block public-v1 labels without the required run count and evidence files.",
+      "sources": [
+        {
+          "path": "scripts/benchmark-gates.mjs",
+          "exists": true,
+          "bytes": 4200,
+          "sha256": "05b827203a4fa92899a55d4a8c85dd3e6d00667509f522b2676424f15399eaaa"
+        },
+        {
+          "path": "scripts/test-benchmark-gates.mjs",
+          "exists": true,
+          "bytes": 1454,
+          "sha256": "8cebae736ddeab495b14e1fe3565b0dff32a3c7a78f5e140347d326e851cdee2"
+        }
+      ]
+    }
+  ],
+  "costModel": {
+    "measuredSeedOnly": true,
+    "assumptions": {
+      "tokenEstimator": "ceil(captured Codex transcript bytes / 4)",
+      "blendedModelCostPerMillionContextTokensUsd": 10,
+      "engineeringReviewRateUsdPerHour": 150,
+      "reviewMinutesPerChangedFile": 3,
+      "reviewMinutesPerRetrySignal": 0.5,
+      "agentTasksPerMonth": 4000
+    },
+    "perTaskDeltaUsd": 5.08869,
+    "monthlyDeltaUsd": 20354.76,
+    "publicLabel": "$20.4k projected monthly impact under your assumptions",
+    "caveat": "Projection uses measured replay deltas plus visible assumptions. It is not a promise of savings."
+  },
+  "metricDefinitions": [
+    {
+      "id": "context-tokens",
+      "label": "What the AI had to read",
+      "plain": "Estimated context in the captured agent transcript. More reading means more model budget and more chances to misunderstand the system.",
+      "evidenceId": "seed-traces"
+    },
+    {
+      "id": "retry-signals",
+      "label": "Human babysitting pressure",
+      "plain": "Signals like error, failed, retry, fix, and fail in the captured run. It is a proxy for cleanup pressure, not a correctness score by itself.",
+      "evidenceId": "seed-traces"
+    },
+    {
+      "id": "review-rate",
+      "label": "Review rate / hour",
+      "plain": "The loaded hourly cost of a person checking AI output. It is a visible assumption slider, not a measured runtime fact.",
+      "evidenceId": "cost-model"
+    },
+    {
+      "id": "diff-size",
+      "label": "Code changed",
+      "plain": "Bytes changed in the accepted source diff. This is the mixed metric: MongoDB changed more code in this run, so the page shows it openly.",
+      "evidenceId": "seed-diffs"
+    }
+  ],
+  "strategy": {
+    "nextV1Move": "Run the full 25 task x 2 database lane x 3 agent x 3 repeat matrix, then publish only aggregate measured results.",
+    "stressLadder": [
+      {
+        "id": "v1",
+        "label": "V1 benchmark",
+        "scale": "25 tasks, native schemas, 450 lane runs",
+        "status": "case-study",
+        "publicClaim": "Seed/case-study until every required lane is captured."
+      },
+      {
+        "id": "enterprise-100",
+        "label": "Enterprise stress tier",
+        "scale": "100+ schema objects per domain",
+        "status": "planned",
+        "publicClaim": "No claim until measured."
+      },
+      {
+        "id": "enterprise-1000",
+        "label": "1,000 object stress tier",
+        "scale": "1,000 tables or collections, migration/history files, schema docs, and noisy legacy modules",
+        "status": "planned",
+        "publicClaim": "Designed to test whether the effect grows with enterprise complexity."
+      }
+    ]
+  },
+  "reproduction": [
+    {
+      "label": "Validate suite",
+      "command": "npm run benchmark:validate"
+    },
+    {
+      "label": "Prepare all target templates",
+      "command": "npm run benchmark:prepare"
+    },
+    {
+      "label": "Run one Codex seed-style cell",
+      "command": "npm run benchmark:run -- --task strategic-account-rescue --lane mongo --agent codex --repeat 1"
+    },
+    {
+      "label": "Score captured runs",
+      "command": "npm run benchmark:score"
+    },
+    {
+      "label": "Check promotion gates",
+      "command": "npm run benchmark:gates"
+    }
+  ],
+  "caveats": [
+    "Current public data is seed case-study evidence until the 450 required V1 lane runs are captured.",
+    "AST-Bench V1 requires Codex, Claude Code, and Cursor before multi-agent claims are allowed.",
+    "Cost projection separates captured run deltas from user-editable assumptions.",
+    "Mixed metrics remain visible; a MongoDB loss on any metric is not hidden."
+  ]
+}

@@ -1,0 +1,27 @@
+
+> customer-360-escalation-mongo-target@0.2.0 test
+> node tests/customer-360-escalation.test.mjs
+
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Customer portal title
++ actual - expected
+
++ 'Shipment delayed'
+- 'At-risk escalation active'
+
+    at file:///Users/rom.iluz/Dev/sql-hidden-cost/instrumented-agent-runs/order-exception-codex-v1/mongo/workspace/tests/customer-360-escalation.test.mjs:30:3
+    at ModuleJob.run (node:internal/modules/esm/module_job:437:25)
+    at async node:internal/modules/esm/loader:639:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 'Shipment delayed',
+  expected: 'At-risk escalation active',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.15.0

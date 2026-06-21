@@ -1,0 +1,19 @@
+{
+  "assumptions": {
+    "tokenEstimator": "ceil(utf8 context bytes / 4)",
+    "blendedModelCostPerMillionContextTokensUsd": 10,
+    "engineeringReviewRateUsdPerHour": 150,
+    "reviewMinutesPerExtraAccessObject": 1.25,
+    "reviewMinutesPerExtraSchemaObject": 0.35,
+    "agentTasksPerMonth": 4000
+  },
+  "contextTokenDelta": 4917,
+  "contextReductionPct": 33,
+  "schemaObjectDelta": 42,
+  "accessObjectDelta": 26,
+  "reviewMinutesDelta": 47.2,
+  "modelDeltaUsd": 0.049170000000000005,
+  "reviewDeltaUsd": 118.00000000000001,
+  "perTaskDeltaUsd": 118.04917000000002,
+  "monthlyDeltaUsd": 472196.68000000005
+}

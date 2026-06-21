@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "taskOrderId": "HX-20491",
+  "taskAccountId": "acct-nova",
+  "assertions": [
+    "Customer portal title shows active at-risk escalation",
+    "Current status is Executive escalation",
+    "Customer Success, Legal, Finance, and Support are visible owners",
+    "Next step is customer-visible and time-bound",
+    "Risk summary includes shipment, account tier, support, invoice, usage, and regulatory signals",
+    "Four internal owner tasks are created",
+    "Audit history is visible",
+    "MongoDB and Postgres portal projections match"
+  ]
+}

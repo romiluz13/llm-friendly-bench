@@ -1,0 +1,136 @@
+{
+  "benchmark_fixture": {
+    "_id": "ast-bench-v1-cross-system-audit-timeline",
+    "suiteId": "ast-bench-v1",
+    "taskId": "cross-system-audit-timeline",
+    "generatedAt": "2026-06-18T12:00:00.000Z"
+  },
+  "accounts": [
+    {
+      "_id": "acct-cross-syst",
+      "name": "Compliance Account 5",
+      "tier": "enterprise",
+      "region": "NA",
+      "contract": {
+        "contractId": "ctr-acct-cross-syst",
+        "renewalDate": "2026-09-30",
+        "arrCents": 7200000,
+        "supportPlan": "platinum"
+      },
+      "contacts": [
+        {
+          "contactId": "ct-acct-cross-syst-ops",
+          "role": "Operations",
+          "email": "ops-acct-cross-syst@example.test"
+        },
+        {
+          "contactId": "ct-acct-cross-syst-finance",
+          "role": "Finance",
+          "email": "finance-acct-cross-syst@example.test"
+        }
+      ],
+      "context": {
+        "healthScore": 68,
+        "usageTrend": "down",
+        "openCases": 2,
+        "invoiceRisk": "medium",
+        "complianceFlags": [
+          "customer-visible-audit"
+        ]
+      }
+    }
+  ],
+  "workflow_requests": [
+    {
+      "_id": "audit-cross-system",
+      "taskId": "cross-system-audit-timeline",
+      "accountId": "acct-cross-syst",
+      "title": "Cross-system audit timeline",
+      "primaryEntity": "audit",
+      "businessPrompt": "Create a cross-system audit timeline that assembles account, order, case, invoice, compliance, owner task, and customer-message events into one verified chronology.",
+      "expectedOutcome": "Audit timeline published with sorted events, source links, and customer-safe status.",
+      "ownerGroups": [
+        "Compliance",
+        "Legal",
+        "Security",
+        "Operations"
+      ],
+      "riskSignals": [
+        {
+          "name": "cross",
+          "detail": "Cross-system audit timeline signal 1: cross"
+        },
+        {
+          "name": "system",
+          "detail": "Cross-system audit timeline signal 2: system"
+        },
+        {
+          "name": "audit",
+          "detail": "Cross-system audit timeline signal 3: audit"
+        },
+        {
+          "name": "enterprise account",
+          "detail": "Cross-system audit timeline signal 4: enterprise account"
+        },
+        {
+          "name": "open customer impact",
+          "detail": "Cross-system audit timeline signal 5: open customer impact"
+        },
+        {
+          "name": "audit required",
+          "detail": "Cross-system audit timeline signal 6: audit required"
+        }
+      ],
+      "nextStep": "Compliance owner review by 16:00",
+      "customerMessage": "Cross-system audit timeline is being handled by Compliance, Legal, Security, Operations."
+    }
+  ],
+  "activities": [
+    {
+      "_id": "act-cross-system-audit-timeline-1",
+      "accountId": "acct-cross-syst",
+      "subjectId": "audit-cross-system",
+      "summary": "Cross-system audit timeline signal 1: cross",
+      "occurredAt": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "_id": "act-cross-system-audit-timeline-2",
+      "accountId": "acct-cross-syst",
+      "subjectId": "audit-cross-system",
+      "summary": "Cross-system audit timeline signal 2: system",
+      "occurredAt": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "_id": "act-cross-system-audit-timeline-3",
+      "accountId": "acct-cross-syst",
+      "subjectId": "audit-cross-system",
+      "summary": "Cross-system audit timeline signal 3: audit",
+      "occurredAt": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "_id": "act-cross-system-audit-timeline-4",
+      "accountId": "acct-cross-syst",
+      "subjectId": "audit-cross-system",
+      "summary": "Cross-system audit timeline signal 4: enterprise account",
+      "occurredAt": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "_id": "act-cross-system-audit-timeline-5",
+      "accountId": "acct-cross-syst",
+      "subjectId": "audit-cross-system",
+      "summary": "Cross-system audit timeline signal 5: open customer impact",
+      "occurredAt": "2026-06-14T10:00:00.000Z"
+    },
+    {
+      "_id": "act-cross-system-audit-timeline-6",
+      "accountId": "acct-cross-syst",
+      "subjectId": "audit-cross-system",
+      "summary": "Cross-system audit timeline signal 6: audit required",
+      "occurredAt": "2026-06-15T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

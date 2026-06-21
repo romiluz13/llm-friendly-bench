@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0.0",
+  "reviewId": "customer-360-escalation-v2-rubric-review",
+  "status": "captured",
+  "reviewer": "Rubric-based Independent Design Review for Seller V1",
+  "scenario": "Customer 360 Escalation / Strategic Account Rescue",
+  "task": "At-risk Customer 360 Escalation Workflow",
+  "rubric": [
+    "Each database must use a database-native model.",
+    "Both targets must support the same customer-visible behavior and acceptance tests.",
+    "MongoDB must not be forced into table parity.",
+    "Postgres must not be intentionally denormalized or weakened.",
+    "Unbounded history, usage snapshots, support comments, invoices, task history, and audit trails must be modeled separately or bounded explicitly.",
+    "The task must be harder because enterprise apps are harder, not because the relational target is sabotaged."
+  ],
+  "mongoRationale": "The MongoDB target models the account as the Customer 360 aggregate for the hot escalation path: contacts, contract, health, account team, billing summary, usage summary, support summary, compliance summary, current escalation, and task summary are co-located because the workflow reads them together. The order remains an aggregate for line items, fulfillment, payment, and bounded status history. Unbounded streams such as support cases, invoices, usage snapshots, work items, customer escalations, and audit events remain separate collections. This follows MongoDB access-pattern modeling without recreating relational table boundaries.",
+  "postgresRationale": "The Postgres target uses a credible normalized relational baseline with explicit tables and foreign keys for account tiers, accounts, contacts, contracts, team members, risk flags, health factors, products, orders, shipments, support cases, invoices, payment risk events, usage snapshots, compliance reviews, escalation policies, escalation cases, risk factors, owner tasks, task assignments, portal messages, legal and finance requests, status history, audit events, SLA, inventory, renewals, and notification outbox. This is a normal relational customer-360 design, not an intentionally weakened schema.",
+  "tradeoff": "The comparison is database-native rather than schema-identical. Identical schemas would be less fair because they would punish one database for the other's natural shape. The proof therefore compares the same customer request, same fixture, same acceptance contract, and same outcome while allowing each target to use its idiomatic data model.",
+  "decision": "Approved for Seller V1 candidate and verified Codex replay generation using the harder Customer 360 Escalation scenario.",
+  "caveat": "This is a rubric-based independent design review artifact. A later customer-facing release can replace or supplement it with named MongoDB and Postgres reviewer sign-off."
+}

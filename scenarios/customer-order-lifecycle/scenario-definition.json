@@ -1,0 +1,330 @@
+{
+  "scenarioVersion": "scenario-fixture-v2",
+  "scenarioName": "Customer 360 Escalation",
+  "variant": "Strategic Account Rescue",
+  "generatedAt": "2026-06-17T00:00:00.000Z",
+  "task": {
+    "orderId": "HX-20491",
+    "accountId": "acct-nova",
+    "headline": "Same enterprise escalation. Same Codex. Same acceptance test. Different schema tax.",
+    "request": "Add an at-risk customer escalation workflow. Detect a delayed high-value order for a strategic account, combine CRM context, open support cases, invoice/payment risk, contract tier, recent product usage, shipment status, regulatory flags, and audit history. Route the account to Customer Success, Legal, Finance, and Support, show the customer-safe status in the portal, create internal owner tasks, and preserve a full audit timeline.",
+    "acceptance": [
+      "The customer portal shows an active at-risk escalation for the strategic account.",
+      "The customer-visible status is Executive escalation.",
+      "Customer Success, Legal, Finance, and Support are visible owners.",
+      "The next customer-safe step is an executive recovery plan by 16:00.",
+      "The risk summary includes shipment delay, account tier, support, invoice, usage, and regulatory signals.",
+      "Four internal owner tasks are created from the same workflow.",
+      "The audit timeline records the automated escalation decision.",
+      "The workflow passes from the same canonical Scenario Fixture in both database-native projections."
+    ]
+  },
+  "accounts": [
+    {
+      "accountId": "acct-nova",
+      "name": "Nova Retail Group",
+      "tier": "strategic",
+      "segment": "retail",
+      "region": "NA",
+      "riskFlags": ["regulated-shipping", "public-company", "renewal-at-risk"],
+      "contract": {
+        "contractId": "ctr-nova-2026",
+        "tier": "enterprise-plus",
+        "arrCents": 18400000,
+        "renewalDate": "2026-07-31",
+        "executiveSponsor": "Dana Weiss",
+        "supportPlan": "platinum",
+        "dataProcessingAddendum": true
+      },
+      "health": {
+        "score": 61,
+        "trend": "down",
+        "summary": "Usage down while renewal and delayed regulated shipment are active."
+      },
+      "accountTeam": [
+        { "ownerGroup": "Customer Success", "name": "Leah Gordon", "role": "Strategic CSM" },
+        { "ownerGroup": "Legal", "name": "Owen Blake", "role": "Commercial Counsel" },
+        { "ownerGroup": "Finance", "name": "Rina Shah", "role": "Collections Lead" },
+        { "ownerGroup": "Support", "name": "Marta Silva", "role": "Support Duty Manager" }
+      ],
+      "contacts": [
+        { "contactId": "ct-nova-ops", "name": "Ari Cohen", "role": "VP Operations", "email": "ari.cohen@nova.example" },
+        { "contactId": "ct-nova-fin", "name": "Maya Rosen", "role": "Finance Controller", "email": "maya.rosen@nova.example" },
+        { "contactId": "ct-nova-care", "name": "Sam Ortega", "role": "Customer Care Lead", "email": "sam.ortega@nova.example" },
+        { "contactId": "ct-nova-cio", "name": "Priya Menon", "role": "CIO", "email": "priya.menon@nova.example" }
+      ]
+    },
+    {
+      "accountId": "acct-helio",
+      "name": "Helio Medical Devices",
+      "tier": "enterprise",
+      "segment": "medical-devices",
+      "region": "EU",
+      "riskFlags": ["regulated-shipping", "sla-critical"],
+      "contract": {
+        "contractId": "ctr-helio-2026",
+        "tier": "enterprise",
+        "arrCents": 9200000,
+        "renewalDate": "2026-10-15",
+        "executiveSponsor": "Mira Stone",
+        "supportPlan": "premium",
+        "dataProcessingAddendum": true
+      },
+      "health": {
+        "score": 82,
+        "trend": "stable",
+        "summary": "Regulated customer with healthy usage."
+      },
+      "accountTeam": [
+        { "ownerGroup": "Customer Success", "name": "Nico Hart", "role": "Enterprise CSM" },
+        { "ownerGroup": "Support", "name": "Iris Bell", "role": "Support Lead" }
+      ],
+      "contacts": [
+        { "contactId": "ct-helio-proc", "name": "Elena Martins", "role": "Procurement", "email": "elena.martins@helio.example" },
+        { "contactId": "ct-helio-qa", "name": "Jon Bell", "role": "Quality", "email": "jon.bell@helio.example" }
+      ]
+    },
+    {
+      "accountId": "acct-polaris",
+      "name": "Polaris Field Systems",
+      "tier": "growth",
+      "segment": "industrial",
+      "region": "NA",
+      "riskFlags": ["field-critical"],
+      "contract": {
+        "contractId": "ctr-polaris-2026",
+        "tier": "growth",
+        "arrCents": 3100000,
+        "renewalDate": "2027-01-31",
+        "executiveSponsor": "Leo Park",
+        "supportPlan": "standard",
+        "dataProcessingAddendum": false
+      },
+      "health": {
+        "score": 74,
+        "trend": "stable",
+        "summary": "Operational delay without strategic escalation criteria."
+      },
+      "accountTeam": [
+        { "ownerGroup": "Customer Success", "name": "Ava Trent", "role": "Growth CSM" }
+      ],
+      "contacts": [
+        { "contactId": "ct-polaris-ops", "name": "Nia Brooks", "role": "Operations", "email": "nia.brooks@polaris.example" },
+        { "contactId": "ct-polaris-it", "name": "Luca Singh", "role": "IT", "email": "luca.singh@polaris.example" }
+      ]
+    },
+    {
+      "accountId": "acct-cascade",
+      "name": "Cascade Outfitters",
+      "tier": "commercial",
+      "segment": "commerce",
+      "region": "APAC",
+      "riskFlags": [],
+      "contract": {
+        "contractId": "ctr-cascade-2026",
+        "tier": "commercial",
+        "arrCents": 860000,
+        "renewalDate": "2026-11-30",
+        "executiveSponsor": "Kim Lau",
+        "supportPlan": "standard",
+        "dataProcessingAddendum": false
+      },
+      "health": {
+        "score": 89,
+        "trend": "up",
+        "summary": "Healthy commercial account."
+      },
+      "accountTeam": [
+        { "ownerGroup": "Customer Success", "name": "Bo Kim", "role": "Commercial CSM" }
+      ],
+      "contacts": [
+        { "contactId": "ct-cascade-ops", "name": "Talia Chen", "role": "Operations", "email": "talia.chen@cascade.example" },
+        { "contactId": "ct-cascade-cx", "name": "Bo Kim", "role": "Customer Experience", "email": "bo.kim@cascade.example" }
+      ]
+    }
+  ],
+  "products": [
+    { "productId": "prd-coldchain-kit", "name": "Cold Chain Sensor Kit", "category": "regulated", "unitPriceCents": 128000 },
+    { "productId": "prd-gateway-pro", "name": "Gateway Pro", "category": "hardware", "unitPriceCents": 78000 },
+    { "productId": "prd-support-plus", "name": "Priority Support Plus", "category": "service", "unitPriceCents": 240000 },
+    { "productId": "prd-field-case", "name": "Rugged Field Case", "category": "hardware", "unitPriceCents": 18000 },
+    { "productId": "prd-analytics", "name": "Fleet Analytics Pack", "category": "software", "unitPriceCents": 96000 }
+  ],
+  "orders": [
+    {
+      "orderId": "HX-20491",
+      "accountId": "acct-nova",
+      "contactId": "ct-nova-ops",
+      "createdAt": "2026-06-14T09:12:00.000Z",
+      "status": "delayed",
+      "valueCents": 872000,
+      "currency": "USD",
+      "regulatedShipment": true,
+      "delayReason": "customs_hold",
+      "promisedReleaseTime": "2026-06-17T16:00:00.000Z",
+      "lineItems": [
+        { "productId": "prd-coldchain-kit", "quantity": 4 },
+        { "productId": "prd-gateway-pro", "quantity": 3 },
+        { "productId": "prd-support-plus", "quantity": 1 }
+      ]
+    },
+    {
+      "orderId": "HX-20472",
+      "accountId": "acct-helio",
+      "contactId": "ct-helio-proc",
+      "createdAt": "2026-06-13T13:34:00.000Z",
+      "status": "in_fulfillment",
+      "valueCents": 612000,
+      "currency": "EUR",
+      "regulatedShipment": true,
+      "delayReason": null,
+      "promisedReleaseTime": null,
+      "lineItems": [
+        { "productId": "prd-coldchain-kit", "quantity": 2 },
+        { "productId": "prd-analytics", "quantity": 2 }
+      ]
+    },
+    {
+      "orderId": "HX-20388",
+      "accountId": "acct-polaris",
+      "contactId": "ct-polaris-ops",
+      "createdAt": "2026-06-11T16:22:00.000Z",
+      "status": "delayed",
+      "valueCents": 128000,
+      "currency": "USD",
+      "regulatedShipment": false,
+      "delayReason": "carrier_capacity",
+      "promisedReleaseTime": "2026-06-17T11:30:00.000Z",
+      "lineItems": [
+        { "productId": "prd-field-case", "quantity": 2 },
+        { "productId": "prd-gateway-pro", "quantity": 1 }
+      ]
+    },
+    {
+      "orderId": "HX-20371",
+      "accountId": "acct-cascade",
+      "contactId": "ct-cascade-cx",
+      "createdAt": "2026-06-10T10:01:00.000Z",
+      "status": "delivered",
+      "valueCents": 384000,
+      "currency": "USD",
+      "regulatedShipment": false,
+      "delayReason": null,
+      "promisedReleaseTime": null,
+      "lineItems": [
+        { "productId": "prd-analytics", "quantity": 4 }
+      ]
+    }
+  ],
+  "supportCases": [
+    {
+      "caseId": "case-nova-77",
+      "accountId": "acct-nova",
+      "orderId": "HX-20491",
+      "openedAt": "2026-06-15T14:42:00.000Z",
+      "priority": "high",
+      "status": "open",
+      "summary": "Customer wants a release ETA and audit-safe status update."
+    },
+    {
+      "caseId": "case-nova-81",
+      "accountId": "acct-nova",
+      "orderId": null,
+      "openedAt": "2026-06-16T09:20:00.000Z",
+      "priority": "urgent",
+      "status": "open",
+      "summary": "CIO asked whether renewal terms can be paused until delivery is recovered."
+    },
+    {
+      "caseId": "case-polaris-31",
+      "accountId": "acct-polaris",
+      "orderId": "HX-20388",
+      "openedAt": "2026-06-14T08:10:00.000Z",
+      "priority": "normal",
+      "status": "open",
+      "summary": "Carrier capacity delay needs customer-facing explanation."
+    }
+  ],
+  "invoices": [
+    {
+      "invoiceId": "inv-nova-2026-06",
+      "accountId": "acct-nova",
+      "orderId": "HX-20491",
+      "issuedAt": "2026-06-01T00:00:00.000Z",
+      "dueAt": "2026-06-15T00:00:00.000Z",
+      "amountCents": 431000,
+      "status": "past_due",
+      "risk": "payment_hold_requested"
+    },
+    {
+      "invoiceId": "inv-helio-2026-06",
+      "accountId": "acct-helio",
+      "orderId": "HX-20472",
+      "issuedAt": "2026-06-02T00:00:00.000Z",
+      "dueAt": "2026-06-30T00:00:00.000Z",
+      "amountCents": 212000,
+      "status": "open",
+      "risk": null
+    },
+    {
+      "invoiceId": "inv-polaris-2026-06",
+      "accountId": "acct-polaris",
+      "orderId": "HX-20388",
+      "issuedAt": "2026-06-02T00:00:00.000Z",
+      "dueAt": "2026-06-30T00:00:00.000Z",
+      "amountCents": 74000,
+      "status": "open",
+      "risk": null
+    }
+  ],
+  "usageSnapshots": [
+    {
+      "snapshotId": "usage-nova-2026-06-16",
+      "accountId": "acct-nova",
+      "capturedAt": "2026-06-16T08:00:00.000Z",
+      "activeUsers7d": 184,
+      "activeUsersPrevious7d": 302,
+      "criticalWorkflows": 6,
+      "failedSyncs24h": 17,
+      "trend": "down"
+    },
+    {
+      "snapshotId": "usage-helio-2026-06-16",
+      "accountId": "acct-helio",
+      "capturedAt": "2026-06-16T08:00:00.000Z",
+      "activeUsers7d": 212,
+      "activeUsersPrevious7d": 205,
+      "criticalWorkflows": 8,
+      "failedSyncs24h": 1,
+      "trend": "stable"
+    },
+    {
+      "snapshotId": "usage-polaris-2026-06-16",
+      "accountId": "acct-polaris",
+      "capturedAt": "2026-06-16T08:00:00.000Z",
+      "activeUsers7d": 63,
+      "activeUsersPrevious7d": 66,
+      "criticalWorkflows": 2,
+      "failedSyncs24h": 3,
+      "trend": "stable"
+    }
+  ],
+  "complianceReviews": [
+    {
+      "reviewId": "comp-nova-hx-20491",
+      "accountId": "acct-nova",
+      "orderId": "HX-20491",
+      "openedAt": "2026-06-15T18:00:00.000Z",
+      "status": "review_required",
+      "flags": ["regulated-shipping", "public-company-disclosure", "customs-hold"]
+    },
+    {
+      "reviewId": "comp-helio-hx-20472",
+      "accountId": "acct-helio",
+      "orderId": "HX-20472",
+      "openedAt": "2026-06-14T11:00:00.000Z",
+      "status": "cleared",
+      "flags": ["regulated-shipping"]
+    }
+  ]
+}

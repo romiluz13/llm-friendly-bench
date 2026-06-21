@@ -1,0 +1,136 @@
+{
+  "benchmark_fixture": {
+    "_id": "ast-bench-v1-multi-product-incident-impact",
+    "suiteId": "ast-bench-v1",
+    "taskId": "multi-product-incident-impact",
+    "generatedAt": "2026-06-18T12:00:00.000Z"
+  },
+  "accounts": [
+    {
+      "_id": "acct-multi-prod",
+      "name": "Support Account 3",
+      "tier": "enterprise",
+      "region": "NA",
+      "contract": {
+        "contractId": "ctr-acct-multi-prod",
+        "renewalDate": "2026-09-30",
+        "arrCents": 7200000,
+        "supportPlan": "platinum"
+      },
+      "contacts": [
+        {
+          "contactId": "ct-acct-multi-prod-ops",
+          "role": "Operations",
+          "email": "ops-acct-multi-prod@example.test"
+        },
+        {
+          "contactId": "ct-acct-multi-prod-finance",
+          "role": "Finance",
+          "email": "finance-acct-multi-prod@example.test"
+        }
+      ],
+      "context": {
+        "healthScore": 68,
+        "usageTrend": "down",
+        "openCases": 2,
+        "invoiceRisk": "medium",
+        "complianceFlags": [
+          "customer-visible-audit"
+        ]
+      }
+    }
+  ],
+  "workflow_requests": [
+    {
+      "_id": "case-multi-produc",
+      "taskId": "multi-product-incident-impact",
+      "accountId": "acct-multi-prod",
+      "title": "Multi-product incident impact",
+      "primaryEntity": "case",
+      "businessPrompt": "Build a multi-product incident impact view that identifies affected accounts, cases, products, subscriptions, open orders, owner tasks, and customer-safe impact summaries.",
+      "expectedOutcome": "Incident impact map active with account tasks, product scope, and audit timeline.",
+      "ownerGroups": [
+        "Support",
+        "Customer Success",
+        "Product",
+        "Operations"
+      ],
+      "riskSignals": [
+        {
+          "name": "multi",
+          "detail": "Multi-product incident impact signal 1: multi"
+        },
+        {
+          "name": "product",
+          "detail": "Multi-product incident impact signal 2: product"
+        },
+        {
+          "name": "incident",
+          "detail": "Multi-product incident impact signal 3: incident"
+        },
+        {
+          "name": "enterprise account",
+          "detail": "Multi-product incident impact signal 4: enterprise account"
+        },
+        {
+          "name": "open customer impact",
+          "detail": "Multi-product incident impact signal 5: open customer impact"
+        },
+        {
+          "name": "audit required",
+          "detail": "Multi-product incident impact signal 6: audit required"
+        }
+      ],
+      "nextStep": "Support owner review by 16:00",
+      "customerMessage": "Multi-product incident impact is being handled by Support, Customer Success, Product, Operations."
+    }
+  ],
+  "activities": [
+    {
+      "_id": "act-multi-product-incident-impact-1",
+      "accountId": "acct-multi-prod",
+      "subjectId": "case-multi-produc",
+      "summary": "Multi-product incident impact signal 1: multi",
+      "occurredAt": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "_id": "act-multi-product-incident-impact-2",
+      "accountId": "acct-multi-prod",
+      "subjectId": "case-multi-produc",
+      "summary": "Multi-product incident impact signal 2: product",
+      "occurredAt": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "_id": "act-multi-product-incident-impact-3",
+      "accountId": "acct-multi-prod",
+      "subjectId": "case-multi-produc",
+      "summary": "Multi-product incident impact signal 3: incident",
+      "occurredAt": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "_id": "act-multi-product-incident-impact-4",
+      "accountId": "acct-multi-prod",
+      "subjectId": "case-multi-produc",
+      "summary": "Multi-product incident impact signal 4: enterprise account",
+      "occurredAt": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "_id": "act-multi-product-incident-impact-5",
+      "accountId": "acct-multi-prod",
+      "subjectId": "case-multi-produc",
+      "summary": "Multi-product incident impact signal 5: open customer impact",
+      "occurredAt": "2026-06-14T10:00:00.000Z"
+    },
+    {
+      "_id": "act-multi-product-incident-impact-6",
+      "accountId": "acct-multi-prod",
+      "subjectId": "case-multi-produc",
+      "summary": "Multi-product incident impact signal 6: audit required",
+      "occurredAt": "2026-06-15T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

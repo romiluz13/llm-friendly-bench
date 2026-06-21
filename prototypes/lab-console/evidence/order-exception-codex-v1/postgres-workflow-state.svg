@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="650" viewBox="0 0 1180 650">
+  <style>
+    .bg{fill:#111311}.panel{fill:#f4f1e8;stroke:#d8d0bd}.h{font:700 30px system-ui;fill:#f4f1e8}.sub{font:600 14px system-ui;fill:#a9af9d}.title{font:800 25px system-ui;fill:#151711}.k{font:700 15px system-ui;fill:#5f6659}.v{font:700 15px system-ui;fill:#151711}.good{fill:#0a7f4b}.label{font:800 12px system-ui;fill:#5f6659;letter-spacing:2px}.line{stroke:#d8d0bd}
+  </style>
+  <rect width="1180" height="650" class="bg"/>
+  <text x="48" y="58" class="h">Customer 360 Escalation Proof Snapshot</text>
+  <text x="48" y="86" class="sub">postgres lane / Order HX-20491 / Instrumented Agent Run artifact</text>
+  <rect x="48" y="122" width="510" height="444" class="panel"/>
+  <rect x="620" y="122" width="510" height="444" class="panel"/>
+  <text x="70" y="154" class="label">BEFORE</text><text x="642" y="154" class="label">AFTER</text>
+  <text x="70" y="118" class="title">Shipment delayed</text>
+  <text x="642" y="118" class="title">At-risk escalation active</text>
+  <line x1="200" y1="168" x2="200" y2="532" class="line"/><line x1="620" y1="168" x2="620" y2="532" class="line"/>
+  <text x="70" y="196" class="k">Status</text><text x="230" y="196" class="v">delayed</text><text x="650" y="196" class="v good">Executive escalation</text><text x="70" y="254" class="k">Owner</text><text x="230" y="254" class="v">Unassigned</text><text x="650" y="254" class="v good">Customer Success + Legal + Finance + Support</text><text x="70" y="312" class="k">Next step</text><text x="230" y="312" class="v">Contact support</text><text x="650" y="312" class="v good">Executive recovery plan by 16:00</text><text x="70" y="370" class="k">History</text><text x="230" y="370" class="v">Not visible</text><text x="650" y="370" class="v good">Audit visible</text><text x="70" y="428" class="k">Risk</text><text x="230" y="428" class="v">Risk not scored</text><text x="650" y="428" class="v good">6 signals: shipment delay, strategic account, open support case, invoice risk, usage drop, regulatory review</text><text x="70" y="486" class="k">Tasks</text><text x="230" y="486" class="v">0 owner tasks</text><text x="650" y="486" class="v good">4 owner tasks</text>
+</svg>

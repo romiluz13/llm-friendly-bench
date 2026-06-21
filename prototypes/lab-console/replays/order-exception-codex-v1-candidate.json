@@ -1,0 +1,427 @@
+{
+  "schemaVersion": "0.2.0",
+  "artifactId": "order-exception-codex-v1-candidate",
+  "proofStatus": "candidate",
+  "scenario": {
+    "name": "Customer 360 Escalation",
+    "variant": "Strategic Account Rescue",
+    "fixtureVersion": "scenario-fixture-v2"
+  },
+  "task": {
+    "headline": "Same enterprise escalation. Same Codex. Same acceptance test. Different schema tax.",
+    "request": "Add an at-risk customer escalation workflow. Detect a delayed high-value order for a strategic account, combine CRM context, open support cases, invoice/payment risk, contract tier, recent product usage, shipment status, regulatory flags, and audit history. Route the account to Customer Success, Legal, Finance, and Support, show the customer-safe status in the portal, create internal owner tasks, and preserve a full audit timeline."
+  },
+  "agent": {
+    "name": "Codex",
+    "model": "local proof runner; live agent trace required before verified",
+    "constraint": "Codex lane reserved; local runner candidate"
+  },
+  "fairnessContract": [
+    "Same customer request",
+    "Same canonical Scenario Fixture",
+    "Same acceptance assertions",
+    "Database-native projections generated from one fixture",
+    "Live agent attempts must be counted before verified"
+  ],
+  "outcome": {
+    "orderId": "HX-20491",
+    "statusPill": "PASSED / local target adapters",
+    "before": {
+      "title": "Shipment delayed",
+      "rows": [
+        {
+          "label": "Status",
+          "value": "delayed",
+          "tone": "warn"
+        },
+        {
+          "label": "Owner",
+          "value": "Unassigned"
+        },
+        {
+          "label": "Next step",
+          "value": "Contact support"
+        },
+        {
+          "label": "History",
+          "value": "Not visible"
+        },
+        {
+          "label": "Risk",
+          "value": "Risk not scored"
+        },
+        {
+          "label": "Tasks",
+          "value": "0 owner tasks"
+        }
+      ]
+    },
+    "after": {
+      "title": "At-risk escalation active",
+      "rows": [
+        {
+          "label": "Status",
+          "value": "Executive escalation",
+          "tone": "warn"
+        },
+        {
+          "label": "Owner",
+          "value": "Customer Success + Legal + Finance + Support"
+        },
+        {
+          "label": "Next step",
+          "value": "Executive recovery plan by 16:00"
+        },
+        {
+          "label": "History",
+          "value": "Audit visible",
+          "tone": "good"
+        },
+        {
+          "label": "Risk",
+          "value": "6 signals: shipment delay, strategic account, open support case, invoice risk, usage drop, regulatory review",
+          "tone": "good"
+        },
+        {
+          "label": "Tasks",
+          "value": "4 owner tasks",
+          "tone": "good"
+        }
+      ]
+    }
+  },
+  "verdict": [
+    {
+      "label": "Context estimate",
+      "value": "33% less"
+    },
+    {
+      "label": "Schema objects",
+      "value": "42 fewer"
+    },
+    {
+      "label": "Review model",
+      "value": "47.2m saved"
+    },
+    {
+      "label": "Monthly estimate",
+      "value": "$472.2k"
+    }
+  ],
+  "lanes": [
+    {
+      "id": "mongo",
+      "name": "MongoDB",
+      "model": "Document model / customer 360 aggregate",
+      "score": 85,
+      "meters": [
+        {
+          "label": "Context est.",
+          "value": "9,787",
+          "width": 67
+        },
+        {
+          "label": "Schema objects",
+          "value": "14",
+          "width": 25
+        },
+        {
+          "label": "Access path",
+          "value": "10",
+          "width": 28
+        },
+        {
+          "label": "Files",
+          "value": "6",
+          "width": 86
+        }
+      ],
+      "schemaNodes": [
+        {
+          "name": "design.json",
+          "primary": true
+        },
+        {
+          "name": "collections.json",
+          "primary": true
+        },
+        {
+          "name": "order-exception-workflow.mjs",
+          "primary": false
+        }
+      ],
+      "events": [
+        {
+          "time": "00:00",
+          "title": "Reads customer 360 aggregate",
+          "description": "Contract tier, health, billing summary, usage summary, team, and support signals are already shaped around the escalation workflow.",
+          "tag": "schema",
+          "active": true
+        },
+        {
+          "time": "00:01",
+          "title": "Checks delayed order and risk signals",
+          "description": "The order aggregate carries shipment, payment, line item, and status context while account summaries carry CRM risk.",
+          "tag": "crm",
+          "active": false
+        },
+        {
+          "time": "00:02",
+          "title": "Creates escalation, owner tasks, and portal state",
+          "description": "The customer-visible escalation state and owner groups are localized to the account/order path.",
+          "tag": "diff",
+          "active": false
+        },
+        {
+          "time": "00:03",
+          "title": "Appends audit event and passes acceptance",
+          "description": "Same customer portal assertions pass from the MongoDB projection.",
+          "tag": "green",
+          "active": false
+        }
+      ]
+    },
+    {
+      "id": "pg",
+      "name": "Postgres",
+      "model": "Clean normalized customer-360 relational baseline",
+      "score": 68,
+      "meters": [
+        {
+          "label": "Context est.",
+          "value": "14,704",
+          "width": 100
+        },
+        {
+          "label": "Schema objects",
+          "value": "56",
+          "width": 100
+        },
+        {
+          "label": "Access path",
+          "value": "36",
+          "width": 100
+        },
+        {
+          "label": "Files",
+          "value": "7",
+          "width": 100
+        }
+      ],
+      "schemaNodes": [
+        {
+          "name": "design.json",
+          "primary": true
+        },
+        {
+          "name": "schema.sql",
+          "primary": true
+        },
+        {
+          "name": "tables.json",
+          "primary": false
+        },
+        {
+          "name": "order-exception-workflow.mjs",
+          "primary": false
+        }
+      ],
+      "events": [
+        {
+          "time": "00:00",
+          "title": "Maps normalized customer graph",
+          "description": "The workflow touches account, contract, team, order, shipment, support, invoice, usage, compliance, escalation, task, audit, and portal tables.",
+          "tag": "schema",
+          "active": true
+        },
+        {
+          "time": "00:02",
+          "title": "Inserts escalation and task rows",
+          "description": "Escalation state spans customer_escalations, escalation_risk_factors, escalation_tasks, task assignments, portal messages, legal, finance, status, and audit tables.",
+          "tag": "migration",
+          "active": false
+        },
+        {
+          "time": "00:03",
+          "title": "Builds customer portal projection",
+          "description": "The portal view depends on reassembling escalation, risk, task, audit, support case, and account context.",
+          "tag": "join",
+          "active": false
+        },
+        {
+          "time": "00:04",
+          "title": "Passes the same acceptance contract",
+          "description": "The relational target is credible and behavior-equivalent, with more schema context to inspect.",
+          "tag": "green",
+          "active": false
+        }
+      ]
+    }
+  ],
+  "scorecard": [
+    {
+      "label": "Context cost",
+      "value": "MongoDB -33% est."
+    },
+    {
+      "label": "Schema review",
+      "value": "42 fewer objects"
+    },
+    {
+      "label": "Access path",
+      "value": "26 fewer objects"
+    },
+    {
+      "label": "Quality confidence",
+      "value": "Same escalation acceptance passed"
+    },
+    {
+      "label": "Governance and safety",
+      "value": "Live trace required before verified"
+    }
+  ],
+  "costProjection": {
+    "assumptions": "Configurable candidate model: 4,000 agent tasks/month, $150/hour review, $10/1M context tokens.",
+    "figures": [
+      {
+        "label": "Per task",
+        "value": "$118"
+      },
+      {
+        "label": "Monthly",
+        "value": "$472.2k"
+      }
+    ]
+  },
+  "proofPacket": {
+    "summary": "This is now a local proof candidate for the harder Customer 360 Escalation workflow: fixture, database-native projections, target adapters, acceptance test, metrics, and cost model are captured. Live agent trace remains required before verified.",
+    "items": [
+      {
+        "label": "Fairness Contract",
+        "value": "Captured"
+      },
+      {
+        "label": "Independent Design Review",
+        "value": "Required"
+      },
+      {
+        "label": "Local target adapters",
+        "value": "Captured"
+      },
+      {
+        "label": "MongoDB local DB replay",
+        "value": "Captured"
+      },
+      {
+        "label": "Postgres local DB replay",
+        "value": "Captured"
+      },
+      {
+        "label": "Acceptance tests",
+        "value": "Captured"
+      },
+      {
+        "label": "Browser screenshot",
+        "value": "Required"
+      },
+      {
+        "label": "Raw agent trace + diffs",
+        "value": "Required"
+      }
+    ]
+  },
+  "caseFile": {
+    "fairnessControls": [
+      {
+        "label": "Task prompt",
+        "value": "Add an at-risk customer escalation workflow. Detect a delayed high-value order for a strategic account, combine CRM context, open support cases, invoice/payment risk, contract tier, recent product usage, shipment status, regulatory flags, and audit history. Route the account to Customer Success, Legal, Finance, and Support, show the customer-safe status in the portal, create internal owner tasks, and preserve a full audit timeline.",
+        "status": "captured"
+      },
+      {
+        "label": "Scenario Fixture",
+        "value": "scenario-fixture-v2",
+        "status": "captured"
+      },
+      {
+        "label": "Acceptance contract",
+        "value": "Customer portal title shows active at-risk escalation; Current status is Executive escalation; Customer Success, Legal, Finance, and Support are visible owners; Next step is customer-visible and time-bound; Risk summary includes shipment, account tier, support, invoice, usage, and regulatory signals; Four internal owner tasks are created; Audit history is visible; MongoDB and Postgres portal projections match",
+        "status": "captured"
+      },
+      {
+        "label": "Database-native models",
+        "value": "MongoDB document aggregate and clean normalized Postgres baseline",
+        "status": "captured"
+      },
+      {
+        "label": "Live agent attempts",
+        "value": "Required before verified; candidate uses local target adapters",
+        "status": "required"
+      }
+    ],
+    "designReview": {
+      "status": "required",
+      "reviewer": "Independent design review required before verified",
+      "mongoRationale": "The MongoDB target follows the document-model principle that data accessed together should be stored together: customer account, contract, health, team, billing summary, usage summary, support summary, compliance summary, and current escalation are co-located for the hot Customer 360 escalation path while unbounded streams remain separate.",
+      "postgresRationale": "The Postgres target is a clean normalized baseline with explicit tables and foreign keys for accounts, contacts, contracts, teams, orders, shipments, support cases, invoices, usage snapshots, compliance reviews, escalation policies, tasks, portal messages, audit, SLA, and visibility concerns.",
+      "tradeoff": "The proof compares database-native designs. Identical schemas would be less fair because they would punish one model for the other's natural shape."
+    },
+    "evidenceLedger": [
+      {
+        "claim": "Evidence manifest locks 20 source and proof files with SHA-256",
+        "source": "data/generated/proof/evidence-manifest.json",
+        "status": "captured"
+      },
+      {
+        "claim": "Context estimate: MongoDB 9,787 vs Postgres 14,704 tokens",
+        "source": "data/generated/proof/metrics.json",
+        "status": "captured"
+      },
+      {
+        "claim": "Schema objects: MongoDB 14 collections vs Postgres 56 tables",
+        "source": "targets/mongodb-app/schema/design.json; targets/postgres-app/schema/design.json",
+        "status": "captured"
+      },
+      {
+        "claim": "Access path: MongoDB 10 collections vs Postgres 36 tables",
+        "source": "targets/mongodb-app/schema/design.json; targets/postgres-app/schema/design.json",
+        "status": "captured"
+      },
+      {
+        "claim": "Both database-native target adapters pass the same Customer 360 escalation acceptance assertions",
+        "source": "data/generated/proof/order-exception-acceptance.json",
+        "status": "captured"
+      },
+      {
+        "claim": "MongoDB local database seed and workflow replay",
+        "source": "data/generated/proof/mongodb-local-db-proof.json",
+        "status": "captured"
+      },
+      {
+        "claim": "Postgres local database seed and workflow replay",
+        "source": "data/generated/proof/postgres-local-db-proof.json",
+        "status": "captured"
+      },
+      {
+        "claim": "Cost projection: $118 per task candidate delta",
+        "source": "data/generated/proof/cost-model.json",
+        "status": "captured"
+      },
+      {
+        "claim": "Captured Codex trace, inspected files, retries, token counts, and code diffs",
+        "source": "instrumented-agent-run/",
+        "status": "required"
+      },
+      {
+        "claim": "Independent design review by MongoDB and Postgres reviewers or rubric",
+        "source": "design-review/",
+        "status": "required"
+      },
+      {
+        "claim": "Browser screenshot for customer portal before and after",
+        "source": "data/generated/proof/screenshots/customer-portal-before-after.png",
+        "status": "required"
+      }
+    ]
+  },
+  "caveat": "Candidate generated from local file-backed target adapters for Customer 360 Escalation / Strategic Account Rescue. Metrics are evidence-backed estimates, not a verified live agent replay."
+}

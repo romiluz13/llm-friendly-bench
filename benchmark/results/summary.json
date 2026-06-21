@@ -1,0 +1,406 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "generatedAt": "2026-06-21T20:41:37.370Z",
+  "status": "case-study",
+  "claimLevel": "case-study",
+  "requiredLaneRuns": 450,
+  "capturedLaneRuns": 3,
+  "passedLaneRuns": 3,
+  "missingLaneRuns": 447,
+  "taskCount": 25,
+  "taskCells": 450,
+  "agents": [
+    {
+      "id": "codex",
+      "label": "Codex",
+      "adapter": "codex exec",
+      "capturedLaneRuns": 3,
+      "claimStatus": "seed-captured"
+    },
+    {
+      "id": "claude-code",
+      "label": "Claude Code",
+      "adapter": "claude --print",
+      "capturedLaneRuns": 0,
+      "claimStatus": "not-yet-verified"
+    },
+    {
+      "id": "cursor",
+      "label": "Cursor Agent",
+      "adapter": "cursor agent --print",
+      "capturedLaneRuns": 0,
+      "claimStatus": "not-yet-verified"
+    }
+  ],
+  "lanes": [
+    {
+      "id": "mongo",
+      "label": "MongoDB",
+      "modelingRule": "database-native document model shaped around product access patterns"
+    },
+    {
+      "id": "postgres",
+      "label": "Postgres",
+      "modelingRule": "database-native normalized relational model with credible table boundaries"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "strategic-account-rescue",
+      "title": "Strategic account rescue",
+      "domainId": "customer-360-crm",
+      "domainLabel": "Customer 360 / CRM",
+      "expectedOutcome": "At-risk escalation active with executive recovery owner routing and customer-visible audit history.",
+      "seedCase": true,
+      "capturedLaneRuns": 2,
+      "status": "seed-case"
+    },
+    {
+      "id": "renewal-risk-workspace",
+      "title": "Renewal-risk workspace",
+      "domainId": "customer-360-crm",
+      "domainLabel": "Customer 360 / CRM",
+      "expectedOutcome": "Renewal risk workspace active with owner tasks, customer-safe next step, and persisted risk factors.",
+      "seedCase": false,
+      "capturedLaneRuns": 1,
+      "status": "captured"
+    },
+    {
+      "id": "account-merge-consent-audit",
+      "title": "Account merge with consent audit",
+      "domainId": "customer-360-crm",
+      "domainLabel": "Customer 360 / CRM",
+      "expectedOutcome": "Merge review ready with consent-safe contact plan, linked records, and audit export.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "usage-drop-csm-handoff",
+      "title": "Usage-drop CSM handoff",
+      "domainId": "customer-360-crm",
+      "domainLabel": "Customer 360 / CRM",
+      "expectedOutcome": "CSM handoff active with risk evidence, owners, due dates, and activity timeline.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "executive-escalation-summary",
+      "title": "Executive escalation summary",
+      "domainId": "customer-360-crm",
+      "domainLabel": "Customer 360 / CRM",
+      "expectedOutcome": "Executive summary published with complete evidence links and customer-visible status.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "split-shipment-exception",
+      "title": "Split-shipment exception",
+      "domainId": "order-commerce-ops",
+      "domainLabel": "Order / Commerce Ops",
+      "expectedOutcome": "Split-shipment exception active with replacement plan, owners, customer message, and audit trail.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "refund-credit-workflow",
+      "title": "Refund and credit workflow",
+      "domainId": "order-commerce-ops",
+      "domainLabel": "Order / Commerce Ops",
+      "expectedOutcome": "Credit approval ready with finance task, customer-safe message, and accounting audit trail.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "inventory-substitution-approval",
+      "title": "Inventory substitution approval",
+      "domainId": "order-commerce-ops",
+      "domainLabel": "Order / Commerce Ops",
+      "expectedOutcome": "Substitution approval pending with valid alternatives, owners, and customer-safe status.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "fraud-manual-review-hold",
+      "title": "Fraud/manual-review hold",
+      "domainId": "order-commerce-ops",
+      "domainLabel": "Order / Commerce Ops",
+      "expectedOutcome": "Manual review hold active with risk evidence, review owners, and portal-safe status.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "return-rma-timeline",
+      "title": "Return/RMA timeline",
+      "domainId": "order-commerce-ops",
+      "domainLabel": "Order / Commerce Ops",
+      "expectedOutcome": "RMA timeline active with replacement/refund decision path and complete audit state.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "sla-breach-route",
+      "title": "SLA breach route",
+      "domainId": "support-sla",
+      "domainLabel": "Support / SLA",
+      "expectedOutcome": "SLA breach escalated with correct owners, customer-safe next step, and timer audit.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "duplicate-case-merge",
+      "title": "Duplicate-case merge",
+      "domainId": "support-sla",
+      "domainLabel": "Support / SLA",
+      "expectedOutcome": "Duplicate cases merged into a master case with preserved timeline and SLA state.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "multi-product-incident-impact",
+      "title": "Multi-product incident impact",
+      "domainId": "support-sla",
+      "domainLabel": "Support / SLA",
+      "expectedOutcome": "Incident impact map active with account tasks, product scope, and audit timeline.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "entitlement-priority-upgrade",
+      "title": "Entitlement-aware priority upgrade",
+      "domainId": "support-sla",
+      "domainLabel": "Support / SLA",
+      "expectedOutcome": "Case priority upgraded with entitlement evidence and customer-safe escalation state.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "customer-visible-escalation-timeline",
+      "title": "Customer-visible escalation timeline",
+      "domainId": "support-sla",
+      "domainLabel": "Support / SLA",
+      "expectedOutcome": "Customer escalation timeline published with sanitized messages and persisted audit links.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "invoice-dispute-workflow",
+      "title": "Invoice dispute workflow",
+      "domainId": "billing-revenue-ops",
+      "domainLabel": "Billing / Revenue Ops",
+      "expectedOutcome": "Invoice dispute active with finance owner, evidence bundle, and customer-safe status.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "payment-risk-hold-release",
+      "title": "Payment-risk hold release",
+      "domainId": "billing-revenue-ops",
+      "domainLabel": "Billing / Revenue Ops",
+      "expectedOutcome": "Hold release review active with finance/legal owners and customer-safe next step.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "contract-tier-recalculation",
+      "title": "Contract-tier recalculation",
+      "domainId": "billing-revenue-ops",
+      "domainLabel": "Billing / Revenue Ops",
+      "expectedOutcome": "Tier recalculation ready with revenue impact, owner approvals, and audit trail.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "usage-overage-adjustment",
+      "title": "Usage overage adjustment",
+      "domainId": "billing-revenue-ops",
+      "domainLabel": "Billing / Revenue Ops",
+      "expectedOutcome": "Overage adjustment proposed with policy evidence, owner tasks, and customer-safe status.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "collections-promise-to-pay-audit",
+      "title": "Collections promise-to-pay audit",
+      "domainId": "billing-revenue-ops",
+      "domainLabel": "Billing / Revenue Ops",
+      "expectedOutcome": "Promise-to-pay audit active with follow-up owners, due dates, and complete evidence.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "data-access-audit-export",
+      "title": "Data-access audit export",
+      "domainId": "compliance-audit-ops",
+      "domainLabel": "Compliance / Audit Ops",
+      "expectedOutcome": "Audit export ready with scoped records, approvers, customer-safe summary, and hashable audit trail.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "regulated-shipment-approval",
+      "title": "Regulated shipment approval",
+      "domainId": "compliance-audit-ops",
+      "domainLabel": "Compliance / Audit Ops",
+      "expectedOutcome": "Regulated shipment approval active with compliance owners and portal-safe status.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "legal-hold-workflow",
+      "title": "Legal hold workflow",
+      "domainId": "compliance-audit-ops",
+      "domainLabel": "Compliance / Audit Ops",
+      "expectedOutcome": "Legal hold active with scoped records, legal owner, and immutable audit timeline.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "pii-retention-erasure-request",
+      "title": "PII retention/erasure request",
+      "domainId": "compliance-audit-ops",
+      "domainLabel": "Compliance / Audit Ops",
+      "expectedOutcome": "Privacy request staged with retention exceptions, owner tasks, and audit-safe result.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    },
+    {
+      "id": "cross-system-audit-timeline",
+      "title": "Cross-system audit timeline",
+      "domainId": "compliance-audit-ops",
+      "domainLabel": "Compliance / Audit Ops",
+      "expectedOutcome": "Audit timeline published with sorted events, source links, and customer-safe status.",
+      "seedCase": false,
+      "capturedLaneRuns": 0,
+      "status": "defined"
+    }
+  ],
+  "aggregate": {
+    "rows": 3,
+    "byLane": {
+      "mongo": {
+        "rowCount": 2,
+        "medianElapsedMs": 145525,
+        "medianEstimatedTranscriptTokens": 61532.5,
+        "tokenIqr": 4511,
+        "medianRetrySignals": 31,
+        "medianDiffBytes": 6661.5,
+        "medianFilesChanged": 1
+      },
+      "postgres": {
+        "rowCount": 1,
+        "medianElapsedMs": 237528,
+        "medianEstimatedTranscriptTokens": 72657,
+        "tokenIqr": 0,
+        "medianRetrySignals": 28,
+        "medianDiffBytes": 8699,
+        "medianFilesChanged": 1
+      }
+    }
+  },
+  "currentSeed": {
+    "status": "captured",
+    "artifactId": "order-exception-codex-v1-verified",
+    "scenario": "Customer 360 Escalation / Strategic Account Rescue",
+    "agent": {
+      "name": "Codex",
+      "model": "codex-cli 0.130.0",
+      "constraint": "Codex held constant across MongoDB and Postgres instrumented runs"
+    },
+    "headline": "This is about building software with AI agents, not building an AI app. Same feature. Same Codex. Same acceptance test. In this verified replay, Postgres required 8,869 more estimated transcript tokens, Postgres required 70 more seconds, and Postgres required 4 more retry signals. MongoDB required 1,361 more diff bytes.",
+    "measuredDeltas": {
+      "estimatedTranscriptTokens": 8869,
+      "elapsedSeconds": 70,
+      "retrySignals": 4,
+      "diffBytes": -1361
+    },
+    "sources": [
+      {
+        "path": "instrumented-agent-runs/order-exception-codex-v1/summary.json",
+        "exists": true,
+        "bytes": 3541,
+        "sha256": "48b2cb74aae417f9e71f7a1ef0788f6c0d96b85d62b91112de4e748b32331183"
+      },
+      {
+        "path": "prototypes/lab-console/replays/order-exception-codex-v1-verified.json",
+        "exists": true,
+        "bytes": 16598,
+        "sha256": "01e9e9a781ec51b37e5837d3f74adf98ae48867ac764b24392401322b4883a18"
+      },
+      {
+        "path": "prototypes/lab-console/evidence/order-exception-codex-v1/evidence-bundle.json",
+        "exists": true,
+        "bytes": 257180,
+        "sha256": "f79d945d5ab7c8d9313e951ee20b9cb91df673b239f59311d1a69a283395dbad"
+      },
+      {
+        "path": "data/generated/proof/verified-evidence-manifest.json",
+        "exists": true,
+        "bytes": 2636,
+        "sha256": "f7b0c5bda5d342a80f767a351b7a83b0e90a375caad5a9979ce03203ce5f9cb3"
+      }
+    ]
+  },
+  "costModel": {
+    "measuredSeedOnly": true,
+    "assumptions": {
+      "tokenEstimator": "ceil(captured Codex transcript bytes / 4)",
+      "blendedModelCostPerMillionContextTokensUsd": 10,
+      "engineeringReviewRateUsdPerHour": 150,
+      "reviewMinutesPerChangedFile": 3,
+      "reviewMinutesPerRetrySignal": 0.5,
+      "agentTasksPerMonth": 4000
+    },
+    "perTaskDeltaUsd": 5.08869,
+    "monthlyDeltaUsd": 20354.76,
+    "publicLabel": "$20.4k seed-case monthly projection under visible assumptions",
+    "caveat": "Only the seed replay deltas are measured today; V1 aggregate cost waits for the full run set."
+  },
+  "evidenceSources": [
+    {
+      "path": "instrumented-agent-runs/order-exception-codex-v1/summary.json",
+      "sha256": "48b2cb74aae417f9e71f7a1ef0788f6c0d96b85d62b91112de4e748b32331183"
+    },
+    {
+      "path": "prototypes/lab-console/replays/order-exception-codex-v1-verified.json",
+      "sha256": "01e9e9a781ec51b37e5837d3f74adf98ae48867ac764b24392401322b4883a18"
+    },
+    {
+      "path": "prototypes/lab-console/evidence/order-exception-codex-v1/evidence-bundle.json",
+      "sha256": "f79d945d5ab7c8d9313e951ee20b9cb91df673b239f59311d1a69a283395dbad"
+    },
+    {
+      "path": "data/generated/proof/verified-evidence-manifest.json",
+      "sha256": "f7b0c5bda5d342a80f767a351b7a83b0e90a375caad5a9979ce03203ce5f9cb3"
+    }
+  ],
+  "publicBundlePath": "benchmark/public-bundle.json",
+  "caveats": [
+    "Current public data is seed case-study evidence until the 450 required V1 lane runs are captured.",
+    "AST-Bench V1 requires Codex, Claude Code, and Cursor before multi-agent claims are allowed.",
+    "Cost projection separates captured run deltas from user-editable assumptions.",
+    "Mixed metrics remain visible; a MongoDB loss on any metric is not hidden."
+  ]
+}

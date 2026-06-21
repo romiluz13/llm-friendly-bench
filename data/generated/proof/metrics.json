@@ -1,0 +1,46 @@
+{
+  "generatedAt": "2026-06-16T12:00:00.000Z",
+  "mongo": {
+    "contextBytes": 39145,
+    "contextTokens": 9787,
+    "schemaObjects": 14,
+    "accessObjects": 10,
+    "touchedFiles": 6,
+    "touchedFileNames": [
+      "targets/mongodb-app/src/order-exception-workflow.mjs",
+      "targets/mongodb-app/schema/design.json",
+      "data/generated/mongodb/collections.json",
+      "targets/shared/portal-view.mjs",
+      "targets/shared/acceptance.mjs",
+      "prototypes/lab-console/replays/order-exception-codex-v1-candidate.json"
+    ],
+    "evidenceFiles": [
+      "targets/mongodb-app/schema/design.json",
+      "data/generated/mongodb/collections.json",
+      "targets/mongodb-app/src/order-exception-workflow.mjs"
+    ]
+  },
+  "postgres": {
+    "contextBytes": 58813,
+    "contextTokens": 14704,
+    "schemaObjects": 56,
+    "accessObjects": 36,
+    "touchedFiles": 7,
+    "touchedFileNames": [
+      "targets/postgres-app/src/order-exception-workflow.mjs",
+      "targets/postgres-app/schema/design.json",
+      "targets/postgres-app/schema/schema.sql",
+      "data/generated/postgres/tables.json",
+      "targets/shared/portal-view.mjs",
+      "targets/shared/acceptance.mjs",
+      "prototypes/lab-console/replays/order-exception-codex-v1-candidate.json"
+    ],
+    "evidenceFiles": [
+      "targets/postgres-app/schema/design.json",
+      "targets/postgres-app/schema/schema.sql",
+      "data/generated/postgres/tables.json",
+      "targets/postgres-app/src/order-exception-workflow.mjs"
+    ],
+    "ddlBytes": 12446
+  }
+}

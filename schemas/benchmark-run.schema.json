@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mongodb.local/sql-hidden-cost/benchmark-run.schema.json",
+  "title": "AST-Bench Instrumented Run",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "suiteId",
+    "taskId",
+    "agentId",
+    "lane",
+    "repeat",
+    "status",
+    "startedAt",
+    "finishedAt",
+    "artifacts",
+    "metrics",
+    "evidenceSha256"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "suiteId": { "type": "string" },
+    "taskId": { "type": "string" },
+    "agentId": { "type": "string" },
+    "lane": { "enum": ["mongo", "postgres"] },
+    "repeat": { "type": "integer", "minimum": 1 },
+    "status": { "enum": ["prepared", "passed", "failed", "blocked"] },
+    "startedAt": { "type": "string" },
+    "finishedAt": { "type": "string" },
+    "artifacts": { "type": "object" },
+    "metrics": { "type": "object" },
+    "evidenceSha256": { "type": "array" }
+  },
+  "additionalProperties": true
+}

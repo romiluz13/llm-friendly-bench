@@ -1,0 +1,136 @@
+{
+  "benchmark_fixture": {
+    "_id": "ast-bench-v1-legal-hold-workflow",
+    "suiteId": "ast-bench-v1",
+    "taskId": "legal-hold-workflow",
+    "generatedAt": "2026-06-18T12:00:00.000Z"
+  },
+  "accounts": [
+    {
+      "_id": "acct-legal-hold",
+      "name": "Compliance Account 3",
+      "tier": "enterprise",
+      "region": "NA",
+      "contract": {
+        "contractId": "ctr-acct-legal-hold",
+        "renewalDate": "2026-09-30",
+        "arrCents": 7200000,
+        "supportPlan": "platinum"
+      },
+      "contacts": [
+        {
+          "contactId": "ct-acct-legal-hold-ops",
+          "role": "Operations",
+          "email": "ops-acct-legal-hold@example.test"
+        },
+        {
+          "contactId": "ct-acct-legal-hold-finance",
+          "role": "Finance",
+          "email": "finance-acct-legal-hold@example.test"
+        }
+      ],
+      "context": {
+        "healthScore": 68,
+        "usageTrend": "down",
+        "openCases": 2,
+        "invoiceRisk": "medium",
+        "complianceFlags": [
+          "customer-visible-audit"
+        ]
+      }
+    }
+  ],
+  "workflow_requests": [
+    {
+      "_id": "audit-legal-hold-w",
+      "taskId": "legal-hold-workflow",
+      "accountId": "acct-legal-hold",
+      "title": "Legal hold workflow",
+      "primaryEntity": "audit",
+      "businessPrompt": "Build a legal hold workflow that freezes relevant account, order, case, invoice, activity, and audit records while preserving customer-safe operational status.",
+      "expectedOutcome": "Legal hold active with scoped records, legal owner, and immutable audit timeline.",
+      "ownerGroups": [
+        "Compliance",
+        "Legal",
+        "Security",
+        "Operations"
+      ],
+      "riskSignals": [
+        {
+          "name": "legal",
+          "detail": "Legal hold workflow signal 1: legal"
+        },
+        {
+          "name": "hold",
+          "detail": "Legal hold workflow signal 2: hold"
+        },
+        {
+          "name": "workflow",
+          "detail": "Legal hold workflow signal 3: workflow"
+        },
+        {
+          "name": "enterprise account",
+          "detail": "Legal hold workflow signal 4: enterprise account"
+        },
+        {
+          "name": "open customer impact",
+          "detail": "Legal hold workflow signal 5: open customer impact"
+        },
+        {
+          "name": "audit required",
+          "detail": "Legal hold workflow signal 6: audit required"
+        }
+      ],
+      "nextStep": "Compliance owner review by 16:00",
+      "customerMessage": "Legal hold workflow is being handled by Compliance, Legal, Security, Operations."
+    }
+  ],
+  "activities": [
+    {
+      "_id": "act-legal-hold-workflow-1",
+      "accountId": "acct-legal-hold",
+      "subjectId": "audit-legal-hold-w",
+      "summary": "Legal hold workflow signal 1: legal",
+      "occurredAt": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "_id": "act-legal-hold-workflow-2",
+      "accountId": "acct-legal-hold",
+      "subjectId": "audit-legal-hold-w",
+      "summary": "Legal hold workflow signal 2: hold",
+      "occurredAt": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "_id": "act-legal-hold-workflow-3",
+      "accountId": "acct-legal-hold",
+      "subjectId": "audit-legal-hold-w",
+      "summary": "Legal hold workflow signal 3: workflow",
+      "occurredAt": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "_id": "act-legal-hold-workflow-4",
+      "accountId": "acct-legal-hold",
+      "subjectId": "audit-legal-hold-w",
+      "summary": "Legal hold workflow signal 4: enterprise account",
+      "occurredAt": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "_id": "act-legal-hold-workflow-5",
+      "accountId": "acct-legal-hold",
+      "subjectId": "audit-legal-hold-w",
+      "summary": "Legal hold workflow signal 5: open customer impact",
+      "occurredAt": "2026-06-14T10:00:00.000Z"
+    },
+    {
+      "_id": "act-legal-hold-workflow-6",
+      "accountId": "acct-legal-hold",
+      "subjectId": "audit-legal-hold-w",
+      "summary": "Legal hold workflow signal 6: audit required",
+      "occurredAt": "2026-06-15T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0.0",
+  "runId": "order-exception-codex-v1",
+  "generatedAt": "2026-06-17T11:22:16.358Z",
+  "status": "passed",
+  "agent": "Codex",
+  "lanes": {
+    "mongo": {
+      "status": "passed",
+      "cliVersion": "codex-cli 0.130.0",
+      "elapsedMs": 167380,
+      "transcriptBytes": 255152,
+      "estimatedTranscriptTokens": 63788,
+      "diffBytes": 10060,
+      "filesChanged": 1,
+      "changedFiles": [
+        "src/order-exception-workflow.mjs"
+      ],
+      "retrySignals": 24,
+      "testStatus": "passed",
+      "artifacts": {
+        "workspace": "instrumented-agent-runs/order-exception-codex-v1/mongo/workspace",
+        "prompt": "instrumented-agent-runs/order-exception-codex-v1/mongo/prompt.md",
+        "rawTranscript": "instrumented-agent-runs/order-exception-codex-v1/mongo/raw-transcript/codex-events.jsonl",
+        "stderr": "instrumented-agent-runs/order-exception-codex-v1/mongo/raw-transcript/codex-stderr.log",
+        "lastMessage": "instrumented-agent-runs/order-exception-codex-v1/mongo/raw-transcript/codex-last-message.md",
+        "diff": "instrumented-agent-runs/order-exception-codex-v1/mongo/diff.patch",
+        "tests": "instrumented-agent-runs/order-exception-codex-v1/mongo/tests.log",
+        "acceptance": "instrumented-agent-runs/order-exception-codex-v1/mongo/acceptance.json",
+        "screenshot": "instrumented-agent-runs/order-exception-codex-v1/mongo/screenshots/customer-portal-before-after.svg"
+      }
+    },
+    "postgres": {
+      "status": "passed",
+      "cliVersion": "codex-cli 0.130.0",
+      "elapsedMs": 237528,
+      "transcriptBytes": 290626,
+      "estimatedTranscriptTokens": 72657,
+      "diffBytes": 8699,
+      "filesChanged": 1,
+      "changedFiles": [
+        "src/order-exception-workflow.mjs"
+      ],
+      "retrySignals": 28,
+      "testStatus": "passed",
+      "artifacts": {
+        "workspace": "instrumented-agent-runs/order-exception-codex-v1/postgres/workspace",
+        "prompt": "instrumented-agent-runs/order-exception-codex-v1/postgres/prompt.md",
+        "rawTranscript": "instrumented-agent-runs/order-exception-codex-v1/postgres/raw-transcript/codex-events.jsonl",
+        "stderr": "instrumented-agent-runs/order-exception-codex-v1/postgres/raw-transcript/codex-stderr.log",
+        "lastMessage": "instrumented-agent-runs/order-exception-codex-v1/postgres/raw-transcript/codex-last-message.md",
+        "diff": "instrumented-agent-runs/order-exception-codex-v1/postgres/diff.patch",
+        "tests": "instrumented-agent-runs/order-exception-codex-v1/postgres/tests.log",
+        "acceptance": "instrumented-agent-runs/order-exception-codex-v1/postgres/acceptance.json",
+        "screenshot": "instrumented-agent-runs/order-exception-codex-v1/postgres/screenshots/customer-portal-before-after.svg"
+      }
+    }
+  },
+  "deltas": {
+    "estimatedTranscriptTokenDelta": 8869,
+    "transcriptReductionPct": 12,
+    "elapsedMsDelta": 70148,
+    "diffBytesDelta": -1361,
+    "filesChangedDelta": 0,
+    "retrySignalDelta": 4
+  },
+  "costModel": {
+    "assumptions": {
+      "tokenEstimator": "ceil(captured Codex transcript bytes / 4)",
+      "blendedModelCostPerMillionContextTokensUsd": 10,
+      "engineeringReviewRateUsdPerHour": 150,
+      "reviewMinutesPerChangedFile": 3,
+      "reviewMinutesPerRetrySignal": 0.5,
+      "agentTasksPerMonth": 4000
+    },
+    "tokenDelta": 8869,
+    "reviewMinutesDelta": 2,
+    "modelDeltaUsd": 0.08869,
+    "reviewDeltaUsd": 5,
+    "perTaskDeltaUsd": 5.08869,
+    "monthlyDeltaUsd": 20354.76
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "fixtureVersion": "scenario-fixture-v2",
+  "generatedAt": "2026-06-16T12:00:00.000Z",
+  "acceptance": {
+    "status": "passed",
+    "taskOrderId": "HX-20491",
+    "taskAccountId": "acct-nova",
+    "assertions": [
+      "Customer portal title shows active at-risk escalation",
+      "Current status is Executive escalation",
+      "Customer Success, Legal, Finance, and Support are visible owners",
+      "Next step is customer-visible and time-bound",
+      "Risk summary includes shipment, account tier, support, invoice, usage, and regulatory signals",
+      "Four internal owner tasks are created",
+      "Audit history is visible",
+      "MongoDB and Postgres portal projections match"
+    ]
+  },
+  "metrics": {
+    "generatedAt": "2026-06-16T12:00:00.000Z",
+    "mongo": {
+      "contextBytes": 39145,
+      "contextTokens": 9787,
+      "schemaObjects": 14,
+      "accessObjects": 10,
+      "touchedFiles": 6,
+      "touchedFileNames": [
+        "targets/mongodb-app/src/order-exception-workflow.mjs",
+        "targets/mongodb-app/schema/design.json",
+        "data/generated/mongodb/collections.json",
+        "targets/shared/portal-view.mjs",
+        "targets/shared/acceptance.mjs",
+        "prototypes/lab-console/replays/order-exception-codex-v1-candidate.json"
+      ],
+      "evidenceFiles": [
+        "targets/mongodb-app/schema/design.json",
+        "data/generated/mongodb/collections.json",
+        "targets/mongodb-app/src/order-exception-workflow.mjs"
+      ]
+    },
+    "postgres": {
+      "contextBytes": 58813,
+      "contextTokens": 14704,
+      "schemaObjects": 56,
+      "accessObjects": 36,
+      "touchedFiles": 7,
+      "touchedFileNames": [
+        "targets/postgres-app/src/order-exception-workflow.mjs",
+        "targets/postgres-app/schema/design.json",
+        "targets/postgres-app/schema/schema.sql",
+        "data/generated/postgres/tables.json",
+        "targets/shared/portal-view.mjs",
+        "targets/shared/acceptance.mjs",
+        "prototypes/lab-console/replays/order-exception-codex-v1-candidate.json"
+      ],
+      "evidenceFiles": [
+        "targets/postgres-app/schema/design.json",
+        "targets/postgres-app/schema/schema.sql",
+        "data/generated/postgres/tables.json",
+        "targets/postgres-app/src/order-exception-workflow.mjs"
+      ],
+      "ddlBytes": 12446
+    }
+  },
+  "costModel": {
+    "assumptions": {
+      "tokenEstimator": "ceil(utf8 context bytes / 4)",
+      "blendedModelCostPerMillionContextTokensUsd": 10,
+      "engineeringReviewRateUsdPerHour": 150,
+      "reviewMinutesPerExtraAccessObject": 1.25,
+      "reviewMinutesPerExtraSchemaObject": 0.35,
+      "agentTasksPerMonth": 4000
+    },
+    "contextTokenDelta": 4917,
+    "contextReductionPct": 33,
+    "schemaObjectDelta": 42,
+    "accessObjectDelta": 26,
+    "reviewMinutesDelta": 47.2,
+    "modelDeltaUsd": 0.049170000000000005,
+    "reviewDeltaUsd": 118.00000000000001,
+    "perTaskDeltaUsd": 118.04917000000002,
+    "monthlyDeltaUsd": 472196.68000000005
+  },
+  "before": {
+    "mongo": {
+      "orderId": "HX-20491",
+      "accountId": "acct-nova",
+      "accountName": "Nova Retail Group",
+      "caseId": "case-nova-77",
+      "title": "Shipment delayed",
+      "status": "delayed",
+      "owner": "Unassigned",
+      "nextStep": "Contact support",
+      "history": "Not visible",
+      "riskSummary": "Risk not scored",
+      "tasks": "0 owner tasks",
+      "customerMessage": "Contact support"
+    },
+    "postgres": {
+      "orderId": "HX-20491",
+      "accountId": "acct-nova",
+      "accountName": "Nova Retail Group",
+      "caseId": "case-nova-77",
+      "title": "Shipment delayed",
+      "status": "delayed",
+      "owner": "Unassigned",
+      "nextStep": "Contact support",
+      "history": "Not visible",
+      "riskSummary": "Risk not scored",
+      "tasks": "0 owner tasks",
+      "customerMessage": "Contact support"
+    }
+  },
+  "after": {
+    "mongo": {
+      "orderId": "HX-20491",
+      "accountId": "acct-nova",
+      "accountName": "Nova Retail Group",
+      "caseId": "case-nova-77",
+      "title": "At-risk escalation active",
+      "status": "Executive escalation",
+      "owner": "Customer Success + Legal + Finance + Support",
+      "nextStep": "Executive recovery plan by 16:00",
+      "history": "Audit visible",
+      "riskSummary": "6 signals: shipment delay, strategic account, open support case, invoice risk, usage drop, regulatory review",
+      "tasks": "4 owner tasks",
+      "customerMessage": "We are coordinating executive recovery for your delayed shipment."
+    },
+    "postgres": {
+      "orderId": "HX-20491",
+      "accountId": "acct-nova",
+      "accountName": "Nova Retail Group",
+      "caseId": "case-nova-77",
+      "title": "At-risk escalation active",
+      "status": "Executive escalation",
+      "owner": "Customer Success + Legal + Finance + Support",
+      "nextStep": "Executive recovery plan by 16:00",
+      "history": "Audit visible",
+      "riskSummary": "6 signals: shipment delay, strategic account, open support case, invoice risk, usage drop, regulatory review",
+      "tasks": "4 owner tasks",
+      "customerMessage": "We are coordinating executive recovery for your delayed shipment."
+    }
+  }
+}

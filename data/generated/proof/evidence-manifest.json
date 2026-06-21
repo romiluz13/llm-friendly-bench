@@ -1,0 +1,128 @@
+{
+  "artifactId": "order-exception-codex-v1-candidate",
+  "generatedAt": "2026-06-16T12:00:00.000Z",
+  "proofStatus": "candidate",
+  "hashAlgorithm": "sha256",
+  "files": [
+    {
+      "role": "scenario",
+      "path": "scenarios/customer-order-lifecycle/scenario-definition.json",
+      "bytes": 12052,
+      "sha256": "bca1e14cf024f8ab11cb4700b6e1d9b54229b30f91f396489a108496467d0dd0"
+    },
+    {
+      "role": "mongodb-schema-design",
+      "path": "targets/mongodb-app/schema/design.json",
+      "bytes": 5090,
+      "sha256": "d6fb9eb7740b1193f3e0705e613e9a69ad550a9e308ff3a2224d02d0e490ecb7"
+    },
+    {
+      "role": "postgres-schema-design",
+      "path": "targets/postgres-app/schema/design.json",
+      "bytes": 3907,
+      "sha256": "c26e1e31167072a314f2f0a8a7d72c64ba6b731b143791bd8a7cdab8d4330447"
+    },
+    {
+      "role": "postgres-ddl",
+      "path": "targets/postgres-app/schema/schema.sql",
+      "bytes": 12446,
+      "sha256": "d7c084bf6c5cf8fcbe49c248d9db2aece968fd964ea166d0796585d5a7b2d979"
+    },
+    {
+      "role": "mongodb-target-adapter",
+      "path": "targets/mongodb-app/src/order-exception-workflow.mjs",
+      "bytes": 6873,
+      "sha256": "1ae891d571c6420ff97dfd397f6028bb0fcc76875f96bcd6e0e8bd4f4a70e31c"
+    },
+    {
+      "role": "postgres-target-adapter",
+      "path": "targets/postgres-app/src/order-exception-workflow.mjs",
+      "bytes": 8872,
+      "sha256": "3e7f449efd328687709b68663887f10909c3805ea82c79dc88761072450ac889"
+    },
+    {
+      "role": "acceptance-contract",
+      "path": "targets/shared/acceptance.mjs",
+      "bytes": 1963,
+      "sha256": "9026884a2ec191d5fafadc58d7a49560a82b85a575ced34a096bed1f96e6c748"
+    },
+    {
+      "role": "canonical-fixture",
+      "path": "data/generated/scenario-fixture-v2.json",
+      "bytes": 21950,
+      "sha256": "71d74897581036d835c89705cfd6c62298a92c39e50f523af4607243d3cb64b5"
+    },
+    {
+      "role": "mongodb-projection",
+      "path": "data/generated/mongodb/collections.json",
+      "bytes": 25219,
+      "sha256": "002adaac8cefbe52e4e490a68c3ede9492f34c7f1193bf6dd33867a5f123c61a"
+    },
+    {
+      "role": "postgres-projection",
+      "path": "data/generated/postgres/tables.json",
+      "bytes": 31625,
+      "sha256": "21dcfa380ef900914f478b814d2481a5cc05438dbedd70b2d66beac6bf3ce88a"
+    },
+    {
+      "role": "acceptance-evidence",
+      "path": "data/generated/proof/order-exception-acceptance.json",
+      "bytes": 570,
+      "sha256": "04b747738e36aae917c94a9752381541e91a7313b478c730e7b9622044170854"
+    },
+    {
+      "role": "metrics-evidence",
+      "path": "data/generated/proof/metrics.json",
+      "bytes": 1531,
+      "sha256": "53460411854fbcdc448aed3b1e20a990f6b7a8d7d453b1329209c023dc294c9c"
+    },
+    {
+      "role": "cost-model",
+      "path": "data/generated/proof/cost-model.json",
+      "bytes": 609,
+      "sha256": "8240eec4ab3056262c8174b8a9a84d580d742f260a45d1e18fabad5517893922"
+    },
+    {
+      "role": "local-proof",
+      "path": "data/generated/proof/order-exception-local-proof.json",
+      "bytes": 5207,
+      "sha256": "71aa197081aa5286f829d35c8c9594d33e67e69a4ea937d81c836b5ad102b6b0"
+    },
+    {
+      "role": "mongodb-local-db-proof",
+      "path": "data/generated/proof/mongodb-local-db-proof.json",
+      "bytes": 2094,
+      "sha256": "73c73f1489724ded81512f6a699ff072d9604e9a2867c21d29f1ebc48ba32d56"
+    },
+    {
+      "role": "mongodb-seed-script",
+      "path": "data/generated/mongodb/seed.mongo.js",
+      "bytes": 25659,
+      "sha256": "3ee9ad4e935a4bb086fe9c81252a3586554745f0542c0774bce4834b6d039910"
+    },
+    {
+      "role": "mongodb-local-runner",
+      "path": "data/generated/mongodb/run-proof.mongo.js",
+      "bytes": 6906,
+      "sha256": "e7780b175faf23dac27c2c5e88ac3bce0b996bc442745d06da78c092321105dc"
+    },
+    {
+      "role": "postgres-local-db-proof",
+      "path": "data/generated/proof/postgres-local-db-proof.json",
+      "bytes": 2064,
+      "sha256": "2756a6a618a4d8cc5464cd17b57d31d5f65fb7f528902baa7aced5b270fe1599"
+    },
+    {
+      "role": "postgres-seed-sql",
+      "path": "data/generated/postgres/seed.sql",
+      "bytes": 18582,
+      "sha256": "2482cfe900a89d7a54e4bc252fe27b847e3a85a1e463d226384a4b328e1bb914"
+    },
+    {
+      "role": "postgres-local-runner",
+      "path": "data/generated/postgres/run-proof.sql",
+      "bytes": 10568,
+      "sha256": "70d27543d2142299f6deb80a694e782619cb9f7fc59d6363ab99fdb2cc70089b"
+    }
+  ]
+}

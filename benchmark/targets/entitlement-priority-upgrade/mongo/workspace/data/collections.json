@@ -1,0 +1,136 @@
+{
+  "benchmark_fixture": {
+    "_id": "ast-bench-v1-entitlement-priority-upgrade",
+    "suiteId": "ast-bench-v1",
+    "taskId": "entitlement-priority-upgrade",
+    "generatedAt": "2026-06-18T12:00:00.000Z"
+  },
+  "accounts": [
+    {
+      "_id": "acct-entitlemen",
+      "name": "Support Account 4",
+      "tier": "enterprise",
+      "region": "NA",
+      "contract": {
+        "contractId": "ctr-acct-entitlemen",
+        "renewalDate": "2026-09-30",
+        "arrCents": 7200000,
+        "supportPlan": "platinum"
+      },
+      "contacts": [
+        {
+          "contactId": "ct-acct-entitlemen-ops",
+          "role": "Operations",
+          "email": "ops-acct-entitlemen@example.test"
+        },
+        {
+          "contactId": "ct-acct-entitlemen-finance",
+          "role": "Finance",
+          "email": "finance-acct-entitlemen@example.test"
+        }
+      ],
+      "context": {
+        "healthScore": 68,
+        "usageTrend": "down",
+        "openCases": 2,
+        "invoiceRisk": "medium",
+        "complianceFlags": [
+          "customer-visible-audit"
+        ]
+      }
+    }
+  ],
+  "workflow_requests": [
+    {
+      "_id": "case-entitlement-",
+      "taskId": "entitlement-priority-upgrade",
+      "accountId": "acct-entitlemen",
+      "title": "Entitlement-aware priority upgrade",
+      "primaryEntity": "case",
+      "businessPrompt": "Implement priority upgrade logic for a support case based on contract entitlement, account tier, renewal risk, product usage, invoice status, and open order impact.",
+      "expectedOutcome": "Case priority upgraded with entitlement evidence and customer-safe escalation state.",
+      "ownerGroups": [
+        "Support",
+        "Customer Success",
+        "Product",
+        "Operations"
+      ],
+      "riskSignals": [
+        {
+          "name": "entitlement",
+          "detail": "Entitlement-aware priority upgrade signal 1: entitlement"
+        },
+        {
+          "name": "aware",
+          "detail": "Entitlement-aware priority upgrade signal 2: aware"
+        },
+        {
+          "name": "priority",
+          "detail": "Entitlement-aware priority upgrade signal 3: priority"
+        },
+        {
+          "name": "enterprise account",
+          "detail": "Entitlement-aware priority upgrade signal 4: enterprise account"
+        },
+        {
+          "name": "open customer impact",
+          "detail": "Entitlement-aware priority upgrade signal 5: open customer impact"
+        },
+        {
+          "name": "audit required",
+          "detail": "Entitlement-aware priority upgrade signal 6: audit required"
+        }
+      ],
+      "nextStep": "Support owner review by 16:00",
+      "customerMessage": "Entitlement-aware priority upgrade is being handled by Support, Customer Success, Product, Operations."
+    }
+  ],
+  "activities": [
+    {
+      "_id": "act-entitlement-priority-upgrade-1",
+      "accountId": "acct-entitlemen",
+      "subjectId": "case-entitlement-",
+      "summary": "Entitlement-aware priority upgrade signal 1: entitlement",
+      "occurredAt": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "_id": "act-entitlement-priority-upgrade-2",
+      "accountId": "acct-entitlemen",
+      "subjectId": "case-entitlement-",
+      "summary": "Entitlement-aware priority upgrade signal 2: aware",
+      "occurredAt": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "_id": "act-entitlement-priority-upgrade-3",
+      "accountId": "acct-entitlemen",
+      "subjectId": "case-entitlement-",
+      "summary": "Entitlement-aware priority upgrade signal 3: priority",
+      "occurredAt": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "_id": "act-entitlement-priority-upgrade-4",
+      "accountId": "acct-entitlemen",
+      "subjectId": "case-entitlement-",
+      "summary": "Entitlement-aware priority upgrade signal 4: enterprise account",
+      "occurredAt": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "_id": "act-entitlement-priority-upgrade-5",
+      "accountId": "acct-entitlemen",
+      "subjectId": "case-entitlement-",
+      "summary": "Entitlement-aware priority upgrade signal 5: open customer impact",
+      "occurredAt": "2026-06-14T10:00:00.000Z"
+    },
+    {
+      "_id": "act-entitlement-priority-upgrade-6",
+      "accountId": "acct-entitlemen",
+      "subjectId": "case-entitlement-",
+      "summary": "Entitlement-aware priority upgrade signal 6: audit required",
+      "occurredAt": "2026-06-15T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

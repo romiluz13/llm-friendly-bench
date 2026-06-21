@@ -1,0 +1,10 @@
+{
+  "name": "ast-bench-collections-promise-to-pay-audit-postgres",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/acceptance.test.mjs",
+    "render": "node src/render-proof.mjs"
+  }
+}

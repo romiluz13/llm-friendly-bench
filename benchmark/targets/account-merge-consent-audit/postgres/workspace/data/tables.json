@@ -1,0 +1,161 @@
+{
+  "benchmark_fixture": [
+    {
+      "fixture_version": "ast-bench-v1-account-merge-consent-audit",
+      "suite_id": "ast-bench-v1",
+      "task_id": "account-merge-consent-audit",
+      "generated_at": "2026-06-18T12:00:00.000Z"
+    }
+  ],
+  "accounts": [
+    {
+      "account_id": "acct-account-me",
+      "name": "Customer 360 Account 3",
+      "tier": "enterprise",
+      "region": "NA"
+    }
+  ],
+  "account_contracts": [
+    {
+      "contract_id": "ctr-acct-account-me",
+      "account_id": "acct-account-me",
+      "renewal_date": "2026-09-30",
+      "arr_cents": 7200000,
+      "support_plan": "platinum"
+    }
+  ],
+  "contacts": [
+    {
+      "contact_id": "ct-acct-account-me-ops",
+      "account_id": "acct-account-me",
+      "role": "Operations",
+      "email": "ops-acct-account-me@example.test"
+    },
+    {
+      "contact_id": "ct-acct-account-me-finance",
+      "account_id": "acct-account-me",
+      "role": "Finance",
+      "email": "finance-acct-account-me@example.test"
+    }
+  ],
+  "workflow_requests": [
+    {
+      "request_id": "account-account-merg",
+      "task_id": "account-merge-consent-audit",
+      "account_id": "acct-account-me",
+      "title": "Account merge with consent audit",
+      "primary_entity": "account",
+      "expected_outcome": "Merge review ready with consent-safe contact plan, linked records, and audit export.",
+      "next_step": "Customer Success owner review by 16:00",
+      "customer_message": "Account merge with consent audit is being handled by Customer Success, Support, Finance, Executive Sponsor."
+    }
+  ],
+  "workflow_request_owner_groups": [
+    {
+      "request_id": "account-account-merg",
+      "owner_group": "Customer Success",
+      "group_order": 1
+    },
+    {
+      "request_id": "account-account-merg",
+      "owner_group": "Support",
+      "group_order": 2
+    },
+    {
+      "request_id": "account-account-merg",
+      "owner_group": "Finance",
+      "group_order": 3
+    },
+    {
+      "request_id": "account-account-merg",
+      "owner_group": "Executive Sponsor",
+      "group_order": 4
+    }
+  ],
+  "workflow_request_risk_signals": [
+    {
+      "request_id": "account-account-merg",
+      "signal_name": "account",
+      "detail": "Account merge with consent audit signal 1: account",
+      "signal_order": 1
+    },
+    {
+      "request_id": "account-account-merg",
+      "signal_name": "merge",
+      "detail": "Account merge with consent audit signal 2: merge",
+      "signal_order": 2
+    },
+    {
+      "request_id": "account-account-merg",
+      "signal_name": "with",
+      "detail": "Account merge with consent audit signal 3: with",
+      "signal_order": 3
+    },
+    {
+      "request_id": "account-account-merg",
+      "signal_name": "enterprise account",
+      "detail": "Account merge with consent audit signal 4: enterprise account",
+      "signal_order": 4
+    },
+    {
+      "request_id": "account-account-merg",
+      "signal_name": "open customer impact",
+      "detail": "Account merge with consent audit signal 5: open customer impact",
+      "signal_order": 5
+    },
+    {
+      "request_id": "account-account-merg",
+      "signal_name": "audit required",
+      "detail": "Account merge with consent audit signal 6: audit required",
+      "signal_order": 6
+    }
+  ],
+  "activities": [
+    {
+      "activity_id": "act-account-merge-consent-audit-1",
+      "account_id": "acct-account-me",
+      "subject_id": "account-account-merg",
+      "summary": "Account merge with consent audit signal 1: account",
+      "occurred_at": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-account-merge-consent-audit-2",
+      "account_id": "acct-account-me",
+      "subject_id": "account-account-merg",
+      "summary": "Account merge with consent audit signal 2: merge",
+      "occurred_at": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-account-merge-consent-audit-3",
+      "account_id": "acct-account-me",
+      "subject_id": "account-account-merg",
+      "summary": "Account merge with consent audit signal 3: with",
+      "occurred_at": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-account-merge-consent-audit-4",
+      "account_id": "acct-account-me",
+      "subject_id": "account-account-merg",
+      "summary": "Account merge with consent audit signal 4: enterprise account",
+      "occurred_at": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-account-merge-consent-audit-5",
+      "account_id": "acct-account-me",
+      "subject_id": "account-account-merg",
+      "summary": "Account merge with consent audit signal 5: open customer impact",
+      "occurred_at": "2026-06-14T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-account-merge-consent-audit-6",
+      "account_id": "acct-account-me",
+      "subject_id": "account-account-merg",
+      "summary": "Account merge with consent audit signal 6: audit required",
+      "occurred_at": "2026-06-15T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

@@ -1,0 +1,134 @@
+{
+  "database": "mongodb",
+  "designStatus": "database-native customer-360 escalation candidate",
+  "principles": [
+    "Model around the Customer 360 Escalation access pattern, not around relational entity parity.",
+    "Store hot account, contract, billing, usage, team, and support summaries together because the escalation workflow reads them together.",
+    "Keep unbounded audit events, support case streams, usage snapshots, invoices, and work items in separate collections.",
+    "Use bounded embedded arrays for contacts, account team, line items, status history, and current escalation owners."
+  ],
+  "collections": [
+    {
+      "name": "accounts",
+      "role": "Customer 360 aggregate",
+      "accessPattern": "Escalation detection, CRM view, account detail, portal context",
+      "embedded": ["contacts", "contract", "health", "accountTeam", "billingSummary", "usageSummary", "supportSummary", "complianceSummary", "currentEscalation", "taskSummary"],
+      "references": []
+    },
+    {
+      "name": "orders",
+      "role": "Customer order aggregate",
+      "accessPattern": "Shipment status, order detail, customer portal, escalation subject",
+      "embedded": ["lineItems", "fulfillment", "payment", "riskContext", "exception", "statusHistory"],
+      "references": ["accountId", "contactId", "productId"]
+    },
+    {
+      "name": "products",
+      "role": "Product catalog lookup",
+      "accessPattern": "Line item enrichment and regulated-product checks",
+      "embedded": ["price", "category", "complianceTags"],
+      "references": []
+    },
+    {
+      "name": "support_cases",
+      "role": "Customer support case stream",
+      "accessPattern": "Open case signals and support context",
+      "embedded": ["latestComment", "priority", "status", "customerNeed"],
+      "references": ["accountId", "orderId"]
+    },
+    {
+      "name": "invoice_snapshots",
+      "role": "Billing and payment risk snapshots",
+      "accessPattern": "Escalation risk detection and finance task context",
+      "embedded": ["status", "risk", "amountCents", "dueAt"],
+      "references": ["accountId", "orderId"]
+    },
+    {
+      "name": "usage_snapshots",
+      "role": "Recent product usage signal",
+      "accessPattern": "Usage-drop detection and customer health context",
+      "embedded": ["activeUsers7d", "activeUsersPrevious7d", "criticalWorkflows", "failedSyncs24h", "trend"],
+      "references": ["accountId"]
+    },
+    {
+      "name": "compliance_reviews",
+      "role": "Regulatory and legal review stream",
+      "accessPattern": "Regulatory signal checks and legal task context",
+      "embedded": ["status", "flags", "openedAt"],
+      "references": ["accountId", "orderId"]
+    },
+    {
+      "name": "customer_escalations",
+      "role": "Escalation case stream",
+      "accessPattern": "Operations queue and escalation history",
+      "embedded": ["ownerGroups", "riskFactors", "customerMessage", "nextStep"],
+      "references": ["accountId", "orderId"]
+    },
+    {
+      "name": "work_items",
+      "role": "Internal owner tasks",
+      "accessPattern": "Task queue and owner accountability",
+      "embedded": ["ownerGroup", "title", "status", "dueAt"],
+      "references": ["accountId", "orderId", "escalationId"]
+    },
+    {
+      "name": "audit_events",
+      "role": "Append-only audit trail",
+      "accessPattern": "Compliance proof and portal-safe timeline",
+      "embedded": ["subject", "actor", "action", "diff", "customerVisible"],
+      "references": ["accountId", "orderId", "escalationId"]
+    },
+    {
+      "name": "escalation_policies",
+      "role": "Routing policy document",
+      "accessPattern": "Escalation owner and customer-safe status decision",
+      "embedded": ["requiredSignals", "ownerGroups", "customerVisibleTitle", "nextStep"],
+      "references": []
+    },
+    {
+      "name": "sla_policies",
+      "role": "Customer promise policy",
+      "accessPattern": "Next-step and escalation deadline calculation",
+      "embedded": ["tiers", "regions", "responseWindows"],
+      "references": []
+    },
+    {
+      "name": "activities",
+      "role": "CRM activity timeline",
+      "accessPattern": "Account and case history",
+      "embedded": ["participants", "summary", "nextAction"],
+      "references": ["accountId", "contactId", "caseId", "orderId"]
+    },
+    {
+      "name": "inventory_snapshots",
+      "role": "Fulfillment context",
+      "accessPattern": "Operations queue and shipment diagnostics",
+      "embedded": ["locations", "reservationSummary"],
+      "references": ["productId"]
+    }
+  ],
+  "customer360EscalationAccessPath": [
+    "accounts",
+    "orders",
+    "support_cases",
+    "invoice_snapshots",
+    "usage_snapshots",
+    "compliance_reviews",
+    "escalation_policies",
+    "customer_escalations",
+    "work_items",
+    "audit_events"
+  ],
+  "orderExceptionAccessPath": [
+    "accounts",
+    "orders",
+    "support_cases",
+    "invoice_snapshots",
+    "usage_snapshots",
+    "compliance_reviews",
+    "escalation_policies",
+    "customer_escalations",
+    "work_items",
+    "audit_events"
+  ]
+}

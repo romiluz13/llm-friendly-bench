@@ -1,0 +1,96 @@
+import { buildPortalView } from "./portal-view.mjs";
+
+export function applyBenchmarkTask(db, now) {
+  globalThis.db = db;
+
+  const request = db.workflow_requests[0];
+  const account = db.accounts.find((item) => item._id === request.accountId);
+  const activities = db.activities.filter((item) => item.subjectId === request._id);
+  const status = request.expectedOutcome;
+  const riskSignals = request.riskSignals.map((signal) => {
+    const activity = activities.find((item) => item.summary === signal.detail);
+    return {
+      name: signal.name,
+      detail: signal.detail,
+      sourceActivityId: activity?._id,
+      observedAt: activity?.occurredAt
+    };
+  });
+
+  const workspaceContext = {
+    account: {
+      accountId: account._id,
+      name: account.name,
+      tier: account.tier,
+      region: account.region
+    },
+    contacts: account.contacts,
+    contractRenewal: account.contract,
+    support: {
+      supportPlan: account.contract.supportPlan,
+      openCases: account.context.openCases
+    },
+    invoice: {
+      invoiceRisk: account.context.invoiceRisk
+    },
+    productUsage: {
+      healthScore: account.context.healthScore,
+      usageTrend: account.context.usageTrend
+    },
+    audit: {
+      required: account.context.complianceFlags.includes("customer-visible-audit"),
+      activityIds: activities.map((item) => item._id)
+    }
+  };
+
+  db.workflow_state = db.workflow_state.filter((item) => item.requestId !== request._id);
+  db.workflow_state.push({
+    _id: `state-${request._id}`,
+    requestId: request._id,
+    accountId: request.accountId,
+    title: request.title,
+    status,
+    nextStep: request.nextStep,
+    riskSignals,
+    workspaceContext,
+    updatedAt: now
+  });
+
+  db.owner_tasks = db.owner_tasks.filter((item) => item.requestId !== request._id);
+  db.owner_tasks.push(...request.ownerGroups.map((ownerGroup, index) => ({
+    _id: `owner-task-${request._id}-${index + 1}`,
+    requestId: request._id,
+    accountId: request.accountId,
+    ownerGroup,
+    title: `${ownerGroup} renewal-risk review`,
+    status: "open",
+    dueAt: `${now.slice(0, 10)}T16:00:00.000Z`,
+    createdAt: now
+  })));
+
+  db.customer_messages = db.customer_messages.filter((item) => item.requestId !== request._id);
+  db.customer_messages.push({
+    _id: `message-${request._id}`,
+    requestId: request._id,
+    accountId: request.accountId,
+    body: request.customerMessage,
+    nextStep: request.nextStep,
+    customerSafe: true,
+    createdAt: now
+  });
+
+  db.audit_events = db.audit_events.filter((item) => item.requestId !== request._id);
+  db.audit_events.push({
+    _id: `audit-${request._id}`,
+    requestId: request._id,
+    accountId: request.accountId,
+    eventType: "renewal-risk-workspace-activated",
+    customerVisible: true,
+    occurredAt: now,
+    summary: status,
+    riskSignalNames: riskSignals.map((item) => item.name),
+    ownerGroups: request.ownerGroups
+  });
+
+  return buildPortalView(db);
+}

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0.0",
+  "runId": "order-exception-codex-v1",
+  "lane": "mongo",
+  "agent": {
+    "name": "Codex",
+    "cliVersion": "codex-cli 0.130.0",
+    "mode": "codex exec",
+    "model": "default Codex CLI profile"
+  },
+  "scenario": {
+    "fixtureVersion": "scenario-fixture-v2",
+    "orderId": "HX-20491",
+    "accountId": "acct-nova",
+    "taskPrompt": "You are running an Instrumented Agent Run for MongoDB's Interactive Proof Lab.\n\nTask:\nImplement the at-risk Customer 360 Escalation Workflow for order HX-20491 / account acct-nova.\n\nBusiness request:\nDetect a delayed high-value order for a strategic account, combine CRM context, open support cases, invoice/payment risk, contract tier, recent product usage, shipment status, regulatory flags, and audit history. Route the account to Customer Success, Legal, Finance, and Support, show the customer-safe status in the portal, create internal owner tasks, and preserve a full audit timeline.\n\nAcceptance:\n- The customer portal title is \"At-risk escalation active\".\n- Current status is \"Executive escalation\".\n- Visible owner is \"Customer Success + Legal + Finance + Support\".\n- Next step is \"Executive recovery plan by 16:00\".\n- Risk summary is \"6 signals: shipment delay, strategic account, open support case, invoice risk, usage drop, regulatory review\".\n- Tasks is \"4 owner tasks\".\n- Audit history is visible.\n- Customer message is \"We are coordinating executive recovery for your delayed shipment.\"\n- Persist the escalation state, all six risk factors with detail, four owner tasks with account/order/title/due context, customer portal message, and audit linkage.\n- Run npm test and make it pass.\n\nRules:\n- Do not change tests.\n- Do not change generated fixture data.\n- Keep the MongoDB document-shaped model native.\n- Make the smallest production-style code change needed.\n"
+  },
+  "status": "passed",
+  "startedAt": "2026-06-17T11:15:31.099Z",
+  "finishedAt": "2026-06-17T11:18:17.941Z",
+  "artifacts": {
+    "workspace": "instrumented-agent-runs/order-exception-codex-v1/mongo/workspace",
+    "prompt": "instrumented-agent-runs/order-exception-codex-v1/mongo/prompt.md",
+    "rawTranscript": "instrumented-agent-runs/order-exception-codex-v1/mongo/raw-transcript/codex-events.jsonl",
+    "stderr": "instrumented-agent-runs/order-exception-codex-v1/mongo/raw-transcript/codex-stderr.log",
+    "lastMessage": "instrumented-agent-runs/order-exception-codex-v1/mongo/raw-transcript/codex-last-message.md",
+    "diff": "instrumented-agent-runs/order-exception-codex-v1/mongo/diff.patch",
+    "tests": "instrumented-agent-runs/order-exception-codex-v1/mongo/tests.log",
+    "acceptance": "instrumented-agent-runs/order-exception-codex-v1/mongo/acceptance.json",
+    "screenshot": "instrumented-agent-runs/order-exception-codex-v1/mongo/screenshots/customer-portal-before-after.svg"
+  },
+  "metrics": {
+    "elapsedMs": 167380,
+    "transcriptBytes": 255152,
+    "estimatedTranscriptTokens": 63788,
+    "diffBytes": 10060,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/order-exception-workflow.mjs"
+    ],
+    "testStatus": "passed",
+    "retrySignals": 24,
+    "codexExitCode": 0,
+    "testsExitCode": 0,
+    "evidenceSha256": [
+      {
+        "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/raw-transcript/codex-events.jsonl",
+        "sha256": "dd42f61aff6436e042c315c0765a4b395b1bc5941af613f89ba2c3235ccb7334"
+      },
+      {
+        "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/raw-transcript/codex-stderr.log",
+        "sha256": "7a8e9292f9871b4ebbd72700f51975525e1a6ac396c9834d7f4af8860e5ff4fb"
+      },
+      {
+        "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/diff.patch",
+        "sha256": "dd5c7444429b241762ea743914aa7b97e25b112c5afa732a2268397e2d4e3831"
+      },
+      {
+        "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/tests.log",
+        "sha256": "1fa33afb99bd55f763dc8f89ae3ed5aa48a226a18de201cfd82b37d7f7631e7e"
+      },
+      {
+        "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/acceptance.json",
+        "sha256": "fd23907c97a9593b082a8d5b5e8ae7ea723a34510f594ee8495c60503229068d"
+      },
+      {
+        "path": "instrumented-agent-runs/order-exception-codex-v1/mongo/screenshots/customer-portal-before-after.svg",
+        "sha256": "f75357e501944520a5777046317dda0ffa8cfa3e954a5e3b120e79acd2f8e362"
+      }
+    ]
+  }
+}

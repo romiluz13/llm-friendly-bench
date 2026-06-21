@@ -1,0 +1,483 @@
+{
+  "schemaVersion": "0.3.0",
+  "artifactId": "order-exception-codex-v1-verified",
+  "proofStatus": "verified",
+  "scenario": {
+    "name": "Customer 360 Escalation",
+    "variant": "Strategic Account Rescue",
+    "fixtureVersion": "scenario-fixture-v2"
+  },
+  "task": {
+    "headline": "Same enterprise escalation. Same Codex. Same acceptance test. Different schema tax.",
+    "request": "Add an at-risk customer escalation workflow. Detect a delayed high-value order for a strategic account, combine CRM context, open support cases, invoice/payment risk, contract tier, recent product usage, shipment status, regulatory flags, and audit history. Route the account to Customer Success, Legal, Finance, and Support, show the customer-safe status in the portal, create internal owner tasks, and preserve a full audit timeline."
+  },
+  "agent": {
+    "name": "Codex",
+    "model": "codex-cli 0.130.0",
+    "constraint": "Codex held constant across MongoDB and Postgres instrumented runs"
+  },
+  "fairnessContract": [
+    "Same customer request",
+    "Same canonical scenario dataset",
+    "Same acceptance assertions",
+    "Database-native projections generated from one scenario dataset",
+    "Codex held constant",
+    "Failed attempts and command failures counted",
+    "No hand edits after the accepted agent run",
+    "No unverified runtime data in the verified replay"
+  ],
+  "outcome": {
+    "orderId": "HX-20491",
+    "statusPill": "VERIFIED / Codex instrumented runs",
+    "before": {
+      "title": "Shipment delayed",
+      "rows": [
+        {
+          "label": "Status",
+          "value": "delayed",
+          "tone": "warn"
+        },
+        {
+          "label": "Owner",
+          "value": "Unassigned"
+        },
+        {
+          "label": "Next step",
+          "value": "Contact support"
+        },
+        {
+          "label": "History",
+          "value": "Not visible"
+        },
+        {
+          "label": "Risk",
+          "value": "Risk not scored"
+        },
+        {
+          "label": "Tasks",
+          "value": "0 owner tasks"
+        }
+      ]
+    },
+    "after": {
+      "title": "At-risk escalation active",
+      "rows": [
+        {
+          "label": "Status",
+          "value": "Executive escalation",
+          "tone": "warn"
+        },
+        {
+          "label": "Owner",
+          "value": "Customer Success + Legal + Finance + Support"
+        },
+        {
+          "label": "Next step",
+          "value": "Executive recovery plan by 16:00"
+        },
+        {
+          "label": "History",
+          "value": "Audit visible",
+          "tone": "good"
+        },
+        {
+          "label": "Risk",
+          "value": "6 signals: shipment delay, strategic account, open support case, invoice risk, usage drop, regulatory review",
+          "tone": "good"
+        },
+        {
+          "label": "Tasks",
+          "value": "4 owner tasks",
+          "tone": "good"
+        }
+      ]
+    }
+  },
+  "verdict": [
+    {
+      "label": "Transcript estimate",
+      "value": "8,869 tokens"
+    },
+    {
+      "label": "Files changed",
+      "value": "0 fewer"
+    },
+    {
+      "label": "Review model",
+      "value": "2m saved"
+    },
+    {
+      "label": "Monthly estimate",
+      "value": "$20.4k"
+    }
+  ],
+  "lanes": [
+    {
+      "id": "mongo",
+      "name": "MongoDB",
+      "model": "Document model / customer 360 aggregate",
+      "score": 72,
+      "meters": [
+        {
+          "label": "Transcript est.",
+          "value": "63,788",
+          "width": 88
+        },
+        {
+          "label": "Elapsed",
+          "value": "167s",
+          "width": 70
+        },
+        {
+          "label": "Diff bytes",
+          "value": "10,060",
+          "width": 100
+        },
+        {
+          "label": "Files",
+          "value": "1",
+          "width": 100
+        }
+      ],
+      "schemaNodes": [
+        {
+          "name": "design.json",
+          "primary": true
+        },
+        {
+          "name": "collections.json",
+          "primary": true
+        },
+        {
+          "name": "order-exception-workflow.mjs",
+          "primary": false
+        }
+      ],
+      "events": [
+        {
+          "time": "00:00",
+          "title": "Codex run started",
+          "description": "The same Customer 360 Escalation prompt was used for this lane.",
+          "tag": "trace",
+          "active": true
+        },
+        {
+          "time": "TRACE",
+          "title": "Raw transcript captured",
+          "description": "instrumented-agent-runs/order-exception-codex-v1/mongo/raw-transcript/codex-events.jsonl",
+          "tag": "evidence",
+          "active": false
+        },
+        {
+          "time": "DIFF",
+          "title": "Code diff captured",
+          "description": "instrumented-agent-runs/order-exception-codex-v1/mongo/diff.patch",
+          "tag": "diff",
+          "active": false
+        },
+        {
+          "time": "GREEN",
+          "title": "Acceptance passed",
+          "description": "instrumented-agent-runs/order-exception-codex-v1/mongo/tests.log",
+          "tag": "green",
+          "active": false
+        }
+      ]
+    },
+    {
+      "id": "pg",
+      "name": "Postgres",
+      "model": "Clean normalized customer-360 relational baseline",
+      "score": 69,
+      "meters": [
+        {
+          "label": "Transcript est.",
+          "value": "72,657",
+          "width": 100
+        },
+        {
+          "label": "Elapsed",
+          "value": "238s",
+          "width": 100
+        },
+        {
+          "label": "Diff bytes",
+          "value": "8,699",
+          "width": 86
+        },
+        {
+          "label": "Files",
+          "value": "1",
+          "width": 100
+        }
+      ],
+      "schemaNodes": [
+        {
+          "name": "design.json",
+          "primary": true
+        },
+        {
+          "name": "schema.sql",
+          "primary": true
+        },
+        {
+          "name": "tables.json",
+          "primary": false
+        },
+        {
+          "name": "order-exception-workflow.mjs",
+          "primary": false
+        }
+      ],
+      "events": [
+        {
+          "time": "00:00",
+          "title": "Codex run started",
+          "description": "The same Customer 360 Escalation prompt was used for this lane.",
+          "tag": "trace",
+          "active": true
+        },
+        {
+          "time": "TRACE",
+          "title": "Raw transcript captured",
+          "description": "instrumented-agent-runs/order-exception-codex-v1/postgres/raw-transcript/codex-events.jsonl",
+          "tag": "evidence",
+          "active": false
+        },
+        {
+          "time": "DIFF",
+          "title": "Code diff captured",
+          "description": "instrumented-agent-runs/order-exception-codex-v1/postgres/diff.patch",
+          "tag": "diff",
+          "active": false
+        },
+        {
+          "time": "GREEN",
+          "title": "Acceptance passed",
+          "description": "instrumented-agent-runs/order-exception-codex-v1/postgres/tests.log",
+          "tag": "green",
+          "active": false
+        }
+      ]
+    }
+  ],
+  "scorecard": [
+    {
+      "label": "Context cost",
+      "value": "Transcript delta 12% est."
+    },
+    {
+      "label": "Shipping efficiency",
+      "value": "Both Codex runs pass acceptance"
+    },
+    {
+      "label": "Review burden",
+      "value": "0 fewer changed files"
+    },
+    {
+      "label": "Human babysitting",
+      "value": "4 fewer retry signals"
+    },
+    {
+      "label": "Governance and safety",
+      "value": "Hash-locked evidence manifest"
+    }
+  ],
+  "costProjection": {
+    "assumptions": "Verified Codex model: 4,000 agent tasks/month, $150/hour review, $10/1M estimated transcript tokens.",
+    "figures": [
+      {
+        "label": "Per task",
+        "value": "$5.09"
+      },
+      {
+        "label": "Monthly",
+        "value": "$20.4k"
+      }
+    ]
+  },
+  "proofPacket": {
+    "summary": "Verified Codex replay: both database-native target apps were changed through instrumented Codex runs, passed the same acceptance contract, and preserve raw trace, diff, tests, rendered workflow state, local DB proof, and design-review evidence.",
+    "items": [
+      {
+        "label": "Fairness Contract",
+        "value": "Verified"
+      },
+      {
+        "label": "Independent Design Review",
+        "value": "Captured"
+      },
+      {
+        "label": "MongoDB local DB replay",
+        "value": "Captured"
+      },
+      {
+        "label": "Postgres local DB replay",
+        "value": "Captured"
+      },
+      {
+        "label": "Codex raw trace + diffs",
+        "value": "Captured"
+      },
+      {
+        "label": "Acceptance tests",
+        "value": "Captured"
+      },
+      {
+        "label": "Rendered workflow state",
+        "value": "Captured"
+      },
+      {
+        "label": "Runtime data contract",
+        "value": "Verified"
+      }
+    ]
+  },
+  "caseFile": {
+    "fairnessControls": [
+      {
+        "label": "Task prompt",
+        "value": "Add an at-risk customer escalation workflow. Detect a delayed high-value order for a strategic account, combine CRM context, open support cases, invoice/payment risk, contract tier, recent product usage, shipment status, regulatory flags, and audit history. Route the account to Customer Success, Legal, Finance, and Support, show the customer-safe status in the portal, create internal owner tasks, and preserve a full audit timeline.",
+        "status": "verified"
+      },
+      {
+        "label": "Scenario dataset",
+        "value": "scenario-fixture-v2",
+        "status": "verified"
+      },
+      {
+        "label": "Acceptance contract",
+        "value": "Same customer-visible assertions for both targets",
+        "status": "verified"
+      },
+      {
+        "label": "Database-native models",
+        "value": "MongoDB document aggregate and clean normalized Postgres baseline",
+        "status": "verified"
+      },
+      {
+        "label": "Captured Codex attempts",
+        "value": "order-exception-codex-v1",
+        "status": "captured"
+      },
+      {
+        "label": "Runtime data",
+        "value": "Captured from local MongoDB, local Postgres, Codex traces, diffs, tests, and rendered workflow state",
+        "status": "verified"
+      }
+    ],
+    "designReview": {
+      "status": "captured",
+      "reviewer": "Rubric-based Independent Design Review for Seller V1",
+      "mongoRationale": "The MongoDB target models the account as the Customer 360 aggregate for the hot escalation path: contacts, contract, health, account team, billing summary, usage summary, support summary, compliance summary, current escalation, and task summary are co-located because the workflow reads them together. The order remains an aggregate for line items, fulfillment, payment, and bounded status history. Unbounded streams such as support cases, invoices, usage snapshots, work items, customer escalations, and audit events remain separate collections. This follows MongoDB access-pattern modeling without recreating relational table boundaries.",
+      "postgresRationale": "The Postgres target uses a credible normalized relational baseline with explicit tables and foreign keys for account tiers, accounts, contacts, contracts, team members, risk flags, health factors, products, orders, shipments, support cases, invoices, payment risk events, usage snapshots, compliance reviews, escalation policies, escalation cases, risk factors, owner tasks, task assignments, portal messages, legal and finance requests, status history, audit events, SLA, inventory, renewals, and notification outbox. This is a normal relational customer-360 design, not an intentionally weakened schema.",
+      "tradeoff": "The comparison is database-native rather than schema-identical. Identical schemas would be less fair because they would punish one database for the other's natural shape. The proof therefore compares the same customer request, same fixture, same acceptance contract, and same outcome while allowing each target to use its idiomatic data model."
+    },
+    "evidenceLedger": [
+      {
+        "claim": "Captured Codex trace, inspected files, retries, token estimates, and code diffs",
+        "source": "instrumented-agent-runs/order-exception-codex-v1/summary.json",
+        "status": "captured"
+      },
+      {
+        "claim": "MongoDB Codex raw transcript",
+        "source": "instrumented-agent-runs/order-exception-codex-v1/mongo/raw-transcript/codex-events.jsonl",
+        "status": "captured"
+      },
+      {
+        "claim": "Postgres Codex raw transcript",
+        "source": "instrumented-agent-runs/order-exception-codex-v1/postgres/raw-transcript/codex-events.jsonl",
+        "status": "captured"
+      },
+      {
+        "claim": "MongoDB code diff",
+        "source": "instrumented-agent-runs/order-exception-codex-v1/mongo/diff.patch",
+        "status": "captured"
+      },
+      {
+        "claim": "Postgres code diff",
+        "source": "instrumented-agent-runs/order-exception-codex-v1/postgres/diff.patch",
+        "status": "captured"
+      },
+      {
+        "claim": "MongoDB acceptance tests",
+        "source": "instrumented-agent-runs/order-exception-codex-v1/mongo/tests.log",
+        "status": "captured"
+      },
+      {
+        "claim": "Postgres acceptance tests",
+        "source": "instrumented-agent-runs/order-exception-codex-v1/postgres/tests.log",
+        "status": "captured"
+      },
+      {
+        "claim": "MongoDB rendered workflow state",
+        "source": "instrumented-agent-runs/order-exception-codex-v1/mongo/screenshots/customer-portal-before-after.svg",
+        "status": "captured"
+      },
+      {
+        "claim": "Postgres rendered workflow state",
+        "source": "instrumented-agent-runs/order-exception-codex-v1/postgres/screenshots/customer-portal-before-after.svg",
+        "status": "captured"
+      },
+      {
+        "claim": "Independent design review by MongoDB and Postgres rubric",
+        "source": "design-review/order-exception-v1.json",
+        "status": "captured"
+      },
+      {
+        "claim": "MongoDB local database seed and workflow replay",
+        "source": "data/generated/proof/mongodb-local-db-proof.json",
+        "status": "captured"
+      },
+      {
+        "claim": "Postgres local database seed and workflow replay",
+        "source": "data/generated/proof/postgres-local-db-proof.json",
+        "status": "captured"
+      },
+      {
+        "claim": "Evidence manifest locks verified source files with SHA-256",
+        "source": "data/generated/proof/verified-evidence-manifest.json",
+        "status": "captured"
+      }
+    ]
+  },
+  "caveat": "Verified for one Codex run pair using generated Customer 360 Escalation records seeded into real local MongoDB and Postgres services. Claude Code, Cursor, and Enterprise SQL Sprawl are future validation lanes and are not claimed by this replay.",
+  "dataContract": {
+    "label": "Verified Runtime Data",
+    "mode": "verified-local-services-and-instrumented-agent-runs",
+    "mockDataAllowed": false,
+    "sourceOfTruth": "Captured Codex traces, git diffs, test logs, rendered workflow state, and local database proof files",
+    "runtimeSources": [
+      {
+        "label": "MongoDB local service",
+        "detail": "mongodb://127.0.0.1:27018/sql_hidden_cost; 41 generated records across 14 collections; 47 records after replay",
+        "source": "data/generated/proof/mongodb-local-db-proof.json",
+        "status": "verified"
+      },
+      {
+        "label": "Postgres local service",
+        "detail": "sql-hidden-cost-postgres/sql_hidden_cost on 127.0.0.1:5433; 189 generated rows across 56 tables; 32 proof-result rows after replay",
+        "source": "data/generated/proof/postgres-local-db-proof.json",
+        "status": "verified"
+      },
+      {
+        "label": "MongoDB Codex trace",
+        "detail": "63,788 estimated transcript tokens; 10,060 diff bytes",
+        "source": "instrumented-agent-runs/order-exception-codex-v1/mongo/raw-transcript/codex-events.jsonl",
+        "status": "captured"
+      },
+      {
+        "label": "Postgres Codex trace",
+        "detail": "72,657 estimated transcript tokens; 8,699 diff bytes",
+        "source": "instrumented-agent-runs/order-exception-codex-v1/postgres/raw-transcript/codex-events.jsonl",
+        "status": "captured"
+      },
+      {
+        "label": "Hash-locked evidence manifest",
+        "detail": "Every promoted source file is SHA-256 locked at promotion time",
+        "source": "data/generated/proof/verified-evidence-manifest.json",
+        "status": "captured"
+      }
+    ]
+  }
+}

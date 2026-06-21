@@ -1,0 +1,125 @@
+{
+  "benchmark_fixture": {
+    "_id": "ast-bench-v1-return-rma-timeline",
+    "suiteId": "ast-bench-v1",
+    "taskId": "return-rma-timeline",
+    "generatedAt": "2026-06-18T12:00:00.000Z"
+  },
+  "accounts": [
+    {
+      "_id": "acct-return-rma",
+      "name": "Order Account 5",
+      "tier": "enterprise",
+      "region": "NA",
+      "contract": {
+        "contractId": "ctr-acct-return-rma",
+        "renewalDate": "2026-09-30",
+        "arrCents": 7200000,
+        "supportPlan": "platinum"
+      },
+      "contacts": [
+        {
+          "contactId": "ct-acct-return-rma-ops",
+          "role": "Operations",
+          "email": "ops-acct-return-rma@example.test"
+        },
+        {
+          "contactId": "ct-acct-return-rma-finance",
+          "role": "Finance",
+          "email": "finance-acct-return-rma@example.test"
+        }
+      ],
+      "context": {
+        "healthScore": 68,
+        "usageTrend": "down",
+        "openCases": 2,
+        "invoiceRisk": "medium",
+        "complianceFlags": [
+          "customer-visible-audit"
+        ]
+      }
+    }
+  ],
+  "workflow_requests": [
+    {
+      "_id": "order-return-rma-t",
+      "taskId": "return-rma-timeline",
+      "accountId": "acct-return-rma",
+      "title": "Return/RMA timeline",
+      "primaryEntity": "order",
+      "businessPrompt": "Build a return authorization timeline for a customer order. Combine original order, shipment, product, warranty, support case, payment adjustment, owner tasks, and audit history.",
+      "expectedOutcome": "RMA timeline active with replacement/refund decision path and complete audit state.",
+      "ownerGroups": [
+        "Operations",
+        "Support",
+        "Finance",
+        "Logistics"
+      ],
+      "riskSignals": [
+        {
+          "name": "return",
+          "detail": "Return/RMA timeline signal 1: return"
+        },
+        {
+          "name": "timeline",
+          "detail": "Return/RMA timeline signal 2: timeline"
+        },
+        {
+          "name": "enterprise account",
+          "detail": "Return/RMA timeline signal 3: enterprise account"
+        },
+        {
+          "name": "open customer impact",
+          "detail": "Return/RMA timeline signal 4: open customer impact"
+        },
+        {
+          "name": "audit required",
+          "detail": "Return/RMA timeline signal 5: audit required"
+        }
+      ],
+      "nextStep": "Operations owner review by 16:00",
+      "customerMessage": "Return/RMA timeline is being handled by Operations, Support, Finance, Logistics."
+    }
+  ],
+  "activities": [
+    {
+      "_id": "act-return-rma-timeline-1",
+      "accountId": "acct-return-rma",
+      "subjectId": "order-return-rma-t",
+      "summary": "Return/RMA timeline signal 1: return",
+      "occurredAt": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "_id": "act-return-rma-timeline-2",
+      "accountId": "acct-return-rma",
+      "subjectId": "order-return-rma-t",
+      "summary": "Return/RMA timeline signal 2: timeline",
+      "occurredAt": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "_id": "act-return-rma-timeline-3",
+      "accountId": "acct-return-rma",
+      "subjectId": "order-return-rma-t",
+      "summary": "Return/RMA timeline signal 3: enterprise account",
+      "occurredAt": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "_id": "act-return-rma-timeline-4",
+      "accountId": "acct-return-rma",
+      "subjectId": "order-return-rma-t",
+      "summary": "Return/RMA timeline signal 4: open customer impact",
+      "occurredAt": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "_id": "act-return-rma-timeline-5",
+      "accountId": "acct-return-rma",
+      "subjectId": "order-return-rma-t",
+      "summary": "Return/RMA timeline signal 5: audit required",
+      "occurredAt": "2026-06-14T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

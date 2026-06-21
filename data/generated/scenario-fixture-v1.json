@@ -1,0 +1,419 @@
+{
+  "scenarioVersion": "scenario-fixture-v1",
+  "scenarioName": "Customer Order Lifecycle",
+  "variant": "CRM Variant",
+  "generatedAt": "2026-06-16T00:00:00.000Z",
+  "task": {
+    "orderId": "HX-20491",
+    "headline": "Same customer request. Same acceptance test. Different database overhead.",
+    "request": "Add a customer-visible exception workflow for delayed high-value orders. Route regulated shipments to Legal and Finance, expose status in the portal, and preserve an audit trail.",
+    "acceptance": [
+      "The customer portal shows delayed high-value regulated orders as approval required.",
+      "Legal and Finance are visible as current owners.",
+      "The next step is customer-visible.",
+      "The audit timeline records the automated routing decision.",
+      "The workflow passes from the same canonical Scenario Fixture in both database-native projections."
+    ]
+  },
+  "accounts": [
+    {
+      "accountId": "acct-nova",
+      "name": "Nova Retail Group",
+      "tier": "enterprise",
+      "segment": "retail",
+      "region": "NA",
+      "riskFlags": [
+        "regulated-shipping",
+        "public-company"
+      ],
+      "contacts": [
+        {
+          "contactId": "ct-nova-ops",
+          "name": "Ari Cohen",
+          "role": "VP Operations",
+          "email": "ari.cohen@nova.example"
+        },
+        {
+          "contactId": "ct-nova-fin",
+          "name": "Maya Rosen",
+          "role": "Finance Controller",
+          "email": "maya.rosen@nova.example"
+        },
+        {
+          "contactId": "ct-nova-care",
+          "name": "Sam Ortega",
+          "role": "Customer Care Lead",
+          "email": "sam.ortega@nova.example"
+        }
+      ]
+    },
+    {
+      "accountId": "acct-helio",
+      "name": "Helio Medical Devices",
+      "tier": "enterprise",
+      "segment": "medical-devices",
+      "region": "EU",
+      "riskFlags": [
+        "regulated-shipping",
+        "sla-critical"
+      ],
+      "contacts": [
+        {
+          "contactId": "ct-helio-proc",
+          "name": "Elena Martins",
+          "role": "Procurement",
+          "email": "elena.martins@helio.example"
+        },
+        {
+          "contactId": "ct-helio-qa",
+          "name": "Jon Bell",
+          "role": "Quality",
+          "email": "jon.bell@helio.example"
+        }
+      ]
+    },
+    {
+      "accountId": "acct-polaris",
+      "name": "Polaris Field Systems",
+      "tier": "growth",
+      "segment": "industrial",
+      "region": "NA",
+      "riskFlags": [
+        "field-critical"
+      ],
+      "contacts": [
+        {
+          "contactId": "ct-polaris-ops",
+          "name": "Nia Brooks",
+          "role": "Operations",
+          "email": "nia.brooks@polaris.example"
+        },
+        {
+          "contactId": "ct-polaris-it",
+          "name": "Luca Singh",
+          "role": "IT",
+          "email": "luca.singh@polaris.example"
+        }
+      ]
+    },
+    {
+      "accountId": "acct-cascade",
+      "name": "Cascade Outfitters",
+      "tier": "commercial",
+      "segment": "commerce",
+      "region": "APAC",
+      "riskFlags": [],
+      "contacts": [
+        {
+          "contactId": "ct-cascade-ops",
+          "name": "Talia Chen",
+          "role": "Operations",
+          "email": "talia.chen@cascade.example"
+        },
+        {
+          "contactId": "ct-cascade-cx",
+          "name": "Bo Kim",
+          "role": "Customer Experience",
+          "email": "bo.kim@cascade.example"
+        }
+      ]
+    }
+  ],
+  "products": [
+    {
+      "productId": "prd-coldchain-kit",
+      "name": "Cold Chain Sensor Kit",
+      "category": "regulated",
+      "unitPriceCents": 128000
+    },
+    {
+      "productId": "prd-gateway-pro",
+      "name": "Gateway Pro",
+      "category": "hardware",
+      "unitPriceCents": 78000
+    },
+    {
+      "productId": "prd-support-plus",
+      "name": "Priority Support Plus",
+      "category": "service",
+      "unitPriceCents": 240000
+    },
+    {
+      "productId": "prd-field-case",
+      "name": "Rugged Field Case",
+      "category": "hardware",
+      "unitPriceCents": 18000
+    },
+    {
+      "productId": "prd-analytics",
+      "name": "Fleet Analytics Pack",
+      "category": "software",
+      "unitPriceCents": 96000
+    }
+  ],
+  "orders": [
+    {
+      "orderId": "HX-20491",
+      "accountId": "acct-nova",
+      "contactId": "ct-nova-ops",
+      "createdAt": "2026-06-14T09:12:00.000Z",
+      "status": "delayed",
+      "valueCents": 872000,
+      "currency": "USD",
+      "regulatedShipment": true,
+      "delayReason": "customs_hold",
+      "promisedReleaseTime": "2026-06-16T16:00:00.000Z",
+      "lineItems": [
+        {
+          "productId": "prd-coldchain-kit",
+          "quantity": 4,
+          "productName": "Cold Chain Sensor Kit",
+          "category": "regulated",
+          "unitPriceCents": 128000,
+          "lineTotalCents": 512000
+        },
+        {
+          "productId": "prd-gateway-pro",
+          "quantity": 3,
+          "productName": "Gateway Pro",
+          "category": "hardware",
+          "unitPriceCents": 78000,
+          "lineTotalCents": 234000
+        },
+        {
+          "productId": "prd-support-plus",
+          "quantity": 1,
+          "productName": "Priority Support Plus",
+          "category": "service",
+          "unitPriceCents": 240000,
+          "lineTotalCents": 240000
+        }
+      ],
+      "fulfillment": {
+        "shipmentId": "ship-HX-20491",
+        "carrier": "Northstar Compliance Freight",
+        "delayed": true,
+        "regulatoryFlags": [
+          "regulated-shipping"
+        ],
+        "delayReason": "customs_hold",
+        "promisedReleaseTime": "2026-06-16T16:00:00.000Z"
+      },
+      "payment": {
+        "paymentId": "pay-HX-20491",
+        "status": "captured",
+        "amountCents": 872000
+      },
+      "statusHistory": [
+        {
+          "status": "delayed",
+          "customerVisible": true,
+          "occurredAt": "2026-06-14T09:12:00.000Z",
+          "summary": "Shipment delayed"
+        }
+      ]
+    },
+    {
+      "orderId": "HX-20472",
+      "accountId": "acct-helio",
+      "contactId": "ct-helio-proc",
+      "createdAt": "2026-06-13T13:34:00.000Z",
+      "status": "in_fulfillment",
+      "valueCents": 612000,
+      "currency": "EUR",
+      "regulatedShipment": true,
+      "delayReason": null,
+      "promisedReleaseTime": null,
+      "lineItems": [
+        {
+          "productId": "prd-coldchain-kit",
+          "quantity": 2,
+          "productName": "Cold Chain Sensor Kit",
+          "category": "regulated",
+          "unitPriceCents": 128000,
+          "lineTotalCents": 256000
+        },
+        {
+          "productId": "prd-analytics",
+          "quantity": 2,
+          "productName": "Fleet Analytics Pack",
+          "category": "software",
+          "unitPriceCents": 96000,
+          "lineTotalCents": 192000
+        }
+      ],
+      "fulfillment": {
+        "shipmentId": "ship-HX-20472",
+        "carrier": "Northstar Compliance Freight",
+        "delayed": false,
+        "regulatoryFlags": [
+          "regulated-shipping"
+        ],
+        "delayReason": null,
+        "promisedReleaseTime": null
+      },
+      "payment": {
+        "paymentId": "pay-HX-20472",
+        "status": "captured",
+        "amountCents": 612000
+      },
+      "statusHistory": [
+        {
+          "status": "in_fulfillment",
+          "customerVisible": true,
+          "occurredAt": "2026-06-13T13:34:00.000Z",
+          "summary": "Order status updated"
+        }
+      ]
+    },
+    {
+      "orderId": "HX-20388",
+      "accountId": "acct-polaris",
+      "contactId": "ct-polaris-ops",
+      "createdAt": "2026-06-11T16:22:00.000Z",
+      "status": "delayed",
+      "valueCents": 128000,
+      "currency": "USD",
+      "regulatedShipment": false,
+      "delayReason": "carrier_capacity",
+      "promisedReleaseTime": "2026-06-17T11:30:00.000Z",
+      "lineItems": [
+        {
+          "productId": "prd-field-case",
+          "quantity": 2,
+          "productName": "Rugged Field Case",
+          "category": "hardware",
+          "unitPriceCents": 18000,
+          "lineTotalCents": 36000
+        },
+        {
+          "productId": "prd-gateway-pro",
+          "quantity": 1,
+          "productName": "Gateway Pro",
+          "category": "hardware",
+          "unitPriceCents": 78000,
+          "lineTotalCents": 78000
+        }
+      ],
+      "fulfillment": {
+        "shipmentId": "ship-HX-20388",
+        "carrier": "MetroShip",
+        "delayed": true,
+        "regulatoryFlags": [],
+        "delayReason": "carrier_capacity",
+        "promisedReleaseTime": "2026-06-17T11:30:00.000Z"
+      },
+      "payment": {
+        "paymentId": "pay-HX-20388",
+        "status": "captured",
+        "amountCents": 128000
+      },
+      "statusHistory": [
+        {
+          "status": "delayed",
+          "customerVisible": true,
+          "occurredAt": "2026-06-11T16:22:00.000Z",
+          "summary": "Shipment delayed"
+        }
+      ]
+    },
+    {
+      "orderId": "HX-20371",
+      "accountId": "acct-cascade",
+      "contactId": "ct-cascade-cx",
+      "createdAt": "2026-06-10T10:01:00.000Z",
+      "status": "delivered",
+      "valueCents": 384000,
+      "currency": "USD",
+      "regulatedShipment": false,
+      "delayReason": null,
+      "promisedReleaseTime": null,
+      "lineItems": [
+        {
+          "productId": "prd-analytics",
+          "quantity": 4,
+          "productName": "Fleet Analytics Pack",
+          "category": "software",
+          "unitPriceCents": 96000,
+          "lineTotalCents": 384000
+        }
+      ],
+      "fulfillment": {
+        "shipmentId": "ship-HX-20371",
+        "carrier": "MetroShip",
+        "delayed": false,
+        "regulatoryFlags": [],
+        "delayReason": null,
+        "promisedReleaseTime": null
+      },
+      "payment": {
+        "paymentId": "pay-HX-20371",
+        "status": "captured",
+        "amountCents": 384000
+      },
+      "statusHistory": [
+        {
+          "status": "delivered",
+          "customerVisible": false,
+          "occurredAt": "2026-06-10T10:01:00.000Z",
+          "summary": "Order status updated"
+        }
+      ]
+    }
+  ],
+  "supportCases": [
+    {
+      "caseId": "case-nova-77",
+      "accountId": "acct-nova",
+      "orderId": "HX-20491",
+      "openedAt": "2026-06-15T14:42:00.000Z",
+      "priority": "high",
+      "summary": "Customer wants a release ETA and audit-safe status update."
+    },
+    {
+      "caseId": "case-polaris-31",
+      "accountId": "acct-polaris",
+      "orderId": "HX-20388",
+      "openedAt": "2026-06-14T08:10:00.000Z",
+      "priority": "normal",
+      "summary": "Carrier capacity delay needs customer-facing explanation."
+    }
+  ],
+  "approvalPolicy": {
+    "policyId": "policy-delayed-high-value-regulated",
+    "name": "Delayed high-value regulated shipment",
+    "appliesToStatus": "delayed",
+    "minValueCents": 500000,
+    "requiredRiskFlag": "regulated-shipping",
+    "ownerGroups": [
+      "Legal",
+      "Finance"
+    ]
+  },
+  "slaPolicies": [
+    {
+      "policyId": "sla-enterprise-na",
+      "tier": "enterprise",
+      "region": "NA",
+      "responseMinutes": 240
+    },
+    {
+      "policyId": "sla-enterprise-eu",
+      "tier": "enterprise",
+      "region": "EU",
+      "responseMinutes": 360
+    },
+    {
+      "policyId": "sla-growth-na",
+      "tier": "growth",
+      "region": "NA",
+      "responseMinutes": 720
+    },
+    {
+      "policyId": "sla-commercial-apac",
+      "tier": "commercial",
+      "region": "APAC",
+      "responseMinutes": 1440
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+
+> customer-360-escalation-postgres-target@0.2.0 test
+> node tests/customer-360-escalation.test.mjs
+
+Customer 360 Escalation Workflow acceptance passed

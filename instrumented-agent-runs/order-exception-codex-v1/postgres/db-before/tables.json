@@ -1,0 +1,1250 @@
+{
+  "account_tiers": [
+    {
+      "tier_id": "strategic",
+      "label": "strategic",
+      "review_minutes": 60
+    },
+    {
+      "tier_id": "enterprise",
+      "label": "enterprise",
+      "review_minutes": 30
+    },
+    {
+      "tier_id": "growth",
+      "label": "growth",
+      "review_minutes": 15
+    },
+    {
+      "tier_id": "commercial",
+      "label": "commercial",
+      "review_minutes": 15
+    }
+  ],
+  "owner_groups": [
+    {
+      "owner_group": "Customer Success",
+      "label": "Customer Success"
+    },
+    {
+      "owner_group": "Legal",
+      "label": "Legal"
+    },
+    {
+      "owner_group": "Finance",
+      "label": "Finance"
+    },
+    {
+      "owner_group": "Support",
+      "label": "Support"
+    },
+    {
+      "owner_group": "Operations",
+      "label": "Operations"
+    },
+    {
+      "owner_group": "Sales",
+      "label": "Sales"
+    }
+  ],
+  "accounts": [
+    {
+      "account_id": "acct-nova",
+      "tier_id": "strategic",
+      "name": "Nova Retail Group",
+      "segment": "retail",
+      "region": "NA"
+    },
+    {
+      "account_id": "acct-helio",
+      "tier_id": "enterprise",
+      "name": "Helio Medical Devices",
+      "segment": "medical-devices",
+      "region": "EU"
+    },
+    {
+      "account_id": "acct-polaris",
+      "tier_id": "growth",
+      "name": "Polaris Field Systems",
+      "segment": "industrial",
+      "region": "NA"
+    },
+    {
+      "account_id": "acct-cascade",
+      "tier_id": "commercial",
+      "name": "Cascade Outfitters",
+      "segment": "commerce",
+      "region": "APAC"
+    }
+  ],
+  "contacts": [
+    {
+      "contact_id": "ct-nova-ops",
+      "account_id": "acct-nova",
+      "name": "Ari Cohen",
+      "role": "VP Operations",
+      "email": "ari.cohen@nova.example"
+    },
+    {
+      "contact_id": "ct-nova-fin",
+      "account_id": "acct-nova",
+      "name": "Maya Rosen",
+      "role": "Finance Controller",
+      "email": "maya.rosen@nova.example"
+    },
+    {
+      "contact_id": "ct-nova-care",
+      "account_id": "acct-nova",
+      "name": "Sam Ortega",
+      "role": "Customer Care Lead",
+      "email": "sam.ortega@nova.example"
+    },
+    {
+      "contact_id": "ct-nova-cio",
+      "account_id": "acct-nova",
+      "name": "Priya Menon",
+      "role": "CIO",
+      "email": "priya.menon@nova.example"
+    },
+    {
+      "contact_id": "ct-helio-proc",
+      "account_id": "acct-helio",
+      "name": "Elena Martins",
+      "role": "Procurement",
+      "email": "elena.martins@helio.example"
+    },
+    {
+      "contact_id": "ct-helio-qa",
+      "account_id": "acct-helio",
+      "name": "Jon Bell",
+      "role": "Quality",
+      "email": "jon.bell@helio.example"
+    },
+    {
+      "contact_id": "ct-polaris-ops",
+      "account_id": "acct-polaris",
+      "name": "Nia Brooks",
+      "role": "Operations",
+      "email": "nia.brooks@polaris.example"
+    },
+    {
+      "contact_id": "ct-polaris-it",
+      "account_id": "acct-polaris",
+      "name": "Luca Singh",
+      "role": "IT",
+      "email": "luca.singh@polaris.example"
+    },
+    {
+      "contact_id": "ct-cascade-ops",
+      "account_id": "acct-cascade",
+      "name": "Talia Chen",
+      "role": "Operations",
+      "email": "talia.chen@cascade.example"
+    },
+    {
+      "contact_id": "ct-cascade-cx",
+      "account_id": "acct-cascade",
+      "name": "Bo Kim",
+      "role": "Customer Experience",
+      "email": "bo.kim@cascade.example"
+    }
+  ],
+  "contact_preferences": [
+    {
+      "contact_id": "ct-nova-ops",
+      "channel": "email",
+      "enabled": true
+    },
+    {
+      "contact_id": "ct-nova-fin",
+      "channel": "email",
+      "enabled": true
+    },
+    {
+      "contact_id": "ct-nova-care",
+      "channel": "email",
+      "enabled": true
+    },
+    {
+      "contact_id": "ct-nova-cio",
+      "channel": "email",
+      "enabled": true
+    },
+    {
+      "contact_id": "ct-helio-proc",
+      "channel": "email",
+      "enabled": true
+    },
+    {
+      "contact_id": "ct-helio-qa",
+      "channel": "email",
+      "enabled": true
+    },
+    {
+      "contact_id": "ct-polaris-ops",
+      "channel": "email",
+      "enabled": true
+    },
+    {
+      "contact_id": "ct-polaris-it",
+      "channel": "email",
+      "enabled": true
+    },
+    {
+      "contact_id": "ct-cascade-ops",
+      "channel": "email",
+      "enabled": true
+    },
+    {
+      "contact_id": "ct-cascade-cx",
+      "channel": "email",
+      "enabled": true
+    }
+  ],
+  "account_contracts": [
+    {
+      "contract_id": "ctr-nova-2026",
+      "account_id": "acct-nova",
+      "contract_tier": "enterprise-plus",
+      "arr_cents": 18400000,
+      "renewal_date": "2026-07-31",
+      "executive_sponsor": "Dana Weiss",
+      "support_plan": "platinum",
+      "data_processing_addendum": true
+    },
+    {
+      "contract_id": "ctr-helio-2026",
+      "account_id": "acct-helio",
+      "contract_tier": "enterprise",
+      "arr_cents": 9200000,
+      "renewal_date": "2026-10-15",
+      "executive_sponsor": "Mira Stone",
+      "support_plan": "premium",
+      "data_processing_addendum": true
+    },
+    {
+      "contract_id": "ctr-polaris-2026",
+      "account_id": "acct-polaris",
+      "contract_tier": "growth",
+      "arr_cents": 3100000,
+      "renewal_date": "2027-01-31",
+      "executive_sponsor": "Leo Park",
+      "support_plan": "standard",
+      "data_processing_addendum": false
+    },
+    {
+      "contract_id": "ctr-cascade-2026",
+      "account_id": "acct-cascade",
+      "contract_tier": "commercial",
+      "arr_cents": 860000,
+      "renewal_date": "2026-11-30",
+      "executive_sponsor": "Kim Lau",
+      "support_plan": "standard",
+      "data_processing_addendum": false
+    }
+  ],
+  "account_team_members": [
+    {
+      "member_id": "team-acct-nova-customer-success",
+      "account_id": "acct-nova",
+      "owner_group": "Customer Success",
+      "name": "Leah Gordon",
+      "role": "Strategic CSM"
+    },
+    {
+      "member_id": "team-acct-nova-legal",
+      "account_id": "acct-nova",
+      "owner_group": "Legal",
+      "name": "Owen Blake",
+      "role": "Commercial Counsel"
+    },
+    {
+      "member_id": "team-acct-nova-finance",
+      "account_id": "acct-nova",
+      "owner_group": "Finance",
+      "name": "Rina Shah",
+      "role": "Collections Lead"
+    },
+    {
+      "member_id": "team-acct-nova-support",
+      "account_id": "acct-nova",
+      "owner_group": "Support",
+      "name": "Marta Silva",
+      "role": "Support Duty Manager"
+    },
+    {
+      "member_id": "team-acct-helio-customer-success",
+      "account_id": "acct-helio",
+      "owner_group": "Customer Success",
+      "name": "Nico Hart",
+      "role": "Enterprise CSM"
+    },
+    {
+      "member_id": "team-acct-helio-support",
+      "account_id": "acct-helio",
+      "owner_group": "Support",
+      "name": "Iris Bell",
+      "role": "Support Lead"
+    },
+    {
+      "member_id": "team-acct-polaris-customer-success",
+      "account_id": "acct-polaris",
+      "owner_group": "Customer Success",
+      "name": "Ava Trent",
+      "role": "Growth CSM"
+    },
+    {
+      "member_id": "team-acct-cascade-customer-success",
+      "account_id": "acct-cascade",
+      "owner_group": "Customer Success",
+      "name": "Bo Kim",
+      "role": "Commercial CSM"
+    }
+  ],
+  "account_risk_flags": [
+    {
+      "account_id": "acct-nova",
+      "risk_flag": "regulated-shipping"
+    },
+    {
+      "account_id": "acct-nova",
+      "risk_flag": "public-company"
+    },
+    {
+      "account_id": "acct-nova",
+      "risk_flag": "renewal-at-risk"
+    },
+    {
+      "account_id": "acct-helio",
+      "risk_flag": "regulated-shipping"
+    },
+    {
+      "account_id": "acct-helio",
+      "risk_flag": "sla-critical"
+    },
+    {
+      "account_id": "acct-polaris",
+      "risk_flag": "field-critical"
+    }
+  ],
+  "account_health_scores": [
+    {
+      "account_id": "acct-nova",
+      "score": 61,
+      "trend": "down",
+      "summary": "Usage down while renewal and delayed regulated shipment are active.",
+      "captured_at": "2026-06-17T00:00:00.000Z"
+    },
+    {
+      "account_id": "acct-helio",
+      "score": 82,
+      "trend": "stable",
+      "summary": "Regulated customer with healthy usage.",
+      "captured_at": "2026-06-17T00:00:00.000Z"
+    },
+    {
+      "account_id": "acct-polaris",
+      "score": 74,
+      "trend": "stable",
+      "summary": "Operational delay without strategic escalation criteria.",
+      "captured_at": "2026-06-17T00:00:00.000Z"
+    },
+    {
+      "account_id": "acct-cascade",
+      "score": 89,
+      "trend": "up",
+      "summary": "Healthy commercial account.",
+      "captured_at": "2026-06-17T00:00:00.000Z"
+    }
+  ],
+  "account_health_factors": [
+    {
+      "account_id": "acct-nova",
+      "factor": "contract_tier",
+      "value": "enterprise-plus"
+    },
+    {
+      "account_id": "acct-nova",
+      "factor": "arr_cents",
+      "value": "18400000"
+    },
+    {
+      "account_id": "acct-nova",
+      "factor": "usage_trend",
+      "value": "down"
+    },
+    {
+      "account_id": "acct-helio",
+      "factor": "contract_tier",
+      "value": "enterprise"
+    },
+    {
+      "account_id": "acct-helio",
+      "factor": "arr_cents",
+      "value": "9200000"
+    },
+    {
+      "account_id": "acct-helio",
+      "factor": "usage_trend",
+      "value": "stable"
+    },
+    {
+      "account_id": "acct-polaris",
+      "factor": "contract_tier",
+      "value": "growth"
+    },
+    {
+      "account_id": "acct-polaris",
+      "factor": "arr_cents",
+      "value": "3100000"
+    },
+    {
+      "account_id": "acct-polaris",
+      "factor": "usage_trend",
+      "value": "stable"
+    },
+    {
+      "account_id": "acct-cascade",
+      "factor": "contract_tier",
+      "value": "commercial"
+    },
+    {
+      "account_id": "acct-cascade",
+      "factor": "arr_cents",
+      "value": "860000"
+    },
+    {
+      "account_id": "acct-cascade",
+      "factor": "usage_trend",
+      "value": "up"
+    }
+  ],
+  "account_notes": [],
+  "products": [
+    {
+      "product_id": "prd-coldchain-kit",
+      "name": "Cold Chain Sensor Kit",
+      "unit_price_cents": 128000
+    },
+    {
+      "product_id": "prd-gateway-pro",
+      "name": "Gateway Pro",
+      "unit_price_cents": 78000
+    },
+    {
+      "product_id": "prd-support-plus",
+      "name": "Priority Support Plus",
+      "unit_price_cents": 240000
+    },
+    {
+      "product_id": "prd-field-case",
+      "name": "Rugged Field Case",
+      "unit_price_cents": 18000
+    },
+    {
+      "product_id": "prd-analytics",
+      "name": "Fleet Analytics Pack",
+      "unit_price_cents": 96000
+    }
+  ],
+  "product_categories": [
+    {
+      "category_id": "regulated",
+      "label": "regulated"
+    },
+    {
+      "category_id": "hardware",
+      "label": "hardware"
+    },
+    {
+      "category_id": "service",
+      "label": "service"
+    },
+    {
+      "category_id": "software",
+      "label": "software"
+    }
+  ],
+  "product_category_memberships": [
+    {
+      "product_id": "prd-coldchain-kit",
+      "category_id": "regulated"
+    },
+    {
+      "product_id": "prd-gateway-pro",
+      "category_id": "hardware"
+    },
+    {
+      "product_id": "prd-support-plus",
+      "category_id": "service"
+    },
+    {
+      "product_id": "prd-field-case",
+      "category_id": "hardware"
+    },
+    {
+      "product_id": "prd-analytics",
+      "category_id": "software"
+    }
+  ],
+  "subscriptions": [
+    {
+      "subscription_id": "sub-acct-nova",
+      "account_id": "acct-nova",
+      "contract_id": "ctr-nova-2026",
+      "product_family": "customer-operations-platform",
+      "status": "active"
+    },
+    {
+      "subscription_id": "sub-acct-helio",
+      "account_id": "acct-helio",
+      "contract_id": "ctr-helio-2026",
+      "product_family": "customer-operations-platform",
+      "status": "active"
+    },
+    {
+      "subscription_id": "sub-acct-polaris",
+      "account_id": "acct-polaris",
+      "contract_id": "ctr-polaris-2026",
+      "product_family": "customer-operations-platform",
+      "status": "active"
+    },
+    {
+      "subscription_id": "sub-acct-cascade",
+      "account_id": "acct-cascade",
+      "contract_id": "ctr-cascade-2026",
+      "product_family": "customer-operations-platform",
+      "status": "active"
+    }
+  ],
+  "entitlements": [
+    {
+      "entitlement_id": "ent-acct-nova-support",
+      "subscription_id": "sub-acct-nova",
+      "feature": "platinum",
+      "enabled": true
+    },
+    {
+      "entitlement_id": "ent-acct-helio-support",
+      "subscription_id": "sub-acct-helio",
+      "feature": "premium",
+      "enabled": true
+    },
+    {
+      "entitlement_id": "ent-acct-polaris-support",
+      "subscription_id": "sub-acct-polaris",
+      "feature": "standard",
+      "enabled": true
+    },
+    {
+      "entitlement_id": "ent-acct-cascade-support",
+      "subscription_id": "sub-acct-cascade",
+      "feature": "standard",
+      "enabled": true
+    }
+  ],
+  "orders": [
+    {
+      "order_id": "HX-20491",
+      "account_id": "acct-nova",
+      "contact_id": "ct-nova-ops",
+      "created_at": "2026-06-14T09:12:00.000Z",
+      "current_status": "delayed",
+      "value_cents": 872000,
+      "currency": "USD"
+    },
+    {
+      "order_id": "HX-20472",
+      "account_id": "acct-helio",
+      "contact_id": "ct-helio-proc",
+      "created_at": "2026-06-13T13:34:00.000Z",
+      "current_status": "in_fulfillment",
+      "value_cents": 612000,
+      "currency": "EUR"
+    },
+    {
+      "order_id": "HX-20388",
+      "account_id": "acct-polaris",
+      "contact_id": "ct-polaris-ops",
+      "created_at": "2026-06-11T16:22:00.000Z",
+      "current_status": "delayed",
+      "value_cents": 128000,
+      "currency": "USD"
+    },
+    {
+      "order_id": "HX-20371",
+      "account_id": "acct-cascade",
+      "contact_id": "ct-cascade-cx",
+      "created_at": "2026-06-10T10:01:00.000Z",
+      "current_status": "delivered",
+      "value_cents": 384000,
+      "currency": "USD"
+    }
+  ],
+  "order_items": [
+    {
+      "order_id": "HX-20491",
+      "product_id": "prd-coldchain-kit",
+      "quantity": 4
+    },
+    {
+      "order_id": "HX-20491",
+      "product_id": "prd-gateway-pro",
+      "quantity": 3
+    },
+    {
+      "order_id": "HX-20491",
+      "product_id": "prd-support-plus",
+      "quantity": 1
+    },
+    {
+      "order_id": "HX-20472",
+      "product_id": "prd-coldchain-kit",
+      "quantity": 2
+    },
+    {
+      "order_id": "HX-20472",
+      "product_id": "prd-analytics",
+      "quantity": 2
+    },
+    {
+      "order_id": "HX-20388",
+      "product_id": "prd-field-case",
+      "quantity": 2
+    },
+    {
+      "order_id": "HX-20388",
+      "product_id": "prd-gateway-pro",
+      "quantity": 1
+    },
+    {
+      "order_id": "HX-20371",
+      "product_id": "prd-analytics",
+      "quantity": 4
+    }
+  ],
+  "shipments": [
+    {
+      "shipment_id": "ship-HX-20491",
+      "order_id": "HX-20491",
+      "carrier": "Northstar Compliance Freight",
+      "delayed": true,
+      "delay_reason": "customs_hold",
+      "promised_release_time": "2026-06-17T16:00:00.000Z"
+    },
+    {
+      "shipment_id": "ship-HX-20472",
+      "order_id": "HX-20472",
+      "carrier": "Northstar Compliance Freight",
+      "delayed": false,
+      "delay_reason": null,
+      "promised_release_time": null
+    },
+    {
+      "shipment_id": "ship-HX-20388",
+      "order_id": "HX-20388",
+      "carrier": "MetroShip",
+      "delayed": true,
+      "delay_reason": "carrier_capacity",
+      "promised_release_time": "2026-06-17T11:30:00.000Z"
+    },
+    {
+      "shipment_id": "ship-HX-20371",
+      "order_id": "HX-20371",
+      "carrier": "MetroShip",
+      "delayed": false,
+      "delay_reason": null,
+      "promised_release_time": null
+    }
+  ],
+  "shipment_events": [
+    {
+      "event_id": "ship-event-HX-20491-current",
+      "shipment_id": "ship-HX-20491",
+      "event_type": "delayed",
+      "occurred_at": "2026-06-14T09:12:00.000Z"
+    },
+    {
+      "event_id": "ship-event-HX-20472-current",
+      "shipment_id": "ship-HX-20472",
+      "event_type": "in_transit",
+      "occurred_at": "2026-06-13T13:34:00.000Z"
+    },
+    {
+      "event_id": "ship-event-HX-20388-current",
+      "shipment_id": "ship-HX-20388",
+      "event_type": "delayed",
+      "occurred_at": "2026-06-11T16:22:00.000Z"
+    },
+    {
+      "event_id": "ship-event-HX-20371-current",
+      "shipment_id": "ship-HX-20371",
+      "event_type": "in_transit",
+      "occurred_at": "2026-06-10T10:01:00.000Z"
+    }
+  ],
+  "shipment_regulatory_flags": [
+    {
+      "shipment_id": "ship-HX-20491",
+      "flag": "regulated-shipping"
+    },
+    {
+      "shipment_id": "ship-HX-20472",
+      "flag": "regulated-shipping"
+    }
+  ],
+  "payments": [
+    {
+      "payment_id": "pay-HX-20491",
+      "order_id": "HX-20491",
+      "status": "captured",
+      "amount_cents": 872000
+    },
+    {
+      "payment_id": "pay-HX-20472",
+      "order_id": "HX-20472",
+      "status": "captured",
+      "amount_cents": 612000
+    },
+    {
+      "payment_id": "pay-HX-20388",
+      "order_id": "HX-20388",
+      "status": "captured",
+      "amount_cents": 128000
+    },
+    {
+      "payment_id": "pay-HX-20371",
+      "order_id": "HX-20371",
+      "status": "captured",
+      "amount_cents": 384000
+    }
+  ],
+  "payment_events": [
+    {
+      "event_id": "pay-event-HX-20491",
+      "payment_id": "pay-HX-20491",
+      "event_type": "captured",
+      "occurred_at": "2026-06-14T09:12:00.000Z"
+    },
+    {
+      "event_id": "pay-event-HX-20472",
+      "payment_id": "pay-HX-20472",
+      "event_type": "captured",
+      "occurred_at": "2026-06-13T13:34:00.000Z"
+    },
+    {
+      "event_id": "pay-event-HX-20388",
+      "payment_id": "pay-HX-20388",
+      "event_type": "captured",
+      "occurred_at": "2026-06-11T16:22:00.000Z"
+    },
+    {
+      "event_id": "pay-event-HX-20371",
+      "payment_id": "pay-HX-20371",
+      "event_type": "captured",
+      "occurred_at": "2026-06-10T10:01:00.000Z"
+    }
+  ],
+  "invoices": [
+    {
+      "invoice_id": "inv-nova-2026-06",
+      "account_id": "acct-nova",
+      "order_id": "HX-20491",
+      "issued_at": "2026-06-01T00:00:00.000Z",
+      "due_at": "2026-06-15T00:00:00.000Z",
+      "amount_cents": 431000,
+      "status": "past_due",
+      "risk": "payment_hold_requested"
+    },
+    {
+      "invoice_id": "inv-helio-2026-06",
+      "account_id": "acct-helio",
+      "order_id": "HX-20472",
+      "issued_at": "2026-06-02T00:00:00.000Z",
+      "due_at": "2026-06-30T00:00:00.000Z",
+      "amount_cents": 212000,
+      "status": "open",
+      "risk": null
+    },
+    {
+      "invoice_id": "inv-polaris-2026-06",
+      "account_id": "acct-polaris",
+      "order_id": "HX-20388",
+      "issued_at": "2026-06-02T00:00:00.000Z",
+      "due_at": "2026-06-30T00:00:00.000Z",
+      "amount_cents": 74000,
+      "status": "open",
+      "risk": null
+    }
+  ],
+  "invoice_line_items": [
+    {
+      "invoice_line_id": "line-inv-nova-2026-06",
+      "invoice_id": "inv-nova-2026-06",
+      "description": "Order HX-20491",
+      "amount_cents": 431000
+    },
+    {
+      "invoice_line_id": "line-inv-helio-2026-06",
+      "invoice_id": "inv-helio-2026-06",
+      "description": "Order HX-20472",
+      "amount_cents": 212000
+    },
+    {
+      "invoice_line_id": "line-inv-polaris-2026-06",
+      "invoice_id": "inv-polaris-2026-06",
+      "description": "Order HX-20388",
+      "amount_cents": 74000
+    }
+  ],
+  "payment_risk_events": [
+    {
+      "risk_event_id": "risk-inv-nova-2026-06",
+      "invoice_id": "inv-nova-2026-06",
+      "account_id": "acct-nova",
+      "risk_code": "payment_hold_requested",
+      "created_at": "2026-06-15T00:00:00.000Z"
+    }
+  ],
+  "usage_snapshots": [
+    {
+      "snapshot_id": "usage-nova-2026-06-16",
+      "account_id": "acct-nova",
+      "captured_at": "2026-06-16T08:00:00.000Z",
+      "active_users_7d": 184,
+      "active_users_previous_7d": 302,
+      "critical_workflows": 6,
+      "failed_syncs_24h": 17,
+      "trend": "down"
+    },
+    {
+      "snapshot_id": "usage-helio-2026-06-16",
+      "account_id": "acct-helio",
+      "captured_at": "2026-06-16T08:00:00.000Z",
+      "active_users_7d": 212,
+      "active_users_previous_7d": 205,
+      "critical_workflows": 8,
+      "failed_syncs_24h": 1,
+      "trend": "stable"
+    },
+    {
+      "snapshot_id": "usage-polaris-2026-06-16",
+      "account_id": "acct-polaris",
+      "captured_at": "2026-06-16T08:00:00.000Z",
+      "active_users_7d": 63,
+      "active_users_previous_7d": 66,
+      "critical_workflows": 2,
+      "failed_syncs_24h": 3,
+      "trend": "stable"
+    }
+  ],
+  "usage_products": [
+    {
+      "snapshot_id": "usage-nova-2026-06-16",
+      "product_family": "operations",
+      "active_users": 184
+    },
+    {
+      "snapshot_id": "usage-nova-2026-06-16",
+      "product_family": "integration-sync",
+      "active_users": 167
+    },
+    {
+      "snapshot_id": "usage-helio-2026-06-16",
+      "product_family": "operations",
+      "active_users": 212
+    },
+    {
+      "snapshot_id": "usage-helio-2026-06-16",
+      "product_family": "integration-sync",
+      "active_users": 211
+    },
+    {
+      "snapshot_id": "usage-polaris-2026-06-16",
+      "product_family": "operations",
+      "active_users": 63
+    },
+    {
+      "snapshot_id": "usage-polaris-2026-06-16",
+      "product_family": "integration-sync",
+      "active_users": 60
+    }
+  ],
+  "support_cases": [
+    {
+      "case_id": "case-nova-77",
+      "account_id": "acct-nova",
+      "order_id": "HX-20491",
+      "opened_at": "2026-06-15T14:42:00.000Z",
+      "priority": "high",
+      "status": "open",
+      "summary": "Customer wants a release ETA and audit-safe status update."
+    },
+    {
+      "case_id": "case-nova-81",
+      "account_id": "acct-nova",
+      "order_id": null,
+      "opened_at": "2026-06-16T09:20:00.000Z",
+      "priority": "urgent",
+      "status": "open",
+      "summary": "CIO asked whether renewal terms can be paused until delivery is recovered."
+    },
+    {
+      "case_id": "case-polaris-31",
+      "account_id": "acct-polaris",
+      "order_id": "HX-20388",
+      "opened_at": "2026-06-14T08:10:00.000Z",
+      "priority": "normal",
+      "status": "open",
+      "summary": "Carrier capacity delay needs customer-facing explanation."
+    }
+  ],
+  "case_comments": [
+    {
+      "comment_id": "comment-case-nova-77",
+      "case_id": "case-nova-77",
+      "created_at": "2026-06-15T14:42:00.000Z",
+      "body": "Customer wants a release ETA and audit-safe status update."
+    },
+    {
+      "comment_id": "comment-case-nova-81",
+      "case_id": "case-nova-81",
+      "created_at": "2026-06-16T09:20:00.000Z",
+      "body": "CIO asked whether renewal terms can be paused until delivery is recovered."
+    },
+    {
+      "comment_id": "comment-case-polaris-31",
+      "case_id": "case-polaris-31",
+      "created_at": "2026-06-14T08:10:00.000Z",
+      "body": "Carrier capacity delay needs customer-facing explanation."
+    }
+  ],
+  "support_case_links": [
+    {
+      "case_id": "case-nova-77",
+      "subject_type": "order",
+      "subject_id": "HX-20491"
+    },
+    {
+      "case_id": "case-polaris-31",
+      "subject_type": "order",
+      "subject_id": "HX-20388"
+    }
+  ],
+  "activities": [
+    {
+      "activity_id": "act-case-nova-77",
+      "account_id": "acct-nova",
+      "case_id": "case-nova-77",
+      "summary": "Customer wants a release ETA and audit-safe status update.",
+      "occurred_at": "2026-06-15T14:42:00.000Z"
+    },
+    {
+      "activity_id": "act-case-nova-81",
+      "account_id": "acct-nova",
+      "case_id": "case-nova-81",
+      "summary": "CIO asked whether renewal terms can be paused until delivery is recovered.",
+      "occurred_at": "2026-06-16T09:20:00.000Z"
+    },
+    {
+      "activity_id": "act-case-polaris-31",
+      "account_id": "acct-polaris",
+      "case_id": "case-polaris-31",
+      "summary": "Carrier capacity delay needs customer-facing explanation.",
+      "occurred_at": "2026-06-14T08:10:00.000Z"
+    }
+  ],
+  "activity_participants": [],
+  "compliance_reviews": [
+    {
+      "review_id": "comp-nova-hx-20491",
+      "account_id": "acct-nova",
+      "order_id": "HX-20491",
+      "opened_at": "2026-06-15T18:00:00.000Z",
+      "status": "review_required"
+    },
+    {
+      "review_id": "comp-helio-hx-20472",
+      "account_id": "acct-helio",
+      "order_id": "HX-20472",
+      "opened_at": "2026-06-14T11:00:00.000Z",
+      "status": "cleared"
+    }
+  ],
+  "compliance_review_flags": [
+    {
+      "review_id": "comp-nova-hx-20491",
+      "flag": "regulated-shipping"
+    },
+    {
+      "review_id": "comp-nova-hx-20491",
+      "flag": "public-company-disclosure"
+    },
+    {
+      "review_id": "comp-nova-hx-20491",
+      "flag": "customs-hold"
+    },
+    {
+      "review_id": "comp-helio-hx-20472",
+      "flag": "regulated-shipping"
+    }
+  ],
+  "escalation_policies": [
+    {
+      "policy_id": "policy-strategic-customer-360-escalation",
+      "name": "Strategic customer 360 escalation",
+      "applies_to_status": "delayed",
+      "min_value_cents": 500000,
+      "customer_visible_title": "At-risk escalation active",
+      "customer_visible_status": "Executive escalation",
+      "next_step": "Executive recovery plan by 16:00",
+      "customer_message": "We are coordinating executive recovery for your delayed shipment."
+    }
+  ],
+  "escalation_policy_steps": [
+    {
+      "policy_id": "policy-strategic-customer-360-escalation",
+      "step_order": 1,
+      "owner_group": "Customer Success"
+    },
+    {
+      "policy_id": "policy-strategic-customer-360-escalation",
+      "step_order": 2,
+      "owner_group": "Legal"
+    },
+    {
+      "policy_id": "policy-strategic-customer-360-escalation",
+      "step_order": 3,
+      "owner_group": "Finance"
+    },
+    {
+      "policy_id": "policy-strategic-customer-360-escalation",
+      "step_order": 4,
+      "owner_group": "Support"
+    }
+  ],
+  "customer_escalations": [],
+  "escalation_risk_factors": [],
+  "escalation_tasks": [],
+  "escalation_task_assignments": [],
+  "customer_portal_messages": [],
+  "executive_notifications": [],
+  "legal_review_requests": [],
+  "finance_review_requests": [],
+  "success_plan_milestones": [
+    {
+      "milestone_id": "sp-acct-nova-renewal",
+      "account_id": "acct-nova",
+      "due_at": "2026-07-31",
+      "owner_group": "Customer Success",
+      "status": "at_risk"
+    },
+    {
+      "milestone_id": "sp-acct-helio-renewal",
+      "account_id": "acct-helio",
+      "due_at": "2026-10-15",
+      "owner_group": "Customer Success",
+      "status": "open"
+    },
+    {
+      "milestone_id": "sp-acct-polaris-renewal",
+      "account_id": "acct-polaris",
+      "due_at": "2027-01-31",
+      "owner_group": "Customer Success",
+      "status": "open"
+    },
+    {
+      "milestone_id": "sp-acct-cascade-renewal",
+      "account_id": "acct-cascade",
+      "due_at": "2026-11-30",
+      "owner_group": "Customer Success",
+      "status": "open"
+    }
+  ],
+  "renewal_events": [
+    {
+      "renewal_event_id": "renewal-acct-nova",
+      "account_id": "acct-nova",
+      "renewal_date": "2026-07-31",
+      "status": "at_risk"
+    },
+    {
+      "renewal_event_id": "renewal-acct-helio",
+      "account_id": "acct-helio",
+      "renewal_date": "2026-10-15",
+      "status": "on_track"
+    },
+    {
+      "renewal_event_id": "renewal-acct-polaris",
+      "account_id": "acct-polaris",
+      "renewal_date": "2027-01-31",
+      "status": "on_track"
+    },
+    {
+      "renewal_event_id": "renewal-acct-cascade",
+      "account_id": "acct-cascade",
+      "renewal_date": "2026-11-30",
+      "status": "on_track"
+    }
+  ],
+  "order_status_history": [
+    {
+      "history_id": "hist-HX-20491-delayed",
+      "order_id": "HX-20491",
+      "status": "delayed",
+      "customer_visible": true,
+      "occurred_at": "2026-06-14T09:12:00.000Z"
+    },
+    {
+      "history_id": "hist-HX-20472-in_fulfillment",
+      "order_id": "HX-20472",
+      "status": "in_fulfillment",
+      "customer_visible": true,
+      "occurred_at": "2026-06-13T13:34:00.000Z"
+    },
+    {
+      "history_id": "hist-HX-20388-delayed",
+      "order_id": "HX-20388",
+      "status": "delayed",
+      "customer_visible": true,
+      "occurred_at": "2026-06-11T16:22:00.000Z"
+    },
+    {
+      "history_id": "hist-HX-20371-delivered",
+      "order_id": "HX-20371",
+      "status": "delivered",
+      "customer_visible": false,
+      "occurred_at": "2026-06-10T10:01:00.000Z"
+    }
+  ],
+  "audit_events": [],
+  "audit_subjects": [],
+  "sla_policies": [
+    {
+      "policy_id": "sla-strategic-na",
+      "account_tier": "strategic",
+      "region": "NA",
+      "response_minutes": 60
+    },
+    {
+      "policy_id": "sla-enterprise-na",
+      "account_tier": "enterprise",
+      "region": "NA",
+      "response_minutes": 240
+    },
+    {
+      "policy_id": "sla-enterprise-eu",
+      "account_tier": "enterprise",
+      "region": "EU",
+      "response_minutes": 360
+    },
+    {
+      "policy_id": "sla-growth-na",
+      "account_tier": "growth",
+      "region": "NA",
+      "response_minutes": 720
+    },
+    {
+      "policy_id": "sla-commercial-apac",
+      "account_tier": "commercial",
+      "region": "APAC",
+      "response_minutes": 1440
+    }
+  ],
+  "sla_timers": [],
+  "inventory_locations": [
+    {
+      "location_id": "loc-acct-nova",
+      "region": "NA",
+      "label": "Nova Retail Group primary"
+    },
+    {
+      "location_id": "loc-acct-helio",
+      "region": "EU",
+      "label": "Helio Medical Devices primary"
+    },
+    {
+      "location_id": "loc-acct-polaris",
+      "region": "NA",
+      "label": "Polaris Field Systems primary"
+    },
+    {
+      "location_id": "loc-acct-cascade",
+      "region": "APAC",
+      "label": "Cascade Outfitters primary"
+    }
+  ],
+  "inventory_reservations": [
+    {
+      "reservation_id": "res-HX-20491-prd-coldchain-kit",
+      "order_id": "HX-20491",
+      "product_id": "prd-coldchain-kit",
+      "location_id": "loc-acct-nova",
+      "quantity": 4
+    },
+    {
+      "reservation_id": "res-HX-20491-prd-gateway-pro",
+      "order_id": "HX-20491",
+      "product_id": "prd-gateway-pro",
+      "location_id": "loc-acct-nova",
+      "quantity": 3
+    },
+    {
+      "reservation_id": "res-HX-20491-prd-support-plus",
+      "order_id": "HX-20491",
+      "product_id": "prd-support-plus",
+      "location_id": "loc-acct-nova",
+      "quantity": 1
+    },
+    {
+      "reservation_id": "res-HX-20472-prd-coldchain-kit",
+      "order_id": "HX-20472",
+      "product_id": "prd-coldchain-kit",
+      "location_id": "loc-acct-helio",
+      "quantity": 2
+    },
+    {
+      "reservation_id": "res-HX-20472-prd-analytics",
+      "order_id": "HX-20472",
+      "product_id": "prd-analytics",
+      "location_id": "loc-acct-helio",
+      "quantity": 2
+    },
+    {
+      "reservation_id": "res-HX-20388-prd-field-case",
+      "order_id": "HX-20388",
+      "product_id": "prd-field-case",
+      "location_id": "loc-acct-polaris",
+      "quantity": 2
+    },
+    {
+      "reservation_id": "res-HX-20388-prd-gateway-pro",
+      "order_id": "HX-20388",
+      "product_id": "prd-gateway-pro",
+      "location_id": "loc-acct-polaris",
+      "quantity": 1
+    },
+    {
+      "reservation_id": "res-HX-20371-prd-analytics",
+      "order_id": "HX-20371",
+      "product_id": "prd-analytics",
+      "location_id": "loc-acct-cascade",
+      "quantity": 4
+    }
+  ],
+  "portal_visibility_rules": [
+    {
+      "rule_id": "rule-delayed",
+      "status": "delayed",
+      "customer_visible": true,
+      "title": "Shipment delayed"
+    },
+    {
+      "rule_id": "rule-escalation-active",
+      "status": "customer_escalation_active",
+      "customer_visible": true,
+      "title": "At-risk escalation active"
+    }
+  ],
+  "notification_outbox": []
+}
