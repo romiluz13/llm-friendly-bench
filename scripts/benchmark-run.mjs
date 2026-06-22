@@ -14,6 +14,9 @@ import {
   writeJson,
   writeText
 } from "./benchmark-lib.mjs";
+import { extractUsage } from "./agent-usage.mjs";
+
+const suite = readSuite();
 
 export function detectCheatSignals(changedFiles, readFileFn) {
   const signals = [];
@@ -26,7 +29,6 @@ export function detectCheatSignals(changedFiles, readFileFn) {
 }
 
 if (process.argv[1] === new URL(import.meta.url).pathname) {
-  const suite = readSuite();
   const taskId = valueAfter("--task");
   const lane = valueAfter("--lane");
   const agentId = valueAfter("--agent");
@@ -109,6 +111,7 @@ function runCell(cell) {
     try { return readFileSync(join(workspace, f), "utf8"); } catch { return ""; }
   });
   const transcriptBytes = (agentResult.stdoutBytes || 0) + (agentResult.stderrBytes || 0);
+  const usage = extractUsage(cell.agentId, agentResult.transcriptText);
   let status = agentResult.status === 0 && test.status === 0 ? "passed" : "failed";
   if (cheatSignals.length > 0) {
     status = "failed";
@@ -144,7 +147,8 @@ function runCell(cell) {
     metrics: {
       elapsedMs: Date.now() - startMs,
       transcriptBytes,
-      estimatedTranscriptTokens: estimateTokensFromBytes(transcriptBytes),
+      tokens: usage,
+      estimatedTranscriptTokens: usage.source === "measured" ? usage.totalTokens : estimateTokensFromBytes(transcriptBytes),
       diffBytes: Buffer.byteLength(diff, "utf8"),
       filesChanged: changedFiles.length,
       changedFiles,
@@ -202,6 +206,7 @@ function runAgent({ agentId, workspace, prompt, outDir }) {
       "-p",
       "--output-format",
       "stream-json",
+      "--verbose",
       "--permission-mode",
       "bypassPermissions",
       prompt
