@@ -20,13 +20,21 @@ import {
   writeJson
 } from "./benchmark-lib.mjs";
 
+// 2026-06-23: seed replay validated under the pre-fix gameable acceptance tests; archived as raw artifact, not scored until re-run clean.
+const SEED_VERIFIED_CLEAN = false;
+
 const suite = readSuite();
 const tasks = listTasks(suite);
-const capturedRuns = readRunManifests(suite);
+const allCapturedRuns = readRunManifests(suite);
+// Exclude runs that lack a cheatSignals field (pre-fix harness; e.g. the globalThis.db renewal-risk run)
+// and runs whose cheatSignals are non-empty — both represent tainted evidence.
+const capturedRuns = allCapturedRuns.filter(
+  (run) => Array.isArray(run.metrics?.cheatSignals) && run.metrics.cheatSignals.length === 0
+);
 const seed = existsSync(seedRunSummaryPath) ? readJson(seedRunSummaryPath) : null;
 const seedReplay = existsSync(seedReplayPath) ? readJson(seedReplayPath) : null;
 const seedBundle = existsSync(seedEvidenceBundlePath) ? readJson(seedEvidenceBundlePath) : null;
-const seedLaneRuns = seed?.status === "passed" ? 2 : 0;
+const seedLaneRuns = SEED_VERIFIED_CLEAN && seed?.status === "passed" ? 2 : 0;
 const passedRuns = capturedRuns.filter((run) => run.status === "passed");
 const capturedLaneRuns = seedLaneRuns + capturedRuns.length;
 const passedLaneRuns = seedLaneRuns + passedRuns.length;
@@ -115,7 +123,7 @@ function taskStatus(task, manifests, seedReplay) {
 
 function aggregateRuns(manifests, seed) {
   const rows = [];
-  if (seed?.status === "passed") {
+  if (SEED_VERIFIED_CLEAN && seed?.status === "passed") {
     rows.push(seedMetricRow("mongo", seed.lanes.mongo));
     rows.push(seedMetricRow("postgres", seed.lanes.postgres));
   }
