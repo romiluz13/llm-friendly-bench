@@ -65,6 +65,7 @@ const summary = {
   lanes: suite.lanes,
   tasks: tasks.map((task) => taskStatus(task, capturedRuns, seedReplay)),
   aggregate: aggregateRuns(capturedRuns, seed),
+  databaseVerdict: computeDatabaseVerdict(capturedRuns),
   currentSeed: buildSeedSummary({ seed, seedReplay, seedBundle }),
   costModel: buildCostModel(seedCost),
   evidenceSources: hashExisting([
@@ -116,8 +117,8 @@ function taskStatus(task, manifests, seedReplay) {
     domainLabel: task.domainLabel,
     expectedOutcome: task.expectedOutcome,
     seedCase: Boolean(isSeed),
-    capturedLaneRuns: runs.length + (isSeed ? 2 : 0),
-    status: isSeed ? "seed-case" : runs.length ? "captured" : "defined"
+    capturedLaneRuns: runs.length + (isSeed && SEED_VERIFIED_CLEAN ? 2 : 0),
+    status: isSeed && SEED_VERIFIED_CLEAN ? "seed-case" : runs.length ? "captured" : "defined"
   };
 }
 
@@ -205,5 +206,48 @@ function buildCostModel(seedCost) {
     monthlyDeltaUsd: seedCost.monthlyDeltaUsd || 0,
     publicLabel: `${formatMoneyShort(seedCost.monthlyDeltaUsd || 0)} seed-case monthly projection under visible assumptions`,
     caveat: "Only the seed replay deltas are measured today; V1 aggregate cost waits for the full run set."
+  };
+}
+
+export function computeDatabaseVerdict(runs) {
+  const passed = runs.filter((r) => r.status === "passed" && !(r.metrics?.cheatSignals?.length));
+  const agents = [...new Set(passed.map((r) => r.agentId))];
+  const perAgent = agents.map((agentId) => {
+    const lane = (id) => {
+      const rows = passed.filter((r) => r.agentId === agentId && r.lane === id);
+      const tok = (r) => r.metrics.tokens?.totalTokens ?? r.metrics.estimatedTranscriptTokens ?? 0;
+      return {
+        runs: rows.length,
+        medianTokens: median(rows.map(tok)),
+        medianCostUsd: median(rows.map((r) => r.metrics.tokens?.costUsd ?? 0)),
+        medianElapsedMs: median(rows.map((r) => r.metrics.elapsedMs)),
+        medianRetrySignals: median(rows.map((r) => r.metrics.retrySignals))
+      };
+    };
+    const mongo = lane("mongo");
+    const postgres = lane("postgres");
+    const pct = (a, b) => (a > 0 ? Math.round(((b - a) / a) * 100) : 0);
+    return {
+      agentId, mongo, postgres,
+      deltas: {
+        tokensPct: pct(mongo.medianTokens, postgres.medianTokens),
+        costPct: pct(mongo.medianCostUsd, postgres.medianCostUsd),
+        timePct: pct(mongo.medianElapsedMs, postgres.medianElapsedMs),
+        retries: postgres.medianRetrySignals - mongo.medianRetrySignals
+      },
+      mongoWins: mongo.medianTokens > 0 && postgres.medianTokens > mongo.medianTokens
+    };
+  });
+  const agree = perAgent.length > 0 && perAgent.every((a) => a.mongoWins);
+  return {
+    perAgent,
+    agreement: {
+      agentsAgreeMongoFewerTokens: agree,
+      agentCount: perAgent.length,
+      statement: agree
+        ? `All ${perAgent.length} agents independently needed fewer tokens on MongoDB for the same tasks.`
+        : "Agents did not unanimously favor MongoDB on tokens; see per-agent detail."
+    },
+    caveat: "Within-agent comparison only. Cross-agent absolute numbers are not comparable."
   };
 }
