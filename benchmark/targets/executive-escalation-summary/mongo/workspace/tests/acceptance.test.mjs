@@ -13,8 +13,8 @@ strictEqual(before.tasks, "0 owner tasks", "Before state has no owner tasks");
 const runData = structuredClone(data);
 const after = applyBenchmarkTask(runData, now);
 const expectedStatus = "Executive summary published with complete evidence links and customer-visible status.";
-const expectedOwners = db.workflow_requests[0].ownerGroups;
-const expectedSignals = db.workflow_requests[0].riskSignals;
+const expectedOwners = data.workflow_requests[0].ownerGroups;
+const expectedSignals = data.workflow_requests[0].riskSignals;
 
 strictEqual(after.status, expectedStatus, "Customer-facing status");
 strictEqual(after.owner, expectedOwners.join(" + "), "Owner routing");

@@ -228,11 +228,11 @@ function portalView({ lane }) {
 
 function acceptanceTest({ task, lane, dataFile }) {
   const expectedOwners = lane === "mongo"
-    ? "db.workflow_requests[0].ownerGroups"
-    : "tables.workflow_request_owner_groups.sort((a, b) => a.group_order - b.group_order).map((item) => item.owner_group)";
+    ? "data.workflow_requests[0].ownerGroups"
+    : "data.workflow_request_owner_groups.slice().sort((a, b) => a.group_order - b.group_order).map((item) => item.owner_group)";
   const expectedSignals = lane === "mongo"
-    ? "db.workflow_requests[0].riskSignals"
-    : "tables.workflow_request_risk_signals.sort((a, b) => a.signal_order - b.signal_order).map((item) => ({ name: item.signal_name, detail: item.detail }))";
+    ? "data.workflow_requests[0].riskSignals"
+    : "data.workflow_request_risk_signals.slice().sort((a, b) => a.signal_order - b.signal_order).map((item) => ({ name: item.signal_name, detail: item.detail }))";
   return `import { deepStrictEqual, strictEqual } from "node:assert";
 import { readFileSync } from "node:fs";
 import { applyBenchmarkTask } from "../src/workflow.mjs";

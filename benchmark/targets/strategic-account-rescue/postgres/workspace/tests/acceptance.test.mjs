@@ -13,8 +13,8 @@ strictEqual(before.tasks, "0 owner tasks", "Before state has no owner tasks");
 const runData = structuredClone(data);
 const after = applyBenchmarkTask(runData, now);
 const expectedStatus = "At-risk escalation active with executive recovery owner routing and customer-visible audit history.";
-const expectedOwners = tables.workflow_request_owner_groups.sort((a, b) => a.group_order - b.group_order).map((item) => item.owner_group);
-const expectedSignals = tables.workflow_request_risk_signals.sort((a, b) => a.signal_order - b.signal_order).map((item) => ({ name: item.signal_name, detail: item.detail }));
+const expectedOwners = data.workflow_request_owner_groups.slice().sort((a, b) => a.group_order - b.group_order).map((item) => item.owner_group);
+const expectedSignals = data.workflow_request_risk_signals.slice().sort((a, b) => a.signal_order - b.signal_order).map((item) => ({ name: item.signal_name, detail: item.detail }));
 
 strictEqual(after.status, expectedStatus, "Customer-facing status");
 strictEqual(after.owner, expectedOwners.join(" + "), "Owner routing");
