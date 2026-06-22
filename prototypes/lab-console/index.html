@@ -949,6 +949,162 @@
 
     .cost-control strong { font-size: 18px; }
 
+    /* ── Database verdict hero ─────────────────────────────────── */
+
+    .verdict-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: start;
+      border: 1px solid color-mix(in oklch, var(--green) 38%, var(--line));
+      border-radius: 8px;
+      background: color-mix(in oklch, var(--green) 6%, var(--panel));
+      padding: 22px 24px 18px;
+      margin-bottom: 4px;
+    }
+
+    .verdict-headline {
+      margin: 0 0 6px;
+      font-size: 38px;
+      line-height: 1.05;
+      color: var(--ink);
+    }
+
+    .verdict-sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .verdict-side {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    .agreement-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in oklch, var(--green) 55%, var(--line));
+      background: color-mix(in oklch, var(--green) 14%, var(--panel));
+      color: var(--green-deep);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .verdict-caveat {
+      color: var(--muted);
+      font-size: 11px;
+      text-align: right;
+      max-width: 220px;
+      line-height: 1.35;
+    }
+
+    .agent-comparison {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .agent-row {
+      display: grid;
+      grid-template-columns: 100px minmax(0, 1fr) 54px 54px;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .agent-row-label {
+      font-weight: 700;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .agent-bars {
+      display: grid;
+      grid-template-rows: auto auto;
+      gap: 4px;
+    }
+
+    .bar-track {
+      position: relative;
+      height: 10px;
+      border-radius: 999px;
+      background: color-mix(in oklch, var(--line) 60%, var(--panel));
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      border-radius: 999px;
+      transition: width 260ms var(--ease);
+    }
+
+    .bar-fill.mongo { background: var(--green); }
+    .bar-fill.postgres { background: var(--blue); }
+
+    .bar-label {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .agent-col-value {
+      text-align: right;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .agent-col-value.winner { color: var(--green-deep); }
+    .agent-col-value.loser { color: var(--muted); }
+
+    .agent-col-head {
+      text-align: right;
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+
+    .verdict-pending {
+      padding: 16px 20px;
+      border: 1px solid var(--soft-line);
+      border-radius: 8px;
+      background: color-mix(in oklch, var(--panel-2) 50%, var(--panel));
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 720px) {
+      .verdict-hero {
+        grid-template-columns: 1fr;
+      }
+      .verdict-side {
+        align-items: flex-start;
+      }
+      .verdict-caveat {
+        text-align: left;
+        max-width: none;
+      }
+      .verdict-headline { font-size: 28px; }
+    }
+
+    /* ── end database verdict hero ──────────────────────────────── */
+
     .evidence-drawer {
       position: sticky;
       top: 12px;
@@ -1134,6 +1290,8 @@
           <p class="hero-copy" id="hero-copy">Loading captured benchmark bundle.</p>
         </div>
 
+        <div id="verdict-region"></div>
+
         <div class="truth-strip" id="truth-strip"></div>
 
         <div class="lane-board" id="lane-board" aria-label="MongoDB versus Postgres measured lane comparison"></div>
@@ -1141,7 +1299,7 @@
 
       <aside class="hero-side">
         <section class="receipt" id="seed-receipt">
-          <div class="kicker">Measured answer</div>
+          <div class="kicker">Illustrative example — single verified replay</div>
           <h3 id="seed-answer" class="seed-answer">Waiting for evidence.</h3>
           <div class="delta-board" id="seed-metrics"></div>
           <p class="caveat" id="seed-caveat">Single verified replay. Same task, same agent, same acceptance test.</p>
@@ -1361,6 +1519,84 @@
       }
     });
 
+    function renderDatabaseVerdict(bundle) {
+      const region = document.getElementById("verdict-region");
+      if (!region) return;
+      const verdict = bundle?.databaseVerdict;
+      if (!verdict?.perAgent?.length) {
+        region.innerHTML = "";
+        return;
+      }
+
+      const agreement = verdict.agreement || {};
+      const agentCount = agreement.agentCount ?? verdict.perAgent.length;
+      const allAgree = agreement.agentsAgreeMongoFewerTokens ?? false;
+      const caveat = verdict.caveat || "Within-agent comparison only.";
+
+      // Compute headline: median within-agent token reduction across agents that have Mongo wins
+      const winningAgents = verdict.perAgent.filter((a) => a.mongoWins && a.deltas?.tokensPct != null);
+      let headlineNumber = null;
+      if (winningAgents.length > 0) {
+        const sorted = winningAgents.map((a) => Math.abs(a.deltas.tokensPct)).sort((x, y) => x - y);
+        const mid = Math.floor(sorted.length / 2);
+        headlineNumber = sorted.length % 2 === 0 ? Math.round((sorted[mid - 1] + sorted[mid]) / 2) : sorted[mid];
+      }
+
+      const headlineText = headlineNumber != null
+        ? `${headlineNumber}% fewer tokens on MongoDB`
+        : (agreement.statement || "MongoDB used fewer tokens");
+
+      const agentLabel = agentCount === 1 ? "1 independent agent" : `${agentCount} independent agents`;
+      const badgeText = allAgree
+        ? `${agentLabel} agree${agentCount === 1 ? "s" : ""}`
+        : `${agentLabel} tested`;
+
+      // Build per-agent rows
+      const maxTokens = Math.max(...verdict.perAgent.map((a) => Math.max(a.mongo?.medianTokens ?? 0, a.postgres?.medianTokens ?? 0)), 1);
+
+      const agentRowsHtml = verdict.perAgent.map((agent) => {
+        const mongoT = agent.mongo?.medianTokens ?? 0;
+        const pgT = agent.postgres?.medianTokens ?? 0;
+        const mongoPct = Math.round((mongoT / maxTokens) * 100);
+        const pgPct = Math.round((pgT / maxTokens) * 100);
+        const mongoWins = agent.mongoWins ?? (mongoT <= pgT);
+        const agId = escapeHtml(agent.agentId || "agent");
+        return `<div class="agent-row">
+          <span class="agent-row-label" title="${agId}">${agId}</span>
+          <div class="agent-bars">
+            <div>
+              <div class="bar-label">MongoDB</div>
+              <div class="bar-track"><div class="bar-fill mongo" style="width:${mongoPct}%"></div></div>
+            </div>
+            <div>
+              <div class="bar-label">Postgres</div>
+              <div class="bar-track"><div class="bar-fill postgres" style="width:${pgPct}%"></div></div>
+            </div>
+          </div>
+          <span class="agent-col-value ${mongoWins ? "winner" : "loser"}">${formatNumber(mongoT)}<br><small>Mongo</small></span>
+          <span class="agent-col-value ${mongoWins ? "loser" : "winner"}">${formatNumber(pgT)}<br><small>PG</small></span>
+        </div>`;
+      }).join("");
+
+      const subText = winningAgents.length > 0
+        ? `Median context tokens per task, within the same agent. ${escapeHtml(agentLabel)} tested.`
+        : escapeHtml(agreement.statement || "Within-agent token comparison.");
+
+      region.innerHTML = `<div class="verdict-hero">
+        <div>
+          <h2 class="verdict-headline">${escapeHtml(headlineText)}</h2>
+          <p class="verdict-sub">${subText}</p>
+          <div class="agent-comparison" aria-label="Per-agent token comparison">
+            ${agentRowsHtml}
+          </div>
+        </div>
+        <div class="verdict-side">
+          <span class="agreement-badge"><span class="pulse" aria-hidden="true"></span>${escapeHtml(badgeText)}</span>
+          <p class="verdict-caveat">${escapeHtml(caveat)}</p>
+        </div>
+      </div>`;
+    }
+
     function renderAll() {
       const bundle = state.bundle;
       const seedTask = bundle.tasks.find((task) => task.seedCase) || bundle.tasks[0];
@@ -1378,6 +1614,7 @@
       document.getElementById("cost-headline").textContent = bundle.costModel.publicLabel;
       document.getElementById("cost-caveat").textContent = bundle.costModel.caveat;
 
+      renderDatabaseVerdict(bundle);
       renderTruthStrip();
       renderLaneBoard();
       renderSeedReceipt();
