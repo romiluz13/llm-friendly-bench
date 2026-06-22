@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "npm run benchmark:bundle",
+    "deploy": "npx wrangler deploy",
+    "deploy:pages": "npx wrangler pages deploy prototypes/lab-console --project-name=llm-friendly-bench",
     "proof:all": "npm run proof:run && npm run proof:validate && npm run proof:gates && npm run proof:bundle && npm run proof:no-mock",
     "proof:fixture": "node scripts/generate-fixtures.mjs",
     "proof:run": "node scripts/run-local-proof.mjs",

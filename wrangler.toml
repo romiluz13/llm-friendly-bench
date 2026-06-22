@@ -1,2 +1,5 @@
 name = "llm-friendly-bench"
-pages_build_output_dir = "prototypes/lab-console"
+compatibility_date = "2026-06-22"
+
+[assets]
+directory = "./prototypes/lab-console"

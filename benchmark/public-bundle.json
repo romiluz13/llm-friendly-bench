@@ -2,7 +2,7 @@
   "schemaVersion": "1.0.0",
   "suiteId": "ast-bench-v1",
   "status": "case-study",
-  "generatedAt": "2026-06-21T20:41:37.564Z",
+  "generatedAt": "2026-06-22T20:51:58.642Z",
   "headline": "AST-Bench shows how much database work an AI coding agent pays before the same feature ships.",
   "subhead": "Same task. Same Codex run contract. Same acceptance test. MongoDB kept the business state closer to the workflow, so the agent spent less context, less time, and fewer cleanup loops on this verified replay.",
   "proofQuestion": "When the same agent builds the same workflow, how much work is product logic and how much is database-state reconstruction?",

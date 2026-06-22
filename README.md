@@ -50,6 +50,34 @@ npm run benchmark:all
 npm run prototype:lab
 ```
 
+## Cloudflare Deploy
+
+Use this build command:
+
+```sh
+npm run build
+```
+
+For Cloudflare Pages Git integration, leave the custom deploy command empty and set this output directory in the Cloudflare dashboard:
+
+```sh
+prototypes/lab-console
+```
+
+If the Cloudflare project has a custom deploy command, use one of these:
+
+```sh
+npx wrangler pages deploy prototypes/lab-console --project-name=llm-friendly-bench
+```
+
+or:
+
+```sh
+npx wrangler deploy
+```
+
+The committed `wrangler.toml` is configured for Workers Static Assets because Cloudflare ran `npx wrangler deploy` in the failing log. For Pages, the explicit `wrangler pages deploy` command above is the matching deploy path.
+
 Optional isolated local databases:
 
 ```sh
