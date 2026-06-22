@@ -46,7 +46,8 @@ const bundle = {
   plainEnglish: {
     headline: "The feature shipped in both lanes. MongoDB made the AI read less, wait less, and clean up less.",
     seedAnswer: "In this verified replay, Codex passed both lanes. Postgres required more context, more elapsed time, and more cleanup signals. MongoDB had the larger code diff, so the page shows that mixed metric instead of hiding it.",
-    audiencePromise: "A CEO sees the business cost. A developer can open the raw trace, diff, tests, database proof, and hashes."
+    audiencePromise: "A CEO sees the business cost. A developer can open the raw trace, diff, tests, database proof, and hashes.",
+    databaseAnswer: result.databaseVerdict?.agreement?.statement || "Benchmark in progress."
   },
   architectureQuestion: "Is the real comparison one database versus one database, or one MongoDB data plane versus a stitched stack?",
   stackComparison: [
@@ -303,6 +304,7 @@ const bundle = {
       sources: [source("scripts/benchmark-gates.mjs"), source("scripts/test-benchmark-gates.mjs")]
     }
   ],
+  databaseVerdict: result.databaseVerdict,
   costModel: {
     ...result.costModel,
     publicLabel: `${formatMoneyShort(result.costModel.monthlyDeltaUsd)} projected monthly impact under your assumptions`,

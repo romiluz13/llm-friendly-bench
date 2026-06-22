@@ -2,14 +2,15 @@
   "schemaVersion": "1.0.0",
   "suiteId": "ast-bench-v1",
   "status": "case-study",
-  "generatedAt": "2026-06-22T20:51:58.642Z",
+  "generatedAt": "2026-06-22T22:56:23.365Z",
   "headline": "AST-Bench shows how much database work an AI coding agent pays before the same feature ships.",
   "subhead": "Same task. Same Codex run contract. Same acceptance test. MongoDB kept the business state closer to the workflow, so the agent spent less context, less time, and fewer cleanup loops on this verified replay.",
   "proofQuestion": "When the same agent builds the same workflow, how much work is product logic and how much is database-state reconstruction?",
   "plainEnglish": {
     "headline": "The feature shipped in both lanes. MongoDB made the AI read less, wait less, and clean up less.",
     "seedAnswer": "In this verified replay, Codex passed both lanes. Postgres required more context, more elapsed time, and more cleanup signals. MongoDB had the larger code diff, so the page shows that mixed metric instead of hiding it.",
-    "audiencePromise": "A CEO sees the business cost. A developer can open the raw trace, diff, tests, database proof, and hashes."
+    "audiencePromise": "A CEO sees the business cost. A developer can open the raw trace, diff, tests, database proof, and hashes.",
+    "databaseAnswer": "All 1 agents independently needed fewer tokens on MongoDB for the same tasks."
   },
   "architectureQuestion": "Is the real comparison one database versus one database, or one MongoDB data plane versus a stitched stack?",
   "stackComparison": [
@@ -814,20 +815,20 @@
     "byLane": {
       "mongo": {
         "rowCount": 2,
-        "medianElapsedMs": 145525,
-        "medianEstimatedTranscriptTokens": 61532.5,
-        "tokenIqr": 4511,
-        "medianRetrySignals": 31,
-        "medianDiffBytes": 6661.5,
+        "medianElapsedMs": 254410.5,
+        "medianEstimatedTranscriptTokens": 641,
+        "tokenIqr": 84,
+        "medianRetrySignals": 54,
+        "medianDiffBytes": 3308,
         "medianFilesChanged": 1
       },
       "postgres": {
         "rowCount": 1,
-        "medianElapsedMs": 237528,
-        "medianEstimatedTranscriptTokens": 72657,
+        "medianElapsedMs": 268389,
+        "medianEstimatedTranscriptTokens": 669,
         "tokenIqr": 0,
-        "medianRetrySignals": 28,
-        "medianDiffBytes": 8699,
+        "medianRetrySignals": 84,
+        "medianDiffBytes": 3105,
         "medianFilesChanged": 1
       }
     }
@@ -840,8 +841,8 @@
       "domainLabel": "Customer 360 / CRM",
       "expectedOutcome": "At-risk escalation active with executive recovery owner routing and customer-visible audit history.",
       "seedCase": true,
-      "capturedLaneRuns": 2,
-      "status": "seed-case"
+      "capturedLaneRuns": 3,
+      "status": "captured"
     },
     {
       "id": "renewal-risk-workspace",
@@ -850,8 +851,8 @@
       "domainLabel": "Customer 360 / CRM",
       "expectedOutcome": "Renewal risk workspace active with owner tasks, customer-safe next step, and persisted risk factors.",
       "seedCase": false,
-      "capturedLaneRuns": 1,
-      "status": "captured"
+      "capturedLaneRuns": 0,
+      "status": "defined"
     },
     {
       "id": "account-merge-consent-audit",
@@ -1089,14 +1090,14 @@
       "id": "codex",
       "label": "Codex",
       "adapter": "codex exec",
-      "capturedLaneRuns": 3,
-      "claimStatus": "seed-captured"
+      "capturedLaneRuns": 0,
+      "claimStatus": "not-yet-verified"
     },
     {
       "id": "claude-code",
       "label": "Claude Code",
       "adapter": "claude --print",
-      "capturedLaneRuns": 0,
+      "capturedLaneRuns": 3,
       "claimStatus": "not-yet-verified"
     },
     {
@@ -1135,8 +1136,8 @@
         {
           "path": "benchmark/results/summary.json",
           "exists": true,
-          "bytes": 14781,
-          "sha256": "ff29bfc3e9cc98a93b425cd7053ae726df8f0a8ae812aaf66495f3ce6ff5db03"
+          "bytes": 15716,
+          "sha256": "6d090c58592c45bca5d1aa0c8b4e431f4e8085f1e3639c4d62fd273e1645bc2f"
         }
       ]
     },
@@ -1233,8 +1234,8 @@
         {
           "path": "benchmark/results/summary.json",
           "exists": true,
-          "bytes": 14781,
-          "sha256": "ff29bfc3e9cc98a93b425cd7053ae726df8f0a8ae812aaf66495f3ce6ff5db03"
+          "bytes": 15716,
+          "sha256": "6d090c58592c45bca5d1aa0c8b4e431f4e8085f1e3639c4d62fd273e1645bc2f"
         }
       ]
     },
@@ -1293,8 +1294,8 @@
         {
           "path": "benchmark/results/summary.json",
           "exists": true,
-          "bytes": 14781,
-          "sha256": "ff29bfc3e9cc98a93b425cd7053ae726df8f0a8ae812aaf66495f3ce6ff5db03"
+          "bytes": 15716,
+          "sha256": "6d090c58592c45bca5d1aa0c8b4e431f4e8085f1e3639c4d62fd273e1645bc2f"
         }
       ]
     },
@@ -1313,12 +1314,46 @@
         {
           "path": "scripts/test-benchmark-gates.mjs",
           "exists": true,
-          "bytes": 1454,
-          "sha256": "8cebae736ddeab495b14e1fe3565b0dff32a3c7a78f5e140347d326e851cdee2"
+          "bytes": 2219,
+          "sha256": "c5551e0b971de4fd613cc64243886163b1fcee9fabed9150bd9bdfd77de5f296"
         }
       ]
     }
   ],
+  "databaseVerdict": {
+    "perAgent": [
+      {
+        "agentId": "claude-code",
+        "mongo": {
+          "runs": 2,
+          "medianTokens": 641,
+          "medianCostUsd": 1.674325,
+          "medianElapsedMs": 254410.5,
+          "medianRetrySignals": 54
+        },
+        "postgres": {
+          "runs": 1,
+          "medianTokens": 669,
+          "medianCostUsd": 1.6521829999999997,
+          "medianElapsedMs": 268389,
+          "medianRetrySignals": 84
+        },
+        "deltas": {
+          "tokensPct": 4,
+          "costPct": -1,
+          "timePct": 5,
+          "retries": 30
+        },
+        "mongoWins": true
+      }
+    ],
+    "agreement": {
+      "agentsAgreeMongoFewerTokens": true,
+      "agentCount": 1,
+      "statement": "All 1 agents independently needed fewer tokens on MongoDB for the same tasks."
+    },
+    "caveat": "Within-agent comparison only. Cross-agent absolute numbers are not comparable."
+  },
   "costModel": {
     "measuredSeedOnly": true,
     "assumptions": {
