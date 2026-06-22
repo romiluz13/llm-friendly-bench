@@ -92,7 +92,7 @@ function runCell(cell) {
   writeText(join(outDir, "prompt.md"), prompt);
   copyIfExists(join(workspace, "data", cell.lane === "mongo" ? "collections.json" : "tables.json"), join(outDir, "db-before", cell.lane === "mongo" ? "collections.json" : "tables.json"));
 
-  initGit(workspace);
+  const frozenSha = initGit(workspace);
   const startedAt = new Date();
   const startMs = Date.now();
   const agentResult = runAgent({ agentId: cell.agentId, workspace, prompt, outDir });
@@ -104,9 +104,11 @@ function runCell(cell) {
   copyIfExists(join(workspace, "artifacts", "before-after.svg"), join(outDir, "screenshots", "before-after.svg"));
   copyIfExists(join(workspace, "artifacts", "before-after.json"), join(outDir, "db-after", `${cell.lane}-workflow-after.json`));
 
-  const diff = commandOutput("git", ["diff", "--", "."], workspace);
+  const diffArgs = frozenSha ? ["diff", frozenSha, "--", "."] : ["diff", "--", "."];
+  const diffNameArgs = frozenSha ? ["diff", "--name-only", frozenSha, "--", "."] : ["diff", "--name-only", "--", "."];
+  const diff = commandOutput("git", diffArgs, workspace);
   writeText(join(outDir, "diff.patch"), diff);
-  const changedFiles = commandOutput("git", ["diff", "--name-only", "--", "."], workspace).split(/\r?\n/).filter(Boolean);
+  const changedFiles = commandOutput("git", diffNameArgs, workspace).split(/\r?\n/).filter(Boolean);
   const cheatSignals = detectCheatSignals(changedFiles, (f) => {
     try { return readFileSync(join(workspace, f), "utf8"); } catch { return ""; }
   });
@@ -280,6 +282,7 @@ function initGit(workspace) {
   run("git", ["config", "user.name", "AST-Bench"], workspace);
   run("git", ["add", "."], workspace);
   run("git", ["commit", "-m", "Frozen before state"], workspace);
+  return commandOutput("git", ["rev-parse", "HEAD"], workspace).trim();
 }
 
 function run(command, args, cwd) {
