@@ -15,25 +15,37 @@ import {
   writeText
 } from "./benchmark-lib.mjs";
 
-const suite = readSuite();
-const taskId = valueAfter("--task");
-const lane = valueAfter("--lane");
-const agentId = valueAfter("--agent");
-const repeat = Number(valueAfter("--repeat") || 1);
-const runAll = process.argv.includes("--all");
-
-if (runAll && process.env.AST_BENCH_RUN_FULL !== "1") {
-  console.error("Full V1 run requires AST_BENCH_RUN_FULL=1 because it may launch 450 agent runs.");
-  process.exit(1);
+export function detectCheatSignals(changedFiles, readFileFn) {
+  const signals = [];
+  for (const file of changedFiles) {
+    if (file.startsWith("tests/") || file.startsWith("data/")) continue;
+    const text = readFileFn(file) || "";
+    if (/\bglobalThis\.\w+\s*=|\bglobal\.\w+\s*=/.test(text)) signals.push("global-injection");
+  }
+  return [...new Set(signals)];
 }
 
-if (!runAll && (!taskId || !lane || !agentId)) {
-  console.error("Usage: node scripts/benchmark-run.mjs --task <taskId> --lane <mongo|postgres> --agent <codex|claude-code|cursor> [--repeat 1]");
-  process.exit(1);
-}
+if (process.argv[1] === new URL(import.meta.url).pathname) {
+  const suite = readSuite();
+  const taskId = valueAfter("--task");
+  const lane = valueAfter("--lane");
+  const agentId = valueAfter("--agent");
+  const repeat = Number(valueAfter("--repeat") || 1);
+  const runAll = process.argv.includes("--all");
 
-const cells = runAll ? allCells() : [{ taskId, lane, agentId, repeat }];
-for (const cell of cells) runCell(cell);
+  if (runAll && process.env.AST_BENCH_RUN_FULL !== "1") {
+    console.error("Full V1 run requires AST_BENCH_RUN_FULL=1 because it may launch 450 agent runs.");
+    process.exit(1);
+  }
+
+  if (!runAll && (!taskId || !lane || !agentId)) {
+    console.error("Usage: node scripts/benchmark-run.mjs --task <taskId> --lane <mongo|postgres> --agent <codex|claude-code|cursor> [--repeat 1]");
+    process.exit(1);
+  }
+
+  const cells = runAll ? allCells() : [{ taskId, lane, agentId, repeat }];
+  for (const cell of cells) runCell(cell);
+}
 
 function allCells() {
   const cells = [];
@@ -93,8 +105,15 @@ function runCell(cell) {
   const diff = commandOutput("git", ["diff", "--", "."], workspace);
   writeText(join(outDir, "diff.patch"), diff);
   const changedFiles = commandOutput("git", ["diff", "--name-only", "--", "."], workspace).split(/\r?\n/).filter(Boolean);
+  const cheatSignals = detectCheatSignals(changedFiles, (f) => {
+    try { return readFileSync(join(workspace, f), "utf8"); } catch { return ""; }
+  });
   const transcriptBytes = (agentResult.stdoutBytes || 0) + (agentResult.stderrBytes || 0);
-  const status = agentResult.status === 0 && test.status === 0 ? "passed" : "failed";
+  let status = agentResult.status === 0 && test.status === 0 ? "passed" : "failed";
+  if (cheatSignals.length > 0) {
+    status = "failed";
+    console.error(`AST-Bench: cheat signals detected (${cheatSignals.join(", ")}) — run marked failed`);
+  }
   const manifest = {
     schemaVersion: "1.0.0",
     suiteId: suite.suiteId,
@@ -129,6 +148,7 @@ function runCell(cell) {
       diffBytes: Buffer.byteLength(diff, "utf8"),
       filesChanged: changedFiles.length,
       changedFiles,
+      cheatSignals,
       commandCount: agentResult.commandCount,
       failedCommandCount: agentResult.failedCommandCount,
       retrySignals: countRetrySignals(`${agentResult.transcriptText}\n${agentResult.stderrText}\n${test.stdout || ""}\n${test.stderr || ""}`),

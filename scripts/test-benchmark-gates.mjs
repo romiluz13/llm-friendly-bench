@@ -37,3 +37,16 @@ function assertGateRejects(name, mutate) {
     throw new Error(`Negative benchmark gate test failed: ${name}`);
   }
 }
+
+function assert(condition, message) {
+  if (!condition) throw new Error(`Assertion failed: ${message}`);
+}
+
+import { detectCheatSignals } from "./benchmark-run.mjs";
+const dirty = detectCheatSignals(["src/workflow.mjs"], (f) => "export function applyBenchmarkTask(db){ globalThis.db = db; }");
+assert(dirty.includes("global-injection"), "globalThis.db write must be flagged as a cheat");
+const clean = detectCheatSignals(["src/workflow.mjs"], (f) => "export function applyBenchmarkTask(db){ return db; }");
+assert(clean.length === 0, "clean solution has no cheat signals");
+const skipped = detectCheatSignals(["tests/foo.mjs"], (f) => "globalThis.x = 1");
+assert(skipped.length === 0, "tests/ files must not be flagged");
+console.log("cheat-signal detection ok");
