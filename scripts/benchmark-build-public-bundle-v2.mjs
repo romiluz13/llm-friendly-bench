@@ -86,11 +86,11 @@ function rawTraceSources() {
 }
 
 const realRunVerdict = realCell
-  ? `Every run is a real coding-agent session against a live local database. Token counts come from the actual session logs, and an automated check rejects any run that tries to fake the result. ${summary.passedLaneRuns} runs passed.`
+  ? `Every run is a real coding-agent session: a real AI assistant builds the feature against the database's own data, laid out in its native shape — one document for MongoDB, related tables for Postgres. Token counts come from the actual session logs, and an automated check rejects any run that tries to fake the result. ${summary.passedLaneRuns} runs passed.`
   : `${summary.passedLaneRuns} of ${summary.requiredLaneRuns} runs captured so far.`;
 
 const rawTraceVerdict = realCell
-  ? "The complete, unedited log of what each agent did — every command, every database read — is saved for both databases and fingerprinted so it can't be altered after the fact."
+  ? "The complete, unedited log of what each agent did — every command it ran, every file it read — is saved for both databases and fingerprinted so it can't be altered after the fact."
   : "Full run logs are saved for every completed run.";
 
 // Plain-language hero statement, built from the same data-driven fields the
@@ -154,8 +154,9 @@ const bundle = {
   methodology: {
     withinAgentOnly: "We only ever compare each AI assistant to itself — its MongoDB run against its own Postgres run. We never put one assistant's numbers next to the other's, because the two tools count their own effort in different units. Think of it as timing the same runner on two race courses, not racing two different runners against each other.",
     tokenMetric: "Our main measure is how much the AI had to read and process to get the job done, taken straight from each assistant's own session logs. The simplest sanity check is plain clock time, and it agrees: both assistants took longer on Postgres.",
-    sameOutcome: "All three database designs deliver the exact same feature and pass the exact same test. Only the way the data is laid out in Postgres changes from one design to the next. So any difference in the AI's effort comes from the database design alone — nothing else.",
-    idiomaticPostgres: "Each Postgres design is what a skilled engineer would actually build — proper tables and the right links between them, including the kind of cross-referenced relationship real apps use (for example, where many records on one side connect to many on the other). We did not rig it with a deliberately bad design.",
+    dataModel: "Each run is a real AI session: the assistant builds the feature against the database's own data, laid out in that database's native shape — one combined document for MongoDB, a set of related tables for Postgres. The test then checks the resulting data is correct. The AI does the same shape of reading and writing the real database would require, and the one thing we hold constant is that data shape.",
+    sameOutcome: "All three database designs deliver the exact same feature and pass the exact same test. The thing we deliberately change is the shape of the data; everything else about the task is held the same. So the differences you see are consistent with data shape driving how much work the AI has to do.",
+    idiomaticPostgres: "Each Postgres design uses ordinary, sensible relational modeling — proper tables and the right links between them, including the kind of cross-referenced relationship real apps use. We did not rig it with a deliberately bad design. We have not yet had an outside Postgres expert sign off that these are the best possible designs — that review is a deliberate next step (a tuned Postgres design could narrow the gap).",
     cheaperModelStillWorks: "The two assistants ran on very different AI models — one a top-tier model, one a small, low-cost one. The low-cost model still wrote correct, working MongoDB code on 100% of its runs across every database design. You don't need the most expensive AI to build well on MongoDB.",
     whyAgentsDiffer: "Both assistants did more work on Postgres, but by different amounts. That's expected: each tool handles and remembers what it has already read in its own way, so the same extra Postgres work shows up bigger for one than the other. What matters is that both point the same direction — MongoDB took less work — even if the size of the gap is specific to each one.",
     fullV1Scope: "This is a focused study, not the final word. A full-scale benchmark would cover far more tasks and assistants (on the order of 450 runs). This study spends its effort on the one question it set out to answer — how the choice of database affects the AI's workload — rather than on sheer volume.",

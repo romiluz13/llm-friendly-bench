@@ -19,13 +19,24 @@ const forbiddenText = [
   /\bmock\b/i
 ];
 
+// V2 runs execute against the database's data in its native file shape, NOT a
+// live DB server (no pg/mongodb client in any run workspace). Forbid copy that
+// claims a live/running database, so the 2026-06-24 "live local database"
+// overclaim can never regress onto the public page or bundle.
+const forbiddenClaim = [
+  /live local database/i,
+  /\blive database\b/i,
+  /running (?:mongo|postgres|database)\b/i,
+  /against a real (?:mongo|postgres|database) (?:server|instance)/i
+];
+
 requireExists(publicPagePath);
 requireExists(v2BundlePath);
 requireExists(v2LabBundlePath);
 
 if (existsSync(publicPagePath)) {
   const page = readFileSync(publicPagePath, "utf8");
-  for (const pattern of forbiddenText) {
+  for (const pattern of [...forbiddenText, ...forbiddenClaim]) {
     if (pattern.test(page)) errors.push(`${publicPagePath} contains forbidden public copy: ${pattern}`);
   }
   for (const tag of [...page.matchAll(/<button\b[^>]*>/gi)].map((m) => m[0])) {
@@ -52,7 +63,11 @@ if (errors.length) {
 console.log("No-unverified-runtime-data gate passed");
 
 function verifyV2Bundle(path) {
-  const bundle = JSON.parse(readFileSync(path, "utf8"));
+  const raw = readFileSync(path, "utf8");
+  for (const pattern of forbiddenClaim) {
+    if (pattern.test(raw)) errors.push(`${path} contains forbidden live-database claim: ${pattern}`);
+  }
+  const bundle = JSON.parse(raw);
   if (!["case-study", "pilot"].includes(bundle.status)) errors.push(`${path} has invalid v2 status: ${bundle.status}`);
   if (bundle.status === "public-v1") errors.push(`${path} must not overclaim public-v1`);
   if (String(bundle.claimLabel || "").includes("450")) errors.push(`${path} claim label must not contain 450`);

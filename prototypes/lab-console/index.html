@@ -72,12 +72,13 @@
       <div class="tag">30-second version</div>
       <p>AI coding assistants (like the ones built into modern code editors) can now write working software. To do it, the AI has to <b>read and understand where your data lives</b> before it can write a single line.</p>
       <p>We gave two different AI assistants the <b>exact same job</b>, twice: once where the data lived in <b>MongoDB</b>, and once where the same data lived in <b>Postgres</b>. These are the two most popular ways to store data. They organize it differently: MongoDB keeps everything about one thing together in a single record; Postgres splits it across many connected tables that the AI must stitch back together.</p>
-      <p>We then measured how much work each AI had to do to finish the job — how much it had to read, how long it took, how much it cost. <b>Same result, same test, every time.</b> The only thing that changed was the database. So any difference is the database's doing.</p>
+      <p>We then measured how much work each AI had to do to finish the job — how much it had to read, how long it took, how much it cost. <b>Same result, same test, every time.</b> The one thing we deliberately changed was the shape of the data, so the differences you see line up with that choice.</p>
+      <p class="sub" style="margin:4px 0 0">A note for the technically-minded: each run uses the database's own data in its native shape (one document for MongoDB, related tables for Postgres), and the AI's work is checked against it. It is a focused pilot study, not yet a final verdict on every app — see "How we kept it honest" below for exactly what we did and didn't prove.</p>
     </div></section>
     <section><h2>Same job, two databases — here's the difference</h2><p class="sub" id="agent-sub">Shorter bar is better — it means less work for the AI. We only ever compare each AI assistant to itself.</p><div class="twin" id="agent-graphs"><div class="acard" id="agent-graph-claude-code"></div><div class="acard" id="agent-graph-codex"></div></div>
     <p class="sub" id="metric-key" style="margin-top:14px"><b>Text read</b> — how much the AI had to read to finish. <b>Cost</b> — the bill for that work. <b>Time</b> — how long it took. <b>False starts</b> — tries that errored and had to be redone.</p></section>
     <section id="shape-story"><h2>Does the gap grow as the database gets more complex?</h2><p class="sub">We built the same feature on three Postgres designs, from simple to detailed. MongoDB stays one record every time; Postgres spreads the data across more and more connected tables.</p><div class="shapes" id="shape-cards"></div><div class="trend" id="shape-trend"></div></section>
-    <section id="why-panel"><h2>Why the difference happens — from the AI's own session logs</h2><p class="sub">These counts come straight from each AI's recorded work session. On Postgres, a <em>JOIN</em> is the step that stitches separate tables back together; the AI writes one for every connection it needs.</p><div id="why-rows"></div></section>
+    <section id="why-panel"><h2>Why the difference happens</h2><p class="sub">These are approximate counts, scanned from each AI's recorded work session — a directional indicator, not an exact tally. On Postgres, a <em>JOIN</em> is the step that stitches separate tables back together; the AI writes one for every connection it needs.</p><div id="why-rows"></div></section>
     <section id="methodology"><h2>How we kept it honest</h2><ul class="method" id="method-list"></ul></section>
     <section id="evidence-drawer"><h2>Inspect the evidence</h2><p class="sub">Every number on this page comes from a real file you can open. Each file is fingerprinted, so if anyone changed a number after the fact, this page would refuse to load it.</p><button id="inspect-evidence" data-action="toggle-evidence">Show evidence sources</button><div id="evidence-list" class="hidden"></div></section>
     <footer id="foot"></footer>
@@ -181,7 +182,7 @@
 
   function renderMethodology(b) {
     const m = b.methodology || {};
-    const items = [m.withinAgentOnly, m.tokenMetric, m.cheaperModelStillWorks, m.whyAgentsDiffer, m.sameOutcome, m.idiomaticPostgres, m.fullV1Scope, m.pathToOfficial].filter(Boolean);
+    const items = [m.dataModel, m.withinAgentOnly, m.tokenMetric, m.cheaperModelStillWorks, m.whyAgentsDiffer, m.sameOutcome, m.idiomaticPostgres, m.fullV1Scope, m.pathToOfficial].filter(Boolean);
     document.getElementById("method-list").innerHTML = items.map((t) => `<li>${esc(t)}</li>`).join("");
   }
 
