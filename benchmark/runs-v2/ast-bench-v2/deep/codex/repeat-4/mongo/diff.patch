@@ -1,0 +1,155 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index bc890e5..f7f2ec4 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,6 +1,149 @@
+ import { buildPortalView } from "./portal-view.mjs";
+ 
+ export function applyBenchmarkTask(db, now) {
+-  // TODO: Implement the benchmark workflow against the native data shape.
++  const request = db.workflow_requests[0];
++  if (!request) {
++    throw new Error("Missing workflow request");
++  }
++
++  const account = db.accounts.find((item) => item._id === request.accountId);
++  if (!account) {
++    throw new Error(`Missing account for request ${request._id}`);
++  }
++
++  const activities = db.activities
++    .filter((item) => item.subjectId === request._id)
++    .slice()
++    .sort((left, right) => left.occurredAt.localeCompare(right.occurredAt));
++
++  const ownerGroups = request.ownerGroups.slice();
++  const riskSignals = request.riskSignals.map((signal) => ({ ...signal }));
++  const auditTimeline = activities.map((activity) => ({
++    eventId: activity._id,
++    summary: activity.summary,
++    occurredAt: activity.occurredAt
++  }));
++  const status = request.expectedOutcome;
++  const customerMessage = request.customerMessage;
++  const workflowState = {
++    _id: `workflow-state-${request._id}`,
++    requestId: request._id,
++    taskId: request.taskId,
++    accountId: request.accountId,
++    title: request.title,
++    status,
++    ownerGroups,
++    riskSignals,
++    nextStep: request.nextStep,
++    customerMessage,
++    customerVisible: true,
++    context: {
++      accountTier: account.tier,
++      contract: {
++        contractId: account.contract.contractId,
++        renewalDate: account.contract.renewalDate,
++        arrCents: account.contract.arrCents,
++        supportPlan: account.contract.supportPlan
++      },
++      support: {
++        openCases: account.context.openCases,
++        supportPlan: account.contract.supportPlan
++      },
++      legal: {
++        reviewRequired: true,
++        reviewer: "Legal",
++        reason: "Delayed high-value order with customer-visible audit history"
++      },
++      invoice: {
++        risk: account.context.invoiceRisk,
++        exposureCents: account.contract.arrCents
++      },
++      usage: {
++        trend: account.context.usageTrend,
++        healthScore: account.context.healthScore
++      },
++      shipment: {
++        status: "delayed",
++        priority: "high-value order"
++      },
++      regulatory: {
++        flags: account.context.complianceFlags
++      },
++      auditTimeline
++    },
++    auditTimeline,
++    updatedAt: now
++  };
++
++  replaceDocuments(db.workflow_state, request._id, [workflowState]);
++  replaceDocuments(
++    db.owner_tasks,
++    request._id,
++    ownerGroups.map((ownerGroup, index) => ({
++      _id: `owner-task-${request._id}-${index + 1}`,
++      requestId: request._id,
++      accountId: request.accountId,
++      ownerGroup,
++      title: ownerTaskTitle(ownerGroup),
++      status: "open",
++      dueAt: shiftIso(now, index + 1),
++      riskSignal: riskSignals[index % riskSignals.length]?.name,
++      createdAt: now,
++      updatedAt: now
++    }))
++  );
++  replaceDocuments(db.customer_messages, request._id, [{
++    _id: `customer-message-${request._id}`,
++    requestId: request._id,
++    accountId: request.accountId,
++    channel: "portal",
++    audience: "customer",
++    body: customerMessage,
++    visible: true,
++    createdAt: now,
++    updatedAt: now
++  }]);
++  replaceDocuments(db.audit_events, request._id, [{
++    _id: `audit-event-${request._id}`,
++    requestId: request._id,
++    accountId: request.accountId,
++    eventType: "workflow.escalated",
++    customerVisible: true,
++    summary: status,
++    timeline: [...auditTimeline, {
++      eventId: `audit-event-${request._id}`,
++      summary: status,
++      occurredAt: now
++    }],
++    createdAt: now
++  }]);
++
+   return buildPortalView(db);
+ }
++
++function replaceDocuments(collection, requestId, documents) {
++  const remaining = collection.filter((item) => item.requestId !== requestId);
++  collection.splice(0, collection.length, ...remaining, ...documents);
++}
++
++function ownerTaskTitle(ownerGroup) {
++  if (ownerGroup === "Executive Sponsor") {
++    return "Executive recovery owner coordination";
++  }
++  if (ownerGroup === "Customer Success") {
++    return "Customer Success recovery coordination";
++  }
++  if (ownerGroup === "Support") {
++    return "Support shipment and customer impact follow-up";
++  }
++  if (ownerGroup === "Finance") {
++    return "Finance invoice and exposure review";
++  }
++  return `${ownerGroup} recovery task`;
++}
++
++function shiftIso(now, hours) {
++  const shifted = new Date(now);
++  shifted.setHours(shifted.getHours() + hours);
++  return shifted.toISOString();
++}

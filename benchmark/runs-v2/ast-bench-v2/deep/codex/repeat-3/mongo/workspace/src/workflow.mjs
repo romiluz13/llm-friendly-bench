@@ -1,0 +1,130 @@
+import { buildPortalView } from "./portal-view.mjs";
+
+const ESCALATION_STATUS = "At-risk escalation active with executive recovery owner routing and customer-visible audit history.";
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+  const account = db.accounts.find((item) => item._id === request.accountId) || db.accounts[0];
+  const activities = db.activities
+    .filter((item) => item.accountId === account._id && item.subjectId === request._id)
+    .sort((left, right) => left.occurredAt.localeCompare(right.occurredAt));
+
+  const state = {
+    _id: request._id,
+    requestId: request._id,
+    accountId: account._id,
+    taskId: request.taskId,
+    title: request.title,
+    status: ESCALATION_STATUS,
+    customerVisibleStatus: ESCALATION_STATUS,
+    nextStep: request.nextStep,
+    ownerGroups: request.ownerGroups,
+    riskSignals: request.riskSignals,
+    customerMessage: request.customerMessage,
+    recoveryOwner: "Executive Sponsor",
+    portalState: "customer-visible",
+    context: {
+      accountTier: account.tier,
+      contract: account.contract,
+      support: {
+        plan: account.contract.supportPlan,
+        openCases: account.context.openCases
+      },
+      finance: {
+        invoiceRisk: account.context.invoiceRisk
+      },
+      usage: {
+        trend: account.context.usageTrend,
+        healthScore: account.context.healthScore
+      },
+      shipment: {
+        status: "delayed high-value order"
+      },
+      regulatory: {
+        flags: account.context.complianceFlags
+      },
+      audit: {
+        activityCount: activities.length,
+        timeline: activities.map((item) => ({
+          activityId: item._id,
+          summary: item.summary,
+          occurredAt: item.occurredAt
+        }))
+      }
+    },
+    updatedAt: now
+  };
+
+  upsertRequestDocs(db, "workflow_state", request._id, [state]);
+  upsertRequestDocs(
+    db,
+    "owner_tasks",
+    request._id,
+    request.ownerGroups.map((ownerGroup, index) => ({
+      _id: `owner-task-${request._id}-${index + 1}`,
+      requestId: request._id,
+      accountId: account._id,
+      taskId: request.taskId,
+      ownerGroup,
+      title: `${ownerGroup} recovery task`,
+      dueAt: addHours(now, (index + 1) * 2),
+      status: "open",
+      priority: "high",
+      createdAt: now
+    }))
+  );
+  upsertRequestDocs(db, "customer_messages", request._id, [{
+    _id: `customer-message-${request._id}`,
+    requestId: request._id,
+    accountId: account._id,
+    taskId: request.taskId,
+    audience: "customer",
+    body: request.customerMessage,
+    createdAt: now
+  }]);
+  upsertRequestDocs(
+    db,
+    "audit_events",
+    request._id,
+    [
+      ...activities.map((item, index) => ({
+        _id: `audit-event-${request._id}-${index + 1}`,
+        requestId: request._id,
+        accountId: account._id,
+        sourceActivityId: item._id,
+        summary: item.summary,
+        occurredAt: item.occurredAt,
+        customerVisible: false
+      })),
+      {
+        _id: `audit-event-${request._id}-customer-visible`,
+        requestId: request._id,
+        accountId: account._id,
+        sourceActivityId: request._id,
+        summary: ESCALATION_STATUS,
+        occurredAt: now,
+        customerVisible: true
+      }
+    ]
+  );
+
+  return buildPortalView(db);
+}
+
+function upsertRequestDocs(db, collectionName, requestId, docs) {
+  const collection = ensureCollection(db, collectionName);
+  const remaining = collection.filter((item) => item.requestId !== requestId);
+  collection.length = 0;
+  collection.push(...remaining, ...docs);
+}
+
+function ensureCollection(db, collectionName) {
+  if (!Array.isArray(db[collectionName])) {
+    db[collectionName] = [];
+  }
+  return db[collectionName];
+}
+
+function addHours(isoTimestamp, hours) {
+  return new Date(new Date(isoTimestamp).getTime() + hours * 60 * 60 * 1000).toISOString();
+}

@@ -13,7 +13,7 @@
     "realRuns": 60,
     "v1RequiredRuns": 450
   },
-  "generatedAt": "2026-06-23T05:54:24.756Z",
+  "generatedAt": "2026-06-23T16:40:54.026Z",
   "headline": "Two coding agents, the same five build tasks. Each one did less database work on MongoDB than on Postgres.",
   "subhead": "Same task. Same Codex run contract. Same acceptance test. MongoDB kept the business state closer to the workflow, so the agent spent less context, less time, and fewer cleanup loops on this verified replay.",
   "proofQuestion": "When the same agent builds the same workflow, how much work is product logic and how much is database-state reconstruction?",
@@ -21,7 +21,7 @@
     "headline": "Across both agents and all five task domains, MongoDB required less reading, less cost, less time, and fewer cleanup loops than Postgres — within each agent.",
     "seedAnswer": "In this verified replay, Codex passed both lanes. Postgres required more context, more elapsed time, and more cleanup signals. MongoDB had the larger code diff, so the page shows that mixed metric instead of hiding it.",
     "audiencePromise": "A CEO sees the business cost. A developer can open the raw trace, diff, tests, database proof, and hashes.",
-    "databaseAnswer": "Both agents independently read more context, cost more, and retried more on Postgres for the same tasks.",
+    "databaseAnswer": "Both agents independently read more context, cost more, took longer, and retried more on Postgres for the same tasks.",
     "metricsSummary": [
       {
         "agent": "codex",
@@ -1165,8 +1165,8 @@
         {
           "path": "benchmark/results/summary.json",
           "exists": true,
-          "bytes": 16488,
-          "sha256": "a772cafc34fcc29677802be0b3b2d013e57a3629a24e16b73108c00da79d9bdd"
+          "bytes": 16633,
+          "sha256": "0147c9c4ac761eb41ce16f17bc2d4d9cc2c823a6f40794b478e3c8277b97d73f"
         }
       ]
     },
@@ -1263,8 +1263,8 @@
         {
           "path": "benchmark/results/summary.json",
           "exists": true,
-          "bytes": 16488,
-          "sha256": "a772cafc34fcc29677802be0b3b2d013e57a3629a24e16b73108c00da79d9bdd"
+          "bytes": 16633,
+          "sha256": "0147c9c4ac761eb41ce16f17bc2d4d9cc2c823a6f40794b478e3c8277b97d73f"
         }
       ]
     },
@@ -1323,8 +1323,8 @@
         {
           "path": "benchmark/results/summary.json",
           "exists": true,
-          "bytes": 16488,
-          "sha256": "a772cafc34fcc29677802be0b3b2d013e57a3629a24e16b73108c00da79d9bdd"
+          "bytes": 16633,
+          "sha256": "0147c9c4ac761eb41ce16f17bc2d4d9cc2c823a6f40794b478e3c8277b97d73f"
         }
       ]
     },
@@ -1403,7 +1403,14 @@
     "agreement": {
       "agentsAgreeMongoFewerTokens": true,
       "agentCount": 2,
-      "statement": "Both agents independently read more context, cost more, and retried more on Postgres for the same tasks."
+      "statement": "Both agents independently read more context, cost more, took longer, and retried more on Postgres for the same tasks.",
+      "universalMetrics": [
+        "context",
+        "cost",
+        "time",
+        "retries"
+      ],
+      "mixedMetrics": []
     },
     "caveat": "Within-agent comparison only. Cross-agent absolute numbers are not comparable (CLIs report tokens differently; tokensRead = inputTokens + cachedInputTokens)."
   },

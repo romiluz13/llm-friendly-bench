@@ -1,0 +1,113 @@
+import { buildPortalView } from "./portal-view.mjs";
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+  const account = db.accounts.find((item) => item._id === request.accountId) || db.accounts[0];
+  const activities = [...db.activities.filter((item) => item.subjectId === request._id)].sort((left, right) => left.occurredAt.localeCompare(right.occurredAt));
+  const auditTimeline = activities.map((activity, index) => ({
+    sequence: index + 1,
+    activityId: activity._id,
+    accountId: activity.accountId,
+    occurredAt: activity.occurredAt,
+    summary: activity.summary
+  }));
+  const workflowState = {
+    _id: `state-${request._id}`,
+    requestId: request._id,
+    accountId: request.accountId,
+    status: request.expectedOutcome,
+    title: request.title,
+    nextStep: request.nextStep,
+    ownerGroups: [...request.ownerGroups],
+    recoveryOwner: "Executive Sponsor",
+    routing: {
+      customerSuccess: true,
+      support: true,
+      finance: true,
+      legal: true,
+      executiveSponsor: true
+    },
+    riskSignals: request.riskSignals.map((signal) => ({
+      name: signal.name,
+      detail: signal.detail
+    })),
+    customerMessage: request.customerMessage,
+    accountSnapshot: {
+      name: account.name,
+      tier: account.tier,
+      region: account.region
+    },
+    contractSnapshot: {
+      contractId: account.contract.contractId,
+      renewalDate: account.contract.renewalDate,
+      arrCents: account.contract.arrCents,
+      supportPlan: account.contract.supportPlan
+    },
+    supportSnapshot: {
+      openCases: account.context.openCases,
+      supportPlan: account.contract.supportPlan
+    },
+    invoiceSnapshot: {
+      risk: account.context.invoiceRisk
+    },
+    usageSnapshot: {
+      trend: account.context.usageTrend,
+      healthScore: account.context.healthScore
+    },
+    shipmentSnapshot: {
+      status: "delayed",
+      priority: "high-value",
+      customerImpact: "strategic-account"
+    },
+    regulatorySnapshot: {
+      flags: [...account.context.complianceFlags],
+      legalReviewRequired: true
+    },
+    auditSnapshot: {
+      activityCount: auditTimeline.length,
+      lastActivityAt: auditTimeline[auditTimeline.length - 1]?.occurredAt || now,
+      customerVisibleHistory: true,
+      timeline: auditTimeline
+    },
+    updatedAt: now
+  };
+  const ownerTasks = request.ownerGroups.map((ownerGroup, index) => ({
+    _id: `task-${request._id}-${index + 1}`,
+    requestId: request._id,
+    accountId: request.accountId,
+    ownerGroup,
+    title: `${ownerGroup} recovery owner for ${request.title}`,
+    status: "open",
+    dueAt: new Date(new Date(now).getTime() + 4 * 60 * 60 * 1000).toISOString(),
+    createdAt: now
+  }));
+  const customerMessage = {
+    _id: `message-${request._id}`,
+    requestId: request._id,
+    accountId: request.accountId,
+    body: request.customerMessage,
+    sentAt: now
+  };
+  const auditEvent = {
+    _id: `audit-${request._id}`,
+    requestId: request._id,
+    accountId: request.accountId,
+    action: "escalation.activated",
+    summary: `Escalation activated for ${request.title}; routed to ${request.ownerGroups.join(", ")}.`,
+    customerVisible: true,
+    occurredAt: now,
+    timeline: auditTimeline,
+    legalReviewRequired: true
+  };
+
+  replaceRequestDocs(db.workflow_state, request._id, [workflowState]);
+  replaceRequestDocs(db.owner_tasks, request._id, ownerTasks);
+  replaceRequestDocs(db.customer_messages, request._id, [customerMessage]);
+  replaceRequestDocs(db.audit_events, request._id, [auditEvent]);
+  return buildPortalView(db);
+}
+
+function replaceRequestDocs(collection, requestId, nextDocs) {
+  const remaining = collection.filter((item) => item.requestId !== requestId);
+  collection.splice(0, collection.length, ...remaining, ...nextDocs);
+}

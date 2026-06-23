@@ -1,0 +1,10 @@
+import assert from "node:assert";
+import { extractHighlights } from "./trace-highlights.mjs";
+const pg = "ran psql -c '\\d accounts' then SELECT ... JOIN contacts JOIN owner_groups; ERROR: foreign key violation; JOIN risk_signals";
+const h = extractHighlights("postgres", pg);
+assert(h.joinsWritten >= 2, `counts JOINs, got ${h.joinsWritten}`);
+assert(h.fkErrors >= 1, "counts FK errors");
+assert(/JOIN|table/i.test(h.summary), "summary mentions joins/tables");
+const empty = extractHighlights("postgres", "");
+assert(empty.summary === "trace highlight unavailable", "fails honest on empty");
+console.log("trace highlights ok");

@@ -1,0 +1,7 @@
+Implemented in [src/workflow.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v2/ast-bench-v2/deep/codex/repeat-3/postgres/workspace/src/workflow.mjs#L5). The workflow now:
+- reconstructs the escalation from the normalized tables and persists one `workflow_state` row ([state](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v2/ast-bench-v2/deep/codex/repeat-3/postgres/workspace/src/workflow.mjs#L22)), four `owner_tasks` ([tasks](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v2/ast-bench-v2/deep/codex/repeat-3/postgres/workspace/src/workflow.mjs#L52)), one customer-safe message ([message](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v2/ast-bench-v2/deep/codex/repeat-3/postgres/workspace/src/workflow.mjs#L69)), and a full `audit_events` timeline with a customer-visible escalation event ([audit](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v2/ast-bench-v2/deep/codex/repeat-3/postgres/workspace/src/workflow.mjs#L79)).
+- keeps the portal projection aligned with those persisted rows through the existing renderer.
+
+`npm test` passed: `AST-Bench acceptance passed: strategic-account-rescue/postgres`.
+
+I couldn’t create a git commit here because `git add` was blocked by `.git/index.lock` permissions in the sandbox.

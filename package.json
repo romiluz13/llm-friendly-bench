@@ -29,6 +29,7 @@
     "benchmark:run": "node scripts/benchmark-run.mjs",
     "benchmark:score": "node scripts/benchmark-score.mjs",
     "benchmark:bundle": "node scripts/benchmark-build-public-bundle.mjs",
+    "benchmark:bundle:v2": "node scripts/benchmark-build-public-bundle-v2.mjs",
     "benchmark:gates": "node scripts/benchmark-gates.mjs",
     "benchmark:test-gates": "node scripts/test-benchmark-gates.mjs",
     "benchmark:ui:test": "node scripts/benchmark-ui-test.mjs",

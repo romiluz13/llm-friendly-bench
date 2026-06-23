@@ -1,0 +1,68 @@
+import { buildPortalView } from "./portal-view.mjs";
+
+const SLA_HOURS_PER_OWNER = 4;
+
+// Open the at-risk customer escalation for the delayed high-value order and
+// persist it into the normalized relational tables keyed by request_id.
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+
+  const ownerGroups = String(request.owner_groups).split("|");
+  const riskSignals = String(request.risk_signals).split("|").map((entry) => {
+    const idx = entry.indexOf(":");
+    return {
+      name: idx >= 0 ? entry.slice(0, idx) : entry,
+      detail: idx >= 0 ? entry.slice(idx + 1).trim() : ""
+    };
+  });
+  const recoveryOwner = ownerGroups[ownerGroups.length - 1];
+
+  // Workflow state: the customer-facing status plus the scored risk signals
+  // and the executive recovery owner that owns the rescue.
+  db.workflow_state.push({
+    request_id: request.request_id,
+    account_id: request.account_id,
+    title: request.title,
+    status: request.expected_outcome,
+    next_step: request.next_step,
+    owner_groups: ownerGroups.join(" + "),
+    risk_signals: riskSignals.map((signal) => signal.name),
+    recovery_owner: recoveryOwner,
+    updated_at: now
+  });
+
+  // Route one owner task per group with escalating recovery SLAs.
+  ownerGroups.forEach((ownerGroup, index) => {
+    db.owner_tasks.push({
+      request_id: request.request_id,
+      owner_group: ownerGroup,
+      title: `${ownerGroup}: rescue ${request.title}`,
+      due_at: addHours(now, (index + 1) * SLA_HOURS_PER_OWNER),
+      status: "open"
+    });
+  });
+
+  // Publish the customer-safe portal message.
+  db.customer_messages.push({
+    request_id: request.request_id,
+    body: request.customer_message,
+    customer_visible: true,
+    created_at: now
+  });
+
+  // Preserve a customer-visible audit timeline entry for the escalation.
+  db.audit_events.push({
+    request_id: request.request_id,
+    event: "at_risk_escalation_opened",
+    detail: `Escalation routed to ${ownerGroups.join(", ")}; recovery owner ${recoveryOwner}`,
+    actor: "workflow",
+    customer_visible: true,
+    occurred_at: now
+  });
+
+  return buildPortalView(db);
+}
+
+function addHours(iso, hours) {
+  return new Date(new Date(iso).getTime() + hours * 3600 * 1000).toISOString();
+}

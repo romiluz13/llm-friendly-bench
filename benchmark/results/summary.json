@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
   "suiteId": "ast-bench-v1",
-  "generatedAt": "2026-06-23T05:54:24.570Z",
+  "generatedAt": "2026-06-23T16:40:53.811Z",
   "status": "pilot",
   "claimLevel": "pilot",
   "requiredLaneRuns": 450,
@@ -374,7 +374,14 @@
     "agreement": {
       "agentsAgreeMongoFewerTokens": true,
       "agentCount": 2,
-      "statement": "Both agents independently read more context, cost more, and retried more on Postgres for the same tasks."
+      "statement": "Both agents independently read more context, cost more, took longer, and retried more on Postgres for the same tasks.",
+      "universalMetrics": [
+        "context",
+        "cost",
+        "time",
+        "retries"
+      ],
+      "mixedMetrics": []
     },
     "caveat": "Within-agent comparison only. Cross-agent absolute numbers are not comparable (CLIs report tokens differently; tokensRead = inputTokens + cachedInputTokens)."
   },

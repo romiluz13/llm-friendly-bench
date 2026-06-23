@@ -1,0 +1,216 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v2",
+  "generatedAt": "2026-06-23T16:39:08.517Z",
+  "status": "pilot",
+  "claimLevel": "pilot",
+  "requiredLaneRuns": 60,
+  "capturedLaneRuns": 60,
+  "passedLaneRuns": 60,
+  "missingLaneRuns": 0,
+  "shapes": [
+    "shallow",
+    "moderate",
+    "deep"
+  ],
+  "agents": [
+    {
+      "id": "claude-code",
+      "label": "Claude Code",
+      "adapter": "claude --print",
+      "passedLaneRuns": 30
+    },
+    {
+      "id": "codex",
+      "label": "Codex",
+      "adapter": "codex exec",
+      "passedLaneRuns": 30
+    }
+  ],
+  "lanes": [
+    {
+      "id": "mongo",
+      "label": "MongoDB",
+      "modelingRule": "database-native document model shaped around product access patterns"
+    },
+    {
+      "id": "postgres",
+      "label": "Postgres",
+      "modelingRule": "database-native normalized relational model with credible table boundaries"
+    }
+  ],
+  "perShapeCounts": {
+    "shallow": {
+      "captured": 20,
+      "passed": 20
+    },
+    "moderate": {
+      "captured": 20,
+      "passed": 20
+    },
+    "deep": {
+      "captured": 20,
+      "passed": 20
+    }
+  },
+  "databaseVerdict": {
+    "perAgent": [
+      {
+        "agentId": "claude-code",
+        "mongo": {
+          "runs": 15,
+          "medianTokensRead": 28476,
+          "medianCostUsd": 1.6143135,
+          "medianElapsedMs": 273011,
+          "medianRetrySignals": 92
+        },
+        "postgres": {
+          "runs": 15,
+          "medianTokensRead": 29814,
+          "medianCostUsd": 1.8116465,
+          "medianElapsedMs": 298901,
+          "medianRetrySignals": 88
+        },
+        "deltas": {
+          "tokensPct": 5,
+          "costPct": 12,
+          "timePct": 9,
+          "retries": -4
+        },
+        "mongoWins": true
+      },
+      {
+        "agentId": "codex",
+        "mongo": {
+          "runs": 15,
+          "medianTokensRead": 1705579,
+          "medianCostUsd": 2.4516075,
+          "medianElapsedMs": 218000,
+          "medianRetrySignals": 55
+        },
+        "postgres": {
+          "runs": 15,
+          "medianTokensRead": 2948860,
+          "medianCostUsd": 3.9771800000000006,
+          "medianElapsedMs": 284572,
+          "medianRetrySignals": 66
+        },
+        "deltas": {
+          "tokensPct": 73,
+          "costPct": 62,
+          "timePct": 31,
+          "retries": 11
+        },
+        "mongoWins": true
+      }
+    ],
+    "agreement": {
+      "agentsAgreeMongoFewerTokens": true,
+      "agentCount": 2,
+      "statement": "Both agents independently read more context, cost more, and took longer on Postgres for the same tasks. Retries was mixed across agents — see per-agent detail.",
+      "universalMetrics": [
+        "context",
+        "cost",
+        "time"
+      ],
+      "mixedMetrics": [
+        "retries"
+      ]
+    },
+    "caveat": "Within-agent comparison only. Cross-agent absolute numbers are not comparable (CLIs report tokens differently; tokensRead = inputTokens + cachedInputTokens)."
+  },
+  "shapeVerdict": {
+    "perShape": [
+      {
+        "shape": "shallow",
+        "perAgent": [
+          {
+            "agentId": "claude-code",
+            "deltas": {
+              "tokensReadPct": 5,
+              "costPct": 2,
+              "timePct": -6,
+              "retries": -8
+            },
+            "mongoWins": true
+          },
+          {
+            "agentId": "codex",
+            "deltas": {
+              "tokensReadPct": 76,
+              "costPct": 67,
+              "timePct": 45,
+              "retries": 376
+            },
+            "mongoWins": true
+          }
+        ]
+      },
+      {
+        "shape": "moderate",
+        "perAgent": [
+          {
+            "agentId": "claude-code",
+            "deltas": {
+              "tokensReadPct": 8,
+              "costPct": 14,
+              "timePct": 14,
+              "retries": 5
+            },
+            "mongoWins": true
+          },
+          {
+            "agentId": "codex",
+            "deltas": {
+              "tokensReadPct": 76,
+              "costPct": 66,
+              "timePct": 50,
+              "retries": 10
+            },
+            "mongoWins": true
+          }
+        ]
+      },
+      {
+        "shape": "deep",
+        "perAgent": [
+          {
+            "agentId": "claude-code",
+            "deltas": {
+              "tokensReadPct": 5,
+              "costPct": 20,
+              "timePct": 4,
+              "retries": -12
+            },
+            "mongoWins": true
+          },
+          {
+            "agentId": "codex",
+            "deltas": {
+              "tokensReadPct": 30,
+              "costPct": 33,
+              "timePct": 30,
+              "retries": -18
+            },
+            "mongoWins": true
+          }
+        ]
+      }
+    ],
+    "depthTrend": {
+      "tokensReadPctByShape": {
+        "shallow": 41,
+        "moderate": 42,
+        "deep": 18
+      },
+      "growsWithDepth": false
+    },
+    "caveat": "Within-agent comparison only. Same business outcome across all shapes; only Postgres relational depth differs."
+  },
+  "caveats": [
+    "Within-agent comparison only. Cross-agent absolute token counts are not comparable.",
+    "Same business outcome across all 3 schema shapes; only Postgres relational depth differs.",
+    "A MongoDB loss on any metric or shape is shown, not hidden.",
+    "Idiomatic Postgres normalization; independent fairness review is the documented path to official status."
+  ]
+}

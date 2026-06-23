@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v2",
+  "taskId": "strategic-account-rescue",
+  "taskTitle": "Strategic account rescue",
+  "agentId": "claude-code",
+  "agentLabel": "Claude Code",
+  "agentVersion": "2.1.186 (Claude Code)",
+  "lane": "mongo",
+  "laneLabel": "MongoDB",
+  "repeat": 1,
+  "status": "passed",
+  "startedAt": "2026-06-23T10:22:09.582Z",
+  "finishedAt": "2026-06-23T10:26:17.001Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/workspace",
+    "prompt": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/prompt.md",
+    "rawTranscript": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/diff.patch",
+    "tests": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/tests.log",
+    "render": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/render.log",
+    "acceptance": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/acceptance.json",
+    "screenshot": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/db-before/collections.json",
+    "dbAfter": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/db-after/mongo-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 247419,
+    "transcriptBytes": 218534,
+    "tokens": {
+      "inputTokens": 2,
+      "outputTokens": 653,
+      "cachedInputTokens": 27230,
+      "totalTokens": 655,
+      "tokensRead": 27232,
+      "costUsd": 1.746711,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 655,
+    "diffBytes": 1500,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 35,
+    "failedCommandCount": 0,
+    "retrySignals": 106,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/prompt.md",
+      "sha256": "a7cd9e78ded708446606e4e82f7580bd803c883fc6c1c94cf056affdc3309622"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/raw-transcript/claude-code.jsonl",
+      "sha256": "5e442c13a77b2b9d3d0e03fff6af918036e02e7b38064071622a71b67252e218"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/raw-transcript/claude-code-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/diff.patch",
+      "sha256": "79ccd22e148148e1aa503c945657102abbef964455705fa07047164e73a79474"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/tests.log",
+      "sha256": "c351fa3e8ed39d0fa66ee209d163b5b519c86f3980b5b4e7f9c8ed4333ffeecd"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/acceptance.json",
+      "sha256": "3d366ac5fb07e024f72f300eb5b3258c6cc1b3f20d6837f7b911ed07eec33096"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/screenshots/before-after.svg",
+      "sha256": "5c4ad1da90c823f9fa730b4ca99ef8158da39076c83cf5ad615728f9882b99a0"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/db-before/collections.json",
+      "sha256": "f78e018c1b9090277f27fded62f3e9a4cb1f2578784f4d2272223d418410d3fa"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/mongo/db-after/mongo-workflow-after.json",
+      "sha256": "3d366ac5fb07e024f72f300eb5b3258c6cc1b3f20d6837f7b911ed07eec33096"
+    }
+  ],
+  "shape": "shallow"
+}

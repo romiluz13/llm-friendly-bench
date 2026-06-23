@@ -1,0 +1,77 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index bc890e5..360c6db 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,6 +1,71 @@
+ import { buildPortalView } from "./portal-view.mjs";
+ 
+ export function applyBenchmarkTask(db, now) {
+-  // TODO: Implement the benchmark workflow against the native data shape.
++  // Load the workflow request and reconstruct account/contract context via joins.
++  const request = db.workflow_requests[0];
++  const account = db.accounts.find((item) => item.account_id === request.account_id);
++  const contract = db.account_contracts.find((item) => item.account_id === request.account_id);
++
++  // Resolve owner groups and risk signals from their normalized tables, in their
++  // declared order columns so downstream projections render deterministically.
++  const ownerGroups = db.workflow_request_owner_groups
++    .filter((item) => item.request_id === request.request_id)
++    .sort((a, b) => a.group_order - b.group_order);
++  const riskSignals = db.workflow_request_risk_signals
++    .filter((item) => item.request_id === request.request_id)
++    .sort((a, b) => a.signal_order - b.signal_order);
++
++  const ownerList = ownerGroups.map((item) => item.owner_group);
++  const signalNames = riskSignals.map((item) => item.signal_name);
++
++  // Due timestamp: 4 hours after the run time, expressed as an ISO instant.
++  const dueAt = new Date(new Date(now).getTime() + 4 * 60 * 60 * 1000).toISOString();
++
++  // Persist one workflow state row capturing the escalation outcome.
++  db.workflow_state.push({
++    request_id: request.request_id,
++    account_id: request.account_id,
++    title: request.title,
++    status: request.expected_outcome,
++    next_step: request.next_step,
++    risk_signal_count: riskSignals.length,
++    updated_at: now
++  });
++
++  // Persist one owner task per routed owner group, preserving group order.
++  for (const group of ownerGroups) {
++    db.owner_tasks.push({
++      request_id: request.request_id,
++      account_id: request.account_id,
++      owner_group: group.owner_group,
++      title: `${group.owner_group} escalation owner for ${request.title}`,
++      due_at: dueAt,
++      status: "open",
++      created_at: now
++    });
++  }
++
++  // Persist one customer-safe message built from the routed owners and account.
++  const tierLabel = account?.tier ? `${account.tier} ` : "";
++  db.customer_messages.push({
++    request_id: request.request_id,
++    account_id: request.account_id,
++    body: `Your ${tierLabel}account "${account?.name ?? request.account_id}" has an active escalation routed to ${ownerList.join(", ")}. ${request.next_step}.`,
++    customer_visible: true,
++    sent_at: now
++  });
++
++  // Persist one customer-visible audit event summarizing the recovery routing.
++  const arrSummary = contract ? `ARR ${(contract.arr_cents / 100).toFixed(2)} on ${contract.support_plan} support renewing ${contract.renewal_date}` : "contract context unavailable";
++  db.audit_events.push({
++    request_id: request.request_id,
++    account_id: request.account_id,
++    event_type: "at_risk_escalation_opened",
++    detail: `Escalation opened for ${request.title}. Owners: ${ownerList.join(", ")}. Risk signals (${riskSignals.length}): ${signalNames.join(", ")}. ${arrSummary}.`,
++    customer_visible: true,
++    occurred_at: now
++  });
++
++  // Render the portal projection over the now-populated sink tables.
+   return buildPortalView(db);
+ }

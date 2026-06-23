@@ -1,0 +1,21 @@
+Reading additional input from stdin...
+2026-06-23T13:05:44.154323Z ERROR codex_core::session: failed to load skill /Users/rom.iluz/.agents/skills/higgsfield-generate/SKILL.md: invalid description: exceeds maximum length of 1024 characters
+2026-06-23T13:05:49.158092Z ERROR codex_models_manager::manager: failed to refresh available models: timeout waiting for child process to exit
+2026-06-23T13:05:53.287173Z ERROR codex_memories_write::phase2::job: failed to claim job: error returned from database: (code: 1) no such table: jobs
+2026-06-23T13:06:16.138287Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[server]: Failed to connect to MongoDB instance using the connection string from the config: connect ENETUNREACH 65.63.95.160:27017")
+2026-06-23T13:08:32.145592Z ERROR codex_core::tools::router: error=apply_patch verification failed: Failed to find expected lines in /Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-4/mongo/workspace/src/workflow.mjs:
+    }),
+    {
+      _id: `audit-${request._id}-customer-visible`,
+      requestId: request._id,
+      accountId: request.accountId,
+      subjectId: request._id,
+      type: "escalation.activated",
+      summary: ESCALATION_STATUS,
+      actor: "workflow-engine",
+      ownerGroups: [...request.ownerGroups],
+      riskSignals: riskSignals.map((signal) => signal.name),
+      customerVisible: true,
+      occurredAt: at
+    }
+  ];

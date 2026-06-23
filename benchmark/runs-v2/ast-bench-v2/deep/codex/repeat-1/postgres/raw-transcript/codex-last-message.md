@@ -1,0 +1,2 @@
+Implemented the escalation workflow in [src/workflow.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v2/ast-bench-v2/deep/codex/repeat-1/postgres/workspace/src/workflow.mjs#L5). `applyBenchmarkTask` now reconstructs the native Postgres context, persists the workflow state, owner tasks, customer message, and customer-visible audit event, and returns the portal projection with the required customer-facing status. `npm test` passes, and I did not change tests or fixture data.
+

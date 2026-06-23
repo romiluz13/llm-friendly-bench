@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v2",
+  "taskId": "strategic-account-rescue",
+  "taskTitle": "Strategic account rescue",
+  "agentId": "codex",
+  "agentLabel": "Codex",
+  "agentVersion": "codex-cli 0.130.0",
+  "lane": "postgres",
+  "laneLabel": "Postgres",
+  "repeat": 5,
+  "status": "passed",
+  "startedAt": "2026-06-23T11:42:06.608Z",
+  "finishedAt": "2026-06-23T11:45:47.348Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/workspace",
+    "prompt": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/prompt.md",
+    "rawTranscript": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/diff.patch",
+    "tests": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/tests.log",
+    "render": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/render.log",
+    "acceptance": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/acceptance.json",
+    "screenshot": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/db-before/tables.json",
+    "dbAfter": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/db-after/postgres-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 220740,
+    "transcriptBytes": 1245884,
+    "tokens": {
+      "inputTokens": 1157225,
+      "outputTokens": 24390,
+      "cachedInputTokens": 1089408,
+      "totalTokens": 1181615,
+      "tokensRead": 2246633,
+      "costUsd": 3.1369625,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 1181615,
+    "diffBytes": 4237,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 37,
+    "failedCommandCount": 2,
+    "retrySignals": 464,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/prompt.md",
+      "sha256": "d6f814fc67c0ed20b13e1493267562c3fba7b34a798b4f6c81ff30a7bf8601cd"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/raw-transcript/codex.jsonl",
+      "sha256": "8097e8cb4c8ff6ad8e5250818af924183a255e8ed3d46dbd3b3e2f94a38b8fe4"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/raw-transcript/codex-stderr.log",
+      "sha256": "568a05981db218341d21e9fe87f8b69842b367634e3834e551b8c7794d62f7c9"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/diff.patch",
+      "sha256": "8f30470832eeb640a41b2b03da7da92f6f81ed3d9f4235a839aaba7de003b0f3"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/tests.log",
+      "sha256": "3c298067e4c2d4103ea9459f238c1f3d628aefb955414170172b5c3ded376fd2"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/acceptance.json",
+      "sha256": "86e281d2f35b488faef080f0e0dcdda7424abcd229e4479732e5fd83dd68e585"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/screenshots/before-after.svg",
+      "sha256": "f965633636505f522b4b00745c7b9906081114343ef2ec5edac236297d185c4a"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/db-before/tables.json",
+      "sha256": "5487367128a15a2f12968bd96a876595e57c7645f5160d88549dd1a787876c2e"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-5/postgres/db-after/postgres-workflow-after.json",
+      "sha256": "86e281d2f35b488faef080f0e0dcdda7424abcd229e4479732e5fd83dd68e585"
+    }
+  ],
+  "shape": "shallow"
+}

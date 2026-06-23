@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v2",
+  "taskId": "strategic-account-rescue",
+  "taskTitle": "Strategic account rescue",
+  "agentId": "codex",
+  "agentLabel": "Codex",
+  "agentVersion": "codex-cli 0.130.0",
+  "lane": "postgres",
+  "laneLabel": "Postgres",
+  "repeat": 3,
+  "status": "passed",
+  "startedAt": "2026-06-23T13:00:13.750Z",
+  "finishedAt": "2026-06-23T13:05:43.703Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/workspace",
+    "prompt": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/prompt.md",
+    "rawTranscript": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/diff.patch",
+    "tests": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/tests.log",
+    "render": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/render.log",
+    "acceptance": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/acceptance.json",
+    "screenshot": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/db-before/tables.json",
+    "dbAfter": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/db-after/postgres-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 329953,
+    "transcriptBytes": 265392,
+    "tokens": {
+      "inputTokens": 1321596,
+      "outputTokens": 27531,
+      "cachedInputTokens": 1203584,
+      "totalTokens": 1349127,
+      "tokensRead": 2525180,
+      "costUsd": 3.5793000000000004,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 1349127,
+    "diffBytes": 6960,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 32,
+    "failedCommandCount": 2,
+    "retrySignals": 65,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/prompt.md",
+      "sha256": "d6f814fc67c0ed20b13e1493267562c3fba7b34a798b4f6c81ff30a7bf8601cd"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/raw-transcript/codex.jsonl",
+      "sha256": "99adf72346732b38ec63079b76bee8ec19fe266d790ab6043e5dde3c191986b8"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/raw-transcript/codex-stderr.log",
+      "sha256": "8e9aa7e3088da9f047d34e314173b316915d54d3895714d15bda05bbc898defc"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/diff.patch",
+      "sha256": "c9f39486bf69af4329d700e1fcf50ec1ce224e500133c4bb42cf9025a9506e6c"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/tests.log",
+      "sha256": "3c298067e4c2d4103ea9459f238c1f3d628aefb955414170172b5c3ded376fd2"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/acceptance.json",
+      "sha256": "86e281d2f35b488faef080f0e0dcdda7424abcd229e4479732e5fd83dd68e585"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/screenshots/before-after.svg",
+      "sha256": "f965633636505f522b4b00745c7b9906081114343ef2ec5edac236297d185c4a"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/db-before/tables.json",
+      "sha256": "0b54d472be1343174e8f03a6a2cbf6004a7a3f87d72f7034406b75f7ba742b68"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/moderate/codex/repeat-3/postgres/db-after/postgres-workflow-after.json",
+      "sha256": "86e281d2f35b488faef080f0e0dcdda7424abcd229e4479732e5fd83dd68e585"
+    }
+  ],
+  "shape": "moderate"
+}

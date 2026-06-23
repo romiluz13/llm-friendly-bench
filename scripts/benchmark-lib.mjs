@@ -3,10 +3,14 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSy
 import { dirname, join } from "node:path";
 
 export const suitePath = "benchmark/specs/ast-bench-v1.json";
+export const suitePathV2 = "benchmark/specs/ast-bench-v2.json";
 export const benchmarkRoot = "benchmark";
 export const targetRoot = "benchmark/targets";
+export const targetRootV2 = "benchmark/targets-v2";
 export const runRoot = "benchmark/runs";
+export const runRootV2 = "benchmark/runs-v2";
 export const resultPath = "benchmark/results/summary.json";
+export const resultPathV2 = "benchmark/results/summary-v2.json";
 export const publicBundlePath = "benchmark/public-bundle.json";
 export const seedRunSummaryPath = "instrumented-agent-runs/order-exception-codex-v1/summary.json";
 export const seedReplayPath = "prototypes/lab-console/replays/order-exception-codex-v1-verified.json";
@@ -14,6 +18,10 @@ export const seedEvidenceBundlePath = "prototypes/lab-console/evidence/order-exc
 
 export function readSuite() {
   return readJson(suitePath);
+}
+
+export function readSuiteFile(path) {
+  return readJson(path);
 }
 
 export function readJson(path) {
@@ -60,6 +68,18 @@ export function runManifestPath(cell) {
 
 export function targetWorkspacePath(taskId, lane) {
   return join(targetDir(taskId, lane), "workspace");
+}
+
+export function targetWorkspacePathV2(shape, lane) {
+  return join(targetRootV2, shape, lane, "workspace");
+}
+
+export function runDirV2({ shape, agentId, lane, repeat }) {
+  return join(runRootV2, "ast-bench-v2", shape, agentId, `repeat-${repeat}`, lane);
+}
+
+export function runManifestPathV2(cell) {
+  return join(runDirV2(cell), "run-manifest.json");
 }
 
 export function sha256(path) {
@@ -111,6 +131,21 @@ export function readRunManifests(suite) {
             lane: lane.id,
             repeat
           });
+          if (existsSync(path)) manifests.push(readJson(path));
+        }
+      }
+    }
+  }
+  return manifests;
+}
+
+export function readRunManifestsV2(suiteV2) {
+  const manifests = [];
+  for (const shape of suiteV2.shapes) {
+    for (const agent of suiteV2.agents) {
+      for (let repeat = 1; repeat <= suiteV2.repeatsPerCell; repeat += 1) {
+        for (const lane of suiteV2.lanes) {
+          const path = runManifestPathV2({ shape, agentId: agent.id, lane: lane.id, repeat });
           if (existsSync(path)) manifests.push(readJson(path));
         }
       }
@@ -192,7 +227,7 @@ Rules:
 `;
 }
 
-export function buildTaskFixture(task, lane) {
+export function buildTaskFixture(task, lane, shape = "moderate") {
   const ownerGroups = ownerGroupsFor(task.primaryEntity);
   const riskSignals = riskSignalsFor(task);
   const now = "2026-06-18T12:00:00.000Z";
@@ -220,7 +255,7 @@ export function buildTaskFixture(task, lane) {
   };
 
   if (lane === "mongo") return buildMongoFixture(base);
-  return buildPostgresFixture(base);
+  return buildPostgresFixtureForShape(base, shape);
 }
 
 function buildMongoFixture(base) {
@@ -350,6 +385,43 @@ function buildPostgresFixture(base) {
     owner_tasks: [],
     audit_events: [],
     customer_messages: []
+  };
+}
+
+function buildPostgresFixtureForShape(base, shape) {
+  const moderate = buildPostgresFixture(base);
+  if (shape === "moderate") return moderate;
+  if (shape === "shallow") {
+    const contract = moderate.account_contracts[0] || {};
+    return {
+      benchmark_fixture: moderate.benchmark_fixture,
+      accounts: moderate.accounts.map((a) => ({
+        ...a,
+        contract_id: contract.contract_id,
+        renewal_date: contract.renewal_date,
+        arr_cents: contract.arr_cents,
+        support_plan: contract.support_plan
+      })),
+      contacts: moderate.contacts,
+      workflow_requests: moderate.workflow_requests.map((r) => ({
+        ...r,
+        owner_groups: moderate.workflow_request_owner_groups.map((g) => g.owner_group).join("|"),
+        risk_signals: moderate.workflow_request_risk_signals.map((s) => `${s.signal_name}:${s.detail}`).join("|")
+      })),
+      workflow_state: moderate.workflow_state,
+      owner_tasks: moderate.owner_tasks,
+      audit_events: moderate.audit_events,
+      customer_messages: moderate.customer_messages
+    };
+  }
+  // deep: moderate (12) + 5 further-normalized tables = 17
+  return {
+    ...moderate,
+    account_addresses: moderate.accounts.map((a) => ({ address_id: `addr-${a.account_id}`, account_id: a.account_id, region: a.region, kind: "billing" })),
+    support_plans: moderate.account_contracts.map((c) => ({ support_plan_id: `sp-${c.contract_id}`, contract_id: c.contract_id, plan: c.support_plan })),
+    invoice_risk: moderate.accounts.map((a) => ({ invoice_risk_id: `ir-${a.account_id}`, account_id: a.account_id, level: "medium" })),
+    contact_x_owner_group: moderate.contacts.flatMap((c) => moderate.workflow_request_owner_groups.map((g) => ({ contact_id: c.contact_id, request_id: g.request_id, owner_group: g.owner_group }))),
+    activity_sources: moderate.activities.map((act) => ({ activity_source_id: `as-${act.activity_id}`, activity_id: act.activity_id, source: "system" }))
   };
 }
 

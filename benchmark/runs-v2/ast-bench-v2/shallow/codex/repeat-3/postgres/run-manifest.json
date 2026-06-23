@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v2",
+  "taskId": "strategic-account-rescue",
+  "taskTitle": "Strategic account rescue",
+  "agentId": "codex",
+  "agentLabel": "Codex",
+  "agentVersion": "codex-cli 0.130.0",
+  "lane": "postgres",
+  "laneLabel": "Postgres",
+  "repeat": 3,
+  "status": "passed",
+  "startedAt": "2026-06-23T11:26:56.296Z",
+  "finishedAt": "2026-06-23T11:30:31.021Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/workspace",
+    "prompt": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/prompt.md",
+    "rawTranscript": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/diff.patch",
+    "tests": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/tests.log",
+    "render": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/render.log",
+    "acceptance": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/acceptance.json",
+    "screenshot": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/db-before/tables.json",
+    "dbAfter": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/db-after/postgres-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 214725,
+    "transcriptBytes": 2381136,
+    "tokens": {
+      "inputTokens": 1644216,
+      "outputTokens": 25129,
+      "cachedInputTokens": 1565952,
+      "totalTokens": 1669345,
+      "tokensRead": 3210168,
+      "costUsd": 4.36183,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 1669345,
+    "diffBytes": 6536,
+    "filesChanged": 2,
+    "changedFiles": [
+      "src/portal-view.mjs",
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 52,
+    "failedCommandCount": 3,
+    "retrySignals": 677,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/prompt.md",
+      "sha256": "d6f814fc67c0ed20b13e1493267562c3fba7b34a798b4f6c81ff30a7bf8601cd"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/raw-transcript/codex.jsonl",
+      "sha256": "9c018c221582039da1f4c9b645913c47fc5a30ee167571d9625470dfa6f99635"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/raw-transcript/codex-stderr.log",
+      "sha256": "16b0cb262a8bc5a01f3e2fbc9130135e0a24c9d05c3e80c838d0201ffe388fe6"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/diff.patch",
+      "sha256": "aebc8cb79acc0d9ddf1906ed65b7b946deaeb2872654c5bf8810b02397cdadaa"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/tests.log",
+      "sha256": "3c298067e4c2d4103ea9459f238c1f3d628aefb955414170172b5c3ded376fd2"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/acceptance.json",
+      "sha256": "fe55be5b3b17adea68908e016a27d090e6e530f9732b242629894f155d5b2295"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/screenshots/before-after.svg",
+      "sha256": "afa891c909063f67b5669624b1a819be61c64b259da25eb5838c45798faa40b1"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/db-before/tables.json",
+      "sha256": "5487367128a15a2f12968bd96a876595e57c7645f5160d88549dd1a787876c2e"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-3/postgres/db-after/postgres-workflow-after.json",
+      "sha256": "fe55be5b3b17adea68908e016a27d090e6e530f9732b242629894f155d5b2295"
+    }
+  ],
+  "shape": "shallow"
+}

@@ -8,37 +8,60 @@ import {
   buildTaskFixture,
   listTasks,
   readSuite,
+  readSuiteFile,
   targetWorkspacePath,
+  targetWorkspacePathV2,
+  suitePathV2,
   writeJson,
   writeText
 } from "./benchmark-lib.mjs";
+import { SHAPES } from "./benchmark-shapes.mjs";
 
-const suite = readSuite();
-const args = new Set(process.argv.slice(2));
-const taskArg = valueAfter("--task");
+const suiteArg = valueAfter("--suite") || "ast-bench-v1";
+const shapeArg = valueAfter("--shape");
 const laneArg = valueAfter("--lane");
-const tasks = listTasks(suite).filter((task) => !taskArg || task.id === taskArg);
-const lanes = suite.lanes.filter((lane) => !laneArg || lane.id === laneArg);
-
-if (!tasks.length) throw new Error(`Unknown task selector: ${taskArg}`);
-if (!lanes.length) throw new Error(`Unknown lane selector: ${laneArg}`);
-
-for (const task of tasks) {
-  for (const lane of lanes) {
-    const workspace = targetWorkspacePath(task.id, lane.id);
-    rmSync(workspace, { recursive: true, force: true });
-    writeWorkspace({ suite, task, lane: lane.id, workspace });
-    console.log(`Prepared AST-Bench target: ${task.id}/${lane.id}`);
-  }
-}
+const args = new Set(process.argv.slice(2));
 
 function valueAfter(flag) {
   const index = process.argv.indexOf(flag);
   return index >= 0 ? process.argv[index + 1] : "";
 }
 
-function writeWorkspace({ suite, task, lane, workspace }) {
-  const data = buildTaskFixture(task, lane);
+if (suiteArg === "ast-bench-v2") {
+  const suiteV2 = readSuiteFile(suitePathV2);
+  const task = suiteV2.outcome;
+  const shapes = SHAPES.filter((s) => !shapeArg || s === shapeArg);
+  const lanesV2 = suiteV2.lanes.filter((lane) => !laneArg || lane.id === laneArg);
+
+  for (const shape of shapes) {
+    for (const lane of lanesV2) {
+      const workspace = targetWorkspacePathV2(shape, lane.id);
+      rmSync(workspace, { recursive: true, force: true });
+      writeWorkspace({ suite: suiteV2, task, lane: lane.id, shape, workspace });
+      console.log(`Prepared AST-Bench v2 target: ${shape}/${lane.id}`);
+    }
+  }
+} else {
+  const suite = readSuite();
+  const taskArg = valueAfter("--task");
+  const tasks = listTasks(suite).filter((task) => !taskArg || task.id === taskArg);
+  const lanes = suite.lanes.filter((lane) => !laneArg || lane.id === laneArg);
+
+  if (!tasks.length) throw new Error(`Unknown task selector: ${taskArg}`);
+  if (!lanes.length) throw new Error(`Unknown lane selector: ${laneArg}`);
+
+  for (const task of tasks) {
+    for (const lane of lanes) {
+      const workspace = targetWorkspacePath(task.id, lane.id);
+      rmSync(workspace, { recursive: true, force: true });
+      writeWorkspace({ suite, task, lane: lane.id, workspace });
+      console.log(`Prepared AST-Bench target: ${task.id}/${lane.id}`);
+    }
+  }
+}
+
+function writeWorkspace({ suite, task, lane, shape, workspace }) {
+  const data = buildTaskFixture(task, lane, shape);
   const dataFile = lane === "mongo" ? "collections.json" : "tables.json";
   writeJson(join(workspace, "package.json"), {
     name: `ast-bench-${task.id}-${lane}`,
@@ -56,10 +79,10 @@ function writeWorkspace({ suite, task, lane, workspace }) {
   writeText(join(workspace, "schema", "access-paths.md"), accessPathDoc({ task, lane, data }));
   writeText(join(workspace, "migrations", lane === "mongo" ? "001_collection_contract.mongodb.js" : "001_table_contract.sql"), migrationDoc({ task, lane, data }));
   writeJson(join(workspace, "data", dataFile), data);
-  writeText(join(workspace, "src", "portal-view.mjs"), portalView({ lane, dataFile }));
+  writeText(join(workspace, "src", "portal-view.mjs"), portalView({ lane, shape, dataFile }));
   writeText(join(workspace, "src", "workflow.mjs"), workflowStub({ lane }));
   writeText(join(workspace, "src", "render-proof.mjs"), renderScript({ lane, dataFile }));
-  writeText(join(workspace, "tests", "acceptance.test.mjs"), acceptanceTest({ task, lane, dataFile }));
+  writeText(join(workspace, "tests", "acceptance.test.mjs"), acceptanceTest({ task, lane, shape, dataFile }));
 
   const test = spawnSync("npm", ["test"], { cwd: workspace, encoding: "utf8" });
   writeText(join(workspace, "tests-before.log"), `${test.stdout || ""}${test.stderr || ""}`);
@@ -177,7 +200,7 @@ export function applyBenchmarkTask(db, now) {
 `;
 }
 
-function portalView({ lane }) {
+function portalView({ lane, shape, dataFile }) {
   if (lane === "mongo") {
     return `export function buildPortalView(db) {
   const request = db.workflow_requests[0];
@@ -201,15 +224,23 @@ function portalView({ lane }) {
 `;
   }
 
+  // Postgres: shape-aware
+  const signalsCode = shape === "shallow"
+    ? `const signals = (request.risk_signals ? String(request.risk_signals).split("|") : []).map((entry) => {
+    const idx = entry.indexOf(":");
+    return { signal_name: idx >= 0 ? entry.slice(0, idx) : entry };
+  });`
+    : `const signals = tables.workflow_request_risk_signals
+    .filter((item) => item.request_id === request.request_id)
+    .sort((a, b) => a.signal_order - b.signal_order);`;
+
   return `export function buildPortalView(tables) {
   const request = tables.workflow_requests[0];
   const state = tables.workflow_state.find((item) => item.request_id === request.request_id);
   const tasks = tables.owner_tasks.filter((item) => item.request_id === request.request_id);
   const auditVisible = tables.audit_events.some((item) => item.request_id === request.request_id && item.customer_visible);
   const message = tables.customer_messages.find((item) => item.request_id === request.request_id);
-  const signals = tables.workflow_request_risk_signals
-    .filter((item) => item.request_id === request.request_id)
-    .sort((a, b) => a.signal_order - b.signal_order);
+  ${signalsCode}
 
   return {
     taskId: request.task_id,
@@ -226,13 +257,20 @@ function portalView({ lane }) {
 `;
 }
 
-function acceptanceTest({ task, lane, dataFile }) {
-  const expectedOwners = lane === "mongo"
-    ? "data.workflow_requests[0].ownerGroups"
-    : "data.workflow_request_owner_groups.slice().sort((a, b) => a.group_order - b.group_order).map((item) => item.owner_group)";
-  const expectedSignals = lane === "mongo"
-    ? "data.workflow_requests[0].riskSignals"
-    : "data.workflow_request_risk_signals.slice().sort((a, b) => a.signal_order - b.signal_order).map((item) => ({ name: item.signal_name, detail: item.detail }))";
+function acceptanceTest({ task, lane, shape, dataFile }) {
+  let expectedOwnersExpr, expectedSignalsExpr;
+
+  if (lane === "mongo") {
+    expectedOwnersExpr = "data.workflow_requests[0].ownerGroups";
+    expectedSignalsExpr = "data.workflow_requests[0].riskSignals";
+  } else if (shape === "shallow") {
+    expectedOwnersExpr = "data.workflow_requests[0].owner_groups.split(\"|\")" ;
+    expectedSignalsExpr = "data.workflow_requests[0].risk_signals.split(\"|\").map((entry) => { const i = entry.indexOf(\":\"); return { name: entry.slice(0, i), detail: entry.slice(i + 1) }; })";
+  } else {
+    expectedOwnersExpr = "data.workflow_request_owner_groups.slice().sort((a, b) => a.group_order - b.group_order).map((item) => item.owner_group)";
+    expectedSignalsExpr = "data.workflow_request_risk_signals.slice().sort((a, b) => a.signal_order - b.signal_order).map((item) => ({ name: item.signal_name, detail: item.detail }))";
+  }
+
   return `import { deepStrictEqual, strictEqual } from "node:assert";
 import { readFileSync } from "node:fs";
 import { applyBenchmarkTask } from "../src/workflow.mjs";
@@ -248,8 +286,8 @@ strictEqual(before.tasks, "0 owner tasks", "Before state has no owner tasks");
 const runData = structuredClone(data);
 const after = applyBenchmarkTask(runData, now);
 const expectedStatus = ${JSON.stringify(task.expectedOutcome)};
-const expectedOwners = ${expectedOwners};
-const expectedSignals = ${expectedSignals};
+const expectedOwners = ${expectedOwnersExpr};
+const expectedSignals = ${expectedSignalsExpr};
 
 strictEqual(after.status, expectedStatus, "Customer-facing status");
 strictEqual(after.owner, expectedOwners.join(" + "), "Owner routing");

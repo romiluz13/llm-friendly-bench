@@ -1,0 +1,47 @@
+import { buildPortalView } from "./portal-view.mjs";
+
+const addHours = (iso, hours) => new Date(new Date(iso ?? Date.now()).getTime() + hours * 3_600_000).toISOString();
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+  const updatedAt = now ?? new Date().toISOString();
+  const recoveryOwner = request.ownerGroups[request.ownerGroups.length - 1];
+
+  db.workflow_state.push({
+    requestId: request._id,
+    accountId: request.accountId,
+    status: request.expectedOutcome,
+    title: request.title,
+    nextStep: request.nextStep,
+    recoveryOwner,
+    riskSignals: request.riskSignals.map((signal) => ({ ...signal })),
+    updatedAt
+  });
+
+  request.ownerGroups.forEach((ownerGroup) => {
+    db.owner_tasks.push({
+      requestId: request._id,
+      ownerGroup,
+      title: `${ownerGroup} action: ${request.title}`,
+      dueAt: addHours(updatedAt, 4),
+      status: "open"
+    });
+  });
+
+  db.customer_messages.push({
+    requestId: request._id,
+    audience: "customer",
+    body: request.customerMessage,
+    createdAt: updatedAt
+  });
+
+  db.audit_events.push({
+    requestId: request._id,
+    event: "escalation.activated",
+    detail: request.expectedOutcome,
+    customerVisible: true,
+    occurredAt: updatedAt
+  });
+
+  return buildPortalView(db);
+}

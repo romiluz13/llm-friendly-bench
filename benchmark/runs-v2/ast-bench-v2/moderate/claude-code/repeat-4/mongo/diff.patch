@@ -1,0 +1,72 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index bc890e5..6ae6066 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,6 +1,66 @@
+ import { buildPortalView } from "./portal-view.mjs";
+ 
++// Activate the at-risk strategic-account escalation against the document-shaped
++// collections: persist workflow state, route one owner task per owner group,
++// post a customer-safe message, and record a customer-visible audit event.
+ export function applyBenchmarkTask(db, now) {
+-  // TODO: Implement the benchmark workflow against the native data shape.
++  const request = db.workflow_requests[0];
++  const timestamp = now;
++  // Owner review window opens four hours after activation.
++  const dueAt = new Date(new Date(timestamp).getTime() + 4 * 60 * 60 * 1000).toISOString();
++
++  db.workflow_state = db.workflow_state.filter((item) => item.requestId !== request._id);
++  db.workflow_state.push({
++    _id: `state-${request._id}`,
++    requestId: request._id,
++    accountId: request.accountId,
++    taskId: request.taskId,
++    title: request.title,
++    status: request.expectedOutcome,
++    nextStep: request.nextStep,
++    ownerGroups: request.ownerGroups,
++    riskSignals: request.riskSignals.map((signal) => ({
++      name: signal.name,
++      detail: signal.detail
++    })),
++    activatedAt: timestamp,
++    updatedAt: timestamp
++  });
++
++  db.owner_tasks = db.owner_tasks.filter((item) => item.requestId !== request._id);
++  request.ownerGroups.forEach((ownerGroup, index) => {
++    db.owner_tasks.push({
++      _id: `task-${request._id}-${index + 1}`,
++      requestId: request._id,
++      accountId: request.accountId,
++      ownerGroup,
++      title: `${ownerGroup} recovery actions for ${request.title}`,
++      status: "open",
++      dueAt,
++      createdAt: timestamp
++    });
++  });
++
++  db.customer_messages = db.customer_messages.filter((item) => item.requestId !== request._id);
++  db.customer_messages.push({
++    _id: `msg-${request._id}`,
++    requestId: request._id,
++    accountId: request.accountId,
++    body: request.customerMessage,
++    customerVisible: true,
++    sentAt: timestamp
++  });
++
++  db.audit_events.push({
++    _id: `audit-${request._id}-${db.audit_events.length + 1}`,
++    requestId: request._id,
++    accountId: request.accountId,
++    event: "escalation.activated",
++    summary: request.expectedOutcome,
++    ownerGroups: request.ownerGroups,
++    customerVisible: true,
++    occurredAt: timestamp
++  });
++
+   return buildPortalView(db);
+ }

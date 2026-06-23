@@ -1,0 +1,161 @@
+{
+  "benchmark_fixture": [
+    {
+      "fixture_version": "ast-bench-v1-strategic-account-rescue",
+      "suite_id": "ast-bench-v1",
+      "task_id": "strategic-account-rescue",
+      "generated_at": "2026-06-18T12:00:00.000Z"
+    }
+  ],
+  "accounts": [
+    {
+      "account_id": "acct-strategic-",
+      "name": "Customer 360 Account 1",
+      "tier": "enterprise",
+      "region": "NA"
+    }
+  ],
+  "account_contracts": [
+    {
+      "contract_id": "ctr-acct-strategic-",
+      "account_id": "acct-strategic-",
+      "renewal_date": "2026-09-30",
+      "arr_cents": 7200000,
+      "support_plan": "platinum"
+    }
+  ],
+  "contacts": [
+    {
+      "contact_id": "ct-acct-strategic--ops",
+      "account_id": "acct-strategic-",
+      "role": "Operations",
+      "email": "ops-acct-strategic-@example.test"
+    },
+    {
+      "contact_id": "ct-acct-strategic--finance",
+      "account_id": "acct-strategic-",
+      "role": "Finance",
+      "email": "finance-acct-strategic-@example.test"
+    }
+  ],
+  "workflow_requests": [
+    {
+      "request_id": "account-strategic-ac",
+      "task_id": "strategic-account-rescue",
+      "account_id": "acct-strategic-",
+      "title": "Strategic account rescue",
+      "primary_entity": "account",
+      "expected_outcome": "At-risk escalation active with executive recovery owner routing and customer-visible audit history.",
+      "next_step": "Customer Success owner review by 16:00",
+      "customer_message": "Strategic account rescue is being handled by Customer Success, Support, Finance, Executive Sponsor."
+    }
+  ],
+  "workflow_request_owner_groups": [
+    {
+      "request_id": "account-strategic-ac",
+      "owner_group": "Customer Success",
+      "group_order": 1
+    },
+    {
+      "request_id": "account-strategic-ac",
+      "owner_group": "Support",
+      "group_order": 2
+    },
+    {
+      "request_id": "account-strategic-ac",
+      "owner_group": "Finance",
+      "group_order": 3
+    },
+    {
+      "request_id": "account-strategic-ac",
+      "owner_group": "Executive Sponsor",
+      "group_order": 4
+    }
+  ],
+  "workflow_request_risk_signals": [
+    {
+      "request_id": "account-strategic-ac",
+      "signal_name": "strategic",
+      "detail": "Strategic account rescue signal 1: strategic",
+      "signal_order": 1
+    },
+    {
+      "request_id": "account-strategic-ac",
+      "signal_name": "account",
+      "detail": "Strategic account rescue signal 2: account",
+      "signal_order": 2
+    },
+    {
+      "request_id": "account-strategic-ac",
+      "signal_name": "rescue",
+      "detail": "Strategic account rescue signal 3: rescue",
+      "signal_order": 3
+    },
+    {
+      "request_id": "account-strategic-ac",
+      "signal_name": "enterprise account",
+      "detail": "Strategic account rescue signal 4: enterprise account",
+      "signal_order": 4
+    },
+    {
+      "request_id": "account-strategic-ac",
+      "signal_name": "open customer impact",
+      "detail": "Strategic account rescue signal 5: open customer impact",
+      "signal_order": 5
+    },
+    {
+      "request_id": "account-strategic-ac",
+      "signal_name": "audit required",
+      "detail": "Strategic account rescue signal 6: audit required",
+      "signal_order": 6
+    }
+  ],
+  "activities": [
+    {
+      "activity_id": "act-strategic-account-rescue-1",
+      "account_id": "acct-strategic-",
+      "subject_id": "account-strategic-ac",
+      "summary": "Strategic account rescue signal 1: strategic",
+      "occurred_at": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-strategic-account-rescue-2",
+      "account_id": "acct-strategic-",
+      "subject_id": "account-strategic-ac",
+      "summary": "Strategic account rescue signal 2: account",
+      "occurred_at": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-strategic-account-rescue-3",
+      "account_id": "acct-strategic-",
+      "subject_id": "account-strategic-ac",
+      "summary": "Strategic account rescue signal 3: rescue",
+      "occurred_at": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-strategic-account-rescue-4",
+      "account_id": "acct-strategic-",
+      "subject_id": "account-strategic-ac",
+      "summary": "Strategic account rescue signal 4: enterprise account",
+      "occurred_at": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-strategic-account-rescue-5",
+      "account_id": "acct-strategic-",
+      "subject_id": "account-strategic-ac",
+      "summary": "Strategic account rescue signal 5: open customer impact",
+      "occurred_at": "2026-06-14T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-strategic-account-rescue-6",
+      "account_id": "acct-strategic-",
+      "subject_id": "account-strategic-ac",
+      "summary": "Strategic account rescue signal 6: audit required",
+      "occurred_at": "2026-06-15T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

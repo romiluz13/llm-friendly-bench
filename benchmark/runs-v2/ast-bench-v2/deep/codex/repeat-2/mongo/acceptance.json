@@ -1,0 +1,25 @@
+{
+  "lane": "mongo",
+  "before": {
+    "taskId": "strategic-account-rescue",
+    "title": "Strategic account rescue",
+    "status": "Needs work",
+    "owner": "Unassigned",
+    "nextStep": "Waiting for workflow",
+    "riskSummary": "Risk not scored",
+    "tasks": "0 owner tasks",
+    "history": "Not visible",
+    "customerMessage": "No customer-safe message"
+  },
+  "after": {
+    "taskId": "strategic-account-rescue",
+    "title": "Strategic account rescue",
+    "status": "At-risk escalation active with executive recovery owner routing and customer-visible audit history.",
+    "owner": "Customer Success + Support + Finance + Executive Sponsor",
+    "nextStep": "Customer Success owner review by 16:00",
+    "riskSummary": "6 signals: strategic, account, rescue, enterprise account, open customer impact, audit required",
+    "tasks": "4 owner tasks",
+    "history": "Audit visible",
+    "customerMessage": "We have activated an at-risk escalation for your delayed order. Recovery work is underway, and portal updates will stay customer-safe and visible here."
+  }
+}
