@@ -58,19 +58,42 @@ export function computeDatabaseVerdict(runs) {
   });
   const agree = perAgent.length > 0 && perAgent.every((a) => a.mongoWins);
   const agentCount = perAgent.length;
-  const statement = agree
-    ? (agentCount === 2
-      ? "Both agents independently read more context, cost more, and retried more on Postgres for the same tasks."
-      : agentCount === 1
-        ? "1 agent read more context on Postgres than MongoDB for the same tasks."
-        : `All ${agentCount} agents independently read more context on Postgres for the same tasks.`)
-    : "Agents did not unanimously favor MongoDB on tokens-read; see per-agent detail.";
+  const metricUniversal = {
+    "read more context": perAgent.every((a) => a.deltas.tokensPct > 0),
+    "cost more": perAgent.every((a) => a.deltas.costPct > 0),
+    "took longer": perAgent.every((a) => a.deltas.timePct > 0),
+    "retried more": perAgent.every((a) => a.deltas.retries > 0)
+  };
+  const worse = Object.keys(metricUniversal).filter((k) => metricUniversal[k]);
+  const mixed = Object.keys(metricUniversal).filter((k) => !metricUniversal[k]);
+  const metricToReadable = { "read more context": "context", "cost more": "cost", "took longer": "time", "retried more": "retries" };
+  const universalMetrics = worse.map((k) => metricToReadable[k]);
+  const mixedMetrics = mixed.map((k) => metricToReadable[k]);
+  let statement;
+  if (agree) {
+    const subjectPrefix = agentCount === 2 ? "Both agents" : agentCount === 1 ? "1 agent" : `All ${agentCount} agents`;
+    const worseList = worse.length === 0
+      ? "used more tokens"
+      : worse.length === 1
+        ? worse[0]
+        : worse.slice(0, -1).join(", ") + ", and " + worse[worse.length - 1];
+    statement = `${subjectPrefix} independently ${worseList} on Postgres for the same tasks.`;
+    if (mixed.length > 0) {
+      const mixedNames = mixed.map((k) => metricToReadable[k]);
+      const mixedLabel = mixedNames.length === 1 ? mixedNames[0] : mixedNames.join(" and ");
+      statement += ` ${mixedLabel.charAt(0).toUpperCase() + mixedLabel.slice(1)} ${mixedNames.length === 1 ? "was" : "were"} mixed across agents — see per-agent detail.`;
+    }
+  } else {
+    statement = "Agents did not unanimously favor MongoDB on tokens-read; see per-agent detail.";
+  }
   return {
     perAgent,
     agreement: {
       agentsAgreeMongoFewerTokens: agree,
       agentCount,
-      statement
+      statement,
+      universalMetrics,
+      mixedMetrics
     },
     caveat: "Within-agent comparison only. Cross-agent absolute numbers are not comparable (CLIs report tokens differently; tokensRead = inputTokens + cachedInputTokens)."
   };
