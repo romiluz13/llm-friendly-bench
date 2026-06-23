@@ -11,12 +11,16 @@ import {
   publicBundlePath,
   readJson,
   readRunManifests,
+  readRunManifestsV2,
   readSuite,
+  readSuiteFile,
   resultPath,
+  resultPathV2,
   seedEvidenceBundlePath,
   seedReplayPath,
   seedRunSummaryPath,
   source,
+  suitePathV2,
   writeJson
 } from "./benchmark-lib.mjs";
 
@@ -72,7 +76,47 @@ export function computeDatabaseVerdict(runs) {
   };
 }
 
+export function computeShapeVerdict(runs) {
+  const SHAPES = ["shallow", "moderate", "deep"];
+  const passed = runs.filter((r) => r.status === "passed" && Array.isArray(r.metrics?.cheatSignals) && r.metrics.cheatSignals.length === 0);
+  const tok = (r) => { const t = r.metrics.tokens || {}; return (t.tokensRead != null) ? t.tokensRead : ((t.inputTokens||0)+(t.cachedInputTokens||0)) || 0; };
+  const pct = (a, b) => (a > 0 ? Math.round(((b - a) / a) * 100) : 0);
+  const perShape = SHAPES.map((shape) => {
+    const agents = [...new Set(passed.filter((r) => r.shape === shape).map((r) => r.agentId))];
+    const perAgent = agents.map((agentId) => {
+      const lane = (id) => passed.filter((r) => r.shape === shape && r.agentId === agentId && r.lane === id);
+      const m = lane("mongo"), p = lane("postgres");
+      const mTok = median(m.map(tok)), pTok = median(p.map(tok));
+      return {
+        agentId,
+        deltas: {
+          tokensReadPct: pct(mTok, pTok),
+          costPct: pct(median(m.map((r)=>r.metrics.tokens?.costUsd??0)), median(p.map((r)=>r.metrics.tokens?.costUsd??0))),
+          timePct: pct(median(m.map((r)=>r.metrics.elapsedMs)), median(p.map((r)=>r.metrics.elapsedMs))),
+          retries: median(p.map((r)=>r.metrics.retrySignals)) - median(m.map((r)=>r.metrics.retrySignals))
+        },
+        mongoWins: mTok > 0 && pTok > mTok
+      };
+    });
+    return { shape, perAgent };
+  });
+  const avgPct = (shape) => {
+    const rows = perShape.find((s) => s.shape === shape)?.perAgent || [];
+    return rows.length ? Math.round(rows.reduce((a, r) => a + r.deltas.tokensReadPct, 0) / rows.length) : 0;
+  };
+  const byShape = { shallow: avgPct("shallow"), moderate: avgPct("moderate"), deep: avgPct("deep") };
+  return {
+    perShape,
+    depthTrend: { tokensReadPctByShape: byShape, growsWithDepth: byShape.deep > byShape.moderate && byShape.moderate >= byShape.shallow },
+    caveat: "Within-agent comparison only. Same business outcome across all shapes; only Postgres relational depth differs."
+  };
+}
+
 if (process.argv[1] === new URL(import.meta.url).pathname) {
+  const suiteArg = process.argv.includes("--suite") ? process.argv[process.argv.indexOf("--suite") + 1] : "ast-bench-v1";
+  if (suiteArg === "ast-bench-v2") {
+    scoreV2();
+  } else {
   const suite = readSuite();
   const tasks = listTasks(suite);
   const allCapturedRuns = readRunManifests(suite);
@@ -135,6 +179,47 @@ if (process.argv[1] === new URL(import.meta.url).pathname) {
 
   writeJson(resultPath, summary);
   console.log(`AST-Bench score emitted: ${resultPath} (${status}, ${passedLaneRuns}/${required} passed lane runs)`);
+  }
+}
+
+function scoreV2() {
+  const suiteV2 = readSuiteFile(suitePathV2);
+  const allRuns = readRunManifestsV2(suiteV2);
+  const cleanRuns = allRuns.filter((r) => Array.isArray(r.metrics?.cheatSignals) && r.metrics.cheatSignals.length === 0);
+  const passedRuns = cleanRuns.filter((r) => r.status === "passed");
+  const passedLaneRuns = passedRuns.length;
+  const required = suiteV2.requiredLaneRuns;
+  const status = passedLaneRuns >= 54 ? "pilot" : passedLaneRuns >= 2 ? "case-study" : "case-study";
+  const perShapeCounts = Object.fromEntries(suiteV2.shapes.map((shape) => [shape, {
+    captured: cleanRuns.filter((r) => r.shape === shape).length,
+    passed: passedRuns.filter((r) => r.shape === shape).length
+  }]));
+  const summary = {
+    schemaVersion: "1.0.0",
+    suiteId: "ast-bench-v2",
+    generatedAt: new Date().toISOString(),
+    status,
+    claimLevel: status,
+    requiredLaneRuns: required,
+    capturedLaneRuns: cleanRuns.length,
+    passedLaneRuns,
+    missingLaneRuns: Math.max(0, required - passedLaneRuns),
+    shapes: suiteV2.shapes,
+    agents: suiteV2.agents.map((a) => ({ id: a.id, label: a.label, adapter: a.adapter,
+      passedLaneRuns: passedRuns.filter((r) => r.agentId === a.id).length })),
+    lanes: suiteV2.lanes,
+    perShapeCounts,
+    databaseVerdict: computeDatabaseVerdict(cleanRuns),
+    shapeVerdict: computeShapeVerdict(cleanRuns),
+    caveats: [
+      "Within-agent comparison only. Cross-agent absolute token counts are not comparable.",
+      "Same business outcome across all 3 schema shapes; only Postgres relational depth differs.",
+      "A MongoDB loss on any metric or shape is shown, not hidden.",
+      "Idiomatic Postgres normalization; independent fairness review is the documented path to official status."
+    ]
+  };
+  writeJson(resultPathV2, summary);
+  console.log(`AST-Bench v2 score emitted: ${resultPathV2} (${status}, ${passedLaneRuns}/${required} passed lane runs)`);
 }
 
 function promotionStatus({ suite, capturedLaneRuns, passedLaneRuns, capturedRuns }) {

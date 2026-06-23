@@ -10,6 +10,7 @@ export const targetRootV2 = "benchmark/targets-v2";
 export const runRoot = "benchmark/runs";
 export const runRootV2 = "benchmark/runs-v2";
 export const resultPath = "benchmark/results/summary.json";
+export const resultPathV2 = "benchmark/results/summary-v2.json";
 export const publicBundlePath = "benchmark/public-bundle.json";
 export const seedRunSummaryPath = "instrumented-agent-runs/order-exception-codex-v1/summary.json";
 export const seedReplayPath = "prototypes/lab-console/replays/order-exception-codex-v1-verified.json";
@@ -130,6 +131,21 @@ export function readRunManifests(suite) {
             lane: lane.id,
             repeat
           });
+          if (existsSync(path)) manifests.push(readJson(path));
+        }
+      }
+    }
+  }
+  return manifests;
+}
+
+export function readRunManifestsV2(suiteV2) {
+  const manifests = [];
+  for (const shape of suiteV2.shapes) {
+    for (const agent of suiteV2.agents) {
+      for (let repeat = 1; repeat <= suiteV2.repeatsPerCell; repeat += 1) {
+        for (const lane of suiteV2.lanes) {
+          const path = runManifestPathV2({ shape, agentId: agent.id, lane: lane.id, repeat });
           if (existsSync(path)) manifests.push(readJson(path));
         }
       }
