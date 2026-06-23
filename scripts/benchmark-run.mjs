@@ -9,8 +9,12 @@ import {
   hashExisting,
   listTasks,
   readSuite,
+  readSuiteFile,
   runDir,
+  runDirV2,
+  suitePathV2,
   targetWorkspacePath,
+  targetWorkspacePathV2,
   writeJson,
   writeText
 } from "./benchmark-lib.mjs";
@@ -29,24 +33,71 @@ export function detectCheatSignals(changedFiles, readFileFn) {
 }
 
 if (process.argv[1] === new URL(import.meta.url).pathname) {
-  const taskId = valueAfter("--task");
-  const lane = valueAfter("--lane");
-  const agentId = valueAfter("--agent");
-  const repeat = Number(valueAfter("--repeat") || 1);
-  const runAll = process.argv.includes("--all");
+  const suiteFlag = valueAfter("--suite") || "ast-bench-v1";
 
-  if (runAll && process.env.AST_BENCH_RUN_FULL !== "1") {
-    console.error("Full V1 run requires AST_BENCH_RUN_FULL=1 because it may launch 450 agent runs.");
-    process.exit(1);
+  if (suiteFlag === "ast-bench-v2") {
+    const shape = valueAfter("--shape");
+    const lane = valueAfter("--lane");
+    const agentId = valueAfter("--agent");
+    const repeat = Number(valueAfter("--repeat") || 1);
+
+    const suiteV2 = readSuiteFile(suitePathV2);
+
+    if (!shape || !lane || !agentId) {
+      console.error("Usage: node scripts/benchmark-run.mjs --suite ast-bench-v2 --shape <shallow|moderate|deep> --lane <mongo|postgres> --agent <claude-code|codex> [--repeat N]");
+      process.exit(1);
+    }
+
+    if (!suiteV2.shapes.includes(shape)) {
+      console.error(`Invalid --shape "${shape}". Must be one of: ${suiteV2.shapes.join(", ")}`);
+      process.exit(1);
+    }
+    if (!suiteV2.lanes.map((l) => l.id).includes(lane)) {
+      console.error(`Invalid --lane "${lane}". Must be one of: ${suiteV2.lanes.map((l) => l.id).join(", ")}`);
+      process.exit(1);
+    }
+    if (!suiteV2.agents.map((a) => a.id).includes(agentId)) {
+      console.error(`Invalid --agent "${agentId}". Must be one of: ${suiteV2.agents.map((a) => a.id).join(", ")}`);
+      process.exit(1);
+    }
+    if (repeat < 1 || repeat > suiteV2.repeatsPerCell) {
+      console.error(`Invalid --repeat ${repeat}. Must be between 1 and ${suiteV2.repeatsPerCell}`);
+      process.exit(1);
+    }
+
+    const task = suiteV2.outcome;
+    const agent = suiteV2.agents.find((a) => a.id === agentId);
+    const dbLane = suiteV2.lanes.find((l) => l.id === lane);
+    const targetWorkspace = targetWorkspacePathV2(shape, lane);
+
+    if (!existsSync(targetWorkspace)) {
+      const prep = spawnSync(process.execPath, ["scripts/benchmark-prepare.mjs", "--suite", "ast-bench-v2", "--shape", shape, "--lane", lane], { encoding: "utf8" });
+      if (prep.status !== 0) throw new Error(`Prepare failed\n${prep.stdout || ""}${prep.stderr || ""}`);
+    }
+
+    const outDir = runDirV2({ shape, agentId, lane, repeat });
+    runCellCore({ task, agent, dbLane, targetWorkspace, outDir, suiteId: "ast-bench-v2", shape, lane, agentId, repeat });
+  } else {
+    // v1 path — unchanged behavior
+    const taskId = valueAfter("--task");
+    const lane = valueAfter("--lane");
+    const agentId = valueAfter("--agent");
+    const repeat = Number(valueAfter("--repeat") || 1);
+    const runAll = process.argv.includes("--all");
+
+    if (runAll && process.env.AST_BENCH_RUN_FULL !== "1") {
+      console.error("Full V1 run requires AST_BENCH_RUN_FULL=1 because it may launch 450 agent runs.");
+      process.exit(1);
+    }
+
+    if (!runAll && (!taskId || !lane || !agentId)) {
+      console.error("Usage: node scripts/benchmark-run.mjs --task <taskId> --lane <mongo|postgres> --agent <codex|claude-code|cursor> [--repeat 1]");
+      process.exit(1);
+    }
+
+    const cells = runAll ? allCells() : [{ taskId, lane, agentId, repeat }];
+    for (const cell of cells) runCell(cell);
   }
-
-  if (!runAll && (!taskId || !lane || !agentId)) {
-    console.error("Usage: node scripts/benchmark-run.mjs --task <taskId> --lane <mongo|postgres> --agent <codex|claude-code|cursor> [--repeat 1]");
-    process.exit(1);
-  }
-
-  const cells = runAll ? allCells() : [{ taskId, lane, agentId, repeat }];
-  for (const cell of cells) runCell(cell);
 }
 
 function allCells() {
@@ -79,6 +130,10 @@ function runCell(cell) {
   }
 
   const outDir = runDir({ suiteId: suite.suiteId, ...cell });
+  runCellCore({ task, agent, dbLane, targetWorkspace, outDir, suiteId: suite.suiteId, shape: null, lane: cell.lane, agentId: cell.agentId, repeat: cell.repeat });
+}
+
+function runCellCore({ task, agent, dbLane, targetWorkspace, outDir, suiteId, shape, lane, agentId, repeat }) {
   const workspace = join(outDir, "workspace");
   rmSync(workspace, { recursive: true, force: true });
   mkdirSync(outDir, { recursive: true });
@@ -88,21 +143,21 @@ function runCell(cell) {
   mkdirSync(join(outDir, "db-before"), { recursive: true });
   mkdirSync(join(outDir, "db-after"), { recursive: true });
 
-  const prompt = benchmarkTaskPrompt(task, cell.lane);
+  const prompt = benchmarkTaskPrompt(task, lane);
   writeText(join(outDir, "prompt.md"), prompt);
-  copyIfExists(join(workspace, "data", cell.lane === "mongo" ? "collections.json" : "tables.json"), join(outDir, "db-before", cell.lane === "mongo" ? "collections.json" : "tables.json"));
+  copyIfExists(join(workspace, "data", lane === "mongo" ? "collections.json" : "tables.json"), join(outDir, "db-before", lane === "mongo" ? "collections.json" : "tables.json"));
 
   const frozenSha = initGit(workspace);
   const startedAt = new Date();
   const startMs = Date.now();
-  const agentResult = runAgent({ agentId: cell.agentId, workspace, prompt, outDir });
+  const agentResult = runAgent({ agentId, workspace, prompt, outDir });
   const test = spawnSync("npm", ["test"], { cwd: workspace, encoding: "utf8" });
   writeText(join(outDir, "tests.log"), `${test.stdout || ""}${test.stderr || ""}`);
   const render = test.status === 0 ? spawnSync("npm", ["run", "render"], { cwd: workspace, encoding: "utf8" }) : { stdout: "", stderr: "", status: 1 };
   writeText(join(outDir, "render.log"), `${render.stdout || ""}${render.stderr || ""}`);
   copyIfExists(join(workspace, "artifacts", "before-after.json"), join(outDir, "acceptance.json"));
   copyIfExists(join(workspace, "artifacts", "before-after.svg"), join(outDir, "screenshots", "before-after.svg"));
-  copyIfExists(join(workspace, "artifacts", "before-after.json"), join(outDir, "db-after", `${cell.lane}-workflow-after.json`));
+  copyIfExists(join(workspace, "artifacts", "before-after.json"), join(outDir, "db-after", `${lane}-workflow-after.json`));
 
   const diffArgs = frozenSha ? ["diff", frozenSha, "--", "."] : ["diff", "--", "."];
   const diffNameArgs = frozenSha ? ["diff", "--name-only", frozenSha, "--", "."] : ["diff", "--name-only", "--", "."];
@@ -113,23 +168,24 @@ function runCell(cell) {
     try { return readFileSync(join(workspace, f), "utf8"); } catch { return ""; }
   });
   const transcriptBytes = (agentResult.stdoutBytes || 0) + (agentResult.stderrBytes || 0);
-  const usage = extractUsage(cell.agentId, agentResult.transcriptText);
+  const usage = extractUsage(agentId, agentResult.transcriptText);
   let status = agentResult.status === 0 && test.status === 0 ? "passed" : "failed";
   if (cheatSignals.length > 0) {
     status = "failed";
     console.error(`AST-Bench: cheat signals detected (${cheatSignals.join(", ")}) — run marked failed`);
   }
+
   const manifest = {
     schemaVersion: "1.0.0",
-    suiteId: suite.suiteId,
+    suiteId,
     taskId: task.id,
     taskTitle: task.title,
-    agentId: cell.agentId,
+    agentId,
     agentLabel: agent.label,
-    agentVersion: agentVersion(cell.agentId),
-    lane: cell.lane,
+    agentVersion: agentVersion(agentId),
+    lane,
     laneLabel: dbLane.label,
-    repeat: cell.repeat,
+    repeat,
     status,
     startedAt: startedAt.toISOString(),
     finishedAt: new Date().toISOString(),
@@ -143,8 +199,8 @@ function runCell(cell) {
       render: join(outDir, "render.log"),
       acceptance: join(outDir, "acceptance.json"),
       screenshot: join(outDir, "screenshots", "before-after.svg"),
-      dbBefore: join(outDir, "db-before", cell.lane === "mongo" ? "collections.json" : "tables.json"),
-      dbAfter: join(outDir, "db-after", `${cell.lane}-workflow-after.json`)
+      dbBefore: join(outDir, "db-before", lane === "mongo" ? "collections.json" : "tables.json"),
+      dbAfter: join(outDir, "db-after", `${lane}-workflow-after.json`)
     },
     metrics: {
       elapsedMs: Date.now() - startMs,
@@ -170,13 +226,18 @@ function runCell(cell) {
       join(outDir, "tests.log"),
       join(outDir, "acceptance.json"),
       join(outDir, "screenshots", "before-after.svg"),
-      join(outDir, "db-before", cell.lane === "mongo" ? "collections.json" : "tables.json"),
-      join(outDir, "db-after", `${cell.lane}-workflow-after.json`)
+      join(outDir, "db-before", lane === "mongo" ? "collections.json" : "tables.json"),
+      join(outDir, "db-after", `${lane}-workflow-after.json`)
     ])
   };
 
+  // v2-only fields
+  if (suiteId === "ast-bench-v2") {
+    manifest.shape = shape;
+  }
+
   writeJson(join(outDir, "run-manifest.json"), manifest);
-  console.log(`AST-Bench run ${status}: ${task.id}/${cell.agentId}/${cell.lane}/repeat-${cell.repeat}`);
+  console.log(`AST-Bench run ${status}: ${task.id}/${agentId}/${lane}/repeat-${repeat}${shape ? `/${shape}` : ""}`);
   if (status !== "passed") process.exitCode = 1;
 }
 
