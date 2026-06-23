@@ -23,68 +23,119 @@ import {
 // 2026-06-23: seed replay validated under the pre-fix gameable acceptance tests; archived as raw artifact, not scored until re-run clean.
 const SEED_VERIFIED_CLEAN = false;
 
-const suite = readSuite();
-const tasks = listTasks(suite);
-const allCapturedRuns = readRunManifests(suite);
-// Exclude runs that lack a cheatSignals field (pre-fix harness; e.g. the globalThis.db renewal-risk run)
-// and runs whose cheatSignals are non-empty — both represent tainted evidence.
-const capturedRuns = allCapturedRuns.filter(
-  (run) => Array.isArray(run.metrics?.cheatSignals) && run.metrics.cheatSignals.length === 0
-);
-const seed = existsSync(seedRunSummaryPath) ? readJson(seedRunSummaryPath) : null;
-const seedReplay = existsSync(seedReplayPath) ? readJson(seedReplayPath) : null;
-const seedBundle = existsSync(seedEvidenceBundlePath) ? readJson(seedEvidenceBundlePath) : null;
-const seedLaneRuns = SEED_VERIFIED_CLEAN && seed?.status === "passed" ? 2 : 0;
-const passedRuns = capturedRuns.filter((run) => run.status === "passed");
-const capturedLaneRuns = seedLaneRuns + capturedRuns.length;
-const passedLaneRuns = seedLaneRuns + passedRuns.length;
-const status = promotionStatus({ suite, capturedLaneRuns, passedLaneRuns, capturedRuns });
-const required = expectedLaneRuns(suite);
-const seedDeltas = seed?.deltas || {};
-const seedCost = seed?.costModel || {};
+export function computeDatabaseVerdict(runs) {
+  const passed = runs.filter((r) => r.status === "passed" && !(r.metrics?.cheatSignals?.length));
+  const agents = [...new Set(passed.map((r) => r.agentId))];
+  const perAgent = agents.map((agentId) => {
+    const lane = (id) => {
+      const rows = passed.filter((r) => r.agentId === agentId && r.lane === id);
+      const tok = (r) => { const t = r.metrics.tokens || {}; return (t.tokensRead != null) ? t.tokensRead : ((t.inputTokens || 0) + (t.cachedInputTokens || 0)) || t.totalTokens || r.metrics.estimatedTranscriptTokens || 0; };
+      return {
+        runs: rows.length,
+        medianTokensRead: median(rows.map(tok)),
+        medianCostUsd: median(rows.map((r) => r.metrics.tokens?.costUsd ?? 0)),
+        medianElapsedMs: median(rows.map((r) => r.metrics.elapsedMs)),
+        medianRetrySignals: median(rows.map((r) => r.metrics.retrySignals))
+      };
+    };
+    const mongo = lane("mongo");
+    const postgres = lane("postgres");
+    const pct = (a, b) => (a > 0 ? Math.round(((b - a) / a) * 100) : 0);
+    return {
+      agentId, mongo, postgres,
+      deltas: {
+        tokensPct: pct(mongo.medianTokensRead, postgres.medianTokensRead),
+        costPct: pct(mongo.medianCostUsd, postgres.medianCostUsd),
+        timePct: pct(mongo.medianElapsedMs, postgres.medianElapsedMs),
+        retries: postgres.medianRetrySignals - mongo.medianRetrySignals
+      },
+      mongoWins: mongo.medianTokensRead > 0 && postgres.medianTokensRead > mongo.medianTokensRead
+    };
+  });
+  const agree = perAgent.length > 0 && perAgent.every((a) => a.mongoWins);
+  const agentCount = perAgent.length;
+  const statement = agree
+    ? (agentCount === 2
+      ? "Both agents independently read more context, cost more, and retried more on Postgres for the same tasks."
+      : agentCount === 1
+        ? "1 agent read more context on Postgres than MongoDB for the same tasks."
+        : `All ${agentCount} agents independently read more context on Postgres for the same tasks.`)
+    : "Agents did not unanimously favor MongoDB on tokens-read; see per-agent detail.";
+  return {
+    perAgent,
+    agreement: {
+      agentsAgreeMongoFewerTokens: agree,
+      agentCount,
+      statement
+    },
+    caveat: "Within-agent comparison only. Cross-agent absolute numbers are not comparable (CLIs report tokens differently; tokensRead = inputTokens + cachedInputTokens)."
+  };
+}
 
-const summary = {
-  schemaVersion: "1.0.0",
-  suiteId: suite.suiteId,
-  generatedAt: new Date().toISOString(),
-  status,
-  claimLevel: status,
-  requiredLaneRuns: required,
-  capturedLaneRuns,
-  passedLaneRuns,
-  missingLaneRuns: Math.max(0, required - passedLaneRuns),
-  taskCount: tasks.length,
-  taskCells: tasks.length * suite.agents.length * suite.lanes.length * suite.repeatsPerCell,
-  agents: suite.agents.map((agent) => ({
-    id: agent.id,
-    label: agent.label,
-    adapter: agent.adapter,
-    capturedLaneRuns: capturedRuns.filter((run) => run.agentId === agent.id).length + (agent.id === "codex" ? seedLaneRuns : 0),
-    claimStatus: agent.id === "codex" && seedLaneRuns ? "seed-captured" : "not-yet-verified"
-  })),
-  lanes: suite.lanes,
-  tasks: tasks.map((task) => taskStatus(task, capturedRuns, seedReplay)),
-  aggregate: aggregateRuns(capturedRuns, seed),
-  databaseVerdict: computeDatabaseVerdict(capturedRuns),
-  currentSeed: buildSeedSummary({ seed, seedReplay, seedBundle }),
-  costModel: buildCostModel(seedCost),
-  evidenceSources: hashExisting([
-    seedRunSummaryPath,
-    seedReplayPath,
-    seedEvidenceBundlePath,
-    "data/generated/proof/verified-evidence-manifest.json"
-  ]),
-  publicBundlePath,
-  caveats: [
-    "Current public data is seed case-study evidence until the 450 required V1 lane runs are captured.",
-    "AST-Bench V1 requires Codex, Claude Code, and Cursor before multi-agent claims are allowed.",
-    "Cost projection separates captured run deltas from user-editable assumptions.",
-    "Mixed metrics remain visible; a MongoDB loss on any metric is not hidden."
-  ]
-};
+if (process.argv[1] === new URL(import.meta.url).pathname) {
+  const suite = readSuite();
+  const tasks = listTasks(suite);
+  const allCapturedRuns = readRunManifests(suite);
+  // Exclude runs that lack a cheatSignals field (pre-fix harness; e.g. the globalThis.db renewal-risk run)
+  // and runs whose cheatSignals are non-empty — both represent tainted evidence.
+  const capturedRuns = allCapturedRuns.filter(
+    (run) => Array.isArray(run.metrics?.cheatSignals) && run.metrics.cheatSignals.length === 0
+  );
+  const seed = existsSync(seedRunSummaryPath) ? readJson(seedRunSummaryPath) : null;
+  const seedReplay = existsSync(seedReplayPath) ? readJson(seedReplayPath) : null;
+  const seedBundle = existsSync(seedEvidenceBundlePath) ? readJson(seedEvidenceBundlePath) : null;
+  const seedLaneRuns = SEED_VERIFIED_CLEAN && seed?.status === "passed" ? 2 : 0;
+  const passedRuns = capturedRuns.filter((run) => run.status === "passed");
+  const capturedLaneRuns = seedLaneRuns + capturedRuns.length;
+  const passedLaneRuns = seedLaneRuns + passedRuns.length;
+  const status = promotionStatus({ suite, capturedLaneRuns, passedLaneRuns, capturedRuns });
+  const required = expectedLaneRuns(suite);
+  const seedDeltas = seed?.deltas || {};
+  const seedCost = seed?.costModel || {};
 
-writeJson(resultPath, summary);
-console.log(`AST-Bench score emitted: ${resultPath} (${status}, ${passedLaneRuns}/${required} passed lane runs)`);
+  const summary = {
+    schemaVersion: "1.0.0",
+    suiteId: suite.suiteId,
+    generatedAt: new Date().toISOString(),
+    status,
+    claimLevel: status,
+    requiredLaneRuns: required,
+    capturedLaneRuns,
+    passedLaneRuns,
+    missingLaneRuns: Math.max(0, required - passedLaneRuns),
+    taskCount: tasks.length,
+    taskCells: tasks.length * suite.agents.length * suite.lanes.length * suite.repeatsPerCell,
+    agents: suite.agents.map((agent) => ({
+      id: agent.id,
+      label: agent.label,
+      adapter: agent.adapter,
+      capturedLaneRuns: capturedRuns.filter((run) => run.agentId === agent.id).length + (agent.id === "codex" ? seedLaneRuns : 0),
+      claimStatus: agent.id === "codex" && seedLaneRuns ? "seed-captured" : "not-yet-verified"
+    })),
+    lanes: suite.lanes,
+    tasks: tasks.map((task) => taskStatus(task, capturedRuns, seedReplay)),
+    aggregate: aggregateRuns(capturedRuns, seed),
+    databaseVerdict: computeDatabaseVerdict(capturedRuns),
+    currentSeed: buildSeedSummary({ seed, seedReplay, seedBundle }),
+    costModel: buildCostModel(seedCost),
+    evidenceSources: hashExisting([
+      seedRunSummaryPath,
+      seedReplayPath,
+      seedEvidenceBundlePath,
+      "data/generated/proof/verified-evidence-manifest.json"
+    ]),
+    publicBundlePath,
+    caveats: [
+      "Current public data is seed case-study evidence until the 450 required V1 lane runs are captured.",
+      "AST-Bench V1 requires Codex, Claude Code, and Cursor before multi-agent claims are allowed.",
+      "Cost projection separates captured run deltas from user-editable assumptions.",
+      "Mixed metrics remain visible; a MongoDB loss on any metric is not hidden."
+    ]
+  };
+
+  writeJson(resultPath, summary);
+  console.log(`AST-Bench score emitted: ${resultPath} (${status}, ${passedLaneRuns}/${required} passed lane runs)`);
+}
 
 function promotionStatus({ suite, capturedLaneRuns, passedLaneRuns, capturedRuns }) {
   if (passedLaneRuns >= suite.requiredLaneRuns && hasEveryRequiredCell(suite, capturedRuns)) return "public-v1";
@@ -206,54 +257,5 @@ function buildCostModel(seedCost) {
     monthlyDeltaUsd: seedCost.monthlyDeltaUsd || 0,
     publicLabel: `${formatMoneyShort(seedCost.monthlyDeltaUsd || 0)} seed-case monthly projection under visible assumptions`,
     caveat: "Only the seed replay deltas are measured today; V1 aggregate cost waits for the full run set."
-  };
-}
-
-export function computeDatabaseVerdict(runs) {
-  const passed = runs.filter((r) => r.status === "passed" && !(r.metrics?.cheatSignals?.length));
-  const agents = [...new Set(passed.map((r) => r.agentId))];
-  const perAgent = agents.map((agentId) => {
-    const lane = (id) => {
-      const rows = passed.filter((r) => r.agentId === agentId && r.lane === id);
-      const tok = (r) => { const t = r.metrics.tokens || {}; return (t.tokensRead != null) ? t.tokensRead : ((t.inputTokens || 0) + (t.cachedInputTokens || 0)) || t.totalTokens || r.metrics.estimatedTranscriptTokens || 0; };
-      return {
-        runs: rows.length,
-        medianTokensRead: median(rows.map(tok)),
-        medianCostUsd: median(rows.map((r) => r.metrics.tokens?.costUsd ?? 0)),
-        medianElapsedMs: median(rows.map((r) => r.metrics.elapsedMs)),
-        medianRetrySignals: median(rows.map((r) => r.metrics.retrySignals))
-      };
-    };
-    const mongo = lane("mongo");
-    const postgres = lane("postgres");
-    const pct = (a, b) => (a > 0 ? Math.round(((b - a) / a) * 100) : 0);
-    return {
-      agentId, mongo, postgres,
-      deltas: {
-        tokensPct: pct(mongo.medianTokensRead, postgres.medianTokensRead),
-        costPct: pct(mongo.medianCostUsd, postgres.medianCostUsd),
-        timePct: pct(mongo.medianElapsedMs, postgres.medianElapsedMs),
-        retries: postgres.medianRetrySignals - mongo.medianRetrySignals
-      },
-      mongoWins: mongo.medianTokensRead > 0 && postgres.medianTokensRead > mongo.medianTokensRead
-    };
-  });
-  const agree = perAgent.length > 0 && perAgent.every((a) => a.mongoWins);
-  const agentCount = perAgent.length;
-  const statement = agree
-    ? (agentCount === 2
-      ? "Both agents independently read more context, cost more, and retried more on Postgres for the same tasks."
-      : agentCount === 1
-        ? "1 agent read more context on Postgres than MongoDB for the same tasks."
-        : `All ${agentCount} agents independently read more context on Postgres for the same tasks.`)
-    : "Agents did not unanimously favor MongoDB on tokens-read; see per-agent detail.";
-  return {
-    perAgent,
-    agreement: {
-      agentsAgreeMongoFewerTokens: agree,
-      agentCount,
-      statement
-    },
-    caveat: "Within-agent comparison only. Cross-agent absolute numbers are not comparable (CLIs report tokens differently; tokensRead = inputTokens + cachedInputTokens)."
   };
 }
