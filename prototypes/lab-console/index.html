@@ -57,6 +57,7 @@
 </style>
 </head>
 <body>
+  <!-- claim scope: 3 schema shapes × 2 agents × 5 repeats = 60 real runs (rendered from bundle.claimLabel) -->
   <header class="bar"><div class="wrap"><span>LLM-Friendly Database Benchmark</span><span id="claim-label" class="claim"></span></div></header>
   <main id="app" class="wrap">
     <div class="hero" id="hero"></div>
@@ -69,7 +70,6 @@
   </main>
 <script>
   const BUNDLE_URL = "evidence/ast-bench-v2/benchmark-public-bundle.json";
-  const CLAIM_LABEL = "3 schema shapes × 2 agents × 5 repeats = 60 real runs";
   const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c]));
 
@@ -109,6 +109,10 @@
     const order = ["claude-code", "codex"];
     const perAgent = (b.databaseVerdict?.perAgent || []).slice().sort((a, z) => order.indexOf(a.agentId) - order.indexOf(z.agentId));
     const labelFor = (id) => (b.agents || []).find((a) => a.id === id)?.label || id;
+    if (perAgent.length === 0) {
+      document.getElementById("agent-graphs").innerHTML = `<p class="sub">Agent comparison graphs appear once both lanes have captured runs. Runs are still being collected.</p>`;
+      return;
+    }
     document.getElementById("agent-graphs").innerHTML = perAgent.map((a) => {
       const groups = METRICS.map((m) => {
         const mv = Number(a.mongo?.[m.lane] || 0), pv = Number(a.postgres?.[m.lane] || 0);
