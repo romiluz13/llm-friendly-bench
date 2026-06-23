@@ -18,7 +18,7 @@ function lastJsonMatch(text, predicate) {
 }
 
 export function extractUsage(agentId, transcriptText) {
-  const empty = { inputTokens: 0, outputTokens: 0, cachedInputTokens: 0, totalTokens: 0, costUsd: 0, source: "estimated" };
+  const empty = { inputTokens: 0, outputTokens: 0, cachedInputTokens: 0, totalTokens: 0, tokensRead: 0, costUsd: 0, source: "estimated" };
   if (!transcriptText || !transcriptText.trim()) {
     return { ...empty, estimatedFromBytes: true };
   }
@@ -31,7 +31,7 @@ export function extractUsage(agentId, transcriptText) {
     const outputTokens = Number(u.output_tokens || 0);
     const cachedInputTokens = Number(u.cached_input_tokens || 0);
     const costUsd = inputTokens * PRICES.codex.input + outputTokens * PRICES.codex.output;
-    return { inputTokens, outputTokens, cachedInputTokens, totalTokens: inputTokens + outputTokens, costUsd, source: "measured" };
+    return { inputTokens, outputTokens, cachedInputTokens, totalTokens: inputTokens + outputTokens, tokensRead: inputTokens + cachedInputTokens, costUsd, source: "measured" };
   }
 
   if (agentId === "claude-code") {
@@ -42,7 +42,7 @@ export function extractUsage(agentId, transcriptText) {
     const outputTokens = Number(u.output_tokens || 0);
     const cachedInputTokens = Number(u.cache_read_input_tokens || 0);
     const costUsd = Number(result.total_cost_usd || 0);
-    return { inputTokens, outputTokens, cachedInputTokens, totalTokens: inputTokens + outputTokens, costUsd, source: "measured" };
+    return { inputTokens, outputTokens, cachedInputTokens, totalTokens: inputTokens + outputTokens, tokensRead: inputTokens + cachedInputTokens, costUsd, source: "measured" };
   }
 
   return estimate(transcriptText);
@@ -51,5 +51,5 @@ export function extractUsage(agentId, transcriptText) {
 function estimate(transcriptText) {
   const bytes = Buffer.byteLength(transcriptText, "utf8");
   const totalTokens = Math.ceil(bytes / 4);
-  return { inputTokens: totalTokens, outputTokens: 0, cachedInputTokens: 0, totalTokens, costUsd: 0, source: "estimated" };
+  return { inputTokens: totalTokens, outputTokens: 0, cachedInputTokens: 0, totalTokens, tokensRead: totalTokens, costUsd: 0, source: "estimated" };
 }

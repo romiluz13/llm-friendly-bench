@@ -9,6 +9,7 @@ assert(codex.inputTokens === 297998, `codex input tokens, got ${codex.inputToken
 assert(codex.outputTokens === 8241, `codex output tokens, got ${codex.outputTokens}`);
 assert(codex.source === "measured", "codex usage is measured");
 assert(codex.costUsd > 0, "codex cost derived from tokens");
+assert(codex.tokensRead === codex.inputTokens + codex.cachedInputTokens, `codex tokensRead should be inputTokens+cachedInputTokens (${codex.inputTokens}+${codex.cachedInputTokens}=${codex.inputTokens+codex.cachedInputTokens}), got ${codex.tokensRead}`);
 
 // Claude: result event carries usage + total_cost_usd
 const claudeText = [
@@ -19,6 +20,7 @@ const claude = extractUsage("claude-code", claudeText);
 assert(claude.outputTokens === 800, `claude output tokens, got ${claude.outputTokens}`);
 assert(claude.costUsd === 0.42, "claude cost is the CLI-reported total");
 assert(claude.source === "measured", "claude usage is measured");
+assert(claude.tokensRead === 17200, `claude tokensRead should be 1200+16000=17200, got ${claude.tokensRead}`);
 
 // Fallback: empty transcript -> estimated, never throws
 const fb = extractUsage("claude-code", "");

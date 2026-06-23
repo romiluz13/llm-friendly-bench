@@ -215,10 +215,10 @@ export function computeDatabaseVerdict(runs) {
   const perAgent = agents.map((agentId) => {
     const lane = (id) => {
       const rows = passed.filter((r) => r.agentId === agentId && r.lane === id);
-      const tok = (r) => r.metrics.tokens?.totalTokens ?? r.metrics.estimatedTranscriptTokens ?? 0;
+      const tok = (r) => { const t = r.metrics.tokens || {}; return (t.tokensRead != null) ? t.tokensRead : ((t.inputTokens || 0) + (t.cachedInputTokens || 0)) || t.totalTokens || r.metrics.estimatedTranscriptTokens || 0; };
       return {
         runs: rows.length,
-        medianTokens: median(rows.map(tok)),
+        medianTokensRead: median(rows.map(tok)),
         medianCostUsd: median(rows.map((r) => r.metrics.tokens?.costUsd ?? 0)),
         medianElapsedMs: median(rows.map((r) => r.metrics.elapsedMs)),
         medianRetrySignals: median(rows.map((r) => r.metrics.retrySignals))
@@ -230,24 +230,30 @@ export function computeDatabaseVerdict(runs) {
     return {
       agentId, mongo, postgres,
       deltas: {
-        tokensPct: pct(mongo.medianTokens, postgres.medianTokens),
+        tokensPct: pct(mongo.medianTokensRead, postgres.medianTokensRead),
         costPct: pct(mongo.medianCostUsd, postgres.medianCostUsd),
         timePct: pct(mongo.medianElapsedMs, postgres.medianElapsedMs),
         retries: postgres.medianRetrySignals - mongo.medianRetrySignals
       },
-      mongoWins: mongo.medianTokens > 0 && postgres.medianTokens > mongo.medianTokens
+      mongoWins: mongo.medianTokensRead > 0 && postgres.medianTokensRead > mongo.medianTokensRead
     };
   });
   const agree = perAgent.length > 0 && perAgent.every((a) => a.mongoWins);
+  const agentCount = perAgent.length;
+  const statement = agree
+    ? (agentCount === 2
+      ? "Both agents independently read more context, cost more, and retried more on Postgres for the same tasks."
+      : agentCount === 1
+        ? "1 agent read more context on Postgres than MongoDB for the same tasks."
+        : `All ${agentCount} agents independently read more context on Postgres for the same tasks.`)
+    : "Agents did not unanimously favor MongoDB on tokens-read; see per-agent detail.";
   return {
     perAgent,
     agreement: {
       agentsAgreeMongoFewerTokens: agree,
-      agentCount: perAgent.length,
-      statement: agree
-        ? `All ${perAgent.length} agents independently needed fewer tokens on MongoDB for the same tasks.`
-        : "Agents did not unanimously favor MongoDB on tokens; see per-agent detail."
+      agentCount,
+      statement
     },
-    caveat: "Within-agent comparison only. Cross-agent absolute numbers are not comparable."
+    caveat: "Within-agent comparison only. Cross-agent absolute numbers are not comparable (CLIs report tokens differently; tokensRead = inputTokens + cachedInputTokens)."
   };
 }
