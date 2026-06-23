@@ -192,7 +192,7 @@ Rules:
 `;
 }
 
-export function buildTaskFixture(task, lane) {
+export function buildTaskFixture(task, lane, shape = "moderate") {
   const ownerGroups = ownerGroupsFor(task.primaryEntity);
   const riskSignals = riskSignalsFor(task);
   const now = "2026-06-18T12:00:00.000Z";
@@ -220,7 +220,7 @@ export function buildTaskFixture(task, lane) {
   };
 
   if (lane === "mongo") return buildMongoFixture(base);
-  return buildPostgresFixture(base);
+  return buildPostgresFixtureForShape(base, shape);
 }
 
 function buildMongoFixture(base) {
@@ -350,6 +350,43 @@ function buildPostgresFixture(base) {
     owner_tasks: [],
     audit_events: [],
     customer_messages: []
+  };
+}
+
+function buildPostgresFixtureForShape(base, shape) {
+  const moderate = buildPostgresFixture(base);
+  if (shape === "moderate") return moderate;
+  if (shape === "shallow") {
+    const contract = moderate.account_contracts[0] || {};
+    return {
+      benchmark_fixture: moderate.benchmark_fixture,
+      accounts: moderate.accounts.map((a) => ({
+        ...a,
+        contract_id: contract.contract_id,
+        renewal_date: contract.renewal_date,
+        arr_cents: contract.arr_cents,
+        support_plan: contract.support_plan
+      })),
+      contacts: moderate.contacts,
+      workflow_requests: moderate.workflow_requests.map((r) => ({
+        ...r,
+        owner_groups: moderate.workflow_request_owner_groups.map((g) => g.owner_group).join("|"),
+        risk_signals: moderate.workflow_request_risk_signals.map((s) => `${s.signal_name}:${s.detail}`).join("|")
+      })),
+      workflow_state: moderate.workflow_state,
+      owner_tasks: moderate.owner_tasks,
+      audit_events: moderate.audit_events,
+      customer_messages: moderate.customer_messages
+    };
+  }
+  // deep: moderate (12) + 5 further-normalized tables = 17
+  return {
+    ...moderate,
+    account_addresses: moderate.accounts.map((a) => ({ address_id: `addr-${a.account_id}`, account_id: a.account_id, region: a.region, kind: "billing" })),
+    support_plans: moderate.account_contracts.map((c) => ({ support_plan_id: `sp-${c.contract_id}`, contract_id: c.contract_id, plan: c.support_plan })),
+    invoice_risk: moderate.accounts.map((a) => ({ invoice_risk_id: `ir-${a.account_id}`, account_id: a.account_id, level: "medium" })),
+    contact_x_owner_group: moderate.contacts.flatMap((c) => moderate.workflow_request_owner_groups.map((g) => ({ contact_id: c.contact_id, request_id: g.request_id, owner_group: g.owner_group }))),
+    activity_sources: moderate.activities.map((act) => ({ activity_source_id: `as-${act.activity_id}`, activity_id: act.activity_id, source: "system" }))
   };
 }
 
