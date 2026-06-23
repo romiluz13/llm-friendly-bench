@@ -21,8 +21,8 @@ if (existsSync(pagePath)) {
   }
   for (const text of [
     "did measurably less database work on",
-    "3 schema shapes × 2 agents × 5 repeats = 60 real runs",
-    "Within-agent",
+    "3 database designs × 2 AI assistants × 5 repeats = 60 real runs",
+    "compare each AI assistant to itself",
     "Inspect the evidence"
   ]) {
     requireCheck(page.includes(text), `Marketing UI missing required copy: ${text}`);
@@ -47,7 +47,7 @@ if (existsSync(pagePath)) {
 if (existsSync(bundlePath)) {
   const bundle = readJson(bundlePath);
   requireCheck(bundle.status !== "public-v1", "v2 bundle must not overclaim public-v1");
-  requireCheck(bundle.claimLabel === "3 schema shapes × 2 agents × 5 repeats = 60 real runs", "Honest claim label required");
+  requireCheck(bundle.claimLabel === "3 database designs × 2 AI assistants × 5 repeats = 60 real runs", "Honest claim label required");
   requireCheck(!String(bundle.claimLabel).includes("450"), "450 must not appear in the customer claim label");
   requireCheck(JSON.stringify(bundle.methodology || {}).includes("450"), "450 full-V1 bar must be disclosed in methodology");
   requireCheck(bundle.progress?.requiredLaneRuns === 60, "v2 required lane runs must be 60");

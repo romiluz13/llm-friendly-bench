@@ -7,7 +7,7 @@ export function extractHighlights(lane, transcriptText) {
     + (text.match(/\bFROM\s+(\w+)/gi) || []).length;
   const documentReads = (text.match(/findOne|find\(|collection\(|\.aggregate\(/gi) || []).length;
   const summary = lane === "postgres"
-    ? `Agent inspected ~${tablesInspected} tables, wrote ${joinsWritten} JOINs${fkErrors ? `, hit ${fkErrors} FK errors` : ""}.`
-    : `Agent read the document directly (${documentReads || 1} read${documentReads === 1 ? "" : "s"}), no joins.`;
+    ? `The AI looked at ~${tablesInspected} tables and wrote ${joinsWritten} JOINs to stitch them back together${fkErrors ? `, and hit ${fkErrors} broken-link error${fkErrors === 1 ? "" : "s"} along the way` : ""}.`
+    : `The AI read the single record directly (${documentReads || 1} read${documentReads === 1 ? "" : "s"}) — no stitching needed.`;
   return { tablesInspected, joinsWritten, fkErrors, documentReads, summary };
 }

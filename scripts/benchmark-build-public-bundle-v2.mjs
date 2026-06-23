@@ -32,7 +32,7 @@ function whyForShape(shape) {
         const postgres = extractHighlights("postgres", readFileSync(pPath, "utf8"));
         return {
           shape, agentId, repeat, mongo, postgres, available: true,
-          traceNote: "Heuristic indicators parsed from the raw agent transcript (table reads, JOIN mentions, FK errors). Directional, not an exact instruction count."
+          traceNote: "Counted automatically from the AI's recorded work session (tables it opened, stitch-together steps it wrote, errors it hit). A directional indicator, not an exact tally."
         };
       }
     }
@@ -93,18 +93,41 @@ const rawTraceVerdict = realCell
   ? "The complete, unedited log of what each agent did — every command, every database read — is saved for both databases and fingerprinted so it can't be altered after the fact."
   : "Full run logs are saved for every completed run.";
 
+// Plain-language hero statement, built from the same data-driven fields the
+// scorer computes (universalMetrics = metrics where BOTH agents were worse on
+// Postgres; mixedMetrics = metrics that went different ways). We render it in
+// reader-friendly words here instead of reusing the scorer's terse prose, so
+// the headline sentence is understandable to a non-developer — without
+// changing the canonical scorer output or its tests.
+function buildHeroStatement(agreement) {
+  const universal = agreement?.universalMetrics || [];
+  const mixed = agreement?.mixedMetrics || [];
+  const betterWord = { context: "read less", cost: "cost less", time: "finished faster" };
+  const betterList = universal.map((m) => betterWord[m]).filter(Boolean);
+  const joinList = (xs) => xs.length <= 1 ? (xs[0] || "")
+    : xs.slice(0, -1).join(", ") + (xs.length > 2 ? "," : "") + " and " + xs[xs.length - 1];
+  if (!agreement?.agentsAgreeMongoFewerTokens || betterList.length === 0) {
+    return "See the per-agent results below for how each AI assistant compared on the two databases.";
+  }
+  let s = `On MongoDB, both AI assistants ${joinList(betterList)} — for the exact same result.`;
+  if (mixed.includes("retries")) {
+    s += " False starts were a wash: sometimes a few more on one database, sometimes on the other.";
+  }
+  return s;
+}
+
 const bundle = {
   schemaVersion: "1.0.0",
   suiteId: "ast-bench-v2",
   status: summary.status,
   generatedAt: new Date().toISOString(),
   hero: {
-    kicker: `${summary.agents.length} independent AI coding agents · same app · same tasks · ${summary.passedLaneRuns} real runs`,
+    kicker: `2 different AI coding assistants · same app · same tasks · ${summary.passedLaneRuns} real runs`,
     headline: "Both coding agents did measurably less database work on MongoDB.",
-    statement: summary.databaseVerdict?.agreement?.statement || "Benchmark in progress.",
+    statement: buildHeroStatement(summary.databaseVerdict?.agreement),
     agentsAgree: Boolean(summary.databaseVerdict?.agreement?.agentsAgreeMongoFewerTokens)
   },
-  claimLabel: "3 schema shapes × 2 agents × 5 repeats = 60 real runs",
+  claimLabel: "3 database designs × 2 AI assistants × 5 repeats = 60 real runs",
   claimScope: {
     shapes: 3,
     agents: 2,
@@ -129,14 +152,14 @@ const bundle = {
       : 0
   },
   methodology: {
-    withinAgentOnly: "Within-agent comparison: each AI agent is measured against itself on MongoDB versus Postgres. We never compare one agent's raw numbers to the other's — the two tools measure their work differently, so only each agent's own MongoDB-vs-Postgres difference is meaningful.",
-    tokenMetric: "We measure how much the AI had to read and process to finish the task, taken directly from each agent's real session logs. Wall-clock time is the simplest independent check, and it agrees: both agents were slower on Postgres.",
-    sameOutcome: "All three database designs deliver the exact same feature and pass the exact same test. Only the Postgres table layout changes from one design to the next, so any difference comes from the database design alone — nothing else.",
-    idiomaticPostgres: "Each Postgres design is what a competent engineer would actually build — proper tables, keys, and relationships, including a realistic many-to-many link in the most detailed design. It is not a deliberately bad schema.",
-    cheaperModelStillWorks: "The two agents ran on very different models — one on a top-tier model, one on a small, low-cost model. The low-cost model still wrote correct, working MongoDB code on 100% of its runs across every database design. You don't need the most expensive model to build well on MongoDB.",
-    whyAgentsDiffer: "Both agents did more work on Postgres, but by different amounts. That's expected: the agents reuse previously-read context differently, so the same extra Postgres work shows up larger for one than the other. What matters is that both point the same way — MongoDB took less work — even though the size of the gap is specific to each agent.",
-    fullV1Scope: "This is a focused study, not the final word. A full-scale benchmark would cover far more tasks and agents (on the order of 450 runs). This study spends its budget on the one thing being tested — how database design affects the AI's effort — rather than on repetition.",
-    pathToOfficial: "To become officially-endorsed material, this would still need an independent review of the Postgres fairness and a formal sign-off. Those are deliberately left as next steps."
+    withinAgentOnly: "We only ever compare each AI assistant to itself — its MongoDB run against its own Postgres run. We never put one assistant's numbers next to the other's, because the two tools count their own effort in different units. Think of it as timing the same runner on two race courses, not racing two different runners against each other.",
+    tokenMetric: "Our main measure is how much the AI had to read and process to get the job done, taken straight from each assistant's own session logs. The simplest sanity check is plain clock time, and it agrees: both assistants took longer on Postgres.",
+    sameOutcome: "All three database designs deliver the exact same feature and pass the exact same test. Only the way the data is laid out in Postgres changes from one design to the next. So any difference in the AI's effort comes from the database design alone — nothing else.",
+    idiomaticPostgres: "Each Postgres design is what a skilled engineer would actually build — proper tables and the right links between them, including the kind of cross-referenced relationship real apps use (for example, where many records on one side connect to many on the other). We did not rig it with a deliberately bad design.",
+    cheaperModelStillWorks: "The two assistants ran on very different AI models — one a top-tier model, one a small, low-cost one. The low-cost model still wrote correct, working MongoDB code on 100% of its runs across every database design. You don't need the most expensive AI to build well on MongoDB.",
+    whyAgentsDiffer: "Both assistants did more work on Postgres, but by different amounts. That's expected: each tool handles and remembers what it has already read in its own way, so the same extra Postgres work shows up bigger for one than the other. What matters is that both point the same direction — MongoDB took less work — even if the size of the gap is specific to each one.",
+    fullV1Scope: "This is a focused study, not the final word. A full-scale benchmark would cover far more tasks and assistants (on the order of 450 runs). This study spends its effort on the one question it set out to answer — how the choice of database affects the AI's workload — rather than on sheer volume.",
+    pathToOfficial: "For this to become an officially-endorsed result, it would still need an outside expert to confirm the Postgres designs were built fairly, plus a formal sign-off. Those steps are deliberately left for later."
   },
   evidenceClaims: [
     {
@@ -153,7 +176,7 @@ const bundle = {
       id: "shape-fixtures",
       label: "Are the 3 shapes genuinely different?",
       question: "Are the 3 shapes genuinely different?",
-      verdict: "Yes. The simplest Postgres design keeps most data on one table; the standard design splits it across a dozen related tables; the most detailed design spreads it across seventeen, including a realistic many-to-many relationship. On MongoDB, all three are a single document — which is the point.",
+      verdict: "Yes. The simplest Postgres design keeps most of the data in one table; the standard design splits it across about a dozen connected tables; the most detailed spreads it across seventeen, including the kind of cross-referenced relationship real apps use. On MongoDB, all three are a single record — which is exactly the point.",
       sources: [
         source("scripts/benchmark-lib.mjs"),
         source("benchmark/targets-v2/deep/postgres/workspace/data/tables.json"),
@@ -198,7 +221,7 @@ const bundle = {
       id: "fairness",
       label: "Is Postgres treated fairly?",
       question: "Is Postgres treated fairly?",
-      verdict: "Yes. Each Postgres design follows standard, sensible database practice — including a realistic many-to-many relationship in the most detailed one. It is not a deliberately weakened schema, and both databases must pass the exact same test.",
+      verdict: "Yes. Each Postgres design follows standard, sensible database practice — including the kind of cross-referenced relationship real apps use, in the most detailed one. It is not a deliberately weakened design, and both databases have to pass the exact same test.",
       sources: [
         source("benchmark/specs/ast-bench-v2.json")
       ]
