@@ -3,9 +3,12 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSy
 import { dirname, join } from "node:path";
 
 export const suitePath = "benchmark/specs/ast-bench-v1.json";
+export const suitePathV2 = "benchmark/specs/ast-bench-v2.json";
 export const benchmarkRoot = "benchmark";
 export const targetRoot = "benchmark/targets";
+export const targetRootV2 = "benchmark/targets-v2";
 export const runRoot = "benchmark/runs";
+export const runRootV2 = "benchmark/runs-v2";
 export const resultPath = "benchmark/results/summary.json";
 export const publicBundlePath = "benchmark/public-bundle.json";
 export const seedRunSummaryPath = "instrumented-agent-runs/order-exception-codex-v1/summary.json";
@@ -14,6 +17,10 @@ export const seedEvidenceBundlePath = "prototypes/lab-console/evidence/order-exc
 
 export function readSuite() {
   return readJson(suitePath);
+}
+
+export function readSuiteFile(path) {
+  return readJson(path);
 }
 
 export function readJson(path) {
@@ -60,6 +67,18 @@ export function runManifestPath(cell) {
 
 export function targetWorkspacePath(taskId, lane) {
   return join(targetDir(taskId, lane), "workspace");
+}
+
+export function targetWorkspacePathV2(shape, lane) {
+  return join(targetRootV2, shape, lane, "workspace");
+}
+
+export function runDirV2({ shape, agentId, lane, repeat }) {
+  return join(runRootV2, "ast-bench-v2", shape, agentId, `repeat-${repeat}`, lane);
+}
+
+export function runManifestPathV2(cell) {
+  return join(runDirV2(cell), "run-manifest.json");
 }
 
 export function sha256(path) {

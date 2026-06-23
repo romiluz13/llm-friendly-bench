@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v2",
+  "name": "AST-Bench V2",
+  "title": "Agent Schema Tax Benchmark V2 — Shape Diversity",
+  "claimStance": "benchmark-first",
+  "dataPolicy": "deterministic-synthetic-fixtures-seeded-into-real-local-services",
+  "shapes": [
+    "shallow",
+    "moderate",
+    "deep"
+  ],
+  "repeatsPerCell": 5,
+  "requiredLaneRuns": 60,
+  "localServices": {
+    "mongodb": "127.0.0.1:27018",
+    "postgres": "127.0.0.1:5433"
+  },
+  "lanes": [
+    {
+      "id": "mongo",
+      "label": "MongoDB",
+      "modelingRule": "database-native document model shaped around product access patterns"
+    },
+    {
+      "id": "postgres",
+      "label": "Postgres",
+      "modelingRule": "database-native normalized relational model with credible table boundaries"
+    }
+  ],
+  "agents": [
+    {
+      "id": "claude-code",
+      "label": "Claude Code",
+      "adapter": "claude --print",
+      "claimStatus": "required"
+    },
+    {
+      "id": "codex",
+      "label": "Codex",
+      "adapter": "codex exec",
+      "claimStatus": "required"
+    }
+  ],
+  "promotionTiers": [
+    {
+      "id": "case-study",
+      "label": "Case study",
+      "minimumLaneRuns": 2,
+      "publicClaim": "One captured comparison may be shown as seed evidence only."
+    },
+    {
+      "id": "pilot",
+      "label": "Pilot benchmark",
+      "minimumLaneRuns": 54,
+      "publicClaim": "Directional aggregate claims are allowed with visible caveats."
+    }
+  ],
+  "fairnessRules": [
+    "Same business prompt per compared pair.",
+    "Same acceptance assertions per compared pair.",
+    "Same agent and version per compared pair.",
+    "Same repeat count per compared pair.",
+    "Database-native models are allowed and required.",
+    "Generated fixture records are deterministic and versioned.",
+    "Before-state acceptance must fail.",
+    "No test edits, fixture edits, or human rescue inside an accepted run.",
+    "Failures, retries, timeouts, and mixed metrics remain visible.",
+    "Cost projections separate measured deltas from assumptions.",
+    "Postgres schema must be idiomatic best-practice normalization, not a strawman."
+  ],
+  "outcome": {
+    "id": "strategic-account-rescue",
+    "title": "Strategic account rescue",
+    "businessPrompt": "Add an at-risk customer escalation workflow for a delayed high-value order at a strategic account. Combine account tier, contract, support, invoice, usage, shipment, regulatory, and audit context. Route Customer Success, Legal, Finance, and Support. Show a customer-safe portal state and preserve a full audit timeline.",
+    "expectedOutcome": "At-risk escalation active with executive recovery owner routing and customer-visible audit history.",
+    "primaryEntity": "account",
+    "domainId": "customer-360-crm",
+    "domainLabel": "Customer 360 / CRM",
+    "taskIndex": 0
+  }
+}
