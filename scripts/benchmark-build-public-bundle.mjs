@@ -60,7 +60,8 @@ const bundle = {
     audiencePromise: "A CEO sees the business cost. A developer can open the raw trace, diff, tests, database proof, and hashes.",
     databaseAnswer: result.databaseVerdict?.agreement?.statement || "Benchmark in progress.",
     metricsSummary: (result.databaseVerdict?.perAgent || []).map((a) => ({
-      agent: a.agent,
+      agent: a.agentId,
+      agentLabel: suite.agents.find((agent) => agent.id === a.agentId)?.label || a.agentId,
       tokensReadPct: a.deltas?.tokensPct ?? null,
       costPct: a.deltas?.costPct ?? null,
       timePct: a.deltas?.timePct ?? null,
