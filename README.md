@@ -102,18 +102,45 @@ Full Docker seeding is also available with `npm run db:up` and `npm run db:seed`
 
 ## Proof Status
 
-`order-exception-codex-v1-verified` is the seed verified replay for the Customer 360 Escalation / Strategic Account Rescue scenario. It has captured Codex raw traces, diffs, passing tests, portal screenshots, MongoDB-local proof, Postgres-local proof, acceptance evidence, a no-unverified-runtime-data contract, and rubric-based Independent Design Review. It does not claim Claude Code, Cursor, Copilot, Windsurf, Enterprise SQL Sprawl, or AST-Bench public V1 results.
+**Focused benchmark — 5 domains, 2 agents, 60 real runs.**
 
-Verified Codex result:
+A focused benchmark was run: 5 tasks (one per domain: strategic-account-rescue, split-shipment-exception, sla-breach-route, invoice-dispute-workflow, data-access-audit-export) × 2 database lanes (MongoDB, Postgres) × 3 repeats × 2 coding agents (Claude Code, Codex) = 60 real runs against local Docker MongoDB and Postgres. 59 passed, 0 failed (1 calibration cell reused).
 
-- MongoDB lane: passed in about 167 seconds, 63,788 estimated transcript tokens, 10,060 diff bytes, 24 retry signals.
-- Postgres lane: passed in about 238 seconds, 72,657 estimated transcript tokens, 8,699 diff bytes, 28 retry signals.
-- Measured live-run deltas: Postgres used 8,869 more estimated transcript tokens, 70 more seconds, and 4 more retry signals; MongoDB had 1,361 more diff bytes in this run.
-- Current cost projection: about `$5.09` per task and `$20.4k` monthly under the visible assumptions.
+### Harness integrity
 
-AST-Bench status:
+Before these runs, the acceptance-test generator had a bug that let an agent "pass" by injecting a global. Tests were fixed to fail-closed and a cheat detector now marks any global-injection run as failed. All 60 runs are verified clean: 0 cheats, real diffs, no test or data edits.
 
-- V1 required lane runs: 450.
-- Captured passed lane runs today: 3 lane runs: 2 seed Codex replay lanes plus 1 AST-Bench Codex smoke cell.
-- Current public label: `case-study`.
+### What this benchmark measures
+
+The benchmark compares **databases**, not models. Claude Code and Codex serve as two independent measuring instruments. Only within-agent comparisons are valid:
+
+- Claude Code: MongoDB lane vs. Postgres lane
+- Codex: MongoDB lane vs. Postgres lane
+
+Cross-agent absolute numbers are not comparable. The two CLIs report tokens differently (Codex `turn.completed.usage` is cumulative including cache; Claude `result.usage` is final-turn, cache-dominated). The token metric used is "context tokens read" = input + cached input. Tokens and cost are real measured values from each CLI's usage events, not estimates.
+
+### Results (median across 3 repeats per agent, Postgres vs. MongoDB)
+
+Both agents independently did more work on Postgres for the same tasks:
+
+**Codex (within-agent):**
+- +15% context tokens read on Postgres
+- +15% cost on Postgres
+- +18% elapsed time on Postgres
+- +33 retry signals on Postgres
+
+**Claude Code (within-agent):**
+- +4% context tokens read on Postgres
+- +9% cost on Postgres
+- +8% elapsed time on Postgres
+- +16 retry signals on Postgres
+
+Agent agreement: both agents favor MongoDB on all four metrics.
+
+### AST-Bench status
+
+- V1 required lane runs: 450 (25 tasks × 2 lanes × 3 agents × 3 repeats).
+- Current captured passed lane runs: 60 (focused benchmark, 5 tasks × 2 agents).
+- Current public label: `Focused benchmark — 5 domains, 2 agents, 60 real runs`.
 - `public-v1` remains blocked until all required task/agent/database/repeat cells have captured evidence.
+- The original Codex seed replay (`order-exception-codex-v1-verified`) is superseded by these focused benchmark results.
