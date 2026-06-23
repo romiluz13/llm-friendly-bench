@@ -1,0 +1,118 @@
+import { buildPortalView } from "./portal-view.mjs";
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+  const account = db.accounts.find((item) => item.account_id === request.account_id);
+  const contract = db.account_contracts.find((item) => item.account_id === request.account_id);
+  const supportPlan = db.support_plans.find((item) => item.contract_id === contract?.contract_id);
+  const invoiceRisk = db.invoice_risk.find((item) => item.account_id === request.account_id);
+  const ownerGroups = db.workflow_request_owner_groups
+    .filter((item) => item.request_id === request.request_id)
+    .sort((a, b) => Number(a.group_order) - Number(b.group_order))
+    .map((item) => item.owner_group);
+  const riskSignals = db.workflow_request_risk_signals
+    .filter((item) => item.request_id === request.request_id)
+    .sort((a, b) => Number(a.signal_order) - Number(b.signal_order));
+  const activities = db.activities
+    .filter((item) => item.account_id === request.account_id || item.subject_id === request.request_id)
+    .sort((a, b) => a.occurred_at.localeCompare(b.occurred_at));
+  const dueAt = new Date(Date.parse(now) + 4 * 60 * 60 * 1000).toISOString();
+  const customerMessage = [
+    "Your delayed high-value order is under at-risk escalation.",
+    `Recovery owners are coordinating the ${account?.tier || "strategic"} account across contract, support, invoice, shipment, and compliance context.`,
+    "The portal shows the customer-visible audit history while the recovery plan moves forward."
+  ].join(" ");
+
+  upsertRows(db.workflow_state, request.request_id, [
+    {
+      request_id: request.request_id,
+      account_id: request.account_id,
+      title: request.title,
+      status: request.expected_outcome,
+      next_step: request.next_step,
+      owner_routing: ownerGroups.join(" + "),
+      customer_visible_audit_history: true,
+      account_tier: account?.tier,
+      contract_id: contract?.contract_id,
+      support_plan: supportPlan?.plan || contract?.support_plan,
+      invoice_risk: invoiceRisk?.level,
+      risk_signal_count: riskSignals.length,
+      risk_signals: riskSignals.map((item) => ({
+        signal_name: item.signal_name,
+        detail: item.detail,
+        signal_order: item.signal_order
+      })),
+      audit_timeline: activities.map((item) => ({
+        activity_id: item.activity_id,
+        occurred_at: item.occurred_at,
+        summary: item.summary
+      })),
+      customer_message: customerMessage,
+      updated_at: now
+    }
+  ]);
+
+  upsertRows(
+    db.owner_tasks,
+    request.request_id,
+    ownerGroups.map((ownerGroup, index) => ({
+      request_id: request.request_id,
+      owner_group: ownerGroup,
+      title: `${ownerGroup} recovery task for delayed strategic order`,
+      due_at: dueAt,
+      status: "open",
+      priority: "high",
+      task_order: index + 1,
+      account_id: request.account_id,
+      account_tier: account?.tier,
+      contract_id: contract?.contract_id
+    }))
+  );
+
+  upsertRows(db.customer_messages, request.request_id, [
+    {
+      request_id: request.request_id,
+      body: customerMessage,
+      customer_visible: true,
+      created_at: now
+    }
+  ]);
+
+  upsertRows(db.audit_events, request.request_id, [
+    {
+      request_id: request.request_id,
+      customer_visible: true,
+      event_type: "customer_visible_status_update",
+      status: request.expected_outcome,
+      summary: request.title,
+      occurred_at: now,
+      account_id: request.account_id,
+      account_tier: account?.tier,
+      contract_id: contract?.contract_id,
+      support_plan: supportPlan?.plan || contract?.support_plan,
+      invoice_risk: invoiceRisk?.level,
+      owner_groups: ownerGroups,
+      timeline: activities.map((item) => ({
+        activity_id: item.activity_id,
+        occurred_at: item.occurred_at,
+        summary: item.summary
+      }))
+    }
+  ]);
+
+  return buildPortalView(db);
+}
+
+function upsertRows(table, requestId, rows) {
+  let writeIndex = 0;
+
+  for (const row of table) {
+    if (row.request_id !== requestId) {
+      table[writeIndex] = row;
+      writeIndex += 1;
+    }
+  }
+
+  table.length = writeIndex;
+  table.push(...rows);
+}

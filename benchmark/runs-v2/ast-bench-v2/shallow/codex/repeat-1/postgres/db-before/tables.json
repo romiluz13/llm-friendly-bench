@@ -1,0 +1,54 @@
+{
+  "benchmark_fixture": [
+    {
+      "fixture_version": "ast-bench-v1-strategic-account-rescue",
+      "suite_id": "ast-bench-v1",
+      "task_id": "strategic-account-rescue",
+      "generated_at": "2026-06-18T12:00:00.000Z"
+    }
+  ],
+  "accounts": [
+    {
+      "account_id": "acct-strategic-",
+      "name": "Customer 360 Account 1",
+      "tier": "enterprise",
+      "region": "NA",
+      "contract_id": "ctr-acct-strategic-",
+      "renewal_date": "2026-09-30",
+      "arr_cents": 7200000,
+      "support_plan": "platinum"
+    }
+  ],
+  "contacts": [
+    {
+      "contact_id": "ct-acct-strategic--ops",
+      "account_id": "acct-strategic-",
+      "role": "Operations",
+      "email": "ops-acct-strategic-@example.test"
+    },
+    {
+      "contact_id": "ct-acct-strategic--finance",
+      "account_id": "acct-strategic-",
+      "role": "Finance",
+      "email": "finance-acct-strategic-@example.test"
+    }
+  ],
+  "workflow_requests": [
+    {
+      "request_id": "account-strategic-ac",
+      "task_id": "strategic-account-rescue",
+      "account_id": "acct-strategic-",
+      "title": "Strategic account rescue",
+      "primary_entity": "account",
+      "expected_outcome": "At-risk escalation active with executive recovery owner routing and customer-visible audit history.",
+      "next_step": "Customer Success owner review by 16:00",
+      "customer_message": "Strategic account rescue is being handled by Customer Success, Support, Finance, Executive Sponsor.",
+      "owner_groups": "Customer Success|Support|Finance|Executive Sponsor",
+      "risk_signals": "strategic:Strategic account rescue signal 1: strategic|account:Strategic account rescue signal 2: account|rescue:Strategic account rescue signal 3: rescue|enterprise account:Strategic account rescue signal 4: enterprise account|open customer impact:Strategic account rescue signal 5: open customer impact|audit required:Strategic account rescue signal 6: audit required"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

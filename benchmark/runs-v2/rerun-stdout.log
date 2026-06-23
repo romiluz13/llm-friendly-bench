@@ -1,0 +1,23 @@
+=== RERUN 18:57:39 :: claude-code/deep/postgres/r3 ===
+AST-Bench run passed: strategic-account-rescue/claude-code/postgres/repeat-3/deep
+  exit=0 at 19:00:40
+=== RERUN 19:01:10 :: codex/deep/mongo/r3 ===
+AST-Bench run passed: strategic-account-rescue/codex/mongo/repeat-3/deep
+  exit=0 at 19:04:19
+=== RERUN 19:05:49 :: codex/deep/postgres/r3 ===
+AST-Bench run passed: strategic-account-rescue/codex/postgres/repeat-3/deep
+  exit=0 at 19:12:44
+=== RERUN 19:14:14 :: codex/deep/mongo/r4 ===
+AST-Bench run passed: strategic-account-rescue/codex/mongo/repeat-4/deep
+  exit=0 at 19:18:03
+=== RERUN 19:19:33 :: codex/deep/postgres/r4 ===
+AST-Bench run passed: strategic-account-rescue/codex/postgres/repeat-4/deep
+  exit=0 at 19:23:31
+=== RERUN 19:25:01 :: codex/deep/mongo/r5 ===
+AST-Bench run passed: strategic-account-rescue/codex/mongo/repeat-5/deep
+  exit=0 at 19:27:52
+=== RERUN 19:29:22 :: codex/deep/postgres/r5 ===
+AST-Bench run passed: strategic-account-rescue/codex/postgres/repeat-5/deep
+  exit=0 at 19:34:37
+=== RERUN BATCH COMPLETE 19:34:37 ===
+total manifests now: 60 (target 60)

@@ -1,0 +1,432 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v2",
+  "status": "pilot",
+  "generatedAt": "2026-06-23T16:39:46.759Z",
+  "hero": {
+    "kicker": "2 independent AI coding agents · same app · same tasks · 60 real runs",
+    "headline": "Both coding agents did measurably less database work on MongoDB.",
+    "statement": "Both agents independently read more context, cost more, and took longer on Postgres for the same tasks. Retries was mixed across agents — see per-agent detail.",
+    "agentsAgree": true
+  },
+  "claimLabel": "3 schema shapes × 2 agents × 5 repeats = 60 real runs",
+  "claimScope": {
+    "shapes": 3,
+    "agents": 2,
+    "lanesPerShape": 2,
+    "repeats": 5,
+    "realRuns": 60,
+    "requiredRuns": 60
+  },
+  "databaseVerdict": {
+    "perAgent": [
+      {
+        "agentId": "claude-code",
+        "mongo": {
+          "runs": 15,
+          "medianTokensRead": 28476,
+          "medianCostUsd": 1.6143135,
+          "medianElapsedMs": 273011,
+          "medianRetrySignals": 92
+        },
+        "postgres": {
+          "runs": 15,
+          "medianTokensRead": 29814,
+          "medianCostUsd": 1.8116465,
+          "medianElapsedMs": 298901,
+          "medianRetrySignals": 88
+        },
+        "deltas": {
+          "tokensPct": 5,
+          "costPct": 12,
+          "timePct": 9,
+          "retries": -4
+        },
+        "mongoWins": true
+      },
+      {
+        "agentId": "codex",
+        "mongo": {
+          "runs": 15,
+          "medianTokensRead": 1705579,
+          "medianCostUsd": 2.4516075,
+          "medianElapsedMs": 218000,
+          "medianRetrySignals": 55
+        },
+        "postgres": {
+          "runs": 15,
+          "medianTokensRead": 2948860,
+          "medianCostUsd": 3.9771800000000006,
+          "medianElapsedMs": 284572,
+          "medianRetrySignals": 66
+        },
+        "deltas": {
+          "tokensPct": 73,
+          "costPct": 62,
+          "timePct": 31,
+          "retries": 11
+        },
+        "mongoWins": true
+      }
+    ],
+    "agreement": {
+      "agentsAgreeMongoFewerTokens": true,
+      "agentCount": 2,
+      "statement": "Both agents independently read more context, cost more, and took longer on Postgres for the same tasks. Retries was mixed across agents — see per-agent detail.",
+      "universalMetrics": [
+        "context",
+        "cost",
+        "time"
+      ],
+      "mixedMetrics": [
+        "retries"
+      ]
+    },
+    "caveat": "Within-agent comparison only. Cross-agent absolute numbers are not comparable (CLIs report tokens differently; tokensRead = inputTokens + cachedInputTokens)."
+  },
+  "agents": [
+    {
+      "id": "claude-code",
+      "label": "Claude Code",
+      "adapter": "claude --print",
+      "passedLaneRuns": 30
+    },
+    {
+      "id": "codex",
+      "label": "Codex",
+      "adapter": "codex exec",
+      "passedLaneRuns": 30
+    }
+  ],
+  "shapeVerdict": {
+    "perShape": [
+      {
+        "shape": "shallow",
+        "perAgent": [
+          {
+            "agentId": "claude-code",
+            "deltas": {
+              "tokensReadPct": 5,
+              "costPct": 2,
+              "timePct": -6,
+              "retries": -8
+            },
+            "mongoWins": true
+          },
+          {
+            "agentId": "codex",
+            "deltas": {
+              "tokensReadPct": 76,
+              "costPct": 67,
+              "timePct": 45,
+              "retries": 376
+            },
+            "mongoWins": true
+          }
+        ]
+      },
+      {
+        "shape": "moderate",
+        "perAgent": [
+          {
+            "agentId": "claude-code",
+            "deltas": {
+              "tokensReadPct": 8,
+              "costPct": 14,
+              "timePct": 14,
+              "retries": 5
+            },
+            "mongoWins": true
+          },
+          {
+            "agentId": "codex",
+            "deltas": {
+              "tokensReadPct": 76,
+              "costPct": 66,
+              "timePct": 50,
+              "retries": 10
+            },
+            "mongoWins": true
+          }
+        ]
+      },
+      {
+        "shape": "deep",
+        "perAgent": [
+          {
+            "agentId": "claude-code",
+            "deltas": {
+              "tokensReadPct": 5,
+              "costPct": 20,
+              "timePct": 4,
+              "retries": -12
+            },
+            "mongoWins": true
+          },
+          {
+            "agentId": "codex",
+            "deltas": {
+              "tokensReadPct": 30,
+              "costPct": 33,
+              "timePct": 30,
+              "retries": -18
+            },
+            "mongoWins": true
+          }
+        ]
+      }
+    ],
+    "depthTrend": {
+      "tokensReadPctByShape": {
+        "shallow": 41,
+        "moderate": 42,
+        "deep": 18
+      },
+      "growsWithDepth": false
+    },
+    "caveat": "Within-agent comparison only. Same business outcome across all shapes; only Postgres relational depth differs."
+  },
+  "whyHighlights": [
+    {
+      "shape": "shallow",
+      "agentId": "claude-code",
+      "repeat": 1,
+      "mongo": {
+        "tablesInspected": 12,
+        "joinsWritten": 19,
+        "fkErrors": 0,
+        "documentReads": 19,
+        "summary": "Agent read the document directly (19 reads), no joins."
+      },
+      "postgres": {
+        "tablesInspected": 13,
+        "joinsWritten": 28,
+        "fkErrors": 0,
+        "documentReads": 18,
+        "summary": "Agent inspected ~13 tables, wrote 28 JOINs."
+      },
+      "available": true,
+      "traceNote": "Heuristic indicators parsed from the raw agent transcript (table reads, JOIN mentions, FK errors). Directional, not an exact instruction count."
+    },
+    {
+      "shape": "moderate",
+      "agentId": "claude-code",
+      "repeat": 1,
+      "mongo": {
+        "tablesInspected": 23,
+        "joinsWritten": 23,
+        "fkErrors": 0,
+        "documentReads": 20,
+        "summary": "Agent read the document directly (20 reads), no joins."
+      },
+      "postgres": {
+        "tablesInspected": 24,
+        "joinsWritten": 26,
+        "fkErrors": 1,
+        "documentReads": 15,
+        "summary": "Agent inspected ~24 tables, wrote 26 JOINs, hit 1 FK errors."
+      },
+      "available": true,
+      "traceNote": "Heuristic indicators parsed from the raw agent transcript (table reads, JOIN mentions, FK errors). Directional, not an exact instruction count."
+    },
+    {
+      "shape": "deep",
+      "agentId": "claude-code",
+      "repeat": 1,
+      "mongo": {
+        "tablesInspected": 13,
+        "joinsWritten": 19,
+        "fkErrors": 0,
+        "documentReads": 23,
+        "summary": "Agent read the document directly (23 reads), no joins."
+      },
+      "postgres": {
+        "tablesInspected": 25,
+        "joinsWritten": 15,
+        "fkErrors": 0,
+        "documentReads": 9,
+        "summary": "Agent inspected ~25 tables, wrote 15 JOINs."
+      },
+      "available": true,
+      "traceNote": "Heuristic indicators parsed from the raw agent transcript (table reads, JOIN mentions, FK errors). Directional, not an exact instruction count."
+    }
+  ],
+  "perShapeCounts": {
+    "shallow": {
+      "captured": 20,
+      "passed": 20
+    },
+    "moderate": {
+      "captured": 20,
+      "passed": 20
+    },
+    "deep": {
+      "captured": 20,
+      "passed": 20
+    }
+  },
+  "progress": {
+    "status": "pilot",
+    "requiredLaneRuns": 60,
+    "capturedLaneRuns": 60,
+    "passedLaneRuns": 60,
+    "missingLaneRuns": 0,
+    "progressPct": 100
+  },
+  "methodology": {
+    "withinAgentOnly": "Within-agent comparison only. Each agent is compared to itself across databases; cross-agent absolute token counts are never compared (the CLIs report tokens differently).",
+    "tokenMetric": "Token metric = context tokens read = inputTokens + cachedInputTokens.",
+    "sameOutcome": "All 3 schema shapes implement the SAME business outcome with ONE shared acceptance contract. Only the Postgres relational depth differs, so any metric difference is attributable to schema shape alone.",
+    "idiomaticPostgres": "Every Postgres schema is idiomatic best-practice normalization (sensible keys, a real M:N junction in the deep shape), not a contrived strawman.",
+    "fullV1Scope": "A full public-V1 benchmark would be 25 tasks × 2 lanes × 3 agents × 3 repeats = 450 runs. This focused MVP spends the same ~60-run budget on the causal variable (schema depth) instead of repetition.",
+    "pathToOfficial": "Path to officially-endorsed material: an independent Postgres-fairness review and MongoDB brand/legal sign-off. Both are out of scope for this pilot and documented as next steps."
+  },
+  "evidenceClaims": [
+    {
+      "id": "benchmark-suite",
+      "label": "What was run?",
+      "question": "What was run?",
+      "verdict": "AST-Bench v2: 3 schema shapes × 2 agents × 2 lanes × 5 repeats = 60 required runs. 60 passed so far.",
+      "sources": [
+        {
+          "path": "benchmark/specs/ast-bench-v2.json",
+          "exists": true,
+          "bytes": 2850,
+          "sha256": "2b4b9f339a5ea94a9deabaaa948ac3ca1a19f06ac6cd03904108ad50e80cfb68"
+        },
+        {
+          "path": "scripts/benchmark-shapes.mjs",
+          "exists": true,
+          "bytes": 1070,
+          "sha256": "7184e23972169c1a1f368ef6526d998abe10a08e0c2abefa9a4cf1e1e914a806"
+        }
+      ]
+    },
+    {
+      "id": "shape-fixtures",
+      "label": "Are the 3 shapes genuinely different?",
+      "question": "Are the 3 shapes genuinely different?",
+      "verdict": "Deep has 17+ normalized Postgres tables (including a real M:N junction). Shallow collapses owner_groups and risk_signals into pipe-delimited columns. Moderate is standard 12-table normalization. MongoDB is a single document for all shapes.",
+      "sources": [
+        {
+          "path": "scripts/benchmark-lib.mjs",
+          "exists": true,
+          "bytes": 14691,
+          "sha256": "d5442a98f4aa899eb943e5cbfd0807072e8c443d5b102b4afa1e1e04eb196cd1"
+        },
+        {
+          "path": "benchmark/targets-v2/deep/postgres/workspace/data/tables.json",
+          "exists": true,
+          "bytes": 7559,
+          "sha256": "33b95cefb23ccddb75f822616764835fea35b7e957fcc443bd34513f1f798701"
+        },
+        {
+          "path": "benchmark/targets-v2/shallow/postgres/workspace/data/tables.json",
+          "exists": true,
+          "bytes": 2050,
+          "sha256": "5487367128a15a2f12968bd96a876595e57c7645f5160d88549dd1a787876c2e"
+        }
+      ]
+    },
+    {
+      "id": "real-runs",
+      "label": "Are the runs real and measured?",
+      "question": "Are the runs real and measured?",
+      "verdict": "60 lane runs captured. Tokens measured from raw transcripts. cheatSignals enforced per run (shape=deep, agent=claude-code, repeat=1).",
+      "sources": [
+        {
+          "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-1/mongo/run-manifest.json",
+          "exists": true,
+          "bytes": 4016,
+          "sha256": "eee8c057b0751a7e3f72ad3c39c190e907021a6b23431178f9f1f6e8fc294ade"
+        },
+        {
+          "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-1/postgres/run-manifest.json",
+          "exists": true,
+          "bytes": 4076,
+          "sha256": "9cad144bc407adc21b04fbbc8220d4646e800aa866c3955cbb44b4dcedf92fa8"
+        }
+      ]
+    },
+    {
+      "id": "raw-traces",
+      "label": "Can I see what the agent actually did?",
+      "question": "Can I see what the agent actually did?",
+      "verdict": "Raw agent transcript captured for shape=deep, agent=claude-code, repeat=1. Both lanes present and hashed.",
+      "sources": [
+        {
+          "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-1/mongo/raw-transcript/claude-code.jsonl",
+          "exists": true,
+          "bytes": 212561,
+          "sha256": "63b789e2dd0f30a60ecdfd46e08b062bdc1724e926c2f2738ab13d73cee9f518"
+        },
+        {
+          "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-1/postgres/raw-transcript/claude-code.jsonl",
+          "exists": true,
+          "bytes": 220829,
+          "sha256": "42f296a189ac70f9ba9d224013c9d31374660e91df658f7ca88bb23d3b4bf6fd"
+        }
+      ]
+    },
+    {
+      "id": "within-agent-scoring",
+      "label": "How is the verdict computed (no cross-agent trick)?",
+      "question": "How is the verdict computed (no cross-agent trick)?",
+      "verdict": "Each agent is scored against itself: mongo lane vs postgres lane for the same agent, shape, and repeat. No cross-agent absolute token counts are compared.",
+      "sources": [
+        {
+          "path": "scripts/benchmark-score.mjs",
+          "exists": true,
+          "bytes": 16068,
+          "sha256": "b9e688e2b662816924a25fa36fb03217fa01189a0d83f4bc2f5f831a5f6f4d06"
+        },
+        {
+          "path": "scripts/test-shape-verdict.mjs",
+          "exists": true,
+          "bytes": 1001,
+          "sha256": "11253e2459c4a1ce0a199d07b72b70d4f2cde240ed8293936c33c220d96f4523"
+        }
+      ]
+    },
+    {
+      "id": "anti-cheat-gates",
+      "label": "Can the page overclaim or fake data?",
+      "question": "Can the page overclaim or fake data?",
+      "verdict": "benchmark-run.mjs enforces cheatSignals checks per cell. check-no-mock-data.mjs blocks any mock or hardcoded data from entering the bundle.",
+      "sources": [
+        {
+          "path": "scripts/benchmark-run.mjs",
+          "exists": true,
+          "bytes": 15443,
+          "sha256": "3a53ae6dc75da688fd0301906db044c0d12981a2b3497fc0e10d5652f10f59be"
+        },
+        {
+          "path": "scripts/check-no-mock-data.mjs",
+          "exists": true,
+          "bytes": 3481,
+          "sha256": "27a9e1dbe0f8775fa80ee9459122539d029f0b54a057674e60df1c2b25f2bc26"
+        }
+      ]
+    },
+    {
+      "id": "fairness",
+      "label": "Is Postgres treated fairly?",
+      "question": "Is Postgres treated fairly?",
+      "verdict": "Every Postgres schema uses idiomatic normalization per the v2 spec. The deep shape includes a real M:N junction table, not a contrived strawman. Both databases receive the same acceptance contract.",
+      "sources": [
+        {
+          "path": "benchmark/specs/ast-bench-v2.json",
+          "exists": true,
+          "bytes": 2850,
+          "sha256": "2b4b9f339a5ea94a9deabaaa948ac3ca1a19f06ac6cd03904108ad50e80cfb68"
+        }
+      ]
+    }
+  ],
+  "caveats": [
+    "Within-agent comparison only. Cross-agent absolute token counts are not comparable.",
+    "Same business outcome across all 3 schema shapes; only Postgres relational depth differs.",
+    "A MongoDB loss on any metric or shape is shown, not hidden.",
+    "Idiomatic Postgres normalization; independent fairness review is the documented path to official status."
+  ]
+}

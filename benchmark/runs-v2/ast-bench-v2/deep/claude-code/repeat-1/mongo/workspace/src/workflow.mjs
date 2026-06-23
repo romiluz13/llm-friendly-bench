@@ -1,0 +1,46 @@
+import { buildPortalView } from "./portal-view.mjs";
+
+export function applyBenchmarkTask(db, now) {
+  const timestamp = now || new Date().toISOString();
+  const request = db.workflow_requests[0];
+
+  db.workflow_state.push({
+    _id: `state-${request._id}`,
+    requestId: request._id,
+    taskId: request.taskId,
+    title: request.title,
+    status: request.expectedOutcome,
+    nextStep: request.nextStep,
+    riskSignals: request.riskSignals.map((signal) => ({ name: signal.name, detail: signal.detail })),
+    updatedAt: timestamp
+  });
+
+  request.ownerGroups.forEach((ownerGroup, index) => {
+    db.owner_tasks.push({
+      _id: `task-${request._id}-${index + 1}`,
+      requestId: request._id,
+      taskId: request.taskId,
+      ownerGroup,
+      title: `${request.title} — ${ownerGroup}`,
+      status: "open",
+      dueAt: timestamp
+    });
+  });
+
+  db.customer_messages.push({
+    _id: `msg-${request._id}`,
+    requestId: request._id,
+    body: request.customerMessage,
+    sentAt: timestamp
+  });
+
+  db.audit_events.push({
+    _id: `audit-${request._id}`,
+    requestId: request._id,
+    summary: request.expectedOutcome,
+    customerVisible: true,
+    occurredAt: timestamp
+  });
+
+  return buildPortalView(db);
+}

@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v2",
+  "taskId": "strategic-account-rescue",
+  "taskTitle": "Strategic account rescue",
+  "agentId": "claude-code",
+  "agentLabel": "Claude Code",
+  "agentVersion": "2.1.186 (Claude Code)",
+  "lane": "mongo",
+  "laneLabel": "MongoDB",
+  "repeat": 4,
+  "status": "passed",
+  "startedAt": "2026-06-23T13:48:17.535Z",
+  "finishedAt": "2026-06-23T13:57:50.259Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/workspace",
+    "prompt": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/prompt.md",
+    "rawTranscript": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/diff.patch",
+    "tests": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/tests.log",
+    "render": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/render.log",
+    "acceptance": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/acceptance.json",
+    "screenshot": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/db-before/collections.json",
+    "dbAfter": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/db-after/mongo-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 572724,
+    "transcriptBytes": 202009,
+    "tokens": {
+      "inputTokens": 2,
+      "outputTokens": 648,
+      "cachedInputTokens": 27721,
+      "totalTokens": 650,
+      "tokensRead": 27723,
+      "costUsd": 1.471378,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 650,
+    "diffBytes": 1634,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 31,
+    "failedCommandCount": 0,
+    "retrySignals": 98,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/prompt.md",
+      "sha256": "a7cd9e78ded708446606e4e82f7580bd803c883fc6c1c94cf056affdc3309622"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/raw-transcript/claude-code.jsonl",
+      "sha256": "28d815eca15b2bcb48069bc2b52caeacc3f65f9f7b88d49aa1ab472954024072"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/raw-transcript/claude-code-stderr.log",
+      "sha256": "a01d7f74d37763cb833c985e03c29a444204634ea530d4098590a3b528606b50"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/diff.patch",
+      "sha256": "dae5cc69fe3f2667507d62dc2cd618308fc78b9e7283a5d0bdf17e01a3d95c29"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/tests.log",
+      "sha256": "c351fa3e8ed39d0fa66ee209d163b5b519c86f3980b5b4e7f9c8ed4333ffeecd"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/acceptance.json",
+      "sha256": "c6b9470617ee1ce53bdc22de360e0069d00c61cf83040a580cc6b0ca4d643ae3"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/screenshots/before-after.svg",
+      "sha256": "c4b4a922bf7902937c1a0e7624d8ab4470744fd9b287f01be36b4bfb5e4607be"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/db-before/collections.json",
+      "sha256": "f78e018c1b9090277f27fded62f3e9a4cb1f2578784f4d2272223d418410d3fa"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-4/mongo/db-after/mongo-workflow-after.json",
+      "sha256": "c6b9470617ee1ce53bdc22de360e0069d00c61cf83040a580cc6b0ca4d643ae3"
+    }
+  ],
+  "shape": "deep"
+}

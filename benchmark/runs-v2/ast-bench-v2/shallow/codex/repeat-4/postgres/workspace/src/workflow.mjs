@@ -1,0 +1,135 @@
+import { buildPortalView } from "./portal-view.mjs";
+
+const OWNER_RESPONSIBILITIES = {
+  "Customer Success": "Own the at-risk recovery plan and coordinate the strategic account rescue",
+  "Support": "Drive resolution of the delayed high-value order and clear blocking issues",
+  "Finance": "Review contract, invoice, and credit exposure for the strategic account",
+  "Executive Sponsor": "Act as executive recovery owner and approve customer commitments"
+};
+
+const OWNER_SLA_HOURS = {
+  "Customer Success": 4,
+  "Support": 8,
+  "Finance": 24,
+  "Executive Sponsor": 2
+};
+
+function splitPipeList(value) {
+  return String(value ?? "")
+    .split("|")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+function parseRiskSignals(value) {
+  return splitPipeList(value).map((entry) => {
+    const separator = entry.indexOf(":");
+    if (separator < 0) {
+      return { name: entry, detail: entry };
+    }
+    return {
+      name: entry.slice(0, separator).trim(),
+      detail: entry.slice(separator + 1).trim()
+    };
+  });
+}
+
+function findContactEmail(contacts, role) {
+  return contacts.find((contact) => contact.role === role)?.email || null;
+}
+
+function buildAccountContext(account) {
+  if (!account) {
+    return "unknown account context";
+  }
+
+  const parts = [
+    account.name,
+    account.tier && `${account.tier} tier`,
+    account.support_plan && `${account.support_plan} support`,
+    account.contract_id && `contract ${account.contract_id}`,
+    account.renewal_date && `renewal ${account.renewal_date}`,
+    account.arr_cents != null && `ARR ${account.arr_cents}`,
+    account.region && account.region
+  ];
+
+  return parts.filter(Boolean).join(", ");
+}
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+  const stamp = now || new Date().toISOString();
+  const baseTime = Number.isNaN(Date.parse(stamp)) ? Date.now() : Date.parse(stamp);
+  const ownerGroups = splitPipeList(request.owner_groups);
+  const riskSignals = parseRiskSignals(request.risk_signals);
+  const account = db.accounts.find((item) => item.account_id === request.account_id);
+  const contacts = db.contacts || [];
+  const recoveryOwner = ownerGroups.at(-1) || "Executive Sponsor";
+  const accountContext = buildAccountContext(account);
+  const financeContactEmail = findContactEmail(contacts, "Finance");
+  const operationsContactEmail = findContactEmail(contacts, "Operations");
+
+  db.workflow_state.push({
+    request_id: request.request_id,
+    task_id: request.task_id,
+    account_id: request.account_id,
+    title: request.title,
+    status: request.expected_outcome,
+    next_step: request.next_step,
+    owner_groups: request.owner_groups,
+    risk_signals: request.risk_signals,
+    risk_signal_count: riskSignals.length,
+    risk_signal_names: riskSignals.map((signal) => signal.name).join("|"),
+    customer_message: request.customer_message,
+    customer_visible_audit_history: true,
+    executive_recovery_owner: recoveryOwner,
+    account_name: account?.name || null,
+    account_tier: account?.tier || null,
+    contract_id: account?.contract_id || null,
+    support_plan: account?.support_plan || null,
+    renewal_date: account?.renewal_date || null,
+    arr_cents: account?.arr_cents ?? null,
+    region: account?.region || null,
+    finance_contact_email: financeContactEmail,
+    operations_contact_email: operationsContactEmail,
+    account_context: accountContext,
+    case_context: "contract, support, invoice, usage, shipment, regulatory, legal, and audit context",
+    updated_at: stamp
+  });
+
+  ownerGroups.forEach((ownerGroup, index) => {
+    const dueAt = new Date(baseTime + (OWNER_SLA_HOURS[ownerGroup] || 12) * 60 * 60 * 1000).toISOString();
+    db.owner_tasks.push({
+      request_id: request.request_id,
+      account_id: request.account_id,
+      owner_group: ownerGroup,
+      title: OWNER_RESPONSIBILITIES[ownerGroup] || `${ownerGroup} recovery actions for ${request.title}`,
+      status: "open",
+      due_at: dueAt,
+      task_order: index + 1,
+      customer_safe: true,
+      created_at: stamp
+    });
+  });
+
+  db.customer_messages.push({
+    request_id: request.request_id,
+    account_id: request.account_id,
+    body: request.customer_message,
+    customer_visible: true,
+    audience: "customer",
+    created_at: stamp
+  });
+
+  db.audit_events.push({
+    request_id: request.request_id,
+    account_id: request.account_id,
+    event_type: "at_risk_escalation_opened",
+    detail: `At-risk escalation opened for ${account?.name || request.account_id} (${accountContext}); routed to ${ownerGroups.join(", ")} with ${recoveryOwner} as the executive recovery owner; Legal and regulatory review remain watchlisted; ${riskSignals.length} risk signals captured: ${riskSignals.map((signal) => signal.name).join(", ")}.`,
+    customer_visible: true,
+    timeline: "risk identified -> routed to Customer Success, Support, Finance, and Executive Sponsor -> customer-safe message published -> audit trail opened",
+    occurred_at: stamp
+  });
+
+  return buildPortalView(db);
+}

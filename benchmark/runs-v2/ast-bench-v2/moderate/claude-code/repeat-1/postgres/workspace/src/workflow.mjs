@@ -1,0 +1,49 @@
+import { buildPortalView } from "./portal-view.mjs";
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+
+  const ownerGroups = db.workflow_request_owner_groups
+    .filter((item) => item.request_id === request.request_id)
+    .sort((a, b) => a.group_order - b.group_order);
+
+  const riskSignals = db.workflow_request_risk_signals
+    .filter((item) => item.request_id === request.request_id)
+    .sort((a, b) => a.signal_order - b.signal_order);
+
+  const dueAt = new Date(new Date(now).getTime() + 24 * 60 * 60 * 1000).toISOString();
+
+  db.workflow_state.push({
+    request_id: request.request_id,
+    title: request.title,
+    status: request.expected_outcome,
+    next_step: request.next_step,
+    created_at: now
+  });
+
+  for (const { owner_group } of ownerGroups) {
+    db.owner_tasks.push({
+      request_id: request.request_id,
+      owner_group,
+      title: `Recovery owner: ${owner_group} for ${request.title}`,
+      due_at: dueAt,
+      status: "open"
+    });
+  }
+
+  db.customer_messages.push({
+    request_id: request.request_id,
+    body: request.customer_message,
+    created_at: now
+  });
+
+  db.audit_events.push({
+    request_id: request.request_id,
+    event: "escalation_activated",
+    summary: `${request.title} escalated with ${riskSignals.length} risk signals routed to ${ownerGroups.map((item) => item.owner_group).join(", ")}.`,
+    customer_visible: true,
+    created_at: now
+  });
+
+  return buildPortalView(db);
+}

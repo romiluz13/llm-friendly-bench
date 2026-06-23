@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v2",
+  "taskId": "strategic-account-rescue",
+  "taskTitle": "Strategic account rescue",
+  "agentId": "claude-code",
+  "agentLabel": "Claude Code",
+  "agentVersion": "2.1.186 (Claude Code)",
+  "lane": "postgres",
+  "laneLabel": "Postgres",
+  "repeat": 3,
+  "status": "passed",
+  "startedAt": "2026-06-23T15:57:39.387Z",
+  "finishedAt": "2026-06-23T16:00:40.571Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/workspace",
+    "prompt": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/prompt.md",
+    "rawTranscript": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/diff.patch",
+    "tests": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/tests.log",
+    "render": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/render.log",
+    "acceptance": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/acceptance.json",
+    "screenshot": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/db-before/tables.json",
+    "dbAfter": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/db-after/postgres-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 181184,
+    "transcriptBytes": 245042,
+    "tokens": {
+      "inputTokens": 3,
+      "outputTokens": 92,
+      "cachedInputTokens": 24915,
+      "totalTokens": 95,
+      "tokensRead": 24918,
+      "costUsd": 0.7802864999999998,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 95,
+    "diffBytes": 1277,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 12,
+    "failedCommandCount": 0,
+    "retrySignals": 42,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/prompt.md",
+      "sha256": "d6f814fc67c0ed20b13e1493267562c3fba7b34a798b4f6c81ff30a7bf8601cd"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/raw-transcript/claude-code.jsonl",
+      "sha256": "fdbb054f2bebaddd2f3e9d068e8ef371691c8b687986b979492a20fb32b6e460"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/raw-transcript/claude-code-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/diff.patch",
+      "sha256": "8c2fcb22863a299185dd22f5db5fdda1056653adf803b684862989f6849e2755"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/tests.log",
+      "sha256": "3c298067e4c2d4103ea9459f238c1f3d628aefb955414170172b5c3ded376fd2"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/acceptance.json",
+      "sha256": "86e281d2f35b488faef080f0e0dcdda7424abcd229e4479732e5fd83dd68e585"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/screenshots/before-after.svg",
+      "sha256": "f965633636505f522b4b00745c7b9906081114343ef2ec5edac236297d185c4a"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/db-before/tables.json",
+      "sha256": "33b95cefb23ccddb75f822616764835fea35b7e957fcc443bd34513f1f798701"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-3/postgres/db-after/postgres-workflow-after.json",
+      "sha256": "86e281d2f35b488faef080f0e0dcdda7424abcd229e4479732e5fd83dd68e585"
+    }
+  ],
+  "shape": "deep"
+}

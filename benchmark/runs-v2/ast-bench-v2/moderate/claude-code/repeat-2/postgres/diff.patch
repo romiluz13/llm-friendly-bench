@@ -1,0 +1,80 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index bc890e5..a115f98 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,6 +1,74 @@
+ import { buildPortalView } from "./portal-view.mjs";
+ 
+ export function applyBenchmarkTask(db, now) {
+-  // TODO: Implement the benchmark workflow against the native data shape.
++  const request = db.workflow_requests[0];
++
++  const ownerGroups = db.workflow_request_owner_groups
++    .filter((item) => item.request_id === request.request_id)
++    .slice()
++    .sort((a, b) => a.group_order - b.group_order);
++
++  const riskSignals = db.workflow_request_risk_signals
++    .filter((item) => item.request_id === request.request_id)
++    .slice()
++    .sort((a, b) => a.signal_order - b.signal_order);
++
++  const account = db.accounts.find((item) => item.account_id === request.account_id);
++  const contract = db.account_contracts.find((item) => item.account_id === request.account_id);
++  const contacts = db.contacts.filter((item) => item.account_id === request.account_id);
++  const activities = db.activities
++    .filter((item) => item.subject_id === request.request_id || item.account_id === request.account_id)
++    .slice()
++    .sort((a, b) => new Date(a.occurred_at) - new Date(b.occurred_at));
++
++  const ownerNames = ownerGroups.map((item) => item.owner_group);
++  const signalNames = riskSignals.map((item) => item.signal_name);
++
++  // Persist one workflow state row keyed to the request.
++  db.workflow_state.push({
++    request_id: request.request_id,
++    account_id: request.account_id,
++    status: "At-risk escalation active with executive recovery owner routing and customer-visible audit history.",
++    title: request.title,
++    next_step: request.next_step,
++    risk_summary: `${signalNames.length} signals: ${signalNames.join(", ")}`,
++    updated_at: now
++  });
++
++  // Persist one owner task per owner group, in group_order.
++  for (const group of ownerGroups) {
++    db.owner_tasks.push({
++      request_id: request.request_id,
++      owner_group: group.owner_group,
++      group_order: group.group_order,
++      title: `${group.owner_group} review for ${request.title}`,
++      status: "open",
++      due_at: now,
++      created_at: now
++    });
++  }
++
++  // Persist one customer-safe message linked to the request.
++  const customerBody = request.customer_message ||
++    `${request.title} is being handled by ${ownerNames.join(", ")}.`;
++  db.customer_messages.push({
++    request_id: request.request_id,
++    account_id: request.account_id,
++    body: customerBody,
++    sent_at: now
++  });
++
++  // Persist one customer-visible audit event linked to the request.
++  const tier = account?.tier || "strategic";
++  const plan = contract?.support_plan || "standard";
++  db.audit_events.push({
++    request_id: request.request_id,
++    account_id: request.account_id,
++    customer_visible: true,
++    summary: `Escalation opened for ${tier} account on ${plan} support; routed to ${ownerNames.join(", ")}.`,
++    detail: `${signalNames.length} risk signals reviewed across ${activities.length} activities and ${contacts.length} contacts.`,
++    occurred_at: now
++  });
++
+   return buildPortalView(db);
+ }

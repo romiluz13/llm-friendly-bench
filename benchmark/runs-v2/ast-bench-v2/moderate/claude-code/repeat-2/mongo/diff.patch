@@ -1,0 +1,57 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index bc890e5..6ca65ef 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,6 +1,51 @@
+ import { buildPortalView } from "./portal-view.mjs";
+ 
++const TASK_DUE_HOURS = 4;
++
+ export function applyBenchmarkTask(db, now) {
+-  // TODO: Implement the benchmark workflow against the native data shape.
++  const request = db.workflow_requests[0];
++  const dueAt = new Date(new Date(now).getTime() + TASK_DUE_HOURS * 60 * 60 * 1000).toISOString();
++
++  db.workflow_state.push({
++    _id: `state-${request._id}`,
++    requestId: request._id,
++    accountId: request.accountId,
++    title: request.title,
++    status: request.expectedOutcome,
++    nextStep: request.nextStep,
++    ownerGroups: request.ownerGroups,
++    riskSignals: request.riskSignals,
++    updatedAt: now
++  });
++
++  for (const ownerGroup of request.ownerGroups) {
++    db.owner_tasks.push({
++      _id: `task-${request._id}-${ownerGroup.toLowerCase().replace(/\s+/g, "-")}`,
++      requestId: request._id,
++      ownerGroup,
++      title: `${ownerGroup} recovery owner for ${request.title}`,
++      status: "open",
++      dueAt,
++      createdAt: now
++    });
++  }
++
++  db.customer_messages.push({
++    _id: `msg-${request._id}`,
++    requestId: request._id,
++    body: request.customerMessage,
++    customerVisible: true,
++    sentAt: now
++  });
++
++  db.audit_events.push({
++    _id: `audit-${request._id}`,
++    requestId: request._id,
++    type: "at-risk-escalation",
++    summary: request.expectedOutcome,
++    customerVisible: true,
++    occurredAt: now
++  });
++
+   return buildPortalView(db);
+ }

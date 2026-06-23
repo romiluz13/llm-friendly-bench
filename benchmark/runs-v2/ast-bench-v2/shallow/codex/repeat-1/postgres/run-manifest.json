@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v2",
+  "taskId": "strategic-account-rescue",
+  "taskTitle": "Strategic account rescue",
+  "agentId": "codex",
+  "agentLabel": "Codex",
+  "agentVersion": "codex-cli 0.130.0",
+  "lane": "postgres",
+  "laneLabel": "Postgres",
+  "repeat": 1,
+  "status": "passed",
+  "startedAt": "2026-06-23T11:12:58.256Z",
+  "finishedAt": "2026-06-23T11:17:42.828Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/workspace",
+    "prompt": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/prompt.md",
+    "rawTranscript": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/diff.patch",
+    "tests": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/tests.log",
+    "render": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/render.log",
+    "acceptance": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/acceptance.json",
+    "screenshot": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/db-before/tables.json",
+    "dbAfter": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/db-after/postgres-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 284572,
+    "transcriptBytes": 220852,
+    "tokens": {
+      "inputTokens": 1023173,
+      "outputTokens": 31945,
+      "cachedInputTokens": 968576,
+      "totalTokens": 1055118,
+      "tokensRead": 1991749,
+      "costUsd": 2.8773825000000004,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 1055118,
+    "diffBytes": 5576,
+    "filesChanged": 2,
+    "changedFiles": [
+      "src/portal-view.mjs",
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 21,
+    "failedCommandCount": 1,
+    "retrySignals": 40,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/prompt.md",
+      "sha256": "d6f814fc67c0ed20b13e1493267562c3fba7b34a798b4f6c81ff30a7bf8601cd"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/raw-transcript/codex.jsonl",
+      "sha256": "4dbbc8cbc66a1dad88383514f67370dd5f31f0ef29c260f604571574760dc9b2"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/raw-transcript/codex-stderr.log",
+      "sha256": "9b97003bdf79aabe6d0aedd4e2d8a62b8edfca6a91e5c33706b3f649b2b6a30c"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/diff.patch",
+      "sha256": "10fa23f7c4f43fa9fb08603dffa6e966b13871f8a0ad9234c77d34f61e2d88db"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/tests.log",
+      "sha256": "3c298067e4c2d4103ea9459f238c1f3d628aefb955414170172b5c3ded376fd2"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/acceptance.json",
+      "sha256": "fe55be5b3b17adea68908e016a27d090e6e530f9732b242629894f155d5b2295"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/screenshots/before-after.svg",
+      "sha256": "afa891c909063f67b5669624b1a819be61c64b259da25eb5838c45798faa40b1"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/db-before/tables.json",
+      "sha256": "5487367128a15a2f12968bd96a876595e57c7645f5160d88549dd1a787876c2e"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-1/postgres/db-after/postgres-workflow-after.json",
+      "sha256": "fe55be5b3b17adea68908e016a27d090e6e530f9732b242629894f155d5b2295"
+    }
+  ],
+  "shape": "shallow"
+}

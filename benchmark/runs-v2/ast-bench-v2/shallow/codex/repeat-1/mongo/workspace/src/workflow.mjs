@@ -1,0 +1,137 @@
+import { buildPortalView } from "./portal-view.mjs";
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+  const account = db.accounts.find((item) => item._id === request.accountId);
+  const activities = db.activities
+    .filter((item) => item.accountId === request.accountId || item.subjectId === request._id)
+    .slice()
+    .sort((left, right) => left.occurredAt.localeCompare(right.occurredAt));
+  const dueAt = deriveDueAt(now, request.nextStep);
+  const safeCustomerMessage = [
+    "We have activated executive recovery for your delayed high-value order.",
+    "Your portal now shows the current escalation state and audit history."
+  ].join(" ");
+
+  replaceRequestDocs(db.workflow_state, request._id, [
+    {
+      _id: `${request._id}-workflow-state`,
+      requestId: request._id,
+      accountId: account?._id ?? request.accountId,
+      title: request.title,
+      status: request.expectedOutcome,
+      ownerRouting: [...request.ownerGroups],
+      nextStep: request.nextStep,
+      customerMessage: safeCustomerMessage,
+      riskSignals: request.riskSignals.map((item) => ({ ...item })),
+      accountContext: buildAccountContext(account, activities),
+      auditTimeline: activities.map((item) => ({
+        _id: item._id,
+        summary: item.summary,
+        occurredAt: item.occurredAt
+      })),
+      updatedAt: now
+    }
+  ]);
+
+  replaceRequestDocs(
+    db.owner_tasks,
+    request._id,
+    request.ownerGroups.map((ownerGroup, index) => ({
+      _id: `${request._id}-owner-task-${index + 1}`,
+      requestId: request._id,
+      accountId: account?._id ?? request.accountId,
+      ownerGroup,
+      title: `${ownerGroup} recovery task`,
+      dueAt,
+      status: "open",
+      createdAt: now,
+      updatedAt: now
+    }))
+  );
+
+  replaceRequestDocs(db.customer_messages, request._id, [
+    {
+      _id: `${request._id}-customer-message`,
+      requestId: request._id,
+      accountId: account?._id ?? request.accountId,
+      body: safeCustomerMessage,
+      customerVisible: true,
+      createdAt: now
+    }
+  ]);
+
+  replaceRequestDocs(db.audit_events, request._id, [
+    {
+      _id: `${request._id}-audit-event`,
+      requestId: request._id,
+      accountId: account?._id ?? request.accountId,
+      customerVisible: true,
+      category: "customer-visible-escalation",
+      summary: request.expectedOutcome,
+      timeline: activities.map((item) => ({
+        _id: item._id,
+        summary: item.summary,
+        occurredAt: item.occurredAt
+      })),
+      createdAt: now
+    }
+  ]);
+
+  return buildPortalView(db);
+}
+
+function replaceRequestDocs(collection, requestId, replacementDocs) {
+  const keptDocs = collection.filter((item) => item.requestId !== requestId);
+  collection.splice(0, collection.length, ...keptDocs, ...replacementDocs);
+}
+
+function buildAccountContext(account, activities) {
+  if (!account) {
+    return {};
+  }
+
+  return {
+    tier: account.tier,
+    contract: { ...account.contract },
+    support: {
+      plan: account.contract?.supportPlan,
+      openCases: account.context?.openCases
+    },
+    invoice: {
+      risk: account.context?.invoiceRisk
+    },
+    usage: {
+      healthScore: account.context?.healthScore,
+      trend: account.context?.usageTrend
+    },
+    shipment: {
+      status: "delayed high-value order"
+    },
+    regulatory: {
+      flags: [...(account.context?.complianceFlags ?? [])]
+    },
+    audit: {
+      timeline: activities.map((item) => ({
+        _id: item._id,
+        summary: item.summary,
+        occurredAt: item.occurredAt
+      }))
+    }
+  };
+}
+
+function deriveDueAt(now, nextStep) {
+  const match = /by\s+(\d{1,2}):(\d{2})/.exec(nextStep ?? "");
+  if (!match) {
+    return now;
+  }
+
+  const dueAt = new Date(now);
+  if (Number.isNaN(dueAt.getTime())) {
+    return now;
+  }
+
+  dueAt.setUTCHours(Number(match[1]), Number(match[2]), 0, 0);
+  return dueAt.toISOString();
+}

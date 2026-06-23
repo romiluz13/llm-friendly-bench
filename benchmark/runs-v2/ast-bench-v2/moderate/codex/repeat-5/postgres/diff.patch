@@ -1,0 +1,224 @@
+diff --git a/src/portal-view.mjs b/src/portal-view.mjs
+index 4eedbae..a8d6b7a 100644
+--- a/src/portal-view.mjs
++++ b/src/portal-view.mjs
+@@ -1,7 +1,23 @@
+ export function buildPortalView(tables) {
+   const request = tables.workflow_requests[0];
++  if (!request) {
++    return {
++      taskId: "unknown",
++      title: "Unknown request",
++      status: "Needs work",
++      owner: "Unassigned",
++      nextStep: "Waiting for workflow",
++      riskSummary: "Risk not scored",
++      tasks: "0 owner tasks",
++      history: "Not visible",
++      customerMessage: "No customer-safe message"
++    };
++  }
+   const state = tables.workflow_state.find((item) => item.request_id === request.request_id);
+-  const tasks = tables.owner_tasks.filter((item) => item.request_id === request.request_id);
++  const tasks = tables.owner_tasks
++    .filter((item) => item.request_id === request.request_id)
++    .slice()
++    .sort((a, b) => (a.group_order ?? 0) - (b.group_order ?? 0) || a.owner_group.localeCompare(b.owner_group));
+   const auditVisible = tables.audit_events.some((item) => item.request_id === request.request_id && item.customer_visible);
+   const message = tables.customer_messages.find((item) => item.request_id === request.request_id);
+   const signals = tables.workflow_request_risk_signals
+@@ -12,7 +28,7 @@ export function buildPortalView(tables) {
+     taskId: request.task_id,
+     title: state?.title || request.title,
+     status: state?.status || "Needs work",
+-    owner: tasks.length ? tasks.map((item) => item.owner_group).join(" + ") : "Unassigned",
++    owner: tasks.length ? tasks.map((item) => item.owner_group).join(" + ") : state?.owner_routing || "Unassigned",
+     nextStep: state?.next_step || "Waiting for workflow",
+     riskSummary: state ? `${signals.length} signals: ${signals.map((item) => item.signal_name).join(", ")}` : "Risk not scored",
+     tasks: `${tasks.length} owner tasks`,
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index bc890e5..bda29e1 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,6 +1,180 @@
+ import { buildPortalView } from "./portal-view.mjs";
+ 
++const CUSTOMER_VISIBLE_STATUS =
++  "At-risk escalation active with executive recovery owner routing and customer-visible audit history.";
++
++const OWNER_TASK_DUE_HOURS = {
++  "Customer Success": 4,
++  Support: 8,
++  Finance: 24,
++  Legal: 24,
++  "Executive Sponsor": 36
++};
++
+ export function applyBenchmarkTask(db, now) {
+-  // TODO: Implement the benchmark workflow against the native data shape.
++  const request = db.workflow_requests[0];
++  if (!request) {
++    return buildPortalView(db);
++  }
++
++  db.workflow_state = db.workflow_state || [];
++  db.owner_tasks = db.owner_tasks || [];
++  db.customer_messages = db.customer_messages || [];
++  db.audit_events = db.audit_events || [];
++
++  const account = db.accounts.find((item) => item.account_id === request.account_id) || null;
++  const contract = db.account_contracts.find((item) => item.account_id === request.account_id) || null;
++  const contacts = db.contacts
++    .filter((item) => item.account_id === request.account_id)
++    .slice()
++    .sort((a, b) => a.role.localeCompare(b.role) || a.contact_id.localeCompare(b.contact_id));
++  const ownerGroups = db.workflow_request_owner_groups
++    .filter((item) => item.request_id === request.request_id)
++    .slice()
++    .sort((a, b) => a.group_order - b.group_order);
++  const riskSignals = db.workflow_request_risk_signals
++    .filter((item) => item.request_id === request.request_id)
++    .slice()
++    .sort((a, b) => a.signal_order - b.signal_order);
++  const activities = db.activities
++    .filter((item) => item.account_id === request.account_id && item.subject_id === request.request_id)
++    .slice()
++    .sort((a, b) => new Date(a.occurred_at) - new Date(b.occurred_at));
++  const ownerRouting = ownerGroups.map((item) => item.owner_group).join(" + ");
++  const recoveryOwner = ownerGroups[ownerGroups.length - 1]?.owner_group || ownerGroups[0]?.owner_group || null;
++  const riskSignalSummary = riskSignals.map((item) => item.signal_name).join(", ");
++  const activityTimeline = activities.map((item) => `${item.occurred_at} ${item.summary}`).join(" | ");
++
++  replaceRowsForRequest(db.workflow_state, request.request_id, [{
++    workflow_state_id: `state-${request.request_id}`,
++    request_id: request.request_id,
++    task_id: request.task_id,
++    account_id: request.account_id,
++    title: request.title,
++    status: CUSTOMER_VISIBLE_STATUS,
++    next_step: request.next_step,
++    customer_message: request.customer_message,
++    account_name: account?.name || null,
++    account_tier: account?.tier || null,
++    region: account?.region || null,
++    contract_id: contract?.contract_id || null,
++    renewal_date: contract?.renewal_date || null,
++    support_plan: contract?.support_plan || null,
++    arr_cents: contract?.arr_cents || null,
++    contact_count: contacts.length,
++    contact_roles: contacts.map((item) => item.role).join(", "),
++    owner_routing: ownerRouting,
++    recovery_owner: recoveryOwner,
++    risk_signal_count: riskSignals.length,
++    risk_signal_summary: riskSignalSummary,
++    activity_count: activities.length,
++    audit_timeline: activityTimeline,
++    customer_visible_audit_history: true,
++    opened_at: now,
++    updated_at: now
++  }]);
++
++  replaceRowsForRequest(db.owner_tasks, request.request_id, ownerGroups.map((group, index) => ({
++    task_id: `task-${request.request_id}-${group.group_order}`,
++    request_id: request.request_id,
++    account_id: request.account_id,
++    owner_group: group.owner_group,
++    group_order: group.group_order,
++    title: ownerTaskTitle(group.owner_group, request.title, account, contract),
++    due_at: addHours(now, OWNER_TASK_DUE_HOURS[group.owner_group] ?? (index + 1) * 12),
++    status: "open",
++    priority: index === 0 ? "high" : "normal",
++    created_at: now,
++    updated_at: now
++  })));
++
++  replaceRowsForRequest(db.customer_messages, request.request_id, [{
++    message_id: `message-${request.request_id}`,
++    request_id: request.request_id,
++    account_id: request.account_id,
++    channel: "portal",
++    audience: "customer",
++    customer_visible: true,
++    body: request.customer_message,
++    created_at: now,
++    sent_at: now
++  }]);
++
++  replaceRowsForRequest(db.audit_events, request.request_id, [
++    ...activities.map((activity, index) => ({
++      audit_event_id: `audit-${activity.activity_id}`,
++      request_id: request.request_id,
++      account_id: request.account_id,
++      subject_id: request.request_id,
++      activity_id: activity.activity_id,
++      event_type: "audit_timeline_entry",
++      summary: activity.summary,
++      occurred_at: activity.occurred_at,
++      sequence: index + 1,
++      customer_visible: false
++    })),
++    {
++      audit_event_id: `audit-${request.request_id}-customer-visible`,
++      request_id: request.request_id,
++      account_id: request.account_id,
++      subject_id: request.request_id,
++      event_type: "customer-visible-status",
++      summary: CUSTOMER_VISIBLE_STATUS,
++      detail: buildAuditDetail(request, account, contract, contacts, ownerRouting, riskSignalSummary, activityTimeline),
++      owner_routing: ownerRouting,
++      recovery_owner: recoveryOwner,
++      risk_signals: riskSignalSummary,
++      customer_visible: true,
++      occurred_at: now
++    }
++  ]);
++
+   return buildPortalView(db);
+ }
++
++function replaceRowsForRequest(rows, requestId, nextRows) {
++  const rowsToAdd = Array.isArray(nextRows) ? nextRows : [nextRows];
++
++  for (let index = rows.length - 1; index >= 0; index -= 1) {
++    if (rows[index].request_id === requestId) {
++      rows.splice(index, 1);
++    }
++  }
++
++  rows.push(...rowsToAdd);
++}
++
++function ownerTaskTitle(ownerGroup, title, account, contract) {
++  const tier = account?.tier || "account";
++  const supportPlan = contract?.support_plan || "support";
++
++  switch (ownerGroup) {
++    case "Customer Success":
++      return `Customer Success recovery plan for ${tier} ${supportPlan} account`;
++    case "Support":
++      return "Support investigation for delayed high-value order";
++    case "Finance":
++      return `Finance review for ${tier} account billing and contract exposure`;
++    case "Legal":
++      return `Legal review for ${tier} account escalation risk`;
++    case "Executive Sponsor":
++      return `Executive recovery oversight for ${tier} account`;
++    default:
++      return `${ownerGroup} recovery task for ${title}`;
++  }
++}
++
++function buildAuditDetail(request, account, contract, contacts, ownerRouting, riskSignalSummary, activityTimeline) {
++  const accountName = account?.name || request.account_id;
++  const tier = account?.tier || "unknown";
++  const supportPlan = contract?.support_plan || "unknown";
++  const contactSummary = contacts.length ? ` Contact roles: ${contacts.map((item) => item.role).join(", ")}.` : "";
++
++  return `Escalation opened for ${accountName} (${tier}, ${supportPlan} support). Owner routing: ${ownerRouting}. Risk signals: ${riskSignalSummary}. Activity trail: ${activityTimeline || "none"}.${contactSummary}`;
++}
++
++function addHours(iso, hours) {
++  const date = new Date(iso);
++  date.setUTCHours(date.getUTCHours() + hours);
++  return date.toISOString();
++}

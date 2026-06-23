@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v2",
+  "taskId": "strategic-account-rescue",
+  "taskTitle": "Strategic account rescue",
+  "agentId": "claude-code",
+  "agentLabel": "Claude Code",
+  "agentVersion": "2.1.186 (Claude Code)",
+  "lane": "postgres",
+  "laneLabel": "Postgres",
+  "repeat": 4,
+  "status": "passed",
+  "startedAt": "2026-06-23T10:55:01.385Z",
+  "finishedAt": "2026-06-23T10:59:17.916Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/workspace",
+    "prompt": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/prompt.md",
+    "rawTranscript": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/diff.patch",
+    "tests": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/tests.log",
+    "render": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/render.log",
+    "acceptance": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/acceptance.json",
+    "screenshot": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/db-before/tables.json",
+    "dbAfter": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/db-after/postgres-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 256531,
+    "transcriptBytes": 208646,
+    "tokens": {
+      "inputTokens": 2,
+      "outputTokens": 598,
+      "cachedInputTokens": 28364,
+      "totalTokens": 600,
+      "tokensRead": 28366,
+      "costUsd": 1.5760259999999995,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 600,
+    "diffBytes": 1334,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 33,
+    "failedCommandCount": 0,
+    "retrySignals": 102,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/prompt.md",
+      "sha256": "d6f814fc67c0ed20b13e1493267562c3fba7b34a798b4f6c81ff30a7bf8601cd"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/raw-transcript/claude-code.jsonl",
+      "sha256": "410103961f8f1b0a40da03ff6885c12d6ef05c621ddfabf82740dbb00264c7d6"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/raw-transcript/claude-code-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/diff.patch",
+      "sha256": "9ca6dd07417bca5082604f02c5485d3570b1f9bec2b9ba40073b2ff3a0805a5b"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/tests.log",
+      "sha256": "3c298067e4c2d4103ea9459f238c1f3d628aefb955414170172b5c3ded376fd2"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/acceptance.json",
+      "sha256": "86e281d2f35b488faef080f0e0dcdda7424abcd229e4479732e5fd83dd68e585"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/screenshots/before-after.svg",
+      "sha256": "f965633636505f522b4b00745c7b9906081114343ef2ec5edac236297d185c4a"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/db-before/tables.json",
+      "sha256": "5487367128a15a2f12968bd96a876595e57c7645f5160d88549dd1a787876c2e"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-4/postgres/db-after/postgres-workflow-after.json",
+      "sha256": "86e281d2f35b488faef080f0e0dcdda7424abcd229e4479732e5fd83dd68e585"
+    }
+  ],
+  "shape": "shallow"
+}

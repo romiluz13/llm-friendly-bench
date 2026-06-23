@@ -1,0 +1,425 @@
+{
+  "updatedCells": 60,
+  "log": [
+    {
+      "shape": "shallow",
+      "agentId": "claude-code",
+      "lane": "mongo",
+      "repeat": 1,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "claude-code",
+      "lane": "postgres",
+      "repeat": 1,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "claude-code",
+      "lane": "mongo",
+      "repeat": 2,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "claude-code",
+      "lane": "postgres",
+      "repeat": 2,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "claude-code",
+      "lane": "mongo",
+      "repeat": 3,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "claude-code",
+      "lane": "postgres",
+      "repeat": 3,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "claude-code",
+      "lane": "mongo",
+      "repeat": 4,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "claude-code",
+      "lane": "postgres",
+      "repeat": 4,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "claude-code",
+      "lane": "mongo",
+      "repeat": 5,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "claude-code",
+      "lane": "postgres",
+      "repeat": 5,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "codex",
+      "lane": "mongo",
+      "repeat": 1,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "codex",
+      "lane": "postgres",
+      "repeat": 1,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "codex",
+      "lane": "mongo",
+      "repeat": 2,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "codex",
+      "lane": "postgres",
+      "repeat": 2,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "codex",
+      "lane": "mongo",
+      "repeat": 3,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "codex",
+      "lane": "postgres",
+      "repeat": 3,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "codex",
+      "lane": "mongo",
+      "repeat": 4,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "codex",
+      "lane": "postgres",
+      "repeat": 4,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "codex",
+      "lane": "mongo",
+      "repeat": 5,
+      "exit": 0
+    },
+    {
+      "shape": "shallow",
+      "agentId": "codex",
+      "lane": "postgres",
+      "repeat": 5,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "claude-code",
+      "lane": "mongo",
+      "repeat": 1,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "claude-code",
+      "lane": "postgres",
+      "repeat": 1,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "claude-code",
+      "lane": "mongo",
+      "repeat": 2,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "claude-code",
+      "lane": "postgres",
+      "repeat": 2,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "claude-code",
+      "lane": "mongo",
+      "repeat": 3,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "claude-code",
+      "lane": "postgres",
+      "repeat": 3,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "claude-code",
+      "lane": "mongo",
+      "repeat": 4,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "claude-code",
+      "lane": "postgres",
+      "repeat": 4,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "claude-code",
+      "lane": "mongo",
+      "repeat": 5,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "claude-code",
+      "lane": "postgres",
+      "repeat": 5,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "codex",
+      "lane": "mongo",
+      "repeat": 1,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "codex",
+      "lane": "postgres",
+      "repeat": 1,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "codex",
+      "lane": "mongo",
+      "repeat": 2,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "codex",
+      "lane": "postgres",
+      "repeat": 2,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "codex",
+      "lane": "mongo",
+      "repeat": 3,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "codex",
+      "lane": "postgres",
+      "repeat": 3,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "codex",
+      "lane": "mongo",
+      "repeat": 4,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "codex",
+      "lane": "postgres",
+      "repeat": 4,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "codex",
+      "lane": "mongo",
+      "repeat": 5,
+      "exit": 0
+    },
+    {
+      "shape": "moderate",
+      "agentId": "codex",
+      "lane": "postgres",
+      "repeat": 5,
+      "exit": 0
+    },
+    {
+      "shape": "deep",
+      "agentId": "claude-code",
+      "lane": "mongo",
+      "repeat": 1,
+      "exit": 0
+    },
+    {
+      "shape": "deep",
+      "agentId": "claude-code",
+      "lane": "postgres",
+      "repeat": 1,
+      "status": "skipped-exists"
+    },
+    {
+      "shape": "deep",
+      "agentId": "claude-code",
+      "lane": "mongo",
+      "repeat": 2,
+      "exit": 0
+    },
+    {
+      "shape": "deep",
+      "agentId": "claude-code",
+      "lane": "postgres",
+      "repeat": 2,
+      "exit": 0
+    },
+    {
+      "shape": "deep",
+      "agentId": "claude-code",
+      "lane": "mongo",
+      "repeat": 3,
+      "exit": 0
+    },
+    {
+      "shape": "deep",
+      "agentId": "claude-code",
+      "lane": "postgres",
+      "repeat": 3,
+      "exit": 1
+    },
+    {
+      "shape": "deep",
+      "agentId": "claude-code",
+      "lane": "mongo",
+      "repeat": 4,
+      "exit": 0
+    },
+    {
+      "shape": "deep",
+      "agentId": "claude-code",
+      "lane": "postgres",
+      "repeat": 4,
+      "exit": 0
+    },
+    {
+      "shape": "deep",
+      "agentId": "claude-code",
+      "lane": "mongo",
+      "repeat": 5,
+      "exit": 0
+    },
+    {
+      "shape": "deep",
+      "agentId": "claude-code",
+      "lane": "postgres",
+      "repeat": 5,
+      "exit": 0
+    },
+    {
+      "shape": "deep",
+      "agentId": "codex",
+      "lane": "mongo",
+      "repeat": 1,
+      "status": "skipped-exists"
+    },
+    {
+      "shape": "deep",
+      "agentId": "codex",
+      "lane": "postgres",
+      "repeat": 1,
+      "exit": 0
+    },
+    {
+      "shape": "deep",
+      "agentId": "codex",
+      "lane": "mongo",
+      "repeat": 2,
+      "exit": 0
+    },
+    {
+      "shape": "deep",
+      "agentId": "codex",
+      "lane": "postgres",
+      "repeat": 2,
+      "exit": 0
+    },
+    {
+      "shape": "deep",
+      "agentId": "codex",
+      "lane": "mongo",
+      "repeat": 3,
+      "exit": 1
+    },
+    {
+      "shape": "deep",
+      "agentId": "codex",
+      "lane": "postgres",
+      "repeat": 3,
+      "exit": 1
+    },
+    {
+      "shape": "deep",
+      "agentId": "codex",
+      "lane": "mongo",
+      "repeat": 4,
+      "exit": 1
+    },
+    {
+      "shape": "deep",
+      "agentId": "codex",
+      "lane": "postgres",
+      "repeat": 4,
+      "exit": 1
+    },
+    {
+      "shape": "deep",
+      "agentId": "codex",
+      "lane": "mongo",
+      "repeat": 5,
+      "exit": 1
+    },
+    {
+      "shape": "deep",
+      "agentId": "codex",
+      "lane": "postgres",
+      "repeat": 5,
+      "exit": 1
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+Implemented the workflow in [src/workflow.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v2/ast-bench-v2/shallow/codex/repeat-2/mongo/workspace/src/workflow.mjs#L21). It now persists the required escalation state, owner tasks, customer-safe message, and customer-visible audit trail in the native document collections, with account, contract, support, invoice, usage, shipment, regulatory, and audit context captured on the workflow state. `npm test` passes.
+

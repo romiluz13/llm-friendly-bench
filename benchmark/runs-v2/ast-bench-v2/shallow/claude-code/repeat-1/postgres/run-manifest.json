@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v2",
+  "taskId": "strategic-account-rescue",
+  "taskTitle": "Strategic account rescue",
+  "agentId": "claude-code",
+  "agentLabel": "Claude Code",
+  "agentVersion": "2.1.186 (Claude Code)",
+  "lane": "postgres",
+  "laneLabel": "Postgres",
+  "repeat": 1,
+  "status": "passed",
+  "startedAt": "2026-06-23T10:26:17.166Z",
+  "finishedAt": "2026-06-23T10:31:44.902Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/workspace",
+    "prompt": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/prompt.md",
+    "rawTranscript": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/diff.patch",
+    "tests": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/tests.log",
+    "render": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/render.log",
+    "acceptance": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/acceptance.json",
+    "screenshot": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/db-before/tables.json",
+    "dbAfter": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/db-after/postgres-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 327736,
+    "transcriptBytes": 257381,
+    "tokens": {
+      "inputTokens": 2,
+      "outputTokens": 596,
+      "cachedInputTokens": 32306,
+      "totalTokens": 598,
+      "tokensRead": 32308,
+      "costUsd": 2.006752,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 598,
+    "diffBytes": 1224,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 29,
+    "failedCommandCount": 0,
+    "retrySignals": 98,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/prompt.md",
+      "sha256": "d6f814fc67c0ed20b13e1493267562c3fba7b34a798b4f6c81ff30a7bf8601cd"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/raw-transcript/claude-code.jsonl",
+      "sha256": "e7d3d0debe334d5124e16a734e917741254f398c7e413f661684f767ee3b5215"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/raw-transcript/claude-code-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/diff.patch",
+      "sha256": "d94eb95c693a6cec5f311068c8220f90323568463827a0c2142cc6c38430e563"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/tests.log",
+      "sha256": "3c298067e4c2d4103ea9459f238c1f3d628aefb955414170172b5c3ded376fd2"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/acceptance.json",
+      "sha256": "86e281d2f35b488faef080f0e0dcdda7424abcd229e4479732e5fd83dd68e585"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/screenshots/before-after.svg",
+      "sha256": "f965633636505f522b4b00745c7b9906081114343ef2ec5edac236297d185c4a"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/db-before/tables.json",
+      "sha256": "5487367128a15a2f12968bd96a876595e57c7645f5160d88549dd1a787876c2e"
+    },
+    {
+      "path": "benchmark/runs-v2/ast-bench-v2/shallow/claude-code/repeat-1/postgres/db-after/postgres-workflow-after.json",
+      "sha256": "86e281d2f35b488faef080f0e0dcdda7424abcd229e4479732e5fd83dd68e585"
+    }
+  ],
+  "shape": "shallow"
+}

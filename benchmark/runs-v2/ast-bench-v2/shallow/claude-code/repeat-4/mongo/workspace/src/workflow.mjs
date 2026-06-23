@@ -1,0 +1,40 @@
+import { buildPortalView } from "./portal-view.mjs";
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+
+  db.workflow_state.push({
+    requestId: request._id,
+    status: request.expectedOutcome,
+    title: request.title,
+    nextStep: request.nextStep,
+    riskSignals: request.riskSignals,
+    updatedAt: now
+  });
+
+  request.ownerGroups.forEach((ownerGroup, index) => {
+    db.owner_tasks.push({
+      requestId: request._id,
+      ownerGroup,
+      title: `${ownerGroup} recovery action for ${request.title}`,
+      dueAt: new Date(new Date(now).getTime() + (index + 1) * 60 * 60 * 1000).toISOString(),
+      status: "open"
+    });
+  });
+
+  db.customer_messages.push({
+    requestId: request._id,
+    body: request.customerMessage,
+    sentAt: now
+  });
+
+  db.audit_events.push({
+    requestId: request._id,
+    event: "escalation-activated",
+    customerVisible: true,
+    at: now,
+    by: "workflow-engine"
+  });
+
+  return buildPortalView(db);
+}

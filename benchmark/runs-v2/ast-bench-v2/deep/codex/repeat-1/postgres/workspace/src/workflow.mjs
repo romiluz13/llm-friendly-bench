@@ -1,0 +1,128 @@
+import { buildPortalView } from "./portal-view.mjs";
+
+const ESCALATED_STATUS = "At-risk escalation active with executive recovery owner routing and customer-visible audit history.";
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+  if (!request) {
+    throw new Error("Missing workflow request");
+  }
+
+  const account = db.accounts.find((item) => item.account_id === request.account_id);
+  const contract = db.account_contracts.find((item) => item.account_id === request.account_id);
+  const supportPlan = db.support_plans.find((item) => item.contract_id === contract?.contract_id);
+  const invoiceRisk = db.invoice_risk.find((item) => item.account_id === request.account_id);
+  const ownerGroups = db.workflow_request_owner_groups
+    .filter((item) => item.request_id === request.request_id)
+    .slice()
+    .sort((a, b) => Number(a.group_order) - Number(b.group_order));
+  const riskSignals = db.workflow_request_risk_signals
+    .filter((item) => item.request_id === request.request_id)
+    .slice()
+    .sort((a, b) => Number(a.signal_order) - Number(b.signal_order));
+  const activities = db.activities
+    .filter((item) => item.account_id === request.account_id && item.subject_id === request.request_id)
+    .slice()
+    .sort((a, b) => Date.parse(a.occurred_at) - Date.parse(b.occurred_at));
+  const dueAt = new Date(Date.parse(now) + 4 * 60 * 60 * 1000).toISOString();
+  const customerMessage = [
+    "At-risk escalation is active.",
+    "Customer Success, Support, Finance, and legal review are coordinating recovery with the executive recovery owner.",
+    "Customer-visible audit history is available in the portal."
+  ].join(" ");
+  const workflowState = {
+    request_id: request.request_id,
+    task_id: request.task_id,
+    account_id: request.account_id,
+    title: request.title,
+    primary_entity: request.primary_entity,
+    expected_outcome: request.expected_outcome,
+    status: ESCALATED_STATUS,
+    next_step: "Executive recovery owner routing active; Customer Success review by 16:00",
+    customer_message: customerMessage,
+    owner_groups: ownerGroups.map((item) => item.owner_group),
+    risk_signals: riskSignals.map(({ signal_name, detail, signal_order }) => ({ signal_name, detail, signal_order })),
+    account_tier: account?.tier,
+    contract_support_plan: contract?.support_plan || supportPlan?.plan,
+    invoice_risk_level: invoiceRisk?.level,
+    updated_at: now
+  };
+  const ownerTasks = ownerGroups.map((item, index) => ({
+    request_id: request.request_id,
+    task_id: request.task_id,
+    account_id: request.account_id,
+    owner_group: item.owner_group,
+    group_order: Number(item.group_order),
+    title: ownerTaskTitle(item.owner_group),
+    due_at: dueAt,
+    status: "open",
+    priority: "high",
+    task_order: index + 1
+  }));
+  const timeline = [
+    ...activities.map((activity) => ({
+      type: "activity",
+      activity_id: activity.activity_id,
+      occurred_at: activity.occurred_at,
+      summary: activity.summary,
+      source: db.activity_sources.find((item) => item.activity_id === activity.activity_id)?.source || "system"
+    })),
+    {
+      type: "workflow_state",
+      request_id: request.request_id,
+      occurred_at: now,
+      summary: ESCALATED_STATUS,
+      customer_visible: true,
+      owner_routing: ownerGroups.map((item) => item.owner_group)
+    }
+  ];
+  const auditEvent = {
+    request_id: request.request_id,
+    task_id: request.task_id,
+    account_id: request.account_id,
+    event_type: "workflow_escalation_activated",
+    title: "At-risk escalation activated",
+    summary: ESCALATED_STATUS,
+    customer_visible: true,
+    customer_safe: true,
+    occurred_at: now,
+    owner_groups: ownerGroups.map((item) => item.owner_group),
+    risk_signals: riskSignals.map(({ signal_name, detail }) => ({ signal_name, detail })),
+    timeline
+  };
+  const customerMessageRow = {
+    request_id: request.request_id,
+    task_id: request.task_id,
+    account_id: request.account_id,
+    body: customerMessage,
+    channel: "portal",
+    customer_visible: true,
+    created_at: now
+  };
+
+  db.workflow_state = upsertRows(db.workflow_state, request.request_id, workflowState);
+  db.owner_tasks = upsertRows(db.owner_tasks, request.request_id, ...ownerTasks);
+  db.customer_messages = upsertRows(db.customer_messages, request.request_id, customerMessageRow);
+  db.audit_events = upsertRows(db.audit_events, request.request_id, auditEvent);
+
+  return buildPortalView(db);
+}
+
+function upsertRows(rows, requestId, ...nextRows) {
+  return [...(rows || []).filter((item) => item.request_id !== requestId), ...nextRows];
+}
+
+function ownerTaskTitle(ownerGroup) {
+  switch (ownerGroup) {
+    case "Customer Success":
+      return "Coordinate recovery plan and customer-safe updates";
+    case "Support":
+      return "Resolve shipment delay and service blockers";
+    case "Finance":
+      return "Review invoice risk and commercial exposure";
+    case "Executive Sponsor":
+      return "Provide executive recovery oversight";
+    default:
+      return "Coordinate escalation workstream";
+  }
+}
