@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
   "suiteId": "ast-bench-v2",
-  "generatedAt": "2026-06-23T18:12:14.517Z",
+  "generatedAt": "2026-06-23T18:41:31.205Z",
   "status": "pilot",
   "claimLevel": "pilot",
   "requiredLaneRuns": 60,
@@ -117,7 +117,7 @@
         "retries"
       ]
     },
-    "caveat": "Within-agent comparison only. Cross-agent absolute numbers are not comparable (CLIs report tokens differently; tokensRead = inputTokens + cachedInputTokens)."
+    "caveat": "Within-agent comparison only. Each agent is measured against itself; one agent's raw numbers are not comparable to the other's, because the two tools count their work differently."
   },
   "shapeVerdict": {
     "perShape": [

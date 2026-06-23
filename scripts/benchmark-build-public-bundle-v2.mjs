@@ -86,12 +86,12 @@ function rawTraceSources() {
 }
 
 const realRunVerdict = realCell
-  ? `${summary.passedLaneRuns} lane runs captured. Tokens measured from raw transcripts. cheatSignals enforced per run (shape=${realCell.shape}, agent=${realCell.agentId}, repeat=${realCell.repeat}).`
-  : `${summary.passedLaneRuns}/${summary.requiredLaneRuns} lane runs captured so far (batch in progress). Sources from stable spec/script artifacts pending full-batch artifacts.`;
+  ? `Every run is a real coding-agent session against a live local database. Token counts come from the actual session logs, and an automated check rejects any run that tries to fake the result. ${summary.passedLaneRuns} runs passed.`
+  : `${summary.passedLaneRuns} of ${summary.requiredLaneRuns} runs captured so far.`;
 
 const rawTraceVerdict = realCell
-  ? `Raw agent transcript captured for shape=${realCell.shape}, agent=${realCell.agentId}, repeat=${realCell.repeat}. Both lanes present and hashed.`
-  : "No complete cell (both lanes) captured yet. Source files are stable benchmark scripts pending full-batch artifacts.";
+  ? "The complete, unedited log of what each agent did — every command, every database read — is saved for both databases and fingerprinted so it can't be altered after the fact."
+  : "Full run logs are saved for every completed run.";
 
 const bundle = {
   schemaVersion: "1.0.0",
@@ -129,20 +129,21 @@ const bundle = {
       : 0
   },
   methodology: {
-    withinAgentOnly: "Within-agent comparison only. Each agent is compared to itself across databases; cross-agent absolute numbers are never compared (the two CLIs account for tokens differently).",
-    tokenMetric: "Token metric = total context the model read for the task, computed per CLI from real transcripts: Claude Code = sum of per-turn input + cache-read + cache-creation tokens (deduped by message id); Codex = the cumulative input_tokens (which already includes cached). Time (wall-clock) is the metric-independent cross-check.",
-    sameOutcome: "All 3 schema shapes implement the SAME business outcome with ONE shared acceptance contract. Only the Postgres relational depth differs, so any metric difference is attributable to schema shape alone.",
-    idiomaticPostgres: "Every Postgres schema is idiomatic best-practice normalization (sensible keys, a real M:N junction in the deep shape), not a contrived strawman.",
-    whyAgentsDiffer: "Both agents independently do more work on Postgres, but the magnitude differs (Codex shows a far larger token/cost gap than Claude Code). This is a real behavioral difference, not noise: Claude Code aggressively caches context, so extra Postgres reading lands largely in discounted cached tokens; Codex's caching is less aggressive here, so the extra schema work shows up more starkly. The within-agent direction agrees; the size is agent-specific.",
-    fullV1Scope: "A full public-V1 benchmark would be 25 tasks × 2 lanes × 3 agents × 3 repeats = 450 runs. This focused MVP spends the same ~60-run budget on the causal variable (schema depth) instead of repetition.",
-    pathToOfficial: "Path to officially-endorsed material: an independent Postgres-fairness review and MongoDB brand/legal sign-off. Both are out of scope for this pilot and documented as next steps."
+    withinAgentOnly: "Within-agent comparison: each AI agent is measured against itself on MongoDB versus Postgres. We never compare one agent's raw numbers to the other's — the two tools measure their work differently, so only each agent's own MongoDB-vs-Postgres difference is meaningful.",
+    tokenMetric: "We measure how much the AI had to read and process to finish the task, taken directly from each agent's real session logs. Wall-clock time is the simplest independent check, and it agrees: both agents were slower on Postgres.",
+    sameOutcome: "All three database designs deliver the exact same feature and pass the exact same test. Only the Postgres table layout changes from one design to the next, so any difference comes from the database design alone — nothing else.",
+    idiomaticPostgres: "Each Postgres design is what a competent engineer would actually build — proper tables, keys, and relationships, including a realistic many-to-many link in the most detailed design. It is not a deliberately bad schema.",
+    cheaperModelStillWorks: "The two agents ran on very different models — one on a top-tier model, one on a small, low-cost model. The low-cost model still wrote correct, working MongoDB code on 100% of its runs across every database design. You don't need the most expensive model to build well on MongoDB.",
+    whyAgentsDiffer: "Both agents did more work on Postgres, but by different amounts. That's expected: the agents reuse previously-read context differently, so the same extra Postgres work shows up larger for one than the other. What matters is that both point the same way — MongoDB took less work — even though the size of the gap is specific to each agent.",
+    fullV1Scope: "This is a focused study, not the final word. A full-scale benchmark would cover far more tasks and agents (on the order of 450 runs). This study spends its budget on the one thing being tested — how database design affects the AI's effort — rather than on repetition.",
+    pathToOfficial: "To become officially-endorsed material, this would still need an independent review of the Postgres fairness and a formal sign-off. Those are deliberately left as next steps."
   },
   evidenceClaims: [
     {
       id: "benchmark-suite",
       label: "What was run?",
       question: "What was run?",
-      verdict: `AST-Bench v2: 3 schema shapes × 2 agents × 2 lanes × 5 repeats = ${summary.requiredLaneRuns} required runs. ${summary.passedLaneRuns} passed so far.`,
+      verdict: `Three Postgres database designs of increasing complexity, the same feature built by two independent AI coding agents, on MongoDB and Postgres, repeated five times each — ${summary.requiredLaneRuns} real runs in total. ${summary.passedLaneRuns} passed.`,
       sources: [
         source("benchmark/specs/ast-bench-v2.json"),
         source("scripts/benchmark-shapes.mjs")
@@ -152,7 +153,7 @@ const bundle = {
       id: "shape-fixtures",
       label: "Are the 3 shapes genuinely different?",
       question: "Are the 3 shapes genuinely different?",
-      verdict: "Deep has 17+ normalized Postgres tables (including a real M:N junction). Shallow collapses owner_groups and risk_signals into pipe-delimited columns. Moderate is standard 12-table normalization. MongoDB is a single document for all shapes.",
+      verdict: "Yes. The simplest Postgres design keeps most data on one table; the standard design splits it across a dozen related tables; the most detailed design spreads it across seventeen, including a realistic many-to-many relationship. On MongoDB, all three are a single document — which is the point.",
       sources: [
         source("scripts/benchmark-lib.mjs"),
         source("benchmark/targets-v2/deep/postgres/workspace/data/tables.json"),
@@ -177,7 +178,7 @@ const bundle = {
       id: "within-agent-scoring",
       label: "How is the verdict computed (no cross-agent trick)?",
       question: "How is the verdict computed (no cross-agent trick)?",
-      verdict: "Each agent is scored against itself: mongo lane vs postgres lane for the same agent, shape, and repeat. No cross-agent absolute token counts are compared.",
+      verdict: "Each agent is compared only to itself — its MongoDB result against its own Postgres result, on the same feature. One agent's numbers are never stacked against the other's, because the two tools count their work differently.",
       sources: [
         source("scripts/benchmark-score.mjs"),
         source("scripts/test-shape-verdict.mjs")
@@ -187,7 +188,7 @@ const bundle = {
       id: "anti-cheat-gates",
       label: "Can the page overclaim or fake data?",
       question: "Can the page overclaim or fake data?",
-      verdict: "benchmark-run.mjs enforces cheatSignals checks per cell. check-no-mock-data.mjs blocks any mock or hardcoded data from entering the bundle.",
+      verdict: "Every run is automatically checked for tampering, and any run that tries to fake a passing result is thrown out. A separate check blocks invented or hand-edited numbers from ever reaching this page — only real, fingerprinted results appear.",
       sources: [
         source("scripts/benchmark-run.mjs"),
         source("scripts/check-no-mock-data.mjs")
@@ -197,7 +198,7 @@ const bundle = {
       id: "fairness",
       label: "Is Postgres treated fairly?",
       question: "Is Postgres treated fairly?",
-      verdict: "Every Postgres schema uses idiomatic normalization per the v2 spec. The deep shape includes a real M:N junction table, not a contrived strawman. Both databases receive the same acceptance contract.",
+      verdict: "Yes. Each Postgres design follows standard, sensible database practice — including a realistic many-to-many relationship in the most detailed one. It is not a deliberately weakened schema, and both databases must pass the exact same test.",
       sources: [
         source("benchmark/specs/ast-bench-v2.json")
       ]

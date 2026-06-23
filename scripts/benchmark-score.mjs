@@ -95,7 +95,7 @@ export function computeDatabaseVerdict(runs) {
       universalMetrics,
       mixedMetrics
     },
-    caveat: "Within-agent comparison only. Cross-agent absolute numbers are not comparable (CLIs report tokens differently; tokensRead = inputTokens + cachedInputTokens)."
+    caveat: "Within-agent comparison only. Each agent is measured against itself; one agent's raw numbers are not comparable to the other's, because the two tools count their work differently."
   };
 }
 
