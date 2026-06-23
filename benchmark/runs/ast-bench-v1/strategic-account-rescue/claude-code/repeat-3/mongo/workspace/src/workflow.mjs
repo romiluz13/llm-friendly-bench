@@ -1,0 +1,106 @@
+import { buildPortalView } from "./portal-view.mjs";
+
+const OWNER_TASK_PLAYBOOK = {
+  "Customer Success": {
+    title: "Lead at-risk recovery and own the strategic customer relationship",
+    slaHours: 4
+  },
+  "Support": {
+    title: "Triage open cases and unblock the delayed high-value order",
+    slaHours: 8
+  },
+  "Finance": {
+    title: "Clear invoice risk and remove billing blockers on the account",
+    slaHours: 24
+  },
+  "Executive Sponsor": {
+    title: "Own the executive recovery plan and approve any concessions",
+    slaHours: 12
+  }
+};
+
+function addHours(iso, hours) {
+  return new Date(new Date(iso).getTime() + hours * 3_600_000).toISOString();
+}
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+  const account =
+    db.accounts?.find((item) => item._id === request.accountId) ?? db.accounts?.[0] ?? null;
+
+  const riskSignals = request.riskSignals.map((signal) => ({
+    name: signal.name,
+    detail: signal.detail,
+    raisedAt: now
+  }));
+
+  const state = {
+    requestId: request._id,
+    accountId: request.accountId,
+    taskId: request.taskId,
+    title: request.title,
+    status: request.expectedOutcome,
+    nextStep: request.nextStep,
+    ownerGroups: request.ownerGroups,
+    riskSignals,
+    context: account
+      ? {
+          tier: account.tier,
+          region: account.region,
+          supportPlan: account.contract?.supportPlan,
+          arrCents: account.contract?.arrCents,
+          renewalDate: account.contract?.renewalDate,
+          healthScore: account.context?.healthScore,
+          usageTrend: account.context?.usageTrend,
+          openCases: account.context?.openCases,
+          invoiceRisk: account.context?.invoiceRisk,
+          complianceFlags: account.context?.complianceFlags
+        }
+      : null,
+    openedAt: now,
+    updatedAt: now
+  };
+
+  const ownerTasks = request.ownerGroups.map((ownerGroup, index) => {
+    const playbook = OWNER_TASK_PLAYBOOK[ownerGroup];
+    return {
+      _id: `task-${request._id}-${index + 1}`,
+      requestId: request._id,
+      accountId: request.accountId,
+      ownerGroup,
+      title: playbook?.title ?? `${ownerGroup} owner action for ${request.title}`,
+      status: "open",
+      dueAt: addHours(now, playbook?.slaHours ?? 24),
+      createdAt: now
+    };
+  });
+
+  const customerMessage = {
+    _id: `msg-${request._id}`,
+    requestId: request._id,
+    accountId: request.accountId,
+    channel: "portal",
+    body: request.customerMessage,
+    createdAt: now
+  };
+
+  const auditEvent = {
+    _id: `audit-${request._id}`,
+    requestId: request._id,
+    accountId: request.accountId,
+    type: "escalation.activated",
+    customerVisible: true,
+    summary: request.expectedOutcome,
+    actor: "Customer Success",
+    ownerGroups: request.ownerGroups,
+    riskSignals: riskSignals.map((signal) => signal.name),
+    occurredAt: now
+  };
+
+  db.workflow_state.push(state);
+  db.owner_tasks.push(...ownerTasks);
+  db.customer_messages.push(customerMessage);
+  db.audit_events.push(auditEvent);
+
+  return buildPortalView(db);
+}

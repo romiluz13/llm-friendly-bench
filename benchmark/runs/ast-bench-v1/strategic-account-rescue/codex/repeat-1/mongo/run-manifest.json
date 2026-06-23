@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "taskId": "strategic-account-rescue",
+  "taskTitle": "Strategic account rescue",
+  "agentId": "codex",
+  "agentLabel": "Codex",
+  "agentVersion": "codex-cli 0.130.0",
+  "lane": "mongo",
+  "laneLabel": "MongoDB",
+  "repeat": 1,
+  "status": "passed",
+  "startedAt": "2026-06-22T23:10:51.817Z",
+  "finishedAt": "2026-06-22T23:15:21.890Z",
+  "artifacts": {
+    "workspace": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/workspace",
+    "prompt": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/prompt.md",
+    "rawTranscript": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/diff.patch",
+    "tests": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/tests.log",
+    "render": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/render.log",
+    "acceptance": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/acceptance.json",
+    "screenshot": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/db-before/collections.json",
+    "dbAfter": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/db-after/mongo-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 270073,
+    "transcriptBytes": 343151,
+    "tokens": {
+      "inputTokens": 1455406,
+      "outputTokens": 35971,
+      "cachedInputTokens": 1385216,
+      "totalTokens": 1491377,
+      "costUsd": 3.9982250000000006,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 1491377,
+    "diffBytes": 5246,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 38,
+    "failedCommandCount": 2,
+    "retrySignals": 71,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/prompt.md",
+      "sha256": "a7cd9e78ded708446606e4e82f7580bd803c883fc6c1c94cf056affdc3309622"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/raw-transcript/codex.jsonl",
+      "sha256": "8a2f30e3bca4828d817644b7362cc126633fddd8c22d4f095b2637927560e393"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/raw-transcript/codex-stderr.log",
+      "sha256": "8799b1f5f267b31a953f921ffff529b3c29aee2f629b965f60d940824dcfeb60"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/diff.patch",
+      "sha256": "b886b625159bbef8838cd4a78cdb94de59fe41f482b827d71677d67edbd724b7"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/tests.log",
+      "sha256": "c351fa3e8ed39d0fa66ee209d163b5b519c86f3980b5b4e7f9c8ed4333ffeecd"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/acceptance.json",
+      "sha256": "c6b9470617ee1ce53bdc22de360e0069d00c61cf83040a580cc6b0ca4d643ae3"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/screenshots/before-after.svg",
+      "sha256": "c4b4a922bf7902937c1a0e7624d8ab4470744fd9b287f01be36b4bfb5e4607be"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/db-before/collections.json",
+      "sha256": "f78e018c1b9090277f27fded62f3e9a4cb1f2578784f4d2272223d418410d3fa"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/mongo/db-after/mongo-workflow-after.json",
+      "sha256": "c6b9470617ee1ce53bdc22de360e0069d00c61cf83040a580cc6b0ca4d643ae3"
+    }
+  ]
+}

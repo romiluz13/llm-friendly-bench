@@ -1,0 +1,5 @@
+
+> ast-bench-data-access-audit-export-postgres@1.0.0 test
+> node tests/acceptance.test.mjs
+
+AST-Bench acceptance passed: data-access-audit-export/postgres

@@ -1,0 +1,50 @@
+import { createHash } from "node:crypto";
+import { buildPortalView } from "./portal-view.mjs";
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+  const requestId = request._id;
+
+  db.workflow_state.push({
+    requestId,
+    title: request.title,
+    status: request.expectedOutcome,
+    nextStep: request.nextStep,
+    riskSignals: request.riskSignals.map((signal) => ({ ...signal }))
+  });
+
+  request.ownerGroups.forEach((ownerGroup) => {
+    db.owner_tasks.push({
+      requestId,
+      ownerGroup,
+      title: `${ownerGroup} review for ${request.title}`,
+      dueAt: now,
+      status: "open"
+    });
+  });
+
+  db.customer_messages.push({
+    requestId,
+    body: request.customerMessage
+  });
+
+  const payload = {
+    requestId,
+    status: request.expectedOutcome,
+    ownerGroups: request.ownerGroups,
+    riskSignals: request.riskSignals.map((signal) => signal.name),
+    occurredAt: now
+  };
+  const hash = createHash("sha256").update(JSON.stringify(payload)).digest("hex");
+
+  db.audit_events.push({
+    requestId,
+    customerVisible: true,
+    payload,
+    hash,
+    occurredAt: now,
+    recordedAt: now
+  });
+
+  return buildPortalView(db);
+}

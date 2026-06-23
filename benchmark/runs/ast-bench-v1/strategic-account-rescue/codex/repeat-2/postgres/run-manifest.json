@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "taskId": "strategic-account-rescue",
+  "taskTitle": "Strategic account rescue",
+  "agentId": "codex",
+  "agentLabel": "Codex",
+  "agentVersion": "codex-cli 0.130.0",
+  "lane": "postgres",
+  "laneLabel": "Postgres",
+  "repeat": 2,
+  "status": "passed",
+  "startedAt": "2026-06-22T23:20:43.974Z",
+  "finishedAt": "2026-06-22T23:24:12.898Z",
+  "artifacts": {
+    "workspace": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/workspace",
+    "prompt": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/prompt.md",
+    "rawTranscript": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/diff.patch",
+    "tests": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/tests.log",
+    "render": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/render.log",
+    "acceptance": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/acceptance.json",
+    "screenshot": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/db-before/tables.json",
+    "dbAfter": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/db-after/postgres-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 208924,
+    "transcriptBytes": 286733,
+    "tokens": {
+      "inputTokens": 863433,
+      "outputTokens": 30253,
+      "cachedInputTokens": 800768,
+      "totalTokens": 893686,
+      "costUsd": 2.4611125,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 893686,
+    "diffBytes": 5036,
+    "filesChanged": 2,
+    "changedFiles": [
+      "src/portal-view.mjs",
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 27,
+    "failedCommandCount": 3,
+    "retrySignals": 96,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/prompt.md",
+      "sha256": "d6f814fc67c0ed20b13e1493267562c3fba7b34a798b4f6c81ff30a7bf8601cd"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/raw-transcript/codex.jsonl",
+      "sha256": "82649e81aa30679c680270ff4639fd100c44e58a8d67ab9cd8abb958ea3a638f"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/raw-transcript/codex-stderr.log",
+      "sha256": "0e3b352ec4849a39f194eb4f7b23b4295d2d78e13b749b90688edd96e5f3870e"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/diff.patch",
+      "sha256": "40911e38e60781ebf6e0ffcfe4d5863a58b0874fa8dc29df8a251fe82f6aecde"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/tests.log",
+      "sha256": "3c298067e4c2d4103ea9459f238c1f3d628aefb955414170172b5c3ded376fd2"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/acceptance.json",
+      "sha256": "18926d929bb3262280cd18b28e42ed769b5a93843c7ade7dc5c0bb8250c442d7"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/screenshots/before-after.svg",
+      "sha256": "f965633636505f522b4b00745c7b9906081114343ef2ec5edac236297d185c4a"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/db-before/tables.json",
+      "sha256": "0b54d472be1343174e8f03a6a2cbf6004a7a3f87d72f7034406b75f7ba742b68"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-2/postgres/db-after/postgres-workflow-after.json",
+      "sha256": "18926d929bb3262280cd18b28e42ed769b5a93843c7ade7dc5c0bb8250c442d7"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+
+> ast-bench-sla-breach-route-postgres@1.0.0 test
+> node tests/acceptance.test.mjs
+
+AST-Bench acceptance passed: sla-breach-route/postgres

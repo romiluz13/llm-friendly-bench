@@ -1,0 +1,144 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index bc890e5..cf434ac 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,6 +1,138 @@
+ import { buildPortalView } from "./portal-view.mjs";
+ 
+ export function applyBenchmarkTask(db, now) {
+-  // TODO: Implement the benchmark workflow against the native data shape.
++  const request = db.workflow_requests[0];
++  if (!request) {
++    return buildPortalView(db);
++  }
++
++  const requestId = request.request_id;
++  const referenceTime = now || new Date().toISOString();
++  const account = db.accounts.find((item) => item.account_id === request.account_id);
++  const contract = db.account_contracts.find((item) => item.account_id === request.account_id);
++  const ownerGroups = db.workflow_request_owner_groups
++    .filter((item) => item.request_id === requestId)
++    .slice()
++    .sort((a, b) => a.group_order - b.group_order);
++  const riskSignals = db.workflow_request_risk_signals
++    .filter((item) => item.request_id === requestId)
++    .slice()
++    .sort((a, b) => a.signal_order - b.signal_order);
++  const activities = db.activities
++    .filter((item) => item.subject_id === requestId)
++    .slice()
++    .sort((a, b) => a.occurred_at.localeCompare(b.occurred_at));
++  const ownerRouting = ownerGroups.map((item) => item.owner_group).join(" + ");
++  const auditTimeline = activities.map((item) => ({
++    activity_id: item.activity_id,
++    summary: item.summary,
++    occurred_at: item.occurred_at
++  }));
++  const supportCase = contract
++    ? `Open ${contract.support_plan} support case for ${account?.tier || "account"} account`
++    : "Open support case for split-shipment exception";
++  const dueAt = addHours(referenceTime, 4);
++
++  upsertBy(db.workflow_state, (item) => item.request_id === requestId, {
++    request_id: requestId,
++    account_id: request.account_id,
++    task_id: request.task_id,
++    title: request.title,
++    status: request.expected_outcome,
++    next_step: request.next_step,
++    customer_visible: true,
++    owner_groups: ownerGroups.map((item) => item.owner_group),
++    owner_routing: ownerRouting,
++    risk_signal_count: riskSignals.length,
++    risk_signals: riskSignals.map((item) => ({
++      signal_name: item.signal_name,
++      detail: item.detail,
++      signal_order: item.signal_order
++    })),
++    account_tier: account?.tier || null,
++    support_plan: contract?.support_plan || null,
++    replacement_plan: {
++      status: "active",
++      partial_fulfillment: "Partial fulfillment is in progress for the split shipment.",
++      carrier_delay: "Carrier delay is holding the replacement shipment.",
++      inventory_reservation: "Replacement inventory is reserved.",
++      support_case: supportCase
++    },
++    audit_timeline: auditTimeline,
++    audit_timeline_count: auditTimeline.length,
++    customer_message: request.customer_message,
++    reconciliation: {
++      account_tier: account?.tier || null,
++      support_plan: contract?.support_plan || null,
++      activity_count: activities.length,
++      last_activity_at: activities.length ? activities[activities.length - 1].occurred_at : referenceTime
++    },
++    updated_at: referenceTime
++  });
++
++  ownerGroups.forEach((group) => {
++    upsertBy(
++      db.owner_tasks,
++      (item) => item.request_id === requestId && item.owner_group === group.owner_group,
++      {
++        request_id: requestId,
++        account_id: request.account_id,
++        owner_group: group.owner_group,
++        group_order: group.group_order,
++        task_type: "split-shipment-exception",
++        title: `${group.owner_group} split-shipment review for ${request.title}`,
++        summary: `${group.owner_group} to reconcile partial fulfillment, carrier delay, inventory reservation, support case, and audit timeline.`,
++        due_at: dueAt,
++        priority: account?.tier === "enterprise" ? "high" : "normal",
++        status: "open",
++        created_at: referenceTime
++      }
++    );
++  });
++
++  upsertBy(db.customer_messages, (item) => item.request_id === requestId, {
++    request_id: requestId,
++    account_id: request.account_id,
++    body: request.customer_message,
++    customer_visible: true,
++    channel: "portal",
++    created_at: referenceTime
++  });
++
++  upsertBy(
++    db.audit_events,
++    (item) => item.request_id === requestId && item.event === "split_shipment_exception_activated",
++    {
++      request_id: requestId,
++      account_id: request.account_id,
++      event_type: "split_shipment_exception_activated",
++      event: "split_shipment_exception_activated",
++      description: `Split-shipment exception opened for ${account?.name || request.title}; partial fulfillment, carrier delay, inventory reservation, ${account?.tier || "unknown"} tier, ${contract?.support_plan || "standard"} support, and ${auditTimeline.length} audit entries were reconciled; ${ownerRouting} own the response.`,
++      customer_visible: true,
++      occurred_at: referenceTime,
++      owner_groups: ownerGroups.map((item) => item.owner_group),
++      risk_signals: riskSignals.map((item) => ({
++        signal_name: item.signal_name,
++        detail: item.detail,
++        signal_order: item.signal_order
++      })),
++      audit_timeline: auditTimeline
++    }
++  );
++
+   return buildPortalView(db);
+ }
++
++function upsertBy(collection, predicate, document) {
++  const index = collection.findIndex(predicate);
++  if (index === -1) {
++    collection.push(document);
++    return;
++  }
++
++  collection[index] = document;
++}
++
++function addHours(isoTimestamp, hours) {
++  return new Date(new Date(isoTimestamp).getTime() + hours * 60 * 60 * 1000).toISOString();
++}

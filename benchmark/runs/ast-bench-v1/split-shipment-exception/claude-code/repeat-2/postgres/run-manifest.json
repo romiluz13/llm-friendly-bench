@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "taskId": "split-shipment-exception",
+  "taskTitle": "Split-shipment exception",
+  "agentId": "claude-code",
+  "agentLabel": "Claude Code",
+  "agentVersion": "2.1.186 (Claude Code)",
+  "lane": "postgres",
+  "laneLabel": "Postgres",
+  "repeat": 2,
+  "status": "passed",
+  "startedAt": "2026-06-22T23:41:38.209Z",
+  "finishedAt": "2026-06-22T23:45:41.521Z",
+  "artifacts": {
+    "workspace": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/workspace",
+    "prompt": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/prompt.md",
+    "rawTranscript": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/diff.patch",
+    "tests": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/tests.log",
+    "render": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/render.log",
+    "acceptance": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/acceptance.json",
+    "screenshot": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/db-before/tables.json",
+    "dbAfter": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/db-after/postgres-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 243312,
+    "transcriptBytes": 226791,
+    "tokens": {
+      "inputTokens": 2,
+      "outputTokens": 654,
+      "cachedInputTokens": 27745,
+      "totalTokens": 656,
+      "costUsd": 1.6483795,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 656,
+    "diffBytes": 1880,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 28,
+    "failedCommandCount": 0,
+    "retrySignals": 107,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/prompt.md",
+      "sha256": "a624d4a6f5203177f5662df7a093afae4256432a25f27c2715a79f1d67dfd93b"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/raw-transcript/claude-code.jsonl",
+      "sha256": "cdaa9e5560f2c7779ecfaf1db28c8aca80937e19cc9c5728e1a5fc22388ab6ca"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/raw-transcript/claude-code-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/diff.patch",
+      "sha256": "b1f81bcd444b8af3b20d0cf11e69f939e1223c8fa36e9e2e29b6ba7f035751a5"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/tests.log",
+      "sha256": "6c6156f16e85da3f479a8d8b8ac0f94247a5a179760d1a3d98fcde5706011fa3"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/acceptance.json",
+      "sha256": "5544a6454cdddc15cbf34bc5862a8a153cd24aa32c1707ab14bfc33b44a1105e"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/screenshots/before-after.svg",
+      "sha256": "97092137abda3cab02fab71db9e6d05e4b66179a1485b5341a755f1b3315728e"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/db-before/tables.json",
+      "sha256": "83ed16762238c1d75a7bd7a3aa80a0cd26a281b39323e588e2770391ec3ce5b6"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/claude-code/repeat-2/postgres/db-after/postgres-workflow-after.json",
+      "sha256": "5544a6454cdddc15cbf34bc5862a8a153cd24aa32c1707ab14bfc33b44a1105e"
+    }
+  ]
+}

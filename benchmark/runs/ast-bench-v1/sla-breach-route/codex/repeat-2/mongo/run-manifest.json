@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "taskId": "sla-breach-route",
+  "taskTitle": "SLA breach route",
+  "agentId": "codex",
+  "agentLabel": "Codex",
+  "agentVersion": "codex-cli 0.130.0",
+  "lane": "mongo",
+  "laneLabel": "MongoDB",
+  "repeat": 2,
+  "status": "passed",
+  "startedAt": "2026-06-23T00:48:17.298Z",
+  "finishedAt": "2026-06-23T00:51:06.177Z",
+  "artifacts": {
+    "workspace": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/workspace",
+    "prompt": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/prompt.md",
+    "rawTranscript": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/diff.patch",
+    "tests": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/tests.log",
+    "render": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/render.log",
+    "acceptance": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/acceptance.json",
+    "screenshot": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/db-before/collections.json",
+    "dbAfter": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/db-after/mongo-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 168879,
+    "transcriptBytes": 193558,
+    "tokens": {
+      "inputTokens": 771087,
+      "outputTokens": 19019,
+      "cachedInputTokens": 703488,
+      "totalTokens": 790106,
+      "costUsd": 2.1179075000000003,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 790106,
+    "diffBytes": 5335,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 31,
+    "failedCommandCount": 1,
+    "retrySignals": 18,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/prompt.md",
+      "sha256": "caac2b66f49edbd86f1c2a586fd441b465b74f56a4d7ee988742500b6ad2f462"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/raw-transcript/codex.jsonl",
+      "sha256": "475b8e673e679465ed201da3dcfcf21b82bf8986c5e8dc12a4efb76475df693c"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/raw-transcript/codex-stderr.log",
+      "sha256": "a59db29306a5bf459abeb7a0290ddd74844e2d2b8e404024bf69dcaaa8a08ff8"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/diff.patch",
+      "sha256": "f166e242820752d4fcef2dec9ed4c3f511f021e176f56ab32e4fe2bc632bbcf0"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/tests.log",
+      "sha256": "d7f590b60c296ea3c343a0d3c7eff7807f5045e71f8da7bcd058e3dde4d5782b"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/acceptance.json",
+      "sha256": "f98280587c3cc1441756081a487b703a4f8a37d8381a88900f550dc4909963c7"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/screenshots/before-after.svg",
+      "sha256": "c646cfb56f18e6b2c55bddb897692c935e4a661fe3f9930ff730eb04f355dab1"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/db-before/collections.json",
+      "sha256": "6f4fd02098a3ef05eaeab55e3c8725effecdc72fabbcf93e0da2b79b10e8b6b4"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-2/mongo/db-after/mongo-workflow-after.json",
+      "sha256": "f98280587c3cc1441756081a487b703a4f8a37d8381a88900f550dc4909963c7"
+    }
+  ]
+}

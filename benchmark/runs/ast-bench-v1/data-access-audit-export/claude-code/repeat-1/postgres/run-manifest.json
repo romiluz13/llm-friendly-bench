@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "taskId": "data-access-audit-export",
+  "taskTitle": "Data-access audit export",
+  "agentId": "claude-code",
+  "agentLabel": "Claude Code",
+  "agentVersion": "2.1.186 (Claude Code)",
+  "lane": "postgres",
+  "laneLabel": "Postgres",
+  "repeat": 1,
+  "status": "passed",
+  "startedAt": "2026-06-23T01:57:58.455Z",
+  "finishedAt": "2026-06-23T02:03:20.199Z",
+  "artifacts": {
+    "workspace": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/workspace",
+    "prompt": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/prompt.md",
+    "rawTranscript": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/diff.patch",
+    "tests": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/tests.log",
+    "render": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/render.log",
+    "acceptance": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/acceptance.json",
+    "screenshot": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/db-before/tables.json",
+    "dbAfter": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/db-after/postgres-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 321744,
+    "transcriptBytes": 369453,
+    "tokens": {
+      "inputTokens": 2,
+      "outputTokens": 802,
+      "cachedInputTokens": 44181,
+      "totalTokens": 804,
+      "costUsd": 3.617619,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 804,
+    "diffBytes": 3405,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 35,
+    "failedCommandCount": 0,
+    "retrySignals": 114,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/prompt.md",
+      "sha256": "5f8420e1f9d5ba048e29f4adaa22e3721283bbb88a29a23b6a3920b5b52f6e3d"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/raw-transcript/claude-code.jsonl",
+      "sha256": "ac58b6554cbe294a57f92ed11e5061ca495e54c5dba4329ff76629695ca2e466"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/raw-transcript/claude-code-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/diff.patch",
+      "sha256": "65985fe19b96aee15988d3f5ee5bbec3501bb5cc0445c6adecfecfa9fd53ac0e"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/tests.log",
+      "sha256": "ebea71f1e3d6e267ce2ac13cda16c2be2d4f37b4b6fec2fb5e5bd7c752abaded"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/acceptance.json",
+      "sha256": "de2cd8b3b5413fdd5d81cc7247f5dcf6870ce327a2e364422d859b5026933ce4"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/screenshots/before-after.svg",
+      "sha256": "fab0b726797b2291154873df3ea8226ca3536a9c57b561ed479684eb0fe92d83"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/db-before/tables.json",
+      "sha256": "314ef5a70a928910ac7967fe9fba2866ed258edd58a04a9a7106f237b447ac9d"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/claude-code/repeat-1/postgres/db-after/postgres-workflow-after.json",
+      "sha256": "de2cd8b3b5413fdd5d81cc7247f5dcf6870ce327a2e364422d859b5026933ce4"
+    }
+  ]
+}

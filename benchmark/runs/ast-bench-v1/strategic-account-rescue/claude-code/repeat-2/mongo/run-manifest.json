@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "taskId": "strategic-account-rescue",
+  "taskTitle": "Strategic account rescue",
+  "agentId": "claude-code",
+  "agentLabel": "Claude Code",
+  "agentVersion": "2.1.186 (Claude Code)",
+  "lane": "mongo",
+  "laneLabel": "MongoDB",
+  "repeat": 2,
+  "status": "passed",
+  "startedAt": "2026-06-22T22:50:25.628Z",
+  "finishedAt": "2026-06-22T22:54:19.265Z",
+  "artifacts": {
+    "workspace": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/workspace",
+    "prompt": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/prompt.md",
+    "rawTranscript": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/diff.patch",
+    "tests": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/tests.log",
+    "render": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/render.log",
+    "acceptance": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/acceptance.json",
+    "screenshot": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/db-before/collections.json",
+    "dbAfter": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/db-after/mongo-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 233637,
+    "transcriptBytes": 202675,
+    "tokens": {
+      "inputTokens": 2,
+      "outputTokens": 681,
+      "cachedInputTokens": 30371,
+      "totalTokens": 683,
+      "costUsd": 1.6245299999999998,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 683,
+    "diffBytes": 3060,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 20,
+    "failedCommandCount": 0,
+    "retrySignals": 54,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/prompt.md",
+      "sha256": "a7cd9e78ded708446606e4e82f7580bd803c883fc6c1c94cf056affdc3309622"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/raw-transcript/claude-code.jsonl",
+      "sha256": "30aedd4385c7d47fb4b2ae670ecce4985eb96114a05ef2a6470e073bb3c8a5e0"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/raw-transcript/claude-code-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/diff.patch",
+      "sha256": "02c8637d9b0f3570194076cfd9a4bde55ba31e17f029d1f7aa0051f746822065"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/tests.log",
+      "sha256": "c351fa3e8ed39d0fa66ee209d163b5b519c86f3980b5b4e7f9c8ed4333ffeecd"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/acceptance.json",
+      "sha256": "c6b9470617ee1ce53bdc22de360e0069d00c61cf83040a580cc6b0ca4d643ae3"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/screenshots/before-after.svg",
+      "sha256": "c4b4a922bf7902937c1a0e7624d8ab4470744fd9b287f01be36b4bfb5e4607be"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/db-before/collections.json",
+      "sha256": "f78e018c1b9090277f27fded62f3e9a4cb1f2578784f4d2272223d418410d3fa"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-2/mongo/db-after/mongo-workflow-after.json",
+      "sha256": "c6b9470617ee1ce53bdc22de360e0069d00c61cf83040a580cc6b0ca4d643ae3"
+    }
+  ]
+}

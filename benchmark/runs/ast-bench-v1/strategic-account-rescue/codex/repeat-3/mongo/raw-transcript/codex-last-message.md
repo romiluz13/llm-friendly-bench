@@ -1,0 +1,4 @@
+Implemented the workflow in [src/workflow.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-3/mongo/workspace/src/workflow.mjs#L21). It now persists the escalation state, owner routing, risk signals, customer message, and audit records into the native MongoDB document collections, while carrying the full account/contract/support/invoice/usage/shipment/regulatory/audit context in the workflow state ([src/workflow.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-3/mongo/workspace/src/workflow.mjs#L40), [src/workflow.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-3/mongo/workspace/src/workflow.mjs#L51), [src/workflow.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-3/mongo/workspace/src/workflow.mjs#L164)).
+
+`npm test` passes.
+

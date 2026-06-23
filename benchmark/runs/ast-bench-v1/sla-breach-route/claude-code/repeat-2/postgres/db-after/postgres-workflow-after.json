@@ -1,0 +1,25 @@
+{
+  "lane": "postgres",
+  "before": {
+    "taskId": "sla-breach-route",
+    "title": "SLA breach route",
+    "status": "Needs work",
+    "owner": "Unassigned",
+    "nextStep": "Waiting for workflow",
+    "riskSummary": "Risk not scored",
+    "tasks": "0 owner tasks",
+    "history": "Not visible",
+    "customerMessage": "No customer-safe message"
+  },
+  "after": {
+    "taskId": "sla-breach-route",
+    "title": "SLA breach route",
+    "status": "SLA breach escalated with correct owners, customer-safe next step, and timer audit.",
+    "owner": "Support + Customer Success + Product + Operations",
+    "nextStep": "Support owner review and escalation within 4h SLA window",
+    "riskSummary": "5 signals: breach, route, enterprise account, open customer impact, audit required",
+    "tasks": "4 owner tasks",
+    "history": "Audit visible",
+    "customerMessage": "Your SLA breach has been escalated to Support, Customer Success, Product, Operations. Support owner review and escalation within 4h SLA window."
+  }
+}

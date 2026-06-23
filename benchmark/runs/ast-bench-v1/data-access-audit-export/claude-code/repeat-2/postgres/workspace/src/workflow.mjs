@@ -1,0 +1,69 @@
+import { createHash } from "node:crypto";
+import { buildPortalView } from "./portal-view.mjs";
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+  const requestId = request.request_id;
+
+  const ownerGroups = db.workflow_request_owner_groups
+    .filter((item) => item.request_id === requestId)
+    .slice()
+    .sort((a, b) => a.group_order - b.group_order);
+
+  const signals = db.workflow_request_risk_signals
+    .filter((item) => item.request_id === requestId)
+    .slice()
+    .sort((a, b) => a.signal_order - b.signal_order);
+
+  const status = request.expected_outcome;
+
+  // Persist the authoritative workflow state for this request.
+  db.workflow_state = db.workflow_state.filter((item) => item.request_id !== requestId);
+  db.workflow_state.push({
+    request_id: requestId,
+    title: request.title,
+    status,
+    next_step: request.next_step,
+    updated_at: now
+  });
+
+  // Persist one open owner task per approver group, in approval order.
+  db.owner_tasks = db.owner_tasks.filter((item) => item.request_id !== requestId);
+  for (const group of ownerGroups) {
+    db.owner_tasks.push({
+      request_id: requestId,
+      owner_group: group.owner_group,
+      title: `${group.owner_group} review for ${request.title}`,
+      due_at: now,
+      status: "open"
+    });
+  }
+
+  // Persist the customer-safe summary message.
+  db.customer_messages = db.customer_messages.filter((item) => item.request_id !== requestId);
+  db.customer_messages.push({
+    request_id: requestId,
+    body: request.customer_message,
+    created_at: now
+  });
+
+  // Persist a customer-visible, hashable audit event covering the scoped trail.
+  const auditPayload = {
+    request_id: requestId,
+    status,
+    owners: ownerGroups.map((group) => group.owner_group),
+    signals: signals.map((signal) => ({ name: signal.signal_name, detail: signal.detail })),
+    occurred_at: now
+  };
+  const hash = createHash("sha256").update(JSON.stringify(auditPayload)).digest("hex");
+  db.audit_events.push({
+    request_id: requestId,
+    event: "audit-export-ready",
+    customer_visible: true,
+    occurred_at: now,
+    payload: auditPayload,
+    hash
+  });
+
+  return buildPortalView(db);
+}

@@ -1,0 +1,136 @@
+{
+  "benchmark_fixture": {
+    "_id": "ast-bench-v1-invoice-dispute-workflow",
+    "suiteId": "ast-bench-v1",
+    "taskId": "invoice-dispute-workflow",
+    "generatedAt": "2026-06-18T12:00:00.000Z"
+  },
+  "accounts": [
+    {
+      "_id": "acct-invoice-di",
+      "name": "Billing Account 1",
+      "tier": "enterprise",
+      "region": "NA",
+      "contract": {
+        "contractId": "ctr-acct-invoice-di",
+        "renewalDate": "2026-09-30",
+        "arrCents": 7200000,
+        "supportPlan": "platinum"
+      },
+      "contacts": [
+        {
+          "contactId": "ct-acct-invoice-di-ops",
+          "role": "Operations",
+          "email": "ops-acct-invoice-di@example.test"
+        },
+        {
+          "contactId": "ct-acct-invoice-di-finance",
+          "role": "Finance",
+          "email": "finance-acct-invoice-di@example.test"
+        }
+      ],
+      "context": {
+        "healthScore": 68,
+        "usageTrend": "down",
+        "openCases": 2,
+        "invoiceRisk": "medium",
+        "complianceFlags": [
+          "customer-visible-audit"
+        ]
+      }
+    }
+  ],
+  "workflow_requests": [
+    {
+      "_id": "invoice-invoice-disp",
+      "taskId": "invoice-dispute-workflow",
+      "accountId": "acct-invoice-di",
+      "title": "Invoice dispute workflow",
+      "primaryEntity": "invoice",
+      "businessPrompt": "Implement an invoice dispute workflow that combines account contract, invoice lines, order fulfillment, support evidence, payment history, owner approvals, and audit events.",
+      "expectedOutcome": "Invoice dispute active with finance owner, evidence bundle, and customer-safe status.",
+      "ownerGroups": [
+        "Finance",
+        "Customer Success",
+        "Legal",
+        "Operations"
+      ],
+      "riskSignals": [
+        {
+          "name": "invoice",
+          "detail": "Invoice dispute workflow signal 1: invoice"
+        },
+        {
+          "name": "dispute",
+          "detail": "Invoice dispute workflow signal 2: dispute"
+        },
+        {
+          "name": "workflow",
+          "detail": "Invoice dispute workflow signal 3: workflow"
+        },
+        {
+          "name": "enterprise account",
+          "detail": "Invoice dispute workflow signal 4: enterprise account"
+        },
+        {
+          "name": "open customer impact",
+          "detail": "Invoice dispute workflow signal 5: open customer impact"
+        },
+        {
+          "name": "audit required",
+          "detail": "Invoice dispute workflow signal 6: audit required"
+        }
+      ],
+      "nextStep": "Finance owner review by 16:00",
+      "customerMessage": "Invoice dispute workflow is being handled by Finance, Customer Success, Legal, Operations."
+    }
+  ],
+  "activities": [
+    {
+      "_id": "act-invoice-dispute-workflow-1",
+      "accountId": "acct-invoice-di",
+      "subjectId": "invoice-invoice-disp",
+      "summary": "Invoice dispute workflow signal 1: invoice",
+      "occurredAt": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "_id": "act-invoice-dispute-workflow-2",
+      "accountId": "acct-invoice-di",
+      "subjectId": "invoice-invoice-disp",
+      "summary": "Invoice dispute workflow signal 2: dispute",
+      "occurredAt": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "_id": "act-invoice-dispute-workflow-3",
+      "accountId": "acct-invoice-di",
+      "subjectId": "invoice-invoice-disp",
+      "summary": "Invoice dispute workflow signal 3: workflow",
+      "occurredAt": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "_id": "act-invoice-dispute-workflow-4",
+      "accountId": "acct-invoice-di",
+      "subjectId": "invoice-invoice-disp",
+      "summary": "Invoice dispute workflow signal 4: enterprise account",
+      "occurredAt": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "_id": "act-invoice-dispute-workflow-5",
+      "accountId": "acct-invoice-di",
+      "subjectId": "invoice-invoice-disp",
+      "summary": "Invoice dispute workflow signal 5: open customer impact",
+      "occurredAt": "2026-06-14T10:00:00.000Z"
+    },
+    {
+      "_id": "act-invoice-dispute-workflow-6",
+      "accountId": "acct-invoice-di",
+      "subjectId": "invoice-invoice-disp",
+      "summary": "Invoice dispute workflow signal 6: audit required",
+      "occurredAt": "2026-06-15T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

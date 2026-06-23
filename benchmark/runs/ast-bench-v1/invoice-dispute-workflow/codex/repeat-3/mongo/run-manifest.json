@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "taskId": "invoice-dispute-workflow",
+  "taskTitle": "Invoice dispute workflow",
+  "agentId": "codex",
+  "agentLabel": "Codex",
+  "agentVersion": "codex-cli 0.130.0",
+  "lane": "mongo",
+  "laneLabel": "MongoDB",
+  "repeat": 3,
+  "status": "passed",
+  "startedAt": "2026-06-23T01:46:32.812Z",
+  "finishedAt": "2026-06-23T01:50:26.120Z",
+  "artifacts": {
+    "workspace": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/workspace",
+    "prompt": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/prompt.md",
+    "rawTranscript": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/diff.patch",
+    "tests": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/tests.log",
+    "render": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/render.log",
+    "acceptance": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/acceptance.json",
+    "screenshot": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/db-before/collections.json",
+    "dbAfter": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/db-after/mongo-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 233308,
+    "transcriptBytes": 83897,
+    "tokens": {
+      "inputTokens": 809510,
+      "outputTokens": 27839,
+      "cachedInputTokens": 710528,
+      "totalTokens": 837349,
+      "costUsd": 2.302165,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 837349,
+    "diffBytes": 4762,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 38,
+    "failedCommandCount": 4,
+    "retrySignals": 49,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/prompt.md",
+      "sha256": "5e5c745e65d98355c3bd0c1b85dc9b4a391e1d7bd65b26ba8952a389adb7e133"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/raw-transcript/codex.jsonl",
+      "sha256": "908d7f4ebf6d69cc4028862af32ddcc08f916b113f28deaecc5959124ee9f081"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/raw-transcript/codex-stderr.log",
+      "sha256": "a05698b0af7abcb0b868be3ccbb3a875288f66cb52415bca0d89120cfe19102b"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/diff.patch",
+      "sha256": "ce27680ab6187d38545827bd3036026bf875323917c77324239280964f7ff77a"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/tests.log",
+      "sha256": "ca426380e7ab1c92b5bbcd52fd5043b155f9d4ede8145b6a20d59834690ba912"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/acceptance.json",
+      "sha256": "bc26dc2f0b5d1933d1016905f063d8174ed407e65957558ceeef5b2c189a7d31"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/screenshots/before-after.svg",
+      "sha256": "553134fe3f1072e0cb06eafaed177b207b132183646c761b2e1e57a5180442d9"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/db-before/collections.json",
+      "sha256": "0187535bb3f2b9ff8258cbfead3b07fe2d97c1f40345f48034f9aa4f900112f6"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/mongo/db-after/mongo-workflow-after.json",
+      "sha256": "bc26dc2f0b5d1933d1016905f063d8174ed407e65957558ceeef5b2c189a7d31"
+    }
+  ]
+}

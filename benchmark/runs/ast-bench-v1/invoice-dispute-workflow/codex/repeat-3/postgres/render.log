@@ -1,0 +1,4 @@
+
+> ast-bench-invoice-dispute-workflow-postgres@1.0.0 render
+> node src/render-proof.mjs
+

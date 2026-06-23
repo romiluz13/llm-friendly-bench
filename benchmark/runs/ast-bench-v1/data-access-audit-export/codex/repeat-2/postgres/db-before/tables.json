@@ -1,0 +1,161 @@
+{
+  "benchmark_fixture": [
+    {
+      "fixture_version": "ast-bench-v1-data-access-audit-export",
+      "suite_id": "ast-bench-v1",
+      "task_id": "data-access-audit-export",
+      "generated_at": "2026-06-18T12:00:00.000Z"
+    }
+  ],
+  "accounts": [
+    {
+      "account_id": "acct-data-acces",
+      "name": "Compliance Account 1",
+      "tier": "enterprise",
+      "region": "NA"
+    }
+  ],
+  "account_contracts": [
+    {
+      "contract_id": "ctr-acct-data-acces",
+      "account_id": "acct-data-acces",
+      "renewal_date": "2026-09-30",
+      "arr_cents": 7200000,
+      "support_plan": "platinum"
+    }
+  ],
+  "contacts": [
+    {
+      "contact_id": "ct-acct-data-acces-ops",
+      "account_id": "acct-data-acces",
+      "role": "Operations",
+      "email": "ops-acct-data-acces@example.test"
+    },
+    {
+      "contact_id": "ct-acct-data-acces-finance",
+      "account_id": "acct-data-acces",
+      "role": "Finance",
+      "email": "finance-acct-data-acces@example.test"
+    }
+  ],
+  "workflow_requests": [
+    {
+      "request_id": "audit-data-access-",
+      "task_id": "data-access-audit-export",
+      "account_id": "acct-data-acces",
+      "title": "Data-access audit export",
+      "primary_entity": "audit",
+      "expected_outcome": "Audit export ready with scoped records, approvers, customer-safe summary, and hashable audit trail.",
+      "next_step": "Compliance owner review by 16:00",
+      "customer_message": "Data-access audit export is being handled by Compliance, Legal, Security, Operations."
+    }
+  ],
+  "workflow_request_owner_groups": [
+    {
+      "request_id": "audit-data-access-",
+      "owner_group": "Compliance",
+      "group_order": 1
+    },
+    {
+      "request_id": "audit-data-access-",
+      "owner_group": "Legal",
+      "group_order": 2
+    },
+    {
+      "request_id": "audit-data-access-",
+      "owner_group": "Security",
+      "group_order": 3
+    },
+    {
+      "request_id": "audit-data-access-",
+      "owner_group": "Operations",
+      "group_order": 4
+    }
+  ],
+  "workflow_request_risk_signals": [
+    {
+      "request_id": "audit-data-access-",
+      "signal_name": "data",
+      "detail": "Data-access audit export signal 1: data",
+      "signal_order": 1
+    },
+    {
+      "request_id": "audit-data-access-",
+      "signal_name": "access",
+      "detail": "Data-access audit export signal 2: access",
+      "signal_order": 2
+    },
+    {
+      "request_id": "audit-data-access-",
+      "signal_name": "audit",
+      "detail": "Data-access audit export signal 3: audit",
+      "signal_order": 3
+    },
+    {
+      "request_id": "audit-data-access-",
+      "signal_name": "enterprise account",
+      "detail": "Data-access audit export signal 4: enterprise account",
+      "signal_order": 4
+    },
+    {
+      "request_id": "audit-data-access-",
+      "signal_name": "open customer impact",
+      "detail": "Data-access audit export signal 5: open customer impact",
+      "signal_order": 5
+    },
+    {
+      "request_id": "audit-data-access-",
+      "signal_name": "audit required",
+      "detail": "Data-access audit export signal 6: audit required",
+      "signal_order": 6
+    }
+  ],
+  "activities": [
+    {
+      "activity_id": "act-data-access-audit-export-1",
+      "account_id": "acct-data-acces",
+      "subject_id": "audit-data-access-",
+      "summary": "Data-access audit export signal 1: data",
+      "occurred_at": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-data-access-audit-export-2",
+      "account_id": "acct-data-acces",
+      "subject_id": "audit-data-access-",
+      "summary": "Data-access audit export signal 2: access",
+      "occurred_at": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-data-access-audit-export-3",
+      "account_id": "acct-data-acces",
+      "subject_id": "audit-data-access-",
+      "summary": "Data-access audit export signal 3: audit",
+      "occurred_at": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-data-access-audit-export-4",
+      "account_id": "acct-data-acces",
+      "subject_id": "audit-data-access-",
+      "summary": "Data-access audit export signal 4: enterprise account",
+      "occurred_at": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-data-access-audit-export-5",
+      "account_id": "acct-data-acces",
+      "subject_id": "audit-data-access-",
+      "summary": "Data-access audit export signal 5: open customer impact",
+      "occurred_at": "2026-06-14T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-data-access-audit-export-6",
+      "account_id": "acct-data-acces",
+      "subject_id": "audit-data-access-",
+      "summary": "Data-access audit export signal 6: audit required",
+      "occurred_at": "2026-06-15T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

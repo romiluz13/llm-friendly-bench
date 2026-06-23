@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "taskId": "sla-breach-route",
+  "taskTitle": "SLA breach route",
+  "agentId": "codex",
+  "agentLabel": "Codex",
+  "agentVersion": "codex-cli 0.130.0",
+  "lane": "postgres",
+  "laneLabel": "Postgres",
+  "repeat": 3,
+  "status": "passed",
+  "startedAt": "2026-06-23T00:58:44.228Z",
+  "finishedAt": "2026-06-23T01:01:04.246Z",
+  "artifacts": {
+    "workspace": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/workspace",
+    "prompt": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/prompt.md",
+    "rawTranscript": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/diff.patch",
+    "tests": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/tests.log",
+    "render": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/render.log",
+    "acceptance": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/acceptance.json",
+    "screenshot": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/db-before/tables.json",
+    "dbAfter": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/db-after/postgres-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 140018,
+    "transcriptBytes": 241056,
+    "tokens": {
+      "inputTokens": 604082,
+      "outputTokens": 18159,
+      "cachedInputTokens": 556800,
+      "totalTokens": 622241,
+      "costUsd": 1.691795,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 622241,
+    "diffBytes": 4834,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 24,
+    "failedCommandCount": 2,
+    "retrySignals": 51,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/prompt.md",
+      "sha256": "99e765eafbb0ea99dfaed827774850a964fed76ffc7694ce5607acda5e3a709c"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/raw-transcript/codex.jsonl",
+      "sha256": "6598c88f985bc18e7ca1a6255aff6db06f9206c8d1c4e5a07e1364f9eb57c440"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/raw-transcript/codex-stderr.log",
+      "sha256": "12304cc68c6239816dd62889c2cd2f13cabeb4a45fddfc03ace148ada5f35e26"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/diff.patch",
+      "sha256": "4f7af434e4d75f9d54e40dad658d1dfbd9c80eeab0aa0e4965b6a3bfd32b9d87"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/tests.log",
+      "sha256": "0ebf987bc169ef56db6260fc4d470697e0c35187f46fce61fa2160a0468e6b09"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/acceptance.json",
+      "sha256": "33a925eca184d8601d3c6496c6d9206ae228e6250b191f672a52cc2bed7049ff"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/screenshots/before-after.svg",
+      "sha256": "0aa8cb657757547f391e0dc03f0d715d05f8fa1d538f6dbf9ddaa4174f333659"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/db-before/tables.json",
+      "sha256": "dbb7246cfdcfa9ca32ef60b5d95119cf5428a40a2b3a8f8b22a7ee65c11d79de"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/codex/repeat-3/postgres/db-after/postgres-workflow-after.json",
+      "sha256": "33a925eca184d8601d3c6496c6d9206ae228e6250b191f672a52cc2bed7049ff"
+    }
+  ]
+}

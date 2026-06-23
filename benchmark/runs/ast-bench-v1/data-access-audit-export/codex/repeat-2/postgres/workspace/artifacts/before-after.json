@@ -1,0 +1,25 @@
+{
+  "lane": "postgres",
+  "before": {
+    "taskId": "data-access-audit-export",
+    "title": "Data-access audit export",
+    "status": "Needs work",
+    "owner": "Unassigned",
+    "nextStep": "Waiting for workflow",
+    "riskSummary": "Risk not scored",
+    "tasks": "0 owner tasks",
+    "history": "Not visible",
+    "customerMessage": "No customer-safe message"
+  },
+  "after": {
+    "taskId": "data-access-audit-export",
+    "title": "Data-access audit export",
+    "status": "Audit export ready with scoped records, approvers, customer-safe summary, and hashable audit trail.",
+    "owner": "Compliance + Legal + Security + Operations",
+    "nextStep": "Compliance owner review by 16:00",
+    "riskSummary": "6 signals: data, access, audit, enterprise account, open customer impact, audit required",
+    "tasks": "4 owner tasks",
+    "history": "Audit visible",
+    "customerMessage": "Data-access audit export is being handled by Compliance, Legal, Security, Operations."
+  }
+}

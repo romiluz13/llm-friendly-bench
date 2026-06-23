@@ -1,13 +1,13 @@
 {
   "schemaVersion": "1.0.0",
   "suiteId": "ast-bench-v1",
-  "generatedAt": "2026-06-21T20:41:37.370Z",
-  "status": "case-study",
-  "claimLevel": "case-study",
+  "generatedAt": "2026-06-23T05:42:10.536Z",
+  "status": "pilot",
+  "claimLevel": "pilot",
   "requiredLaneRuns": 450,
-  "capturedLaneRuns": 3,
-  "passedLaneRuns": 3,
-  "missingLaneRuns": 447,
+  "capturedLaneRuns": 60,
+  "passedLaneRuns": 60,
+  "missingLaneRuns": 390,
   "taskCount": 25,
   "taskCells": 450,
   "agents": [
@@ -15,14 +15,14 @@
       "id": "codex",
       "label": "Codex",
       "adapter": "codex exec",
-      "capturedLaneRuns": 3,
-      "claimStatus": "seed-captured"
+      "capturedLaneRuns": 30,
+      "claimStatus": "not-yet-verified"
     },
     {
       "id": "claude-code",
       "label": "Claude Code",
       "adapter": "claude --print",
-      "capturedLaneRuns": 0,
+      "capturedLaneRuns": 30,
       "claimStatus": "not-yet-verified"
     },
     {
@@ -53,8 +53,8 @@
       "domainLabel": "Customer 360 / CRM",
       "expectedOutcome": "At-risk escalation active with executive recovery owner routing and customer-visible audit history.",
       "seedCase": true,
-      "capturedLaneRuns": 2,
-      "status": "seed-case"
+      "capturedLaneRuns": 12,
+      "status": "captured"
     },
     {
       "id": "renewal-risk-workspace",
@@ -63,8 +63,8 @@
       "domainLabel": "Customer 360 / CRM",
       "expectedOutcome": "Renewal risk workspace active with owner tasks, customer-safe next step, and persisted risk factors.",
       "seedCase": false,
-      "capturedLaneRuns": 1,
-      "status": "captured"
+      "capturedLaneRuns": 0,
+      "status": "defined"
     },
     {
       "id": "account-merge-consent-audit",
@@ -103,8 +103,8 @@
       "domainLabel": "Order / Commerce Ops",
       "expectedOutcome": "Split-shipment exception active with replacement plan, owners, customer message, and audit trail.",
       "seedCase": false,
-      "capturedLaneRuns": 0,
-      "status": "defined"
+      "capturedLaneRuns": 12,
+      "status": "captured"
     },
     {
       "id": "refund-credit-workflow",
@@ -153,8 +153,8 @@
       "domainLabel": "Support / SLA",
       "expectedOutcome": "SLA breach escalated with correct owners, customer-safe next step, and timer audit.",
       "seedCase": false,
-      "capturedLaneRuns": 0,
-      "status": "defined"
+      "capturedLaneRuns": 12,
+      "status": "captured"
     },
     {
       "id": "duplicate-case-merge",
@@ -203,8 +203,8 @@
       "domainLabel": "Billing / Revenue Ops",
       "expectedOutcome": "Invoice dispute active with finance owner, evidence bundle, and customer-safe status.",
       "seedCase": false,
-      "capturedLaneRuns": 0,
-      "status": "defined"
+      "capturedLaneRuns": 12,
+      "status": "captured"
     },
     {
       "id": "payment-risk-hold-release",
@@ -253,8 +253,8 @@
       "domainLabel": "Compliance / Audit Ops",
       "expectedOutcome": "Audit export ready with scoped records, approvers, customer-safe summary, and hashable audit trail.",
       "seedCase": false,
-      "capturedLaneRuns": 0,
-      "status": "defined"
+      "capturedLaneRuns": 12,
+      "status": "captured"
     },
     {
       "id": "regulated-shipment-approval",
@@ -298,27 +298,85 @@
     }
   ],
   "aggregate": {
-    "rows": 3,
+    "rows": 60,
     "byLane": {
       "mongo": {
-        "rowCount": 2,
-        "medianElapsedMs": 145525,
-        "medianEstimatedTranscriptTokens": 61532.5,
-        "tokenIqr": 4511,
-        "medianRetrySignals": 31,
-        "medianDiffBytes": 6661.5,
+        "rowCount": 30,
+        "medianElapsedMs": 233472.5,
+        "medianEstimatedTranscriptTokens": 238492,
+        "tokenIqr": 789429,
+        "medianRetrySignals": 72,
+        "medianDiffBytes": 3286.5,
         "medianFilesChanged": 1
       },
       "postgres": {
-        "rowCount": 1,
-        "medianElapsedMs": 237528,
-        "medianEstimatedTranscriptTokens": 72657,
-        "tokenIqr": 0,
-        "medianRetrySignals": 28,
-        "medianDiffBytes": 8699,
+        "rowCount": 30,
+        "medianElapsedMs": 250437,
+        "medianEstimatedTranscriptTokens": 291859,
+        "tokenIqr": 934638,
+        "medianRetrySignals": 95.5,
+        "medianDiffBytes": 2784.5,
         "medianFilesChanged": 1
       }
     }
+  },
+  "databaseVerdict": {
+    "perAgent": [
+      {
+        "agentId": "codex",
+        "mongo": {
+          "runs": 15,
+          "medianTokensRead": 1483753,
+          "medianCostUsd": 2.1862150000000002,
+          "medianElapsedMs": 168879,
+          "medianRetrySignals": 49
+        },
+        "postgres": {
+          "runs": 15,
+          "medianTokensRead": 1710889,
+          "medianCostUsd": 2.5173525000000003,
+          "medianElapsedMs": 199398,
+          "medianRetrySignals": 82
+        },
+        "deltas": {
+          "tokensPct": 15,
+          "costPct": 15,
+          "timePct": 18,
+          "retries": 33
+        },
+        "mongoWins": true
+      },
+      {
+        "agentId": "claude-code",
+        "mongo": {
+          "runs": 15,
+          "medianTokensRead": 29328,
+          "medianCostUsd": 1.6387559999999999,
+          "medianElapsedMs": 262814,
+          "medianRetrySignals": 86
+        },
+        "postgres": {
+          "runs": 15,
+          "medianTokensRead": 30438,
+          "medianCostUsd": 1.7885575,
+          "medianElapsedMs": 282604,
+          "medianRetrySignals": 102
+        },
+        "deltas": {
+          "tokensPct": 4,
+          "costPct": 9,
+          "timePct": 8,
+          "retries": 16
+        },
+        "mongoWins": true
+      }
+    ],
+    "agreement": {
+      "agentsAgreeMongoFewerTokens": true,
+      "agentCount": 2,
+      "statement": "Both agents independently read more context, cost more, and retried more on Postgres for the same tasks."
+    },
+    "caveat": "Within-agent comparison only. Cross-agent absolute numbers are not comparable (CLIs report tokens differently; tokensRead = inputTokens + cachedInputTokens)."
   },
   "currentSeed": {
     "status": "captured",

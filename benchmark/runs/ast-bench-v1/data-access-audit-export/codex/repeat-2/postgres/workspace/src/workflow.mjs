@@ -1,0 +1,117 @@
+import { createHash } from "node:crypto";
+import { buildPortalView } from "./portal-view.mjs";
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+  const requestId = request.request_id;
+  const accountId = request.account_id;
+
+  const ownerGroups = db.workflow_request_owner_groups
+    .filter((item) => item.request_id === requestId)
+    .sort((a, b) => a.group_order - b.group_order);
+
+  const riskSignals = db.workflow_request_risk_signals
+    .filter((item) => item.request_id === requestId)
+    .sort((a, b) => a.signal_order - b.signal_order);
+
+  const account = db.accounts.find((item) => item.account_id === accountId) ?? null;
+  const contract = db.account_contracts.find((item) => item.account_id === accountId) ?? null;
+  const contacts = db.contacts.filter((item) => item.account_id === accountId);
+  const scopedActivities = db.activities.filter(
+    (item) => item.subject_id === requestId || item.account_id === accountId
+  );
+  const customerSafeSummary = request.customer_message;
+
+  db.workflow_state = db.workflow_state.filter((item) => item.request_id !== requestId);
+  db.owner_tasks = db.owner_tasks.filter((item) => item.request_id !== requestId);
+  db.customer_messages = db.customer_messages.filter((item) => item.request_id !== requestId);
+  db.audit_events = db.audit_events.filter((item) => item.request_id !== requestId);
+
+  const scopedRecords = {
+    account_id: accountId,
+    account_name: account?.name ?? null,
+    account_tier: account?.tier ?? null,
+    account_region: account?.region ?? null,
+    contract_id: contract?.contract_id ?? null,
+    renewal_date: contract?.renewal_date ?? null,
+    support_plan: contract?.support_plan ?? null,
+    contact_roles: contacts.map((item) => item.role),
+    activity_count: scopedActivities.length,
+    activity_ids: scopedActivities.map((item) => item.activity_id)
+  };
+
+  const payload = {
+    request_id: requestId,
+    task_id: request.task_id,
+    account_id: accountId,
+    status: request.expected_outcome,
+    next_step: request.next_step,
+    approvers: ownerGroups.map((item) => ({
+      owner_group: item.owner_group,
+      group_order: item.group_order
+    })),
+    risk_signals: riskSignals.map((item) => ({
+      signal_name: item.signal_name,
+      detail: item.detail,
+      signal_order: item.signal_order
+    })),
+    customer_safe_summary: customerSafeSummary,
+    scoped_records: scopedRecords
+  };
+  const auditHash = createHash("sha256").update(JSON.stringify(payload)).digest("hex");
+
+  db.workflow_state.push({
+    request_id: requestId,
+    task_id: request.task_id,
+    account_id: accountId,
+    title: request.title,
+    status: request.expected_outcome,
+    next_step: request.next_step,
+    customer_safe_summary: customerSafeSummary,
+    owner_groups: ownerGroups.map((item) => ({
+      owner_group: item.owner_group,
+      group_order: item.group_order
+    })),
+    risk_signals: riskSignals.map((item) => ({
+      signal_name: item.signal_name,
+      detail: item.detail,
+      signal_order: item.signal_order
+    })),
+    scoped_records: scopedRecords,
+    owner_group_count: ownerGroups.length,
+    risk_signal_count: riskSignals.length,
+    audit_hash: auditHash,
+    updated_at: now
+  });
+
+  const dueAt = new Date(new Date(now).getTime() + 24 * 60 * 60 * 1000).toISOString();
+  for (const group of ownerGroups) {
+    db.owner_tasks.push({
+      request_id: requestId,
+      owner_group: group.owner_group,
+      title: `${group.owner_group} review for ${request.title}`,
+      due_at: dueAt,
+      status: "open"
+    });
+  }
+
+  db.customer_messages.push({
+    request_id: requestId,
+    channel: "portal",
+    body: customerSafeSummary,
+    customer_visible: true,
+    created_at: now
+  });
+
+  db.audit_events.push({
+    request_id: requestId,
+    event_type: "audit_export_ready",
+    summary: `Audit export ready for ${request.title}: ${ownerGroups.length} approvers, ${riskSignals.length} risk signals.`,
+    customer_visible: true,
+    payload,
+    hash: auditHash,
+    created_at: now
+  });
+
+  return buildPortalView(db);
+}

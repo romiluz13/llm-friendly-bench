@@ -1,0 +1,128 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index bc890e5..0e75d0b 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,6 +1,122 @@
+ import { buildPortalView } from "./portal-view.mjs";
+ 
++const EXPECTED_STATUS = "SLA breach escalated with correct owners, customer-safe next step, and timer audit.";
++
++function ensureTable(db, name) {
++  if (!Array.isArray(db[name])) {
++    db[name] = [];
++  }
++
++  return db[name];
++}
++
++function addHours(isoTimestamp, hours) {
++  const date = new Date(isoTimestamp);
++  date.setUTCHours(date.getUTCHours() + hours);
++  return date.toISOString();
++}
++
++function sortByNumericField(rows, field) {
++  return [...rows].sort((left, right) => Number(left[field]) - Number(right[field]));
++}
++
++function replaceRowsForRequest(rows, requestId, nextRows) {
++  const retainedRows = rows.filter((item) => item.request_id !== requestId);
++  rows.splice(0, rows.length, ...retainedRows, ...nextRows);
++}
++
+ export function applyBenchmarkTask(db, now) {
+-  // TODO: Implement the benchmark workflow against the native data shape.
++  const requests = ensureTable(db, "workflow_requests");
++  const request = requests[0];
++
++  if (!request) {
++    return buildPortalView(db);
++  }
++
++  const account = ensureTable(db, "accounts").find((item) => item.account_id === request.account_id);
++  const contract = ensureTable(db, "account_contracts").find((item) => item.account_id === request.account_id);
++  const ownerGroups = sortByNumericField(
++    ensureTable(db, "workflow_request_owner_groups").filter((item) => item.request_id === request.request_id),
++    "group_order"
++  );
++  const riskSignals = sortByNumericField(
++    ensureTable(db, "workflow_request_risk_signals").filter((item) => item.request_id === request.request_id),
++    "signal_order"
++  );
++  const activities = ensureTable(db, "activities")
++    .filter((item) => item.account_id === request.account_id && item.subject_id === request.request_id)
++    .sort((left, right) => left.occurred_at.localeCompare(right.occurred_at));
++
++  const ownerGroupNames = ownerGroups.map((item) => item.owner_group);
++  const riskSummary = `${riskSignals.length} signals: ${riskSignals.map((item) => item.signal_name).join(", ")}`;
++  const nextStep = "Support owner review by 16:00 UTC with customer-safe update queued.";
++  const customerMessage = `We have escalated this enterprise SLA breach to ${ownerGroupNames.join(", ")}. The next customer-safe update is the support owner review by 16:00 UTC.`;
++  const timerAudit = [
++    `checked ${now}`,
++    `response timer ${addHours(now, 4)}`,
++    `${activities.length} open incidents`,
++    `${account?.tier || "unknown"} tier`,
++    `${contract?.support_plan || "unknown"} support plan`
++  ].join("; ");
++
++  request.next_step = nextStep;
++  request.customer_message = customerMessage;
++
++  replaceRowsForRequest(ensureTable(db, "workflow_state"), request.request_id, [{
++    request_id: request.request_id,
++    task_id: request.task_id,
++    account_id: request.account_id,
++    title: request.title,
++    status: EXPECTED_STATUS,
++    escalation_state: "customer-visible",
++    customer_visible: true,
++    next_step: nextStep,
++    customer_message: customerMessage,
++    owner_group: ownerGroupNames.join(" + "),
++    risk_summary: riskSummary,
++    entitlement: contract?.support_plan || "unknown",
++    account_tier: account?.tier || "unknown",
++    open_incident_count: activities.length,
++    order_impact: activities.some((item) => item.summary.toLowerCase().includes("customer impact"))
++      ? "customer order impact under active review"
++      : "order impact under active review",
++    owner_availability: `${ownerGroupNames.length} owner groups assigned`,
++    response_timer_due_at: addHours(now, 4),
++    timer_audit: timerAudit,
++    updated_at: now
++  }]);
++
++  replaceRowsForRequest(ensureTable(db, "owner_tasks"), request.request_id, ownerGroups.map((item, index) => ({
++    request_id: request.request_id,
++    task_id: request.task_id,
++    owner_group: item.owner_group,
++    group_order: Number(item.group_order),
++    title: `${item.owner_group} SLA breach response`,
++    due_at: addHours(now, index + 1),
++    status: "open",
++    assigned_at: now,
++    next_step: nextStep,
++    timer_audit: timerAudit
++  })));
++
++  replaceRowsForRequest(ensureTable(db, "customer_messages"), request.request_id, [{
++    request_id: request.request_id,
++    task_id: request.task_id,
++    body: customerMessage,
++    created_at: now,
++    channel: "customer-visible"
++  }]);
++
++  replaceRowsForRequest(ensureTable(db, "audit_events"), request.request_id, [{
++    request_id: request.request_id,
++    task_id: request.task_id,
++    event_type: "customer_visible_escalation",
++    title: request.title,
++    body: `${EXPECTED_STATUS} Next step: ${nextStep} Timer audit: ${timerAudit}.`,
++    customer_visible: true,
++    created_at: now,
++    timer_audit: timerAudit
++  }]);
++
+   return buildPortalView(db);
+ }

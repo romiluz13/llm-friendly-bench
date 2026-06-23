@@ -1,0 +1,78 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index bc890e5..b3353d2 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,6 +1,72 @@
+ import { buildPortalView } from "./portal-view.mjs";
+ 
++// Recovery SLA per owner group (hours from escalation open), tuned to each group's urgency.
++const OWNER_SLA_HOURS = {
++  "Customer Success": 4,
++  "Support": 8,
++  "Finance": 24,
++  "Executive Sponsor": 2
++};
++
+ export function applyBenchmarkTask(db, now) {
+-  // TODO: Implement the benchmark workflow against the native data shape.
++  const request = db.workflow_requests[0];
++  const stamp = now || new Date().toISOString();
++  const baseTime = Date.parse(stamp);
++
++  const ownerGroups = db.workflow_request_owner_groups
++    .filter((item) => item.request_id === request.request_id)
++    .sort((a, b) => a.group_order - b.group_order);
++  const signals = db.workflow_request_risk_signals
++    .filter((item) => item.request_id === request.request_id)
++    .sort((a, b) => a.signal_order - b.signal_order);
++
++  // The highest-ordered owner group is the executive recovery owner accountable for the rescue.
++  const recoveryOwner = ownerGroups[ownerGroups.length - 1]?.owner_group || "Executive Sponsor";
++  const routing = ownerGroups.map((group) => group.owner_group).join(", ");
++  const nextStep = `Executive recovery owner ${recoveryOwner} to drive ${request.title} across ${routing}.`;
++
++  db.workflow_state.push({
++    request_id: request.request_id,
++    task_id: request.task_id,
++    account_id: request.account_id,
++    title: request.title,
++    status: request.expected_outcome,
++    next_step: nextStep,
++    risk_level: "at-risk",
++    recovery_owner: recoveryOwner,
++    updated_at: stamp
++  });
++
++  for (const group of ownerGroups) {
++    const slaHours = OWNER_SLA_HOURS[group.owner_group] ?? 12;
++    db.owner_tasks.push({
++      task_id: `${request.request_id}-${group.owner_group.toLowerCase().replace(/\s+/g, "-")}`,
++      request_id: request.request_id,
++      owner_group: group.owner_group,
++      title: `${group.owner_group} recovery action for ${request.title}`,
++      status: "open",
++      due_at: new Date(baseTime + slaHours * 3600 * 1000).toISOString(),
++      created_at: stamp
++    });
++  }
++
++  db.customer_messages.push({
++    message_id: `${request.request_id}-customer-update`,
++    request_id: request.request_id,
++    body: request.customer_message,
++    customer_safe: true,
++    created_at: stamp
++  });
++
++  db.audit_events.push({
++    event_id: `${request.request_id}-escalation-opened`,
++    request_id: request.request_id,
++    event: "at_risk_escalation_opened",
++    detail: `Routed to ${routing} on ${signals.length} risk signals: ${signals.map((item) => item.signal_name).join(", ")}.`,
++    actor: recoveryOwner,
++    customer_visible: true,
++    occurred_at: stamp
++  });
++
+   return buildPortalView(db);
+ }

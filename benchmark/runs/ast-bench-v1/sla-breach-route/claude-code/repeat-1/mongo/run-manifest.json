@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "taskId": "sla-breach-route",
+  "taskTitle": "SLA breach route",
+  "agentId": "claude-code",
+  "agentLabel": "Claude Code",
+  "agentVersion": "2.1.186 (Claude Code)",
+  "lane": "mongo",
+  "laneLabel": "MongoDB",
+  "repeat": 1,
+  "status": "passed",
+  "startedAt": "2026-06-23T00:13:23.269Z",
+  "finishedAt": "2026-06-23T00:17:20.076Z",
+  "artifacts": {
+    "workspace": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/workspace",
+    "prompt": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/prompt.md",
+    "rawTranscript": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/diff.patch",
+    "tests": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/tests.log",
+    "render": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/render.log",
+    "acceptance": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/acceptance.json",
+    "screenshot": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/db-before/collections.json",
+    "dbAfter": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/db-after/mongo-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 236807,
+    "transcriptBytes": 202050,
+    "tokens": {
+      "inputTokens": 2,
+      "outputTokens": 515,
+      "cachedInputTokens": 28958,
+      "totalTokens": 517,
+      "costUsd": 1.5016419999999997,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 517,
+    "diffBytes": 1316,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 26,
+    "failedCommandCount": 0,
+    "retrySignals": 94,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/prompt.md",
+      "sha256": "caac2b66f49edbd86f1c2a586fd441b465b74f56a4d7ee988742500b6ad2f462"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/raw-transcript/claude-code.jsonl",
+      "sha256": "c68cf286afc13bc39099bd49c4e1c9e5ba5b1fd44d2c4ef8ffd1b7b6bfe9b86d"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/raw-transcript/claude-code-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/diff.patch",
+      "sha256": "2f9af5d2833d816247828ac17433d86f4e49df01b8fc7420b83423e4802859eb"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/tests.log",
+      "sha256": "d7f590b60c296ea3c343a0d3c7eff7807f5045e71f8da7bcd058e3dde4d5782b"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/acceptance.json",
+      "sha256": "2a44724384c5525f23f3238be537c836c9725d47c329259f336a10e34a14443c"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/screenshots/before-after.svg",
+      "sha256": "82bd17b5ae7f05bee5a2f52a8a53daedf62f496541e8d1e44a903351fca97fb3"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/db-before/collections.json",
+      "sha256": "6f4fd02098a3ef05eaeab55e3c8725effecdc72fabbcf93e0da2b79b10e8b6b4"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/mongo/db-after/mongo-workflow-after.json",
+      "sha256": "2a44724384c5525f23f3238be537c836c9725d47c329259f336a10e34a14443c"
+    }
+  ]
+}

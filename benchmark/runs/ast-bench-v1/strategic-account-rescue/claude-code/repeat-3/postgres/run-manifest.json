@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "taskId": "strategic-account-rescue",
+  "taskTitle": "Strategic account rescue",
+  "agentId": "claude-code",
+  "agentLabel": "Claude Code",
+  "agentVersion": "2.1.186 (Claude Code)",
+  "lane": "postgres",
+  "laneLabel": "Postgres",
+  "repeat": 3,
+  "status": "passed",
+  "startedAt": "2026-06-22T23:05:43.939Z",
+  "finishedAt": "2026-06-22T23:10:51.647Z",
+  "artifacts": {
+    "workspace": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/workspace",
+    "prompt": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/prompt.md",
+    "rawTranscript": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/diff.patch",
+    "tests": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/tests.log",
+    "render": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/render.log",
+    "acceptance": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/acceptance.json",
+    "screenshot": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/db-before/tables.json",
+    "dbAfter": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/db-after/postgres-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 307708,
+    "transcriptBytes": 235176,
+    "tokens": {
+      "inputTokens": 2,
+      "outputTokens": 723,
+      "cachedInputTokens": 32038,
+      "totalTokens": 725,
+      "costUsd": 1.8573910000000005,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 725,
+    "diffBytes": 2699,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 29,
+    "failedCommandCount": 0,
+    "retrySignals": 82,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/prompt.md",
+      "sha256": "d6f814fc67c0ed20b13e1493267562c3fba7b34a798b4f6c81ff30a7bf8601cd"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/raw-transcript/claude-code.jsonl",
+      "sha256": "9404a668ff980cf49be5a130c2171c57f52b12db96139484aaa1b77a4d3a8c37"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/raw-transcript/claude-code-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/diff.patch",
+      "sha256": "c892e055476236f1aac0b3fa954ba64125fc910e72ac0f7744b24c0f1b1e7d6d"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/tests.log",
+      "sha256": "3c298067e4c2d4103ea9459f238c1f3d628aefb955414170172b5c3ded376fd2"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/acceptance.json",
+      "sha256": "86e281d2f35b488faef080f0e0dcdda7424abcd229e4479732e5fd83dd68e585"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/screenshots/before-after.svg",
+      "sha256": "f965633636505f522b4b00745c7b9906081114343ef2ec5edac236297d185c4a"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/db-before/tables.json",
+      "sha256": "0b54d472be1343174e8f03a6a2cbf6004a7a3f87d72f7034406b75f7ba742b68"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/strategic-account-rescue/claude-code/repeat-3/postgres/db-after/postgres-workflow-after.json",
+      "sha256": "86e281d2f35b488faef080f0e0dcdda7424abcd229e4479732e5fd83dd68e585"
+    }
+  ]
+}

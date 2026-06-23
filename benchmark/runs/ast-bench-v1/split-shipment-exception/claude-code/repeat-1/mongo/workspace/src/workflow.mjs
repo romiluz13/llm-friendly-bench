@@ -1,0 +1,41 @@
+import { buildPortalView } from "./portal-view.mjs";
+
+const TASK_DUE_HOURS = 4;
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+  const dueAt = new Date(new Date(now).getTime() + TASK_DUE_HOURS * 60 * 60 * 1000).toISOString();
+
+  db.workflow_state.push({
+    requestId: request._id,
+    title: request.title,
+    status: request.expectedOutcome,
+    nextStep: request.nextStep,
+    riskSignals: request.riskSignals
+  });
+
+  for (const ownerGroup of request.ownerGroups) {
+    db.owner_tasks.push({
+      requestId: request._id,
+      ownerGroup,
+      title: `${ownerGroup} action for ${request.title}`,
+      dueAt,
+      status: "open"
+    });
+  }
+
+  db.customer_messages.push({
+    requestId: request._id,
+    body: request.customerMessage
+  });
+
+  db.audit_events.push({
+    requestId: request._id,
+    at: now,
+    event: "workflow.reconciled",
+    description: `${request.title} reconciled with replacement plan, owners, customer message, and audit trail.`,
+    customerVisible: true
+  });
+
+  return buildPortalView(db);
+}

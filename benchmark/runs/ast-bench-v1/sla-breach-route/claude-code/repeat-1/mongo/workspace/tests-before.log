@@ -1,0 +1,27 @@
+
+> ast-bench-sla-breach-route-mongo@1.0.0 test
+> node tests/acceptance.test.mjs
+
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Customer-facing status
++ actual - expected
+
++ 'Needs work'
+- 'SLA breach escalated with correct owners, customer-safe next step, and timer audit.'
+
+    at file:///Users/rom.iluz/Dev/sql-hidden-cost/benchmark/targets/sla-breach-route/mongo/workspace/tests/acceptance.test.mjs:19:1
+    at ModuleJob.run (node:internal/modules/esm/module_job:437:25)
+    at async node:internal/modules/esm/loader:639:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 'Needs work',
+  expected: 'SLA breach escalated with correct owners, customer-safe next step, and timer audit.',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.15.0

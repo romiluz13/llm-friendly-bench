@@ -1,0 +1,60 @@
+import { buildPortalView } from "./portal-view.mjs";
+
+const TASK_SLA_MS = 24 * 60 * 60 * 1000;
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+
+  const ownerGroups = db.workflow_request_owner_groups
+    .filter((group) => group.request_id === request.request_id)
+    .slice()
+    .sort((a, b) => a.group_order - b.group_order);
+  const signals = db.workflow_request_risk_signals
+    .filter((signal) => signal.request_id === request.request_id)
+    .slice()
+    .sort((a, b) => a.signal_order - b.signal_order);
+  const activities = db.activities.filter((activity) => activity.subject_id === request.request_id);
+  const dueAt = new Date(new Date(now).getTime() + TASK_SLA_MS).toISOString();
+
+  db.workflow_state.push({
+    request_id: request.request_id,
+    account_id: request.account_id,
+    title: request.title,
+    status: request.expected_outcome,
+    next_step: request.next_step,
+    risk_signal_count: signals.length,
+    evidence_count: activities.length,
+    created_at: now,
+    updated_at: now
+  });
+
+  for (const group of ownerGroups) {
+    db.owner_tasks.push({
+      request_id: request.request_id,
+      owner_group: group.owner_group,
+      title: `${group.owner_group} review for ${request.title}`,
+      due_at: dueAt,
+      status: "open",
+      created_at: now
+    });
+  }
+
+  db.customer_messages.push({
+    request_id: request.request_id,
+    channel: "portal",
+    body: request.customer_message,
+    customer_safe: true,
+    created_at: now
+  });
+
+  db.audit_events.push({
+    request_id: request.request_id,
+    account_id: request.account_id,
+    event_type: "invoice_dispute_workflow_activated",
+    detail: `Routed to ${ownerGroups.map((group) => group.owner_group).join(", ")} with ${signals.length} risk signals and ${activities.length} evidence activities.`,
+    customer_visible: true,
+    created_at: now
+  });
+
+  return buildPortalView(db);
+}

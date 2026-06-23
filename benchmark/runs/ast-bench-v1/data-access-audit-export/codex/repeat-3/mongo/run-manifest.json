@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "taskId": "data-access-audit-export",
+  "taskTitle": "Data-access audit export",
+  "agentId": "codex",
+  "agentLabel": "Codex",
+  "agentVersion": "codex-cli 0.130.0",
+  "lane": "mongo",
+  "laneLabel": "MongoDB",
+  "repeat": 3,
+  "status": "passed",
+  "startedAt": "2026-06-23T02:35:03.691Z",
+  "finishedAt": "2026-06-23T02:37:08.309Z",
+  "artifacts": {
+    "workspace": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/workspace",
+    "prompt": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/prompt.md",
+    "rawTranscript": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/diff.patch",
+    "tests": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/tests.log",
+    "render": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/render.log",
+    "acceptance": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/acceptance.json",
+    "screenshot": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/db-before/collections.json",
+    "dbAfter": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/db-after/mongo-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 124618,
+    "transcriptBytes": 1372322,
+    "tokens": {
+      "inputTokens": 768233,
+      "outputTokens": 11110,
+      "cachedInputTokens": 715520,
+      "totalTokens": 779343,
+      "costUsd": 2.0316825,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 779343,
+    "diffBytes": 5480,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 29,
+    "failedCommandCount": 2,
+    "retrySignals": 501,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/prompt.md",
+      "sha256": "dde4c4eee23f310622e0f2af6e73157765bd887ce0c3985a54dcf590458a8e70"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/raw-transcript/codex.jsonl",
+      "sha256": "9cd8275ca11bbff9e0a3a6a938455ffc723d3fad0b44110cea6649420ca0f127"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/raw-transcript/codex-stderr.log",
+      "sha256": "a92ac67429a21f0112824f130e65df00cb65217cb69c27d4869e1cfe04082514"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/diff.patch",
+      "sha256": "79dc9b495e1dddfcc5ce7e17216ad8f89e752d9a6534d8e4df5c6747475d7fbd"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/tests.log",
+      "sha256": "0109bebe3bd56abc71b7419aa2bb61afed87ea970516b605e3e2ee848b630d6c"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/acceptance.json",
+      "sha256": "b8d51fdd0c84f6d371a98b334ecee5fda4dad63c21140a86fda136e2645dd058"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/screenshots/before-after.svg",
+      "sha256": "9923948460beaef780af69adf4fccbcd91ece2752ea90ae02671ea87c339fc0d"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/db-before/collections.json",
+      "sha256": "9828bb7762110cadfeffcd8dc4a2c1e2a8700685a58b9a249914e0c755e4044c"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-3/mongo/db-after/mongo-workflow-after.json",
+      "sha256": "b8d51fdd0c84f6d371a98b334ecee5fda4dad63c21140a86fda136e2645dd058"
+    }
+  ]
+}

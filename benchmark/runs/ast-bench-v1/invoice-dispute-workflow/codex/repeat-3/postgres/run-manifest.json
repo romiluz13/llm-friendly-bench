@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "taskId": "invoice-dispute-workflow",
+  "taskTitle": "Invoice dispute workflow",
+  "agentId": "codex",
+  "agentLabel": "Codex",
+  "agentVersion": "codex-cli 0.130.0",
+  "lane": "postgres",
+  "laneLabel": "Postgres",
+  "repeat": 3,
+  "status": "passed",
+  "startedAt": "2026-06-23T01:50:26.288Z",
+  "finishedAt": "2026-06-23T01:53:56.453Z",
+  "artifacts": {
+    "workspace": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/workspace",
+    "prompt": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/prompt.md",
+    "rawTranscript": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/diff.patch",
+    "tests": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/tests.log",
+    "render": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/render.log",
+    "acceptance": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/acceptance.json",
+    "screenshot": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/db-before/tables.json",
+    "dbAfter": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/db-after/postgres-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 210165,
+    "transcriptBytes": 1463384,
+    "tokens": {
+      "inputTokens": 1594081,
+      "outputTokens": 23052,
+      "cachedInputTokens": 1519360,
+      "totalTokens": 1617133,
+      "costUsd": 4.2157225,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 1617133,
+    "diffBytes": 2204,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 52,
+    "failedCommandCount": 2,
+    "retrySignals": 301,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/prompt.md",
+      "sha256": "a31fb9e55782869fe73aff09e506092fafeca3882062a11bb4bdcfd28d73b246"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/raw-transcript/codex.jsonl",
+      "sha256": "9a6ee67aea318c88264b6f488e748f36b79a20e5fd43ee6fbe5ec3746dc22a0b"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/raw-transcript/codex-stderr.log",
+      "sha256": "f33f091456b97f4b431ee92ba53f51138829e6fb15f2011045800055350a5090"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/diff.patch",
+      "sha256": "3baa66df05d57b56103707b612a4f76bbccdc1160e16007c05f3b85ab0fbdcca"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/tests.log",
+      "sha256": "556ce85e10ceb7533dfa3870a42e6b9b08964aac833f9fdc062e45534ff91c83"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/acceptance.json",
+      "sha256": "73fe9a1d15a5b59d43f513745afd0f6614d0ea64633938a2ef1d0c46b1cecb4e"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/screenshots/before-after.svg",
+      "sha256": "49df37534f9087188aec0a1dbe5e6b5d3997d5f4a18ad0c42dd1443ea0be3a1f"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/db-before/tables.json",
+      "sha256": "837a68c0df242efa3016ac8575c447d66fc197c05631fa0f9edf5fe671da8c47"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/codex/repeat-3/postgres/db-after/postgres-workflow-after.json",
+      "sha256": "73fe9a1d15a5b59d43f513745afd0f6614d0ea64633938a2ef1d0c46b1cecb4e"
+    }
+  ]
+}

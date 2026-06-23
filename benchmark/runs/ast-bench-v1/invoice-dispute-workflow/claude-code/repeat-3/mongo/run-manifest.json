@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "taskId": "invoice-dispute-workflow",
+  "taskTitle": "Invoice dispute workflow",
+  "agentId": "claude-code",
+  "agentLabel": "Claude Code",
+  "agentVersion": "2.1.186 (Claude Code)",
+  "lane": "mongo",
+  "laneLabel": "MongoDB",
+  "repeat": 3,
+  "status": "passed",
+  "startedAt": "2026-06-23T01:19:28.410Z",
+  "finishedAt": "2026-06-23T01:24:25.680Z",
+  "artifacts": {
+    "workspace": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/workspace",
+    "prompt": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/prompt.md",
+    "rawTranscript": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/diff.patch",
+    "tests": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/tests.log",
+    "render": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/render.log",
+    "acceptance": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/acceptance.json",
+    "screenshot": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/db-before/collections.json",
+    "dbAfter": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/db-after/mongo-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 297270,
+    "transcriptBytes": 267021,
+    "tokens": {
+      "inputTokens": 2,
+      "outputTokens": 691,
+      "cachedInputTokens": 32595,
+      "totalTokens": 693,
+      "costUsd": 2.0970524999999998,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 693,
+    "diffBytes": 2237,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 29,
+    "failedCommandCount": 0,
+    "retrySignals": 76,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/prompt.md",
+      "sha256": "5e5c745e65d98355c3bd0c1b85dc9b4a391e1d7bd65b26ba8952a389adb7e133"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/raw-transcript/claude-code.jsonl",
+      "sha256": "eb67de750ddc84a570881c6d441e9f16dcd1e8cc356d9a8d3efc02ef92b51719"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/raw-transcript/claude-code-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/diff.patch",
+      "sha256": "5eb04fcb073c0ed8f7a1def4c8bd8dfa604c34b4d77c6024a5c2209e30b04bea"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/tests.log",
+      "sha256": "ca426380e7ab1c92b5bbcd52fd5043b155f9d4ede8145b6a20d59834690ba912"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/acceptance.json",
+      "sha256": "bc26dc2f0b5d1933d1016905f063d8174ed407e65957558ceeef5b2c189a7d31"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/screenshots/before-after.svg",
+      "sha256": "553134fe3f1072e0cb06eafaed177b207b132183646c761b2e1e57a5180442d9"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/db-before/collections.json",
+      "sha256": "0187535bb3f2b9ff8258cbfead3b07fe2d97c1f40345f48034f9aa4f900112f6"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/invoice-dispute-workflow/claude-code/repeat-3/mongo/db-after/mongo-workflow-after.json",
+      "sha256": "bc26dc2f0b5d1933d1016905f063d8174ed407e65957558ceeef5b2c189a7d31"
+    }
+  ]
+}

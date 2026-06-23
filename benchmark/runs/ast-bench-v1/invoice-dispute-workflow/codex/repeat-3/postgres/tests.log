@@ -1,0 +1,5 @@
+
+> ast-bench-invoice-dispute-workflow-postgres@1.0.0 test
+> node tests/acceptance.test.mjs
+
+AST-Bench acceptance passed: invoice-dispute-workflow/postgres

@@ -1,0 +1,110 @@
+import { buildPortalView } from "./portal-view.mjs";
+
+const CUSTOMER_STATUS = "Split-shipment exception active with replacement plan, owners, customer message, and audit trail.";
+const OWNER_TASK_DUE_HOURS = 4;
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+  const account = db.accounts.find((item) => item._id === request.accountId);
+  const activities = db.activities
+    .filter((item) => item.subjectId === request._id)
+    .slice()
+    .sort((a, b) => a.occurredAt.localeCompare(b.occurredAt));
+  const ownerGroups = [...request.ownerGroups];
+  const riskSignals = request.riskSignals.map((item) => ({ ...item }));
+  const dueAt = addHours(now, OWNER_TASK_DUE_HOURS);
+  const auditTimeline = activities.map((item) => ({
+    occurredAt: item.occurredAt,
+    summary: item.summary
+  }));
+  const supportCase = account?.context?.openCases
+    ? `Open enterprise support case with ${account.context.openCases} existing cases in the account context.`
+    : "Open enterprise support case for follow-up.";
+
+  upsertBy(db.workflow_state, (item) => item.requestId === request._id, {
+    _id: `workflow-state-${request._id}`,
+    requestId: request._id,
+    accountId: request.accountId,
+    taskId: request.taskId,
+    title: request.title,
+    status: CUSTOMER_STATUS,
+    nextStep: request.nextStep,
+    ownerGroups,
+    riskSignals,
+    accountTier: account?.tier ?? "unknown",
+    replacementPlan: {
+      status: "active",
+      partialFulfillment: "Partial fulfillment is in progress for the split shipment.",
+      carrierDelay: "Carrier delay is holding the replacement shipment.",
+      inventoryReservation: "Replacement inventory is reserved.",
+      supportCase
+    },
+    reconciliation: {
+      accountTier: account?.tier ?? "unknown",
+      supportPlan: account?.contract?.supportPlan ?? "standard",
+      auditTimeline,
+      activityCount: activities.length,
+      lastActivityAt: activities.length ? activities[activities.length - 1].occurredAt : now
+    },
+    customerMessage: request.customerMessage,
+    updatedAt: now
+  });
+
+  ownerGroups.forEach((ownerGroup, index) => {
+    upsertBy(
+      db.owner_tasks,
+      (item) => item.requestId === request._id && item.ownerGroup === ownerGroup,
+      {
+        _id: `owner-task-${request._id}-${index + 1}`,
+        requestId: request._id,
+        accountId: request.accountId,
+        ownerGroup,
+        taskType: "split-shipment-exception",
+        title: `${ownerGroup} split-shipment action for ${request.title}`,
+        status: "open",
+        dueAt,
+        priority: account?.tier === "enterprise" ? "high" : "normal",
+        summary: `${ownerGroup} to reconcile partial fulfillment, carrier delay, inventory reservation, support case, and audit timing.`,
+        createdAt: now
+      }
+    );
+  });
+
+  upsertBy(db.customer_messages, (item) => item.requestId === request._id, {
+    _id: `customer-message-${request._id}`,
+    requestId: request._id,
+    accountId: request.accountId,
+    body: request.customerMessage,
+    customerVisible: true,
+    createdAt: now
+  });
+
+  upsertBy(db.audit_events, (item) => item.requestId === request._id && item.event === "split-shipment-exception.activated", {
+    _id: `audit-event-${request._id}`,
+    requestId: request._id,
+    accountId: request.accountId,
+    event: "split-shipment-exception.activated",
+    description: `Split-shipment exception opened for ${account?.name || request.title}; ${ownerGroups.join(", ")} own the response; ${riskSignals.length} risk signals reconciled across the audit timeline.`,
+    customerVisible: true,
+    occurredAt: now,
+    ownerGroups,
+    riskSignals,
+    auditTimeline
+  });
+
+  return buildPortalView(db);
+}
+
+function upsertBy(collection, predicate, document) {
+  const index = collection.findIndex(predicate);
+  if (index === -1) {
+    collection.push(document);
+    return;
+  }
+
+  collection[index] = document;
+}
+
+function addHours(isoTimestamp, hours) {
+  return new Date(new Date(isoTimestamp).getTime() + hours * 60 * 60 * 1000).toISOString();
+}

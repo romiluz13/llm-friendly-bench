@@ -1,0 +1,148 @@
+{
+  "benchmark_fixture": [
+    {
+      "fixture_version": "ast-bench-v1-sla-breach-route",
+      "suite_id": "ast-bench-v1",
+      "task_id": "sla-breach-route",
+      "generated_at": "2026-06-18T12:00:00.000Z"
+    }
+  ],
+  "accounts": [
+    {
+      "account_id": "acct-sla-breach",
+      "name": "Support Account 1",
+      "tier": "enterprise",
+      "region": "NA"
+    }
+  ],
+  "account_contracts": [
+    {
+      "contract_id": "ctr-acct-sla-breach",
+      "account_id": "acct-sla-breach",
+      "renewal_date": "2026-09-30",
+      "arr_cents": 7200000,
+      "support_plan": "platinum"
+    }
+  ],
+  "contacts": [
+    {
+      "contact_id": "ct-acct-sla-breach-ops",
+      "account_id": "acct-sla-breach",
+      "role": "Operations",
+      "email": "ops-acct-sla-breach@example.test"
+    },
+    {
+      "contact_id": "ct-acct-sla-breach-finance",
+      "account_id": "acct-sla-breach",
+      "role": "Finance",
+      "email": "finance-acct-sla-breach@example.test"
+    }
+  ],
+  "workflow_requests": [
+    {
+      "request_id": "case-sla-breach-r",
+      "task_id": "sla-breach-route",
+      "account_id": "acct-sla-breach",
+      "title": "SLA breach route",
+      "primary_entity": "case",
+      "expected_outcome": "SLA breach escalated with correct owners, customer-safe next step, and timer audit.",
+      "next_step": "Support owner review by 16:00",
+      "customer_message": "SLA breach route is being handled by Support, Customer Success, Product, Operations."
+    }
+  ],
+  "workflow_request_owner_groups": [
+    {
+      "request_id": "case-sla-breach-r",
+      "owner_group": "Support",
+      "group_order": 1
+    },
+    {
+      "request_id": "case-sla-breach-r",
+      "owner_group": "Customer Success",
+      "group_order": 2
+    },
+    {
+      "request_id": "case-sla-breach-r",
+      "owner_group": "Product",
+      "group_order": 3
+    },
+    {
+      "request_id": "case-sla-breach-r",
+      "owner_group": "Operations",
+      "group_order": 4
+    }
+  ],
+  "workflow_request_risk_signals": [
+    {
+      "request_id": "case-sla-breach-r",
+      "signal_name": "breach",
+      "detail": "SLA breach route signal 1: breach",
+      "signal_order": 1
+    },
+    {
+      "request_id": "case-sla-breach-r",
+      "signal_name": "route",
+      "detail": "SLA breach route signal 2: route",
+      "signal_order": 2
+    },
+    {
+      "request_id": "case-sla-breach-r",
+      "signal_name": "enterprise account",
+      "detail": "SLA breach route signal 3: enterprise account",
+      "signal_order": 3
+    },
+    {
+      "request_id": "case-sla-breach-r",
+      "signal_name": "open customer impact",
+      "detail": "SLA breach route signal 4: open customer impact",
+      "signal_order": 4
+    },
+    {
+      "request_id": "case-sla-breach-r",
+      "signal_name": "audit required",
+      "detail": "SLA breach route signal 5: audit required",
+      "signal_order": 5
+    }
+  ],
+  "activities": [
+    {
+      "activity_id": "act-sla-breach-route-1",
+      "account_id": "acct-sla-breach",
+      "subject_id": "case-sla-breach-r",
+      "summary": "SLA breach route signal 1: breach",
+      "occurred_at": "2026-06-10T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-sla-breach-route-2",
+      "account_id": "acct-sla-breach",
+      "subject_id": "case-sla-breach-r",
+      "summary": "SLA breach route signal 2: route",
+      "occurred_at": "2026-06-11T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-sla-breach-route-3",
+      "account_id": "acct-sla-breach",
+      "subject_id": "case-sla-breach-r",
+      "summary": "SLA breach route signal 3: enterprise account",
+      "occurred_at": "2026-06-12T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-sla-breach-route-4",
+      "account_id": "acct-sla-breach",
+      "subject_id": "case-sla-breach-r",
+      "summary": "SLA breach route signal 4: open customer impact",
+      "occurred_at": "2026-06-13T10:00:00.000Z"
+    },
+    {
+      "activity_id": "act-sla-breach-route-5",
+      "account_id": "acct-sla-breach",
+      "subject_id": "case-sla-breach-r",
+      "summary": "SLA breach route signal 5: audit required",
+      "occurred_at": "2026-06-14T10:00:00.000Z"
+    }
+  ],
+  "workflow_state": [],
+  "owner_tasks": [],
+  "audit_events": [],
+  "customer_messages": []
+}

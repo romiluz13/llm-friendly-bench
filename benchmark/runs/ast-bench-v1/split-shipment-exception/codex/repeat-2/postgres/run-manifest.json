@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "taskId": "split-shipment-exception",
+  "taskTitle": "Split-shipment exception",
+  "agentId": "codex",
+  "agentLabel": "Codex",
+  "agentVersion": "codex-cli 0.130.0",
+  "lane": "postgres",
+  "laneLabel": "Postgres",
+  "repeat": 2,
+  "status": "passed",
+  "startedAt": "2026-06-23T00:03:11.110Z",
+  "finishedAt": "2026-06-23T00:06:27.324Z",
+  "artifacts": {
+    "workspace": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/workspace",
+    "prompt": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/prompt.md",
+    "rawTranscript": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/diff.patch",
+    "tests": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/tests.log",
+    "render": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/render.log",
+    "acceptance": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/acceptance.json",
+    "screenshot": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/db-before/tables.json",
+    "dbAfter": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/db-after/postgres-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 196214,
+    "transcriptBytes": 285981,
+    "tokens": {
+      "inputTokens": 694036,
+      "outputTokens": 20113,
+      "cachedInputTokens": 632064,
+      "totalTokens": 714149,
+      "costUsd": 1.9362200000000003,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 714149,
+    "diffBytes": 5639,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 31,
+    "failedCommandCount": 0,
+    "retrySignals": 35,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/prompt.md",
+      "sha256": "a624d4a6f5203177f5662df7a093afae4256432a25f27c2715a79f1d67dfd93b"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/raw-transcript/codex.jsonl",
+      "sha256": "992f6576a29df180b312f4e7791e7747c7e3bc88ef46dcc0dfd0007322f16bbd"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/raw-transcript/codex-stderr.log",
+      "sha256": "021e4a64088b076032b94ef8b8e479127c90a0f4c040ea0fa88a6ae71b80153c"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/diff.patch",
+      "sha256": "444256291d154995da36e68d3c4cda45fba1e53851bcce9af763f2f963216ef1"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/tests.log",
+      "sha256": "6c6156f16e85da3f479a8d8b8ac0f94247a5a179760d1a3d98fcde5706011fa3"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/acceptance.json",
+      "sha256": "5544a6454cdddc15cbf34bc5862a8a153cd24aa32c1707ab14bfc33b44a1105e"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/screenshots/before-after.svg",
+      "sha256": "97092137abda3cab02fab71db9e6d05e4b66179a1485b5341a755f1b3315728e"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/db-before/tables.json",
+      "sha256": "83ed16762238c1d75a7bd7a3aa80a0cd26a281b39323e588e2770391ec3ce5b6"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/postgres/db-after/postgres-workflow-after.json",
+      "sha256": "5544a6454cdddc15cbf34bc5862a8a153cd24aa32c1707ab14bfc33b44a1105e"
+    }
+  ]
+}

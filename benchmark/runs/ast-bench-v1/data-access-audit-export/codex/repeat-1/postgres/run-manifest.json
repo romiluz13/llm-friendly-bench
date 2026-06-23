@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "taskId": "data-access-audit-export",
+  "taskTitle": "Data-access audit export",
+  "agentId": "codex",
+  "agentLabel": "Codex",
+  "agentVersion": "codex-cli 0.130.0",
+  "lane": "postgres",
+  "laneLabel": "Postgres",
+  "repeat": 1,
+  "status": "passed",
+  "startedAt": "2026-06-23T02:26:35.383Z",
+  "finishedAt": "2026-06-23T02:29:42.782Z",
+  "artifacts": {
+    "workspace": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/workspace",
+    "prompt": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/prompt.md",
+    "rawTranscript": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/diff.patch",
+    "tests": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/tests.log",
+    "render": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/render.log",
+    "acceptance": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/acceptance.json",
+    "screenshot": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/db-before/tables.json",
+    "dbAfter": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/db-after/postgres-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 187399,
+    "transcriptBytes": 141145,
+    "tokens": {
+      "inputTokens": 887841,
+      "outputTokens": 29775,
+      "cachedInputTokens": 809472,
+      "totalTokens": 917616,
+      "costUsd": 2.5173525000000003,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 917616,
+    "diffBytes": 5499,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 36,
+    "failedCommandCount": 1,
+    "retrySignals": 50,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/prompt.md",
+      "sha256": "5f8420e1f9d5ba048e29f4adaa22e3721283bbb88a29a23b6a3920b5b52f6e3d"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/raw-transcript/codex.jsonl",
+      "sha256": "e80028ad88b39e9589eac3408a3afde4605d514f3e6c6096d631c8946f5e618c"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/raw-transcript/codex-stderr.log",
+      "sha256": "cc5bff371b2b7443a1484318ec3fcb54032268781aa5abbd1f634dcf6c13d592"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/diff.patch",
+      "sha256": "1daadb5698d44960f2417443f327d9ee815df1c50c32518531fb83c72da1c32a"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/tests.log",
+      "sha256": "ebea71f1e3d6e267ce2ac13cda16c2be2d4f37b4b6fec2fb5e5bd7c752abaded"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/acceptance.json",
+      "sha256": "d08cf637d402b6085604eaad43f7fd19e7a8f6cee710efd03938af399c0b0253"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/screenshots/before-after.svg",
+      "sha256": "fab0b726797b2291154873df3ea8226ca3536a9c57b561ed479684eb0fe92d83"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/db-before/tables.json",
+      "sha256": "314ef5a70a928910ac7967fe9fba2866ed258edd58a04a9a7106f237b447ac9d"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/data-access-audit-export/codex/repeat-1/postgres/db-after/postgres-workflow-after.json",
+      "sha256": "d08cf637d402b6085604eaad43f7fd19e7a8f6cee710efd03938af399c0b0253"
+    }
+  ]
+}

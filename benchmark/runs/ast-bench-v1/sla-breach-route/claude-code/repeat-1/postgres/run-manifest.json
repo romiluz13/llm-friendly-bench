@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "taskId": "sla-breach-route",
+  "taskTitle": "SLA breach route",
+  "agentId": "claude-code",
+  "agentLabel": "Claude Code",
+  "agentVersion": "2.1.186 (Claude Code)",
+  "lane": "postgres",
+  "laneLabel": "Postgres",
+  "repeat": 1,
+  "status": "passed",
+  "startedAt": "2026-06-23T00:17:20.266Z",
+  "finishedAt": "2026-06-23T00:22:43.983Z",
+  "artifacts": {
+    "workspace": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/workspace",
+    "prompt": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/prompt.md",
+    "rawTranscript": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/diff.patch",
+    "tests": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/tests.log",
+    "render": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/render.log",
+    "acceptance": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/acceptance.json",
+    "screenshot": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/db-before/tables.json",
+    "dbAfter": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/db-after/postgres-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 323717,
+    "transcriptBytes": 268752,
+    "tokens": {
+      "inputTokens": 2,
+      "outputTokens": 666,
+      "cachedInputTokens": 32053,
+      "totalTokens": 668,
+      "costUsd": 2.1747070000000006,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 668,
+    "diffBytes": 2074,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 45,
+    "failedCommandCount": 0,
+    "retrySignals": 133,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/prompt.md",
+      "sha256": "99e765eafbb0ea99dfaed827774850a964fed76ffc7694ce5607acda5e3a709c"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/raw-transcript/claude-code.jsonl",
+      "sha256": "3ddb0bcfb9a005bee41d361a7abf7ed21ac0987cbf7b94056723027e371cf1bd"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/raw-transcript/claude-code-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/diff.patch",
+      "sha256": "b2f8c99ec1ce4292413698aec472ec77974f058318a81ae814f3a0b94ef91a1f"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/tests.log",
+      "sha256": "0ebf987bc169ef56db6260fc4d470697e0c35187f46fce61fa2160a0468e6b09"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/acceptance.json",
+      "sha256": "c9b931aae5fc692ac6fe3d30458ee5e66e8926d4956474362cbd3e4fec3941c7"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/screenshots/before-after.svg",
+      "sha256": "b1c80931b20dbd9f547fcc575dd141828daf68411662027bebe79bde826c66f0"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/db-before/tables.json",
+      "sha256": "dbb7246cfdcfa9ca32ef60b5d95119cf5428a40a2b3a8f8b22a7ee65c11d79de"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/sla-breach-route/claude-code/repeat-1/postgres/db-after/postgres-workflow-after.json",
+      "sha256": "c9b931aae5fc692ac6fe3d30458ee5e66e8926d4956474362cbd3e4fec3941c7"
+    }
+  ]
+}

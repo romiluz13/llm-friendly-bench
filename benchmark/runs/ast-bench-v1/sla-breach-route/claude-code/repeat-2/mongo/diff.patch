@@ -1,0 +1,126 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index bc890e5..4dba488 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,6 +1,120 @@
+ import { buildPortalView } from "./portal-view.mjs";
+ 
++const ESCALATED_STATUS =
++  "SLA breach escalated with correct owners, customer-safe next step, and timer audit.";
++
++// Response window (hours) the owner group is expected to act within once an
++// enterprise SLA breach is routed. Premium support plans get tighter windows;
++// the lead owner group (first in the routing list) is treated as front line.
++const PLAN_RESPONSE_HOURS = {
++  platinum: 1,
++  gold: 2,
++  silver: 4
++};
++
++function slugify(value) {
++  return String(value)
++    .toLowerCase()
++    .replace(/[^a-z0-9]+/g, "-")
++    .replace(/(^-|-$)/g, "");
++}
++
++function resolveResponseHours(account) {
++  const plan = account?.contract?.supportPlan;
++  const planHours = plan ? PLAN_RESPONSE_HOURS[plan] : undefined;
++  // Enterprise accounts get the fastest applicable window.
++  const base = planHours ?? 4;
++  return account?.tier === "enterprise" ? base : base * 2;
++}
++
+ export function applyBenchmarkTask(db, now) {
+-  // TODO: Implement the benchmark workflow against the native data shape.
++  const request = db.workflow_requests[0];
++  const requestId = request._id;
++  const account = db.accounts.find((item) => item._id === request.accountId);
++
++  // Open incidents / order impact for this case, drawn from the activity feed.
++  const openIncidents = db.activities.filter(
++    (item) => item.subjectId === requestId
++  );
++
++  // Risk signals carry over from the request unchanged so the portal risk
++  // summary matches the source signal names and order exactly.
++  const riskSignals = request.riskSignals.map((signal) => ({
++    name: signal.name,
++    detail: signal.detail
++  }));
++
++  // Owner availability: every routed owner group gets a task, in order, with a
++  // due date derived from the contract response window relative to `now`.
++  const escalatedAt = new Date(now);
++  const responseHours = resolveResponseHours(account);
++
++  db.workflow_state.push({
++    _id: `state-${requestId}`,
++    requestId,
++    accountId: request.accountId,
++    title: request.title,
++    status: ESCALATED_STATUS,
++    tier: account?.tier ?? null,
++    supportPlan: account?.contract?.supportPlan ?? null,
++    riskSignals,
++    nextStep: request.nextStep,
++    ownerGroups: request.ownerGroups.slice(),
++    openIncidentCount: openIncidents.length,
++    escalatedAt: escalatedAt.toISOString(),
++    updatedAt: escalatedAt.toISOString()
++  });
++
++  request.ownerGroups.forEach((ownerGroup, index) => {
++    // Front-line owner responds within the SLA window; downstream groups are
++    // staggered by one window each so the response timeline is auditable.
++    const dueAt = new Date(
++      escalatedAt.getTime() + responseHours * (index + 1) * 60 * 60 * 1000
++    );
++    db.owner_tasks.push({
++      _id: `task-${requestId}-${slugify(ownerGroup)}`,
++      requestId,
++      ownerGroup,
++      title: `${ownerGroup} response for ${request.title}`,
++      status: "open",
++      dueAt: dueAt.toISOString(),
++      responseWindowHours: responseHours,
++      createdAt: escalatedAt.toISOString()
++    });
++  });
++
++  const ownerList = request.ownerGroups.join(", ");
++  const customerBody =
++    request.customerMessage ||
++    `Your case "${request.title}" has been escalated and is being handled by ${ownerList}.`;
++
++  db.customer_messages.push({
++    _id: `msg-${requestId}`,
++    requestId,
++    audience: "customer",
++    body: customerBody,
++    sentAt: escalatedAt.toISOString()
++  });
++
++  // Timer audit: records escalation time, the response window, and the breach
++  // state. Customer-visible because the account requires a customer-visible
++  // audit trail (see account.context.complianceFlags).
++  const breachDeadline = new Date(
++    escalatedAt.getTime() + responseHours * 60 * 60 * 1000
++  );
++  db.audit_events.push({
++    _id: `audit-${requestId}`,
++    requestId,
++    type: "sla-breach-escalation",
++    customerVisible: true,
++    escalatedAt: escalatedAt.toISOString(),
++    responseWindowHours: responseHours,
++    breachDeadline: breachDeadline.toISOString(),
++    breached: true,
++    owners: request.ownerGroups.slice(),
++    summary: `SLA breach escalated at ${escalatedAt.toISOString()} with a ${responseHours}h response window across ${request.ownerGroups.length} owner groups.`,
++    recordedAt: escalatedAt.toISOString()
++  });
++
+   return buildPortalView(db);
+ }

@@ -1,0 +1,25 @@
+{
+  "lane": "mongo",
+  "before": {
+    "taskId": "split-shipment-exception",
+    "title": "Split-shipment exception",
+    "status": "Needs work",
+    "owner": "Unassigned",
+    "nextStep": "Waiting for workflow",
+    "riskSummary": "Risk not scored",
+    "tasks": "0 owner tasks",
+    "history": "Not visible",
+    "customerMessage": "No customer-safe message"
+  },
+  "after": {
+    "taskId": "split-shipment-exception",
+    "title": "Split-shipment exception",
+    "status": "Split-shipment exception active with replacement plan, owners, customer message, and audit trail.",
+    "owner": "Operations + Support + Finance + Logistics",
+    "nextStep": "Operations owner review by 16:00",
+    "riskSummary": "6 signals: split, shipment, exception, enterprise account, open customer impact, audit required",
+    "tasks": "4 owner tasks",
+    "history": "Audit visible",
+    "customerMessage": "Split-shipment exception is being handled by Operations, Support, Finance, Logistics. Replacement plan is active and the audit trail is recorded."
+  }
+}

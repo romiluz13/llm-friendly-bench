@@ -1,0 +1,25 @@
+{
+  "lane": "mongo",
+  "before": {
+    "taskId": "invoice-dispute-workflow",
+    "title": "Invoice dispute workflow",
+    "status": "Needs work",
+    "owner": "Unassigned",
+    "nextStep": "Waiting for workflow",
+    "riskSummary": "Risk not scored",
+    "tasks": "0 owner tasks",
+    "history": "Not visible",
+    "customerMessage": "No customer-safe message"
+  },
+  "after": {
+    "taskId": "invoice-dispute-workflow",
+    "title": "Invoice dispute workflow",
+    "status": "Invoice dispute active with finance owner, evidence bundle, and customer-safe status.",
+    "owner": "Finance + Customer Success + Legal + Operations",
+    "nextStep": "Finance owner review by 16:00",
+    "riskSummary": "6 signals: invoice, dispute, workflow, enterprise account, open customer impact, audit required",
+    "tasks": "4 owner tasks",
+    "history": "Audit visible",
+    "customerMessage": "Invoice dispute workflow is being handled by Finance, Customer Success, Legal, Operations."
+  }
+}

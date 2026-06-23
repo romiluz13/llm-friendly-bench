@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "ast-bench-v1",
+  "taskId": "split-shipment-exception",
+  "taskTitle": "Split-shipment exception",
+  "agentId": "codex",
+  "agentLabel": "Codex",
+  "agentVersion": "codex-cli 0.130.0",
+  "lane": "mongo",
+  "laneLabel": "MongoDB",
+  "repeat": 1,
+  "status": "passed",
+  "startedAt": "2026-06-22T23:53:49.564Z",
+  "finishedAt": "2026-06-22T23:56:22.457Z",
+  "artifacts": {
+    "workspace": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/workspace",
+    "prompt": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/prompt.md",
+    "rawTranscript": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/diff.patch",
+    "tests": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/tests.log",
+    "render": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/render.log",
+    "acceptance": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/acceptance.json",
+    "screenshot": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/screenshots/before-after.svg",
+    "dbBefore": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/db-before/collections.json",
+    "dbAfter": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/db-after/mongo-workflow-after.json"
+  },
+  "metrics": {
+    "elapsedMs": 152893,
+    "transcriptBytes": 229667,
+    "tokens": {
+      "inputTokens": 634149,
+      "outputTokens": 16302,
+      "cachedInputTokens": 592512,
+      "totalTokens": 650451,
+      "costUsd": 1.7483925,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 650451,
+    "diffBytes": 3730,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "commandCount": 24,
+    "failedCommandCount": 2,
+    "retrySignals": 37,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/prompt.md",
+      "sha256": "8d6a335f24ebfbea406ba00026d004b86282cfa1a16b071467133dad68429fcc"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/raw-transcript/codex.jsonl",
+      "sha256": "6d0effa9ca6dfbbe8ca441fbce4a28ffcdf6b69b1492a6a27347ce8e3cc845bf"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/raw-transcript/codex-stderr.log",
+      "sha256": "2fbb3e989f3c97d3e5014fdd097806b41438119b1cfefc5cf9be8c1553178d8f"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/diff.patch",
+      "sha256": "9bca4a5513b10d2baa0fa466a48166a8e6c89a9bf35c574be92d988ceb984f8c"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/tests.log",
+      "sha256": "d756d113cd455ec6fc97af818983bec82144764d7bc77815edf8512d142a37bc"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/acceptance.json",
+      "sha256": "b9d4cb698d1ca4e028ac1349651fbe1cb7ecf9e30daeb07f9d5abc3ca26959eb"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/screenshots/before-after.svg",
+      "sha256": "86f4e4c2fe6c243008c40a8ec01f5bb16a03774827dc14ecd7def4ec37347645"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/db-before/collections.json",
+      "sha256": "16eb7f4191824d83689854802a83593dcd2d295acae20cbc9214f247df90255d"
+    },
+    {
+      "path": "benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-1/mongo/db-after/mongo-workflow-after.json",
+      "sha256": "b9d4cb698d1ca4e028ac1349651fbe1cb7ecf9e30daeb07f9d5abc3ca26959eb"
+    }
+  ]
+}

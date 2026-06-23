@@ -1,0 +1,88 @@
+import { createHash } from "node:crypto";
+import { buildPortalView } from "./portal-view.mjs";
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+  const requestId = request.request_id;
+
+  const ownerGroups = db.workflow_request_owner_groups
+    .filter((item) => item.request_id === requestId)
+    .sort((a, b) => a.group_order - b.group_order);
+
+  const riskSignals = db.workflow_request_risk_signals
+    .filter((item) => item.request_id === requestId)
+    .sort((a, b) => a.signal_order - b.signal_order);
+
+  // Scoped-record context pulled from the native data shape (real fields only).
+  const accountId = request.account_id;
+  const activityCount = db.activities.filter(
+    (item) => item.subject_id === requestId || item.account_id === accountId
+  ).length;
+  const contractPlan = db.account_contracts.find((item) => item.account_id === accountId)?.support_plan ?? null;
+
+  // Idempotent: drop any prior rows for this request before re-persisting.
+  db.workflow_state = db.workflow_state.filter((item) => item.request_id !== requestId);
+  db.owner_tasks = db.owner_tasks.filter((item) => item.request_id !== requestId);
+  db.customer_messages = db.customer_messages.filter((item) => item.request_id !== requestId);
+  db.audit_events = db.audit_events.filter((item) => item.request_id !== requestId);
+
+  db.workflow_state.push({
+    request_id: requestId,
+    task_id: request.task_id,
+    account_id: accountId,
+    title: request.title,
+    status: request.expected_outcome,
+    next_step: request.next_step,
+    risk_signal_count: riskSignals.length,
+    owner_group_count: ownerGroups.length,
+    updated_at: now
+  });
+
+  // 24h SLA deadline, deterministic from `now`.
+  const dueAt = new Date(new Date(now).getTime() + 24 * 60 * 60 * 1000).toISOString();
+  for (const group of ownerGroups) {
+    db.owner_tasks.push({
+      request_id: requestId,
+      owner_group: group.owner_group,
+      title: `${group.owner_group} review for ${request.title}`,
+      due_at: dueAt,
+      status: "open"
+    });
+  }
+
+  db.customer_messages.push({
+    request_id: requestId,
+    channel: "portal",
+    body: request.customer_message,
+    customer_visible: true,
+    created_at: now
+  });
+
+  const payload = {
+    request_id: requestId,
+    task_id: request.task_id,
+    account_id: accountId,
+    status: request.expected_outcome,
+    next_step: request.next_step,
+    owners: ownerGroups.map((item) => item.owner_group),
+    risk_signals: riskSignals.map((item) => ({ name: item.signal_name, detail: item.detail })),
+    scoped_records: {
+      account_id: accountId,
+      support_plan: contractPlan,
+      activity_count: activityCount
+    }
+  };
+  const hash = createHash("sha256").update(JSON.stringify(payload)).digest("hex");
+
+  db.audit_events.push({
+    request_id: requestId,
+    event_type: "audit_export_ready",
+    summary: `Audit export ready for ${request.title}: ${ownerGroups.length} approvers, ${riskSignals.length} risk signals.`,
+    customer_visible: true,
+    payload,
+    hash,
+    created_at: now
+  });
+
+  return buildPortalView(db);
+}

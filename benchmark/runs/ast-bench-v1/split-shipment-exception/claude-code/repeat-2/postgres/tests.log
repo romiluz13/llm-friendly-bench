@@ -1,0 +1,5 @@
+
+> ast-bench-split-shipment-exception-postgres@1.0.0 test
+> node tests/acceptance.test.mjs
+
+AST-Bench acceptance passed: split-shipment-exception/postgres

@@ -1,0 +1,117 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index bc890e5..f3d2a6c 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,6 +1,111 @@
+ import { buildPortalView } from "./portal-view.mjs";
+ 
+ export function applyBenchmarkTask(db, now) {
+-  // TODO: Implement the benchmark workflow against the native data shape.
++  const request = db.workflow_requests.find((item) => item.task_id === "sla-breach-route") || db.workflow_requests[0];
++
++  if (!request) {
++    return buildPortalView(db);
++  }
++
++  const account = db.accounts.find((item) => item.account_id === request.account_id);
++  const contract = db.account_contracts.find((item) => item.account_id === request.account_id);
++  const ownerGroups = db.workflow_request_owner_groups
++    .filter((item) => item.request_id === request.request_id)
++    .slice()
++    .sort((a, b) => a.group_order - b.group_order);
++  const riskSignals = db.workflow_request_risk_signals
++    .filter((item) => item.request_id === request.request_id)
++    .slice()
++    .sort((a, b) => a.signal_order - b.signal_order);
++  const openActivities = db.activities
++    .filter((item) => item.account_id === request.account_id || item.subject_id === request.request_id)
++    .slice()
++    .sort((a, b) => a.occurred_at.localeCompare(b.occurred_at));
++  const contacts = db.contacts
++    .filter((item) => item.account_id === request.account_id)
++    .map((item) => item.role)
++    .sort();
++
++  const escalatedAt = new Date(now);
++  const dueAt = new Date(escalatedAt.getTime() + 4 * 60 * 60 * 1000);
++  const dueAtIso = dueAt.toISOString();
++  const dueAtLabel = dueAtIso.slice(11, 16);
++  const status = "SLA breach escalated with correct owners, customer-safe next step, and timer audit.";
++  const ownerNextStep = request.next_step || `Support owner review by ${dueAtLabel}`;
++  const customerNextStep = `We have escalated this enterprise case and will send the next customer-safe update by ${dueAtLabel} UTC.`;
++  const riskSummary = `${riskSignals.length} signals: ${riskSignals.map((item) => item.signal_name).join(", ")}`;
++  const timerAudit = `Timer audit at ${escalatedAt.toISOString()}: ${account?.tier || "unknown"} tier, ${contract?.support_plan || "unknown"} plan, ${openActivities.length} open incident signals, ${ownerGroups.length} owner groups, due by ${dueAtIso}.`;
++
++  upsertRow(db.workflow_state, request.request_id, {
++    request_id: request.request_id,
++    account_id: request.account_id,
++    title: request.title,
++    status,
++    next_step: customerNextStep,
++    owner_next_step: ownerNextStep,
++    customer_visible_state: "escalated",
++    entitlement: account && contract ? `${account.tier} / ${contract.support_plan}` : "unknown",
++    account_tier: account?.tier || "unknown",
++    support_plan: contract?.support_plan || "unknown",
++    open_incident_count: openActivities.length,
++    order_impact_cents: contract?.arr_cents || null,
++    owner_group_count: ownerGroups.length,
++    owner_availability: ownerGroups.map((item) => item.owner_group).join(", "),
++    contact_roles: contacts.join(", "),
++    risk_summary: riskSummary,
++    timer_due_at: dueAtIso,
++    timer_audit: timerAudit,
++    escalated_at: escalatedAt.toISOString()
++  });
++
++  replaceRequestRows(db.owner_tasks, request.request_id, ownerGroups.map((ownerGroup, index) => ({
++    request_id: request.request_id,
++    account_id: request.account_id,
++    owner_group: ownerGroup.owner_group,
++    group_order: ownerGroup.group_order,
++    title: `${ownerGroup.owner_group} SLA breach response`,
++    status: "open",
++    priority: index === 0 ? "urgent" : "high",
++    due_at: dueAtIso,
++    created_at: escalatedAt.toISOString(),
++    assigned_at: escalatedAt.toISOString(),
++    task_type: "sla_breach_response",
++    escalation_state: "escalated"
++  })));
++
++  replaceRequestRows(db.customer_messages, request.request_id, [{
++    request_id: request.request_id,
++    account_id: request.account_id,
++    body: customerNextStep,
++    channel: "customer-portal",
++    visibility: "customer_safe",
++    sent_at: escalatedAt.toISOString()
++  }]);
++
++  replaceRequestRows(db.audit_events, request.request_id, [{
++    request_id: request.request_id,
++    account_id: request.account_id,
++    event_type: "sla_breach_escalated",
++    summary: status,
++    body: timerAudit,
++    customer_visible: true,
++    created_at: escalatedAt.toISOString()
++  }]);
++
+   return buildPortalView(db);
+ }
++
++function upsertRow(rows, requestId, row) {
++  const index = rows.findIndex((item) => item.request_id === requestId);
++  if (index === -1) {
++    rows.push(row);
++    return;
++  }
++  rows[index] = row;
++}
++
++function replaceRequestRows(rows, requestId, nextRows) {
++  const filtered = rows.filter((item) => item.request_id !== requestId);
++  rows.length = 0;
++  rows.push(...filtered, ...nextRows);
++}

@@ -1,0 +1,61 @@
+import { createHash } from "node:crypto";
+import { buildPortalView } from "./portal-view.mjs";
+
+const TASK_DEADLINE_HOURS = 4;
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+  const requestId = request._id;
+  const dueAt = new Date(new Date(now).getTime() + TASK_DEADLINE_HOURS * 3600 * 1000).toISOString();
+
+  db.workflow_state = db.workflow_state.filter((item) => item.requestId !== requestId);
+  db.workflow_state.push({
+    requestId,
+    status: request.expectedOutcome,
+    title: request.title,
+    nextStep: request.nextStep,
+    riskSignals: request.riskSignals.map((signal) => ({ name: signal.name, detail: signal.detail })),
+    recordedAt: now
+  });
+
+  db.owner_tasks = db.owner_tasks.filter((item) => item.requestId !== requestId);
+  for (const ownerGroup of request.ownerGroups) {
+    db.owner_tasks.push({
+      requestId,
+      ownerGroup,
+      title: `${request.title} - ${ownerGroup} review`,
+      dueAt,
+      status: "open",
+      createdAt: now
+    });
+  }
+
+  db.customer_messages = db.customer_messages.filter((item) => item.requestId !== requestId);
+  db.customer_messages.push({
+    requestId,
+    body: request.customerMessage,
+    recordedAt: now
+  });
+
+  const auditPayload = {
+    requestId,
+    status: request.expectedOutcome,
+    ownerGroups: request.ownerGroups,
+    riskSignals: request.riskSignals.map((signal) => signal.name),
+    customerMessage: request.customerMessage,
+    recordedAt: now
+  };
+  const hash = createHash("sha256").update(JSON.stringify(auditPayload)).digest("hex");
+
+  db.audit_events = db.audit_events.filter((item) => item.requestId !== requestId);
+  db.audit_events.push({
+    requestId,
+    action: "audit-export-ready",
+    customerVisible: true,
+    payload: auditPayload,
+    hash,
+    recordedAt: now
+  });
+
+  return buildPortalView(db);
+}

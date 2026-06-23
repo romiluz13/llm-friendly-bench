@@ -1,0 +1,3 @@
+Implemented the split-shipment workflow in [src/workflow.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs/ast-bench-v1/split-shipment-exception/codex/repeat-2/mongo/workspace/src/workflow.mjs#L6). It now persists a native `workflow_state` document with the exact customer-facing status, replacement plan, reconciliation timeline, account tier, and risk signals, plus owner tasks, a customer message, and a customer-visible audit event.
+
+`npm test` passes.

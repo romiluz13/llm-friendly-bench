@@ -1,0 +1,49 @@
+import { buildPortalView } from "./portal-view.mjs";
+
+export function applyBenchmarkTask(db, now) {
+  const request = db.workflow_requests[0];
+
+  const ownerGroups = db.workflow_request_owner_groups
+    .filter((item) => item.request_id === request.request_id)
+    .sort((a, b) => a.group_order - b.group_order);
+
+  const signals = db.workflow_request_risk_signals
+    .filter((item) => item.request_id === request.request_id)
+    .sort((a, b) => a.signal_order - b.signal_order);
+
+  db.workflow_state.push({
+    request_id: request.request_id,
+    title: request.title,
+    status: request.expected_outcome,
+    next_step: request.next_step,
+    risk_signal_count: signals.length,
+    updated_at: now
+  });
+
+  for (const group of ownerGroups) {
+    db.owner_tasks.push({
+      request_id: request.request_id,
+      owner_group: group.owner_group,
+      title: `${group.owner_group} owner review for ${request.title}`,
+      due_at: now,
+      status: "open",
+      created_at: now
+    });
+  }
+
+  db.customer_messages.push({
+    request_id: request.request_id,
+    body: request.customer_message,
+    created_at: now
+  });
+
+  db.audit_events.push({
+    request_id: request.request_id,
+    event: "workflow_activated",
+    detail: request.expected_outcome,
+    customer_visible: true,
+    created_at: now
+  });
+
+  return buildPortalView(db);
+}

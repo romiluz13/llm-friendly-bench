@@ -1,0 +1,2 @@
+Implemented in [src/workflow.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs/ast-bench-v1/strategic-account-rescue/codex/repeat-1/postgres/workspace/src/workflow.mjs#L3-L63): the workflow now reconstructs the request context, persists `workflow_state`, owner tasks, a customer-safe message, and a customer-visible audit event, and then returns the existing portal projection. `npm test` passes.
+
