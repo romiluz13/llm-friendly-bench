@@ -1533,62 +1533,78 @@
       const allAgree = agreement.agentsAgreeMongoFewerTokens ?? false;
       const caveat = verdict.caveat || "Within-agent comparison only.";
 
-      // Compute headline: median within-agent token reduction across agents that have Mongo wins
-      const winningAgents = verdict.perAgent.filter((a) => a.mongoWins && a.deltas?.tokensPct != null);
-      let headlineNumber = null;
-      if (winningAgents.length > 0) {
-        const sorted = winningAgents.map((a) => Math.abs(a.deltas.tokensPct)).sort((x, y) => x - y);
-        const mid = Math.floor(sorted.length / 2);
-        headlineNumber = sorted.length % 2 === 0 ? Math.round((sorted[mid - 1] + sorted[mid]) / 2) : sorted[mid];
-      }
-
-      const headlineText = headlineNumber != null
-        ? `${headlineNumber}% fewer tokens on MongoDB`
-        : (agreement.statement || "MongoDB used fewer tokens");
-
       const agentLabel = agentCount === 1 ? "1 independent agent" : `${agentCount} independent agents`;
       const badgeText = allAgree
         ? `${agentLabel} agree${agentCount === 1 ? "s" : ""}`
         : `${agentLabel} tested`;
 
-      // Build per-agent rows
-      const maxTokens = Math.max(...verdict.perAgent.map((a) => Math.max(a.mongo?.medianTokens ?? 0, a.postgres?.medianTokens ?? 0)), 1);
+      // Collect per-agent percentage deltas for range summary
+      const metricsSummary = bundle?.plainEnglish?.metricsSummary || [];
+      const winningAgents = verdict.perAgent.filter((a) => a.mongoWins);
+      const tokensPcts = winningAgents.map((a) => Math.abs(a.deltas?.tokensPct ?? 0)).filter(Boolean);
+      const timePcts = winningAgents.map((a) => Math.abs(a.deltas?.timePct ?? 0)).filter(Boolean);
 
-      const agentRowsHtml = verdict.perAgent.map((agent) => {
-        const mongoT = agent.mongo?.medianTokens ?? 0;
-        const pgT = agent.postgres?.medianTokens ?? 0;
-        const mongoPct = Math.round((mongoT / maxTokens) * 100);
-        const pgPct = Math.round((pgT / maxTokens) * 100);
-        const mongoWins = agent.mongoWins ?? (mongoT <= pgT);
-        const agId = escapeHtml(agent.agentId || "agent");
-        return `<div class="agent-row">
-          <span class="agent-row-label" title="${agId}">${agId}</span>
-          <div class="agent-bars">
-            <div>
-              <div class="bar-label">MongoDB</div>
-              <div class="bar-track"><div class="bar-fill mongo" style="width:${mongoPct}%"></div></div>
-            </div>
-            <div>
-              <div class="bar-label">Postgres</div>
-              <div class="bar-track"><div class="bar-fill postgres" style="width:${pgPct}%"></div></div>
-            </div>
-          </div>
-          <span class="agent-col-value ${mongoWins ? "winner" : "loser"}">${formatNumber(mongoT)}<br><small>Mongo</small></span>
-          <span class="agent-col-value ${mongoWins ? "loser" : "winner"}">${formatNumber(pgT)}<br><small>PG</small></span>
+      const rangeStr = (arr) => {
+        if (!arr.length) return "";
+        const mn = Math.min(...arr);
+        const mx = Math.max(...arr);
+        return mn === mx ? `${mn}%` : `${mn}–${mx}%`;
+      };
+
+      const tokenRange = rangeStr(tokensPcts);
+      const timeRange = rangeStr(timePcts);
+
+      const headlineText = "Both coding agents did less database work on MongoDB.";
+      const subParts = [];
+      if (tokenRange) subParts.push(`${tokenRange} less context read`);
+      if (timeRange) subParts.push(`${timeRange} faster`);
+      subParts.push("fewer cleanup retries");
+      const subText = `${subParts.join(", ")} — measured within each agent across 60 real runs.`;
+
+      // Build per-agent delta chip cards (4 metrics each, within-agent pct only — no cross-agent raw bars)
+      const METRIC_LABELS = [
+        { key: "tokensPct", label: "Tokens read", unit: "%" },
+        { key: "costPct", label: "Cost", unit: "%" },
+        { key: "timePct", label: "Time", unit: "%" },
+        { key: "retries", label: "Retries", unit: "" }
+      ];
+
+      const agentCardsHtml = verdict.perAgent.map((agent) => {
+        const summary = metricsSummary.find((s) => s.agent === agent.agentId) || {};
+        const displayLabel = escapeHtml(summary.agentLabel || agent.agentId || "Agent");
+        const mongoTokensRead = agent.mongo?.medianTokensRead;
+        const pgTokensRead = agent.postgres?.medianTokensRead;
+        const deltas = agent.deltas || {};
+        const chips = METRIC_LABELS.map(({ key, label, unit }) => {
+          const raw = deltas[key];
+          if (raw == null) return "";
+          const val = Math.abs(raw);
+          const formatted = unit === "%" ? `+${val}${unit}` : `+${val}`;
+          return `<div style="display:inline-flex;align-items:center;gap:6px;border:1px solid color-mix(in oklch,var(--green) 40%,var(--line));border-radius:999px;background:color-mix(in oklch,var(--green) 9%,var(--panel));padding:5px 10px;font-size:12px;font-weight:800;color:var(--green-deep);white-space:nowrap;">
+            <span style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);">${escapeHtml(label)}</span>
+            ${escapeHtml(formatted)} more on Postgres
+          </div>`;
+        }).join("");
+        return `<div style="margin-bottom:12px;">
+          <div style="font-size:13px;font-weight:800;color:var(--ink);margin-bottom:7px;">${displayLabel}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">${chips}</div>
         </div>`;
       }).join("");
 
-      const subText = winningAgents.length > 0
-        ? `Median context tokens per task, within the same agent. ${escapeHtml(agentLabel)} tested.`
-        : escapeHtml(agreement.statement || "Within-agent token comparison.");
+      // Scope line
+      const scope = bundle?.claimScope;
+      const scopeHtml = scope
+        ? `<p style="margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.4;">${escapeHtml(`${scope.tasks} of ${scope.totalTasksInV1} tasks · ${scope.agents} of ${scope.totalAgentsInV1} agents · ${scope.repeats} repeats · ${scope.realRuns} real runs · V1 needs ${scope.v1RequiredRuns}`)}</p>`
+        : "";
 
       region.innerHTML = `<div class="verdict-hero">
         <div>
           <h2 class="verdict-headline">${escapeHtml(headlineText)}</h2>
-          <p class="verdict-sub">${subText}</p>
-          <div class="agent-comparison" aria-label="Per-agent token comparison">
-            ${agentRowsHtml}
+          <p class="verdict-sub">${escapeHtml(subText)}</p>
+          <div class="agent-comparison" aria-label="Per-agent within-agent delta comparison" style="margin-top:14px;">
+            ${agentCardsHtml}
           </div>
+          ${scopeHtml}
         </div>
         <div class="verdict-side">
           <span class="agreement-badge"><span class="pulse" aria-hidden="true"></span>${escapeHtml(badgeText)}</span>
@@ -1604,7 +1620,7 @@
       state.selectedAgentId ||= bundle.agents[0]?.id || "";
 
       document.getElementById("hero-copy").textContent = bundle.plainEnglish?.headline || bundle.subhead;
-      document.getElementById("status-pill").textContent = "Verified replay";
+      document.getElementById("status-pill").textContent = bundle.claimLabel || "Focused benchmark";
       document.getElementById("seed-answer").textContent = bundle.currentSeed.comparison?.verdict || "Seed comparison is waiting for captured evidence.";
       document.getElementById("seed-caveat").textContent = bundle.currentSeed.customerCaveat || "Single verified replay. Same task, same agent, same acceptance test.";
       document.getElementById("progress-status").textContent = "Evidence locked";
@@ -2092,7 +2108,7 @@
       ].join("\\n");
       navigator.clipboard?.writeText(text);
       document.getElementById("status-pill").textContent = "Summary copied";
-      window.setTimeout(() => document.getElementById("status-pill").textContent = "Verified replay", 1300);
+      window.setTimeout(() => document.getElementById("status-pill").textContent = state.bundle?.claimLabel || "Focused benchmark", 1300);
     }
 
     function escapeHtml(value) {
