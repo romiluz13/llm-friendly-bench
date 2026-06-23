@@ -1,16 +1,41 @@
 {
   "schemaVersion": "1.0.0",
   "suiteId": "ast-bench-v1",
-  "status": "case-study",
-  "generatedAt": "2026-06-22T22:56:23.365Z",
-  "headline": "AST-Bench shows how much database work an AI coding agent pays before the same feature ships.",
+  "status": "pilot",
+  "claimLabel": "Focused benchmark — 5 domains, 2 agents, 60 real runs",
+  "claimScope": {
+    "tasks": 5,
+    "totalTasksInV1": 25,
+    "agents": 2,
+    "totalAgentsInV1": 3,
+    "lanesPerTask": 2,
+    "repeats": 3,
+    "realRuns": 60,
+    "v1RequiredRuns": 450
+  },
+  "generatedAt": "2026-06-23T05:33:37.423Z",
+  "headline": "Two coding agents, the same five build tasks. Each one did less database work on MongoDB than on Postgres.",
   "subhead": "Same task. Same Codex run contract. Same acceptance test. MongoDB kept the business state closer to the workflow, so the agent spent less context, less time, and fewer cleanup loops on this verified replay.",
   "proofQuestion": "When the same agent builds the same workflow, how much work is product logic and how much is database-state reconstruction?",
   "plainEnglish": {
-    "headline": "The feature shipped in both lanes. MongoDB made the AI read less, wait less, and clean up less.",
+    "headline": "Across both agents and all five task domains, MongoDB required less reading, less cost, less time, and fewer cleanup loops than Postgres — within each agent.",
     "seedAnswer": "In this verified replay, Codex passed both lanes. Postgres required more context, more elapsed time, and more cleanup signals. MongoDB had the larger code diff, so the page shows that mixed metric instead of hiding it.",
     "audiencePromise": "A CEO sees the business cost. A developer can open the raw trace, diff, tests, database proof, and hashes.",
-    "databaseAnswer": "All 1 agents independently needed fewer tokens on MongoDB for the same tasks."
+    "databaseAnswer": "Both agents independently read more context, cost more, and retried more on Postgres for the same tasks.",
+    "metricsSummary": [
+      {
+        "tokensReadPct": 15,
+        "costPct": 15,
+        "timePct": 18,
+        "retries": 33
+      },
+      {
+        "tokensReadPct": 4,
+        "costPct": 9,
+        "timePct": 8,
+        "retries": 16
+      }
+    ]
   },
   "architectureQuestion": "Is the real comparison one database versus one database, or one MongoDB data plane versus a stitched stack?",
   "stackComparison": [
@@ -46,13 +71,13 @@
     }
   ],
   "progress": {
-    "label": "case-study",
+    "label": "pilot",
     "requiredLaneRuns": 450,
-    "capturedLaneRuns": 3,
-    "passedLaneRuns": 3,
-    "missingLaneRuns": 447,
+    "capturedLaneRuns": 60,
+    "passedLaneRuns": 60,
+    "missingLaneRuns": 390,
     "taskCount": 25,
-    "progressPct": 1
+    "progressPct": 13
   },
   "currentSeed": {
     "label": "Seed case study",
@@ -811,24 +836,24 @@
     ]
   },
   "aggregate": {
-    "rows": 3,
+    "rows": 60,
     "byLane": {
       "mongo": {
-        "rowCount": 2,
-        "medianElapsedMs": 254410.5,
-        "medianEstimatedTranscriptTokens": 641,
-        "tokenIqr": 84,
-        "medianRetrySignals": 54,
-        "medianDiffBytes": 3308,
+        "rowCount": 30,
+        "medianElapsedMs": 233472.5,
+        "medianEstimatedTranscriptTokens": 238492,
+        "tokenIqr": 789429,
+        "medianRetrySignals": 72,
+        "medianDiffBytes": 3286.5,
         "medianFilesChanged": 1
       },
       "postgres": {
-        "rowCount": 1,
-        "medianElapsedMs": 268389,
-        "medianEstimatedTranscriptTokens": 669,
-        "tokenIqr": 0,
-        "medianRetrySignals": 84,
-        "medianDiffBytes": 3105,
+        "rowCount": 30,
+        "medianElapsedMs": 250437,
+        "medianEstimatedTranscriptTokens": 291859,
+        "tokenIqr": 934638,
+        "medianRetrySignals": 95.5,
+        "medianDiffBytes": 2784.5,
         "medianFilesChanged": 1
       }
     }
@@ -841,7 +866,7 @@
       "domainLabel": "Customer 360 / CRM",
       "expectedOutcome": "At-risk escalation active with executive recovery owner routing and customer-visible audit history.",
       "seedCase": true,
-      "capturedLaneRuns": 3,
+      "capturedLaneRuns": 12,
       "status": "captured"
     },
     {
@@ -891,8 +916,8 @@
       "domainLabel": "Order / Commerce Ops",
       "expectedOutcome": "Split-shipment exception active with replacement plan, owners, customer message, and audit trail.",
       "seedCase": false,
-      "capturedLaneRuns": 0,
-      "status": "defined"
+      "capturedLaneRuns": 12,
+      "status": "captured"
     },
     {
       "id": "refund-credit-workflow",
@@ -941,8 +966,8 @@
       "domainLabel": "Support / SLA",
       "expectedOutcome": "SLA breach escalated with correct owners, customer-safe next step, and timer audit.",
       "seedCase": false,
-      "capturedLaneRuns": 0,
-      "status": "defined"
+      "capturedLaneRuns": 12,
+      "status": "captured"
     },
     {
       "id": "duplicate-case-merge",
@@ -991,8 +1016,8 @@
       "domainLabel": "Billing / Revenue Ops",
       "expectedOutcome": "Invoice dispute active with finance owner, evidence bundle, and customer-safe status.",
       "seedCase": false,
-      "capturedLaneRuns": 0,
-      "status": "defined"
+      "capturedLaneRuns": 12,
+      "status": "captured"
     },
     {
       "id": "payment-risk-hold-release",
@@ -1041,8 +1066,8 @@
       "domainLabel": "Compliance / Audit Ops",
       "expectedOutcome": "Audit export ready with scoped records, approvers, customer-safe summary, and hashable audit trail.",
       "seedCase": false,
-      "capturedLaneRuns": 0,
-      "status": "defined"
+      "capturedLaneRuns": 12,
+      "status": "captured"
     },
     {
       "id": "regulated-shipment-approval",
@@ -1090,14 +1115,14 @@
       "id": "codex",
       "label": "Codex",
       "adapter": "codex exec",
-      "capturedLaneRuns": 0,
+      "capturedLaneRuns": 30,
       "claimStatus": "not-yet-verified"
     },
     {
       "id": "claude-code",
       "label": "Claude Code",
       "adapter": "claude --print",
-      "capturedLaneRuns": 3,
+      "capturedLaneRuns": 30,
       "claimStatus": "not-yet-verified"
     },
     {
@@ -1125,7 +1150,7 @@
       "id": "benchmark-contract",
       "label": "Proof boundary",
       "question": "What is proven today?",
-      "verdict": "This customer demo proves one verified Codex replay pair. The broader AST-Bench benchmark still requires 450 lane runs; 3 are currently passed.",
+      "verdict": "This customer demo proves one verified Codex replay pair. The broader AST-Bench benchmark still requires 450 lane runs; 60 are currently passed.",
       "sources": [
         {
           "path": "benchmark/specs/ast-bench-v1.json",
@@ -1136,8 +1161,8 @@
         {
           "path": "benchmark/results/summary.json",
           "exists": true,
-          "bytes": 15716,
-          "sha256": "6d090c58592c45bca5d1aa0c8b4e431f4e8085f1e3639c4d62fd273e1645bc2f"
+          "bytes": 16488,
+          "sha256": "8518c8c0d0f7bff0babf40f89be274b5ced60d35d3794a524771482ba7157b9d"
         }
       ]
     },
@@ -1234,8 +1259,8 @@
         {
           "path": "benchmark/results/summary.json",
           "exists": true,
-          "bytes": 15716,
-          "sha256": "6d090c58592c45bca5d1aa0c8b4e431f4e8085f1e3639c4d62fd273e1645bc2f"
+          "bytes": 16488,
+          "sha256": "8518c8c0d0f7bff0babf40f89be274b5ced60d35d3794a524771482ba7157b9d"
         }
       ]
     },
@@ -1294,8 +1319,8 @@
         {
           "path": "benchmark/results/summary.json",
           "exists": true,
-          "bytes": 15716,
-          "sha256": "6d090c58592c45bca5d1aa0c8b4e431f4e8085f1e3639c4d62fd273e1645bc2f"
+          "bytes": 16488,
+          "sha256": "8518c8c0d0f7bff0babf40f89be274b5ced60d35d3794a524771482ba7157b9d"
         }
       ]
     },
@@ -1323,36 +1348,60 @@
   "databaseVerdict": {
     "perAgent": [
       {
-        "agentId": "claude-code",
+        "agentId": "codex",
         "mongo": {
-          "runs": 2,
-          "medianTokens": 641,
-          "medianCostUsd": 1.674325,
-          "medianElapsedMs": 254410.5,
-          "medianRetrySignals": 54
+          "runs": 15,
+          "medianTokensRead": 1483753,
+          "medianCostUsd": 2.1862150000000002,
+          "medianElapsedMs": 168879,
+          "medianRetrySignals": 49
         },
         "postgres": {
-          "runs": 1,
-          "medianTokens": 669,
-          "medianCostUsd": 1.6521829999999997,
-          "medianElapsedMs": 268389,
-          "medianRetrySignals": 84
+          "runs": 15,
+          "medianTokensRead": 1710889,
+          "medianCostUsd": 2.5173525000000003,
+          "medianElapsedMs": 199398,
+          "medianRetrySignals": 82
+        },
+        "deltas": {
+          "tokensPct": 15,
+          "costPct": 15,
+          "timePct": 18,
+          "retries": 33
+        },
+        "mongoWins": true
+      },
+      {
+        "agentId": "claude-code",
+        "mongo": {
+          "runs": 15,
+          "medianTokensRead": 29328,
+          "medianCostUsd": 1.6387559999999999,
+          "medianElapsedMs": 262814,
+          "medianRetrySignals": 86
+        },
+        "postgres": {
+          "runs": 15,
+          "medianTokensRead": 30438,
+          "medianCostUsd": 1.7885575,
+          "medianElapsedMs": 282604,
+          "medianRetrySignals": 102
         },
         "deltas": {
           "tokensPct": 4,
-          "costPct": -1,
-          "timePct": 5,
-          "retries": 30
+          "costPct": 9,
+          "timePct": 8,
+          "retries": 16
         },
         "mongoWins": true
       }
     ],
     "agreement": {
       "agentsAgreeMongoFewerTokens": true,
-      "agentCount": 1,
-      "statement": "All 1 agents independently needed fewer tokens on MongoDB for the same tasks."
+      "agentCount": 2,
+      "statement": "Both agents independently read more context, cost more, and retried more on Postgres for the same tasks."
     },
-    "caveat": "Within-agent comparison only. Cross-agent absolute numbers are not comparable."
+    "caveat": "Within-agent comparison only. Cross-agent absolute numbers are not comparable (CLIs report tokens differently; tokensRead = inputTokens + cachedInputTokens)."
   },
   "costModel": {
     "measuredSeedOnly": true,
@@ -1402,7 +1451,7 @@
         "id": "v1",
         "label": "V1 benchmark",
         "scale": "25 tasks, native schemas, 450 lane runs",
-        "status": "case-study",
+        "status": "pilot",
         "publicClaim": "Seed/case-study until every required lane is captured."
       },
       {

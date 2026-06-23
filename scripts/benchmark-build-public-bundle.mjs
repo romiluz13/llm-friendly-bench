@@ -39,15 +39,33 @@ const bundle = {
   schemaVersion: "1.0.0",
   suiteId: suite.suiteId,
   status: result.status,
+  claimLabel: "Focused benchmark — 5 domains, 2 agents, 60 real runs",
+  claimScope: {
+    tasks: 5,
+    totalTasksInV1: 25,
+    agents: 2,
+    totalAgentsInV1: 3,
+    lanesPerTask: 2,
+    repeats: 3,
+    realRuns: result.passedLaneRuns,
+    v1RequiredRuns: result.requiredLaneRuns
+  },
   generatedAt: new Date().toISOString(),
-  headline: "AST-Bench shows how much database work an AI coding agent pays before the same feature ships.",
+  headline: "Two coding agents, the same five build tasks. Each one did less database work on MongoDB than on Postgres.",
   subhead: "Same task. Same Codex run contract. Same acceptance test. MongoDB kept the business state closer to the workflow, so the agent spent less context, less time, and fewer cleanup loops on this verified replay.",
   proofQuestion: "When the same agent builds the same workflow, how much work is product logic and how much is database-state reconstruction?",
   plainEnglish: {
-    headline: "The feature shipped in both lanes. MongoDB made the AI read less, wait less, and clean up less.",
+    headline: "Across both agents and all five task domains, MongoDB required less reading, less cost, less time, and fewer cleanup loops than Postgres — within each agent.",
     seedAnswer: "In this verified replay, Codex passed both lanes. Postgres required more context, more elapsed time, and more cleanup signals. MongoDB had the larger code diff, so the page shows that mixed metric instead of hiding it.",
     audiencePromise: "A CEO sees the business cost. A developer can open the raw trace, diff, tests, database proof, and hashes.",
-    databaseAnswer: result.databaseVerdict?.agreement?.statement || "Benchmark in progress."
+    databaseAnswer: result.databaseVerdict?.agreement?.statement || "Benchmark in progress.",
+    metricsSummary: (result.databaseVerdict?.perAgent || []).map((a) => ({
+      agent: a.agent,
+      tokensReadPct: a.deltas?.tokensPct ?? null,
+      costPct: a.deltas?.costPct ?? null,
+      timePct: a.deltas?.timePct ?? null,
+      retries: a.deltas?.retries ?? null
+    }))
   },
   architectureQuestion: "Is the real comparison one database versus one database, or one MongoDB data plane versus a stitched stack?",
   stackComparison: [
