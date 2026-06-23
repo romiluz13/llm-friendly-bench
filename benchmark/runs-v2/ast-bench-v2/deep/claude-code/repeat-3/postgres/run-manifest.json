@@ -29,15 +29,15 @@
     "elapsedMs": 181184,
     "transcriptBytes": 245042,
     "tokens": {
-      "inputTokens": 3,
-      "outputTokens": 92,
-      "cachedInputTokens": 24915,
-      "totalTokens": 95,
-      "tokensRead": 24918,
+      "inputTokens": 457,
+      "outputTokens": 145,
+      "cachedInputTokens": 370200,
+      "totalTokens": 602,
+      "tokensRead": 370657,
       "costUsd": 0.7802864999999998,
       "source": "measured"
     },
-    "estimatedTranscriptTokens": 95,
+    "estimatedTranscriptTokens": 602,
     "diffBytes": 1277,
     "filesChanged": 1,
     "changedFiles": [

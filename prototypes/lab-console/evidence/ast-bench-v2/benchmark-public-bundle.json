@@ -2,7 +2,7 @@
   "schemaVersion": "1.0.0",
   "suiteId": "ast-bench-v2",
   "status": "pilot",
-  "generatedAt": "2026-06-23T16:39:46.759Z",
+  "generatedAt": "2026-06-23T18:13:55.790Z",
   "hero": {
     "kicker": "2 independent AI coding agents · same app · same tasks · 60 real runs",
     "headline": "Both coding agents did measurably less database work on MongoDB.",
@@ -24,20 +24,20 @@
         "agentId": "claude-code",
         "mongo": {
           "runs": 15,
-          "medianTokensRead": 28476,
+          "medianTokensRead": 508085,
           "medianCostUsd": 1.6143135,
           "medianElapsedMs": 273011,
           "medianRetrySignals": 92
         },
         "postgres": {
           "runs": 15,
-          "medianTokensRead": 29814,
+          "medianTokensRead": 540347,
           "medianCostUsd": 1.8116465,
           "medianElapsedMs": 298901,
           "medianRetrySignals": 88
         },
         "deltas": {
-          "tokensPct": 5,
+          "tokensPct": 6,
           "costPct": 12,
           "timePct": 9,
           "retries": -4
@@ -48,20 +48,20 @@
         "agentId": "codex",
         "mongo": {
           "runs": 15,
-          "medianTokensRead": 1705579,
+          "medianTokensRead": 894059,
           "medianCostUsd": 2.4516075,
           "medianElapsedMs": 218000,
           "medianRetrySignals": 55
         },
         "postgres": {
           "runs": 15,
-          "medianTokensRead": 2948860,
+          "medianTokensRead": 1499516,
           "medianCostUsd": 3.9771800000000006,
           "medianElapsedMs": 284572,
           "medianRetrySignals": 66
         },
         "deltas": {
-          "tokensPct": 73,
+          "tokensPct": 68,
           "costPct": 62,
           "timePct": 31,
           "retries": 11
@@ -106,7 +106,7 @@
           {
             "agentId": "claude-code",
             "deltas": {
-              "tokensReadPct": 5,
+              "tokensReadPct": 2,
               "costPct": 2,
               "timePct": -6,
               "retries": -8
@@ -116,7 +116,7 @@
           {
             "agentId": "codex",
             "deltas": {
-              "tokensReadPct": 76,
+              "tokensReadPct": 74,
               "costPct": 67,
               "timePct": 45,
               "retries": 376
@@ -131,7 +131,7 @@
           {
             "agentId": "claude-code",
             "deltas": {
-              "tokensReadPct": 8,
+              "tokensReadPct": 18,
               "costPct": 14,
               "timePct": 14,
               "retries": 5
@@ -141,7 +141,7 @@
           {
             "agentId": "codex",
             "deltas": {
-              "tokensReadPct": 76,
+              "tokensReadPct": 71,
               "costPct": 66,
               "timePct": 50,
               "retries": 10
@@ -156,7 +156,7 @@
           {
             "agentId": "claude-code",
             "deltas": {
-              "tokensReadPct": 5,
+              "tokensReadPct": 3,
               "costPct": 20,
               "timePct": 4,
               "retries": -12
@@ -166,7 +166,7 @@
           {
             "agentId": "codex",
             "deltas": {
-              "tokensReadPct": 30,
+              "tokensReadPct": 32,
               "costPct": 33,
               "timePct": 30,
               "retries": -18
@@ -178,8 +178,8 @@
     ],
     "depthTrend": {
       "tokensReadPctByShape": {
-        "shallow": 41,
-        "moderate": 42,
+        "shallow": 38,
+        "moderate": 45,
         "deep": 18
       },
       "growsWithDepth": false
@@ -274,10 +274,11 @@
     "progressPct": 100
   },
   "methodology": {
-    "withinAgentOnly": "Within-agent comparison only. Each agent is compared to itself across databases; cross-agent absolute token counts are never compared (the CLIs report tokens differently).",
-    "tokenMetric": "Token metric = context tokens read = inputTokens + cachedInputTokens.",
+    "withinAgentOnly": "Within-agent comparison only. Each agent is compared to itself across databases; cross-agent absolute numbers are never compared (the two CLIs account for tokens differently).",
+    "tokenMetric": "Token metric = total context the model read for the task, computed per CLI from real transcripts: Claude Code = sum of per-turn input + cache-read + cache-creation tokens (deduped by message id); Codex = the cumulative input_tokens (which already includes cached). Time (wall-clock) is the metric-independent cross-check.",
     "sameOutcome": "All 3 schema shapes implement the SAME business outcome with ONE shared acceptance contract. Only the Postgres relational depth differs, so any metric difference is attributable to schema shape alone.",
     "idiomaticPostgres": "Every Postgres schema is idiomatic best-practice normalization (sensible keys, a real M:N junction in the deep shape), not a contrived strawman.",
+    "whyAgentsDiffer": "Both agents independently do more work on Postgres, but the magnitude differs (Codex shows a far larger token/cost gap than Claude Code). This is a real behavioral difference, not noise: Claude Code aggressively caches context, so extra Postgres reading lands largely in discounted cached tokens; Codex's caching is less aggressive here, so the extra schema work shows up more starkly. The within-agent direction agrees; the size is agent-specific.",
     "fullV1Scope": "A full public-V1 benchmark would be 25 tasks × 2 lanes × 3 agents × 3 repeats = 450 runs. This focused MVP spends the same ~60-run budget on the causal variable (schema depth) instead of repetition.",
     "pathToOfficial": "Path to officially-endorsed material: an independent Postgres-fairness review and MongoDB brand/legal sign-off. Both are out of scope for this pilot and documented as next steps."
   },
@@ -337,14 +338,14 @@
         {
           "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-1/mongo/run-manifest.json",
           "exists": true,
-          "bytes": 4016,
-          "sha256": "eee8c057b0751a7e3f72ad3c39c190e907021a6b23431178f9f1f6e8fc294ade"
+          "bytes": 4023,
+          "sha256": "757b1246f23f67772ff9f9cca0a9a02801b6960d841b14ee7d2866c51d3a683e"
         },
         {
           "path": "benchmark/runs-v2/ast-bench-v2/deep/claude-code/repeat-1/postgres/run-manifest.json",
           "exists": true,
-          "bytes": 4076,
-          "sha256": "9cad144bc407adc21b04fbbc8220d4646e800aa866c3955cbb44b4dcedf92fa8"
+          "bytes": 4079,
+          "sha256": "72fd5eb3e52e7fc427d4f24de13303bed130410b3b263ac6db138bfcb0ddf826"
         }
       ]
     },

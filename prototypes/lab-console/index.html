@@ -156,7 +156,7 @@
 
   function renderMethodology(b) {
     const m = b.methodology || {};
-    const items = [m.withinAgentOnly, m.tokenMetric, m.sameOutcome, m.idiomaticPostgres, m.fullV1Scope, m.pathToOfficial].filter(Boolean);
+    const items = [m.withinAgentOnly, m.tokenMetric, m.whyAgentsDiffer, m.sameOutcome, m.idiomaticPostgres, m.fullV1Scope, m.pathToOfficial].filter(Boolean);
     document.getElementById("method-list").innerHTML = items.map((t) => `<li>${esc(t)}</li>`).join("");
   }
 

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
   "suiteId": "ast-bench-v2",
-  "generatedAt": "2026-06-23T16:39:08.517Z",
+  "generatedAt": "2026-06-23T18:12:14.517Z",
   "status": "pilot",
   "claimLevel": "pilot",
   "requiredLaneRuns": 60,
@@ -59,20 +59,20 @@
         "agentId": "claude-code",
         "mongo": {
           "runs": 15,
-          "medianTokensRead": 28476,
+          "medianTokensRead": 508085,
           "medianCostUsd": 1.6143135,
           "medianElapsedMs": 273011,
           "medianRetrySignals": 92
         },
         "postgres": {
           "runs": 15,
-          "medianTokensRead": 29814,
+          "medianTokensRead": 540347,
           "medianCostUsd": 1.8116465,
           "medianElapsedMs": 298901,
           "medianRetrySignals": 88
         },
         "deltas": {
-          "tokensPct": 5,
+          "tokensPct": 6,
           "costPct": 12,
           "timePct": 9,
           "retries": -4
@@ -83,20 +83,20 @@
         "agentId": "codex",
         "mongo": {
           "runs": 15,
-          "medianTokensRead": 1705579,
+          "medianTokensRead": 894059,
           "medianCostUsd": 2.4516075,
           "medianElapsedMs": 218000,
           "medianRetrySignals": 55
         },
         "postgres": {
           "runs": 15,
-          "medianTokensRead": 2948860,
+          "medianTokensRead": 1499516,
           "medianCostUsd": 3.9771800000000006,
           "medianElapsedMs": 284572,
           "medianRetrySignals": 66
         },
         "deltas": {
-          "tokensPct": 73,
+          "tokensPct": 68,
           "costPct": 62,
           "timePct": 31,
           "retries": 11
@@ -127,7 +127,7 @@
           {
             "agentId": "claude-code",
             "deltas": {
-              "tokensReadPct": 5,
+              "tokensReadPct": 2,
               "costPct": 2,
               "timePct": -6,
               "retries": -8
@@ -137,7 +137,7 @@
           {
             "agentId": "codex",
             "deltas": {
-              "tokensReadPct": 76,
+              "tokensReadPct": 74,
               "costPct": 67,
               "timePct": 45,
               "retries": 376
@@ -152,7 +152,7 @@
           {
             "agentId": "claude-code",
             "deltas": {
-              "tokensReadPct": 8,
+              "tokensReadPct": 18,
               "costPct": 14,
               "timePct": 14,
               "retries": 5
@@ -162,7 +162,7 @@
           {
             "agentId": "codex",
             "deltas": {
-              "tokensReadPct": 76,
+              "tokensReadPct": 71,
               "costPct": 66,
               "timePct": 50,
               "retries": 10
@@ -177,7 +177,7 @@
           {
             "agentId": "claude-code",
             "deltas": {
-              "tokensReadPct": 5,
+              "tokensReadPct": 3,
               "costPct": 20,
               "timePct": 4,
               "retries": -12
@@ -187,7 +187,7 @@
           {
             "agentId": "codex",
             "deltas": {
-              "tokensReadPct": 30,
+              "tokensReadPct": 32,
               "costPct": 33,
               "timePct": 30,
               "retries": -18
@@ -199,8 +199,8 @@
     ],
     "depthTrend": {
       "tokensReadPctByShape": {
-        "shallow": 41,
-        "moderate": 42,
+        "shallow": 38,
+        "moderate": 45,
         "deep": 18
       },
       "growsWithDepth": false

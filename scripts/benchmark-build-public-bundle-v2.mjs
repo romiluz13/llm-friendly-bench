@@ -129,10 +129,11 @@ const bundle = {
       : 0
   },
   methodology: {
-    withinAgentOnly: "Within-agent comparison only. Each agent is compared to itself across databases; cross-agent absolute token counts are never compared (the CLIs report tokens differently).",
-    tokenMetric: "Token metric = context tokens read = inputTokens + cachedInputTokens.",
+    withinAgentOnly: "Within-agent comparison only. Each agent is compared to itself across databases; cross-agent absolute numbers are never compared (the two CLIs account for tokens differently).",
+    tokenMetric: "Token metric = total context the model read for the task, computed per CLI from real transcripts: Claude Code = sum of per-turn input + cache-read + cache-creation tokens (deduped by message id); Codex = the cumulative input_tokens (which already includes cached). Time (wall-clock) is the metric-independent cross-check.",
     sameOutcome: "All 3 schema shapes implement the SAME business outcome with ONE shared acceptance contract. Only the Postgres relational depth differs, so any metric difference is attributable to schema shape alone.",
     idiomaticPostgres: "Every Postgres schema is idiomatic best-practice normalization (sensible keys, a real M:N junction in the deep shape), not a contrived strawman.",
+    whyAgentsDiffer: "Both agents independently do more work on Postgres, but the magnitude differs (Codex shows a far larger token/cost gap than Claude Code). This is a real behavioral difference, not noise: Claude Code aggressively caches context, so extra Postgres reading lands largely in discounted cached tokens; Codex's caching is less aggressive here, so the extra schema work shows up more starkly. The within-agent direction agrees; the size is agent-specific.",
     fullV1Scope: "A full public-V1 benchmark would be 25 tasks × 2 lanes × 3 agents × 3 repeats = 450 runs. This focused MVP spends the same ~60-run budget on the causal variable (schema depth) instead of repetition.",
     pathToOfficial: "Path to officially-endorsed material: an independent Postgres-fairness review and MongoDB brand/legal sign-off. Both are out of scope for this pilot and documented as next steps."
   },
