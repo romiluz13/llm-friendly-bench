@@ -43,6 +43,11 @@ if (process.argv[1] === new URL(import.meta.url).pathname) {
 
     const suiteV2 = readSuiteFile(suitePathV2);
 
+    if (!suiteV2.outcome || !suiteV2.outcome.id) {
+      console.error("ast-bench-v2 suite is missing a valid `outcome` (need outcome.id/title/businessPrompt/expectedOutcome)");
+      process.exit(1);
+    }
+
     if (!shape || !lane || !agentId) {
       console.error("Usage: node scripts/benchmark-run.mjs --suite ast-bench-v2 --shape <shallow|moderate|deep> --lane <mongo|postgres> --agent <claude-code|codex> [--repeat N]");
       process.exit(1);
