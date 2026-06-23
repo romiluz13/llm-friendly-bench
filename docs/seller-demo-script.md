@@ -4,7 +4,7 @@
 
 MongoDB's productivity message for the coding-agent era: when agents build ordinary application features, database overhead becomes token spend, elapsed time, retries, and human babysitting.
 
-The v2 pilot sharpens this into a testable question: **does that overhead grow as the Postgres schema gets deeper?** One business outcome, three Postgres schema shapes (shallow → moderate → deep), two independent coding agents, 60 real measured runs. The marketing page shows the answer honestly — whichever way it lands.
+The v2 pilot sharpens this into a testable question: **does that overhead grow as the Postgres schema gets deeper?** One business outcome, three Postgres schema shapes (shallow → moderate → deep), two independent coding agents, targeting 60 measured runs. The marketing page shows the answer honestly — whichever way it lands.
 
 Lead with one sentence: two independent agents (Codex and Claude Code) both did less database work on MongoDB. The v2 story is whether that gap widens as Postgres normalizes deeper.
 
@@ -14,7 +14,7 @@ Lead with one sentence: two independent agents (Codex and Claude Code) both did 
 
 1. **Open the marketing page** at `http://127.0.0.1:4173/`.
 2. **Lead with the agreement hero** — "both agents did less DB work on MongoDB." Agent agreement is the core claim: two independent instruments, same direction.
-3. **Walk the twin-agent graphs (within-agent).** Read the current within-agent deltas live off the page — the real v2 numbers come from the 60-run batch and live in the bundle. Do not quote v1 figures. Point out: Codex-vs-Codex and Claude-vs-Claude are the only valid comparisons; cross-agent absolute numbers are not comparable because the two CLIs report tokens differently.
+3. **Walk the twin-agent graphs (within-agent).** Read the current within-agent deltas live off the page — the per-shape within-agent deltas are read live off the page from the captured run set (targeting 3 shapes × 2 lanes × 2 agents × 5 repeats = 60 runs). Do not quote v1 figures. Point out: Codex-vs-Codex and Claude-vs-Claude are the only valid comparisons; cross-agent absolute numbers are not comparable because the two CLIs report tokens differently.
 4. **Tell the 3-shape depth story.** The benchmark ran one shared outcome across three Postgres schema shapes:
    - *Shallow* — 8 tables, mostly denormalized.
    - *Moderate* — 12 tables, 1-to-many child tables.

@@ -75,7 +75,7 @@ Until both are complete, this is a "disciplined, reproducible pilot," not offici
 
 ## v1 Suite (still present, additive)
 
-The v1 suite remains valid. It ran 5 tasks × 2 lanes × 2 agents × 3 repeats = 60 runs across five domains, confirming within-agent MongoDB advantage on all four metrics (tokens, cost, time, retries). v2 is additive — it does not replace v1 results but extends the question to schema-depth variation.
+The v1 suite remains valid. The earlier v1 focused run (5 of the 25 defined tasks × 2 lanes × 2 agents × 3 repeats = 60 runs) measured a within-agent MongoDB advantage on tokens, cost, time, and retries for those tasks; the captured per-agent deltas live in the v1 evidence bundle, not in this prose. v2 is additive — it does not replace v1 results but extends the question to schema-depth variation.
 
 ### v1 Flow
 
@@ -114,7 +114,7 @@ Cross-agent absolute numbers are not comparable. The token metric used is **toke
 
 ### Benchmark status
 
-- Current v2 MVP: 3 shapes × 2 agents × 5 repeats = **60 real runs**. Read the measured per-shape deltas and depth-trend verdict on the marketing page.
+- Current v2 MVP: 3 shapes × 2 lanes × 2 agents × 5 repeats = **60 real runs**. Read the measured per-shape deltas and depth-trend verdict on the marketing page.
 - V1 required lane runs: **450** (25 tasks × 2 lanes × 3 agents × 3 repeats) — this is a future-scope milestone, not the current claim. `public-v1` remains blocked until all required cells have captured evidence.
 
 ---
