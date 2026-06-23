@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 
 const verifiedPath = "prototypes/lab-console/replays/order-exception-codex-v1-verified.json";
@@ -122,6 +123,10 @@ for (const path of [benchmarkBundlePath, labBenchmarkBundlePath]) {
     for (const source of claim.sources || []) {
       if (!source.exists || !existsSync(source.path)) errors.push(`${path} evidence source does not exist: ${claim.id} -> ${source.path}`);
       if (!source.sha256 || source.sha256.length !== 64) errors.push(`${path} evidence source needs sha256: ${claim.id} -> ${source.path}`);
+      if (source.sha256 && source.sha256.length === 64 && existsSync(source.path)) {
+        const actual = createHash("sha256").update(readFileSync(source.path)).digest("hex");
+        if (actual !== source.sha256) errors.push(`${path} evidence source hash mismatch (stale/forged): ${claim.id} -> ${source.path} (claims ${source.sha256.slice(0, 12)}…, actual ${actual.slice(0, 12)}…)`);
+      }
     }
   }
 }

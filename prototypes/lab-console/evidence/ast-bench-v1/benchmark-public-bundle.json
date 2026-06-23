@@ -13,7 +13,7 @@
     "realRuns": 60,
     "v1RequiredRuns": 450
   },
-  "generatedAt": "2026-06-23T05:42:08.946Z",
+  "generatedAt": "2026-06-23T05:54:24.756Z",
   "headline": "Two coding agents, the same five build tasks. Each one did less database work on MongoDB than on Postgres.",
   "subhead": "Same task. Same Codex run contract. Same acceptance test. MongoDB kept the business state closer to the workflow, so the agent spent less context, less time, and fewer cleanup loops on this verified replay.",
   "proofQuestion": "When the same agent builds the same workflow, how much work is product logic and how much is database-state reconstruction?",
@@ -1166,7 +1166,7 @@
           "path": "benchmark/results/summary.json",
           "exists": true,
           "bytes": 16488,
-          "sha256": "ee3bed67041b366e08a49804ec6eac0a3019e7bc5e436632b145d6ac55099a1e"
+          "sha256": "a772cafc34fcc29677802be0b3b2d013e57a3629a24e16b73108c00da79d9bdd"
         }
       ]
     },
@@ -1264,7 +1264,7 @@
           "path": "benchmark/results/summary.json",
           "exists": true,
           "bytes": 16488,
-          "sha256": "ee3bed67041b366e08a49804ec6eac0a3019e7bc5e436632b145d6ac55099a1e"
+          "sha256": "a772cafc34fcc29677802be0b3b2d013e57a3629a24e16b73108c00da79d9bdd"
         }
       ]
     },
@@ -1324,7 +1324,7 @@
           "path": "benchmark/results/summary.json",
           "exists": true,
           "bytes": 16488,
-          "sha256": "ee3bed67041b366e08a49804ec6eac0a3019e7bc5e436632b145d6ac55099a1e"
+          "sha256": "a772cafc34fcc29677802be0b3b2d013e57a3629a24e16b73108c00da79d9bdd"
         }
       ]
     },
