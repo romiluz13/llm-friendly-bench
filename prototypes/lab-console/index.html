@@ -43,6 +43,8 @@
   .shape .pct { font-size:30px; font-weight:800; color:var(--mg); }
   .shape .name { font-weight:700; text-transform:uppercase; font-size:11px; color:var(--muted); }
   .trend { margin-top:14px; font-weight:700; }
+  .trend-note { font-weight:400; font-size:14px; color:#27323a; margin:10px 0 0; max-width:760px; }
+  .trend-note b { color:var(--ink); }
   .why { background:#0e1b16; color:#cfe8df; border-radius:10px; padding:14px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; margin-bottom:10px; }
   .why .pg { color:#ffd9b0; } .why .mg { color:#9fe0c2; } .why .note { color:#7a857f; font-size:10px; margin-top:6px; }
   .method li { margin:6px 0; color:#27323a; font-size:14px; }
@@ -130,7 +132,15 @@
         const mv = Number(a.mongo?.[m.lane] || 0), pv = Number(a.postgres?.[m.lane] || 0);
         const max = Math.max(mv, pv, 1);
         const mh = Math.round((mv / max) * 90), ph = Math.round((pv / max) * 90);
-        const fmt = (n) => m.lane === "medianCostUsd" ? ("$" + (Math.round(n * 100) / 100)) : Intl.NumberFormat("en-US",{notation:"compact"}).format(Math.round(n));
+        const fmt = (n) => {
+          if (m.lane === "medianCostUsd") return "$" + (Math.round(n * 100) / 100);
+          if (m.lane === "medianElapsedMs") {
+            const sec = n / 1000;
+            return sec < 90 ? Math.round(sec) + "s" : (Math.round(sec / 6) / 10) + " min";
+          }
+          if (m.lane === "medianRetrySignals") return String(Math.round(n));
+          return Intl.NumberFormat("en-US", { notation: "compact" }).format(Math.round(n));
+        };
         return `<div class="group"><div class="pair">
           <div class="b mg" data-h="${mh}" style="height:${reduceMotion ? mh : 0}px"><span class="v">${fmt(mv)}</span></div>
           <div class="b pg" data-h="${ph}" style="height:${reduceMotion ? ph : 0}px"><span class="v">${fmt(pv)}</span></div>
@@ -156,7 +166,8 @@
     const grows = b.shapeVerdict?.depthTrend?.growsWithDepth;
     document.getElementById("shape-trend").innerHTML = grows
       ? `<span style="color:var(--mg)">↑ The MongoDB advantage gets bigger as the Postgres design gets more complex.</span>`
-      : `<span style="color:var(--muted)">MongoDB came out ahead at every level of complexity — but the size of the gap did not grow in a straight line. We report it exactly as the runs came out, not the tidier story we expected.</span>`;
+      : `<span style="color:var(--muted)">MongoDB came out ahead at every level of complexity — but the size of the gap did not grow in a straight line. We report it exactly as the runs came out, not the tidier story we expected.</span>
+         <p class="trend-note">You might expect the most detailed design to be the hardest, but it isn't always. What drives the AI's extra work is <b>how many tables this particular job has to touch</b> — not the total number of tables in the database. The detailed design has more tables overall, but several just sit on the side (logs, settings) and never get read for this task. So the gap follows the work the job actually requires, not raw table count.</p>`;
   }
 
   function renderWhyPanel(b) {
