@@ -12,3 +12,7 @@ yarn-error.log*
 pnpm-debug.log*
 .superpowers/
 .claude/
+# AST-Bench v3 live-run artifacts (regenerable; mid-run; contain symlinked node_modules)
+benchmark/runs-v3/
+benchmark/.prove-v3/
+benchmark/.cheat-test/

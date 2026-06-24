@@ -41,5 +41,9 @@
     "db:seed:mongo": "node scripts/seed-local-databases.mjs mongo",
     "db:seed:postgres": "node scripts/seed-local-databases.mjs postgres",
     "prototype:lab": "python3 -m http.server 4173 --bind 127.0.0.1 --directory prototypes/lab-console"
+  },
+  "dependencies": {
+    "mongodb": "^7.3.0",
+    "pg": "^8.22.0"
   }
 }

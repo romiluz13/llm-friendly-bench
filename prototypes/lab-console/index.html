@@ -60,6 +60,11 @@
   .explain p:last-child { margin-bottom:0; }
   .explain b { color:var(--ink); }
   .fail-closed { max-width:620px; margin:80px auto; text-align:center; }
+  .status-banner { background:#fff8e6; border:1px solid #e8d8a0; border-radius:10px; padding:14px 18px; margin:22px 0 0; font-size:14px; color:#5a4a1a; }
+  .status-banner b { color:#3d3210; }
+  .status-banner .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:#d99a00; margin-right:7px; vertical-align:middle; animation:pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.35;} }
+  @media (prefers-reduced-motion: reduce){ .status-banner .dot { animation:none; } }
   footer { padding:30px 0; color:var(--muted); font-size:12px; }
 </style>
 </head>
@@ -67,6 +72,9 @@
   <!-- claim scope: 3 database designs × 2 AI assistants × 5 repeats = 60 real runs (rendered from bundle.claimLabel) -->
   <header class="bar"><div class="wrap"><span>AI-Friendly Database Benchmark</span><span id="claim-label" class="claim"></span></div></header>
   <main id="app" class="wrap">
+    <div class="status-banner" id="status-banner">
+      <span class="dot"></span><b>Live update:</b> a tougher, fully reproducible version of this benchmark is running right now. It rebuilds the test against <b>real databases</b> (not files), removes any hints that could let the AI shortcut the answer, and adds a <b>tuned Postgres design</b> so Postgres gets its fairest shot. The numbers below are from our <b>earlier pilot</b>; we'll publish the stronger results when the run finishes. We're showing you this mid-flight on purpose — that's the honesty bar we hold ourselves to.
+    </div>
     <div class="hero" id="hero"></div>
     <section id="primer"><h2>What this is, in plain words</h2><div class="explain" id="primer-card">
       <div class="tag">30-second version</div>
