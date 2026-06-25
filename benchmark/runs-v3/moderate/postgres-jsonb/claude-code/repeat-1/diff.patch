@@ -1,0 +1,132 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..0b62109 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,13 +1,119 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++
++const QUALIFYING_TIERS = ["strategic", "enterprise"];
++const HIGH_SEVERITIES = ["high", "critical"];
++const INVOICE_HIGH_CENTS = 2_500_000;
++const USAGE_DROP_FRACTION = 0.30;
++
++const OWNER_ORDER = ["Legal", "Finance", "Customer Success", "Support"];
++const SIGNAL_ORDER = ["regulatory", "invoice", "shipment", "support", "usage"];
++const SIGNAL_NAME = {
++  regulatory: "Regulatory hold",
++  invoice: "Overdue invoice",
++  shipment: "Delayed shipment",
++  support: "Escalated support",
++  usage: "Usage decline",
++};
++const OWNER_FOR_CATEGORY = {
++  regulatory: "Legal",
++  invoice: "Finance",
++  shipment: "Customer Success",
++  usage: "Customer Success",
++  support: "Support",
++};
++
++const ESCALATION_STATUS =
++  "At-risk escalation active with executive recovery owner routing and customer-visible audit history.";
++const MONITOR_STATUS = "Monitoring — no escalation required.";
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (client) => {
++    const { rows } = await client.query("SELECT doc FROM accounts LIMIT 1");
++    const doc = rows[0].doc;
++
++    const nowMs = Date.parse(now);
++    const accountId = doc._id;
++    const requestId = doc.request?.requestId;
++    const tier = String(doc.tier || "").toLowerCase();
++
++    const fired = {};
++
++    const overdueInvoice = (doc.invoices || []).find(
++      (inv) => inv.status !== "paid" && Date.parse(inv.dueDate) < nowMs && inv.amountCents >= INVOICE_HIGH_CENTS
++    );
++    if (overdueInvoice) fired.invoice = true;
++
++    const lateShipment = (doc.shipments || []).find(
++      (sh) => !sh.deliveredDate && Date.parse(sh.slaDate) < nowMs
++    );
++    if (lateShipment) fired.shipment = true;
++
++    const openReg = (doc.regulatoryFlags || []).find((f) => f.status === "open");
++    if (openReg) fired.regulatory = true;
++
++    const escalatedCase = (doc.supportCases || []).find(
++      (c) => c.status === "open" && HIGH_SEVERITIES.includes(c.severity)
++    );
++    if (escalatedCase) fired.support = true;
++
++    const usage = doc.usage || {};
++    if (
++      typeof usage.priorPeriodUnits === "number" &&
++      typeof usage.currentPeriodUnits === "number" &&
++      usage.priorPeriodUnits > 0 &&
++      usage.currentPeriodUnits <= usage.priorPeriodUnits * (1 - USAGE_DROP_FRACTION)
++    ) {
++      fired.usage = true;
++    }
++
++    const signals = SIGNAL_ORDER.filter((cat) => fired[cat]);
++    const tierOk = QUALIFYING_TIERS.includes(tier);
++    const qualifies = tierOk && signals.length >= 1;
++
++    const status = qualifies ? ESCALATION_STATUS : MONITOR_STATUS;
++    const riskSummary = `${signals.length} signals: ${signals.map((cat) => SIGNAL_NAME[cat]).join(", ")}`;
++
++    const ownerSet = new Set(signals.map((cat) => OWNER_FOR_CATEGORY[cat]));
++    const owners = qualifies ? OWNER_ORDER.filter((o) => ownerSet.has(o)) : [];
++    const topOwner = owners[0] || null;
++    const nextStep = qualifies ? `${topOwner} recovery review by 16:00` : "Continue standard monitoring.";
++
++    await client.query("DELETE FROM workflow_state");
++    await client.query("DELETE FROM owner_tasks");
++    await client.query("DELETE FROM customer_messages");
++    await client.query("DELETE FROM audit_events");
++
++    await client.query(
++      "INSERT INTO workflow_state (request_id, account_id, title, status, next_step, risk_summary) VALUES ($1, $2, $3, $4, $5, $6)",
++      [requestId, accountId, doc.request?.title || "Strategic account rescue", status, nextStep, riskSummary]
++    );
++
++    const dueAt = new Date(now);
++    dueAt.setUTCHours(16, 0, 0, 0);
++    for (const owner of owners) {
++      await client.query(
++        "INSERT INTO owner_tasks (request_id, account_id, owner_group, title, due_at, status) VALUES ($1, $2, $3, $4, $5, $6)",
++        [requestId, accountId, owner, `${owner} recovery review for ${doc.name}`, dueAt.toISOString(), "open"]
++      );
++    }
++
++    if (qualifies) {
++      const signalList = signals.map((cat) => SIGNAL_NAME[cat].toLowerCase()).join(", ");
++      const body = `We are reaching out proactively regarding your account. Our team has identified several areas that require immediate attention, including ${signalList}. Dedicated recovery owners across the relevant teams have been assigned and will be in contact shortly to discuss next steps and work with you toward resolution. We appreciate your continued partnership and are committed to resolving these matters as quickly as possible.`;
++      await client.query(
++        "INSERT INTO customer_messages (request_id, account_id, body) VALUES ($1, $2, $3)",
++        [requestId, accountId, body]
++      );
++    }
++
++    const event = qualifies
++      ? `Escalation workflow initiated: ${riskSummary}. Recovery teams have been engaged.`
++      : `Account review completed. No escalation required at this time.`;
++    await client.query(
++      "INSERT INTO audit_events (request_id, account_id, event, occurred_at, customer_visible) VALUES ($1, $2, $3, $4, $5)",
++      [requestId, accountId, event, now, true]
++    );
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

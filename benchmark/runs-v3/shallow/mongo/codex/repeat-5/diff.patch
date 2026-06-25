@@ -1,0 +1,231 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..2fe85b5 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,15 +1,217 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++
++const QUALIFYING_TIERS = new Set(["strategic", "enterprise"]);
++const OWNER_ORDER = ["Legal", "Finance", "Customer Success", "Support"];
++const OWNER_FOR_CATEGORY = {
++  regulatory: "Legal",
++  invoice: "Finance",
++  shipment: "Customer Success",
++  usage: "Customer Success",
++  support: "Support"
++};
++const SIGNALS = [
++  { category: "regulatory", name: "Regulatory hold" },
++  { category: "invoice", name: "Overdue invoice" },
++  { category: "shipment", name: "Delayed shipment" },
++  { category: "support", name: "Escalated support" },
++  { category: "usage", name: "Usage decline" }
++];
++const ESCALATION_STATUS =
++  "At-risk escalation active with executive recovery owner routing and customer-visible audit history.";
++const MONITOR_STATUS = "Monitoring — no escalation required.";
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  return withDb(async (db) => {
++    const account = await db.collection("accounts").findOne({});
++    if (!account) {
++      throw new Error("No account document found");
++    }
++
++    const request = account.request || {};
++    const world = {
++      account: {
++        accountId: account._id,
++        name: account.name,
++        tier: account.tier,
++        region: account.region
++      },
++      invoices: account.invoices || [],
++      shipments: account.shipments || [],
++      regulatoryFlags: account.regulatoryFlags || [],
++      supportCases: account.supportCases || [],
++      usage: account.usage || {}
++    };
++
++    const signals = deriveSignals(world, now);
++    const qualifies = QUALIFYING_TIERS.has(String(world.account.tier || "").toLowerCase()) && signals.length > 0;
++    const owners = qualifies ? deriveOwners(signals) : [];
++    const status = qualifies ? ESCALATION_STATUS : MONITOR_STATUS;
++    const nextStep = qualifies ? `${owners[0]} recovery review by 16:00` : "Continue standard monitoring.";
++    const riskSummary = `${signals.length} signals: ${signals.map((signal) => signal.name).join(", ")}`;
++    const dueAt = reviewDueAt(now);
++    const requestId = request.requestId || request.request_id || String(account._id);
++    const accountId = String(account._id);
++
++    await Promise.all([
++      db.collection("workflow_state").deleteMany({}),
++      db.collection("owner_tasks").deleteMany({}),
++      db.collection("customer_messages").deleteMany({}),
++      db.collection("audit_events").deleteMany({})
++    ]);
++
++    await db.collection("workflow_state").insertOne({
++      request_id: requestId,
++      account_id: accountId,
++      status,
++      next_step: nextStep,
++      risk_summary: riskSummary,
++      updated_at: now
++    });
++
++    if (owners.length > 0) {
++      await db.collection("owner_tasks").insertMany(
++        owners.map((ownerGroup) => ({
++          request_id: requestId,
++          account_id: accountId,
++          owner_group: ownerGroup,
++          title: `${ownerGroup} recovery review`,
++          due_at: dueAt,
++          status: "open"
++        }))
++      );
++    }
++
++    await db.collection("customer_messages").insertOne({
++      request_id: requestId,
++      account_id: accountId,
++      body: buildCustomerMessage({ qualifies, owners, signals }),
++      sent_at: now
++    });
++
++    await db.collection("audit_events").insertOne({
++      request_id: requestId,
++      account_id: accountId,
++      body: buildAuditBody({ qualifies, owners, signals, nextStep }),
++      customer_visible: true,
++      created_at: now
++    });
++
++    return {
++      status,
++      owners,
++      riskSummary,
++      nextStep
++    };
++  });
++}
++
++function deriveSignals(world, now) {
++  const nowMs = Date.parse(now);
++  const fired = [];
++
++  const overdueInvoice = (world.invoices || []).find(
++    (invoice) =>
++      invoice.status !== "paid" &&
++      Date.parse(invoice.dueDate) < nowMs &&
++      invoice.amountCents >= 25_000 * 100
++  );
++  if (overdueInvoice) {
++    fired.push({
++      category: "invoice",
++      name: "Overdue invoice",
++      detail: `Invoice ${overdueInvoice.invoiceId} for $${Math.round(overdueInvoice.amountCents / 100).toLocaleString("en-US")} past due.`
++    });
++  }
++
++  const lateShipment = (world.shipments || []).find((shipment) => !shipment.deliveredDate && Date.parse(shipment.slaDate) < nowMs);
++  if (lateShipment) {
++    fired.push({
++      category: "shipment",
++      name: "Delayed shipment",
++      detail: `Shipment ${lateShipment.shipmentId} past its delivery commitment.`
++    });
++  }
++
++  const openRegulatoryFlag = (world.regulatoryFlags || []).find((flag) => flag.status === "open");
++  if (openRegulatoryFlag) {
++    fired.push({
++      category: "regulatory",
++      name: "Regulatory hold",
++      detail: `Open ${openRegulatoryFlag.type} regulatory flag (${openRegulatoryFlag.flagId}).`
++    });
++  }
++
++  const escalatedSupport = (world.supportCases || []).find(
++    (supportCase) =>
++      supportCase.status === "open" && ["high", "critical"].includes(String(supportCase.severity || "").toLowerCase())
++  );
++  if (escalatedSupport) {
++    fired.push({
++      category: "support",
++      name: "Escalated support",
++      detail: `Support case ${escalatedSupport.caseId} at ${escalatedSupport.severity} severity.`
++    });
++  }
++
++  const usage = world.usage || {};
++  if (
++    typeof usage.priorPeriodUnits === "number" &&
++    typeof usage.currentPeriodUnits === "number" &&
++    usage.priorPeriodUnits > 0 &&
++    usage.currentPeriodUnits <= usage.priorPeriodUnits * 0.7
++  ) {
++    const dropPct = Math.round((1 - usage.currentPeriodUnits / usage.priorPeriodUnits) * 100);
++    fired.push({
++      category: "usage",
++      name: "Usage decline",
++      detail: `Usage down ${dropPct}% period-over-period.`
++    });
++  }
++
++  return SIGNALS.filter((signal) => fired.some((item) => item.category === signal.category)).map((signal) => ({
++    ...signal,
++    detail: fired.find((item) => item.category === signal.category)?.detail || ""
++  }));
++}
++
++function deriveOwners(signals) {
++  const owners = new Set();
++  for (const signal of signals) {
++    owners.add(OWNER_FOR_CATEGORY[signal.category]);
++  }
++  return OWNER_ORDER.filter((owner) => owners.has(owner));
++}
++
++function reviewDueAt(now) {
++  const due = new Date(now);
++  due.setUTCHours(16, 0, 0, 0);
++  return due.toISOString();
++}
++
++function buildCustomerMessage({ qualifies, owners, signals }) {
++  if (!qualifies) {
++    return "We are continuing standard monitoring and no escalation is required at this time. We will only reach out if the situation changes.";
++  }
++
++  const signalNames = signals.map((signal) => signal.name.toLowerCase()).join(", ");
++  const ownerText = owners.join(", ");
++  return `We have opened a coordinated review across ${ownerText} because there are active issues involving ${signalNames}. Our teams are working through the recovery plan and will share customer-safe updates as actions are confirmed.`;
++}
++
++function buildAuditBody({ qualifies, owners, signals, nextStep }) {
++  if (!qualifies) {
++    return "Standard monitoring update published to the customer portal.";
++  }
++
++  const signalNames = signals.map((signal) => signal.name.toLowerCase()).join(", ");
++  return `Customer-visible escalation update published for ${owners.join(", ")}. Active signals: ${signalNames}. Next step: ${nextStep}.`;
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
+-  run().then(() => console.log("workflow done")).catch((e) => { console.error(e); process.exit(1); });
++  run()
++    .then(() => console.log("workflow done"))
++    .catch((error) => {
++      console.error(error);
++      process.exit(1);
++    });
+ }

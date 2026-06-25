@@ -1,0 +1,16 @@
+
+> ast-bench-v3-postgres-norm@1.0.0 test
+> node tests/acceptance.test.mjs
+
+<anonymous_script>:1
+[object Object],[object Object]
+ ^
+
+SyntaxError: Unexpected token 'o', "[object Obj"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at readFactsFromDb (file:///Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v3/shallow/postgres-norm/codex/repeat-5/workspace/tests/facts.mjs:10:20)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async withDb (file:///Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v3/shallow/postgres-norm/codex/repeat-5/workspace/src/db.mjs:10:16)
+    at async file:///Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v3/shallow/postgres-norm/codex/repeat-5/workspace/tests/acceptance.test.mjs:9:15
+
+Node.js v24.15.0

@@ -1,0 +1,154 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..6ac9c0f 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,15 +1,140 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++import { RULES, qualifies, signalsOf, ownersOf } from "./derive.mjs";
++
++function toIso(value) {
++  return value instanceof Date ? value.toISOString() : String(value);
++}
++
++async function readFactsFromDb(db) {
++  const account = (await db.query("SELECT * FROM accounts LIMIT 1")).rows[0];
++  const normalizeNumbers = (rows, field) =>
++    rows.map((row) => ({
++      ...row,
++      [field]: row[field] == null ? row[field] : Number(row[field])
++    }));
++
++  const invoices = normalizeNumbers(
++    (await db.query("SELECT invoice_id, amount_cents, due_date, status FROM invoices")).rows,
++    "amount_cents"
++  ).map((invoice) => ({
++    invoiceId: invoice.invoice_id,
++    amountCents: invoice.amount_cents,
++    dueDate: toIso(invoice.due_date),
++    status: invoice.status
++  }));
++
++  const shipments = (await db.query("SELECT shipment_id, sla_date, delivered_date, status FROM shipments")).rows.map((shipment) => ({
++    shipmentId: shipment.shipment_id,
++    slaDate: toIso(shipment.sla_date),
++    deliveredDate: shipment.delivered_date ? toIso(shipment.delivered_date) : null,
++    status: shipment.status
++  }));
++
++  const regulatoryFlags = (await db.query("SELECT flag_id, type, status FROM regulatory_flags")).rows.map((flag) => ({
++    flagId: flag.flag_id,
++    type: flag.type,
++    status: flag.status
++  }));
++
++  const supportCases = (await db.query("SELECT case_id, severity, status FROM support_cases")).rows.map((supportCase) => ({
++    caseId: supportCase.case_id,
++    severity: supportCase.severity,
++    status: supportCase.status
++  }));
++
++  const usage = (await db.query("SELECT prior_period_units, current_period_units FROM usage_periods LIMIT 1")).rows[0] || {};
++
++  return {
++    account: {
++      accountId: account.account_id,
++      name: account.name,
++      tier: account.tier,
++      region: account.region
++    },
++    contract: {},
++    contacts: [],
++    invoices,
++    shipments,
++    regulatoryFlags,
++    supportCases,
++    usage: {
++      priorPeriodUnits: Number(usage.prior_period_units),
++      currentPeriodUnits: Number(usage.current_period_units)
++    }
++  };
++}
++
++function dueAt1600Utc(now) {
++  const dueAt = new Date(now);
++  dueAt.setUTCHours(16, 0, 0, 0);
++  if (Date.parse(now) > dueAt.getTime()) {
++    dueAt.setUTCDate(dueAt.getUTCDate() + 1);
++  }
++  return dueAt.toISOString();
++}
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (db) => {
++    const facts = await readFactsFromDb(db);
++    const accountId = facts.account.accountId;
++    const requestId = `req-${accountId}`;
++    const title = facts.account.name || "Strategic account rescue";
++
++    const isQualified = qualifies(facts, now);
++    const signals = signalsOf(facts, now);
++    const owners = isQualified ? ownersOf(facts, now) : [];
++    const status = isQualified ? RULES.escalationStatus : RULES.monitorStatus;
++    const riskSummary = `${signals.length} signals: ${signals.join(", ")}`;
++    const nextStep = isQualified ? `${owners[0]} recovery review by 16:00` : "Continue standard monitoring.";
++    const customerMessage = isQualified
++      ? "We have opened a priority recovery review and are coordinating the right teams. We will keep you updated as we work through the issue."
++      : "We are continuing to monitor your account closely and do not need to escalate at this time. We will keep an eye on it and reach out if anything changes.";
++    const auditEvent = isQualified
++      ? "Recovery review opened and customer follow-up prepared."
++      : "Monitoring review completed with no escalation required.";
++    const dueAt = dueAt1600Utc(now);
++
++    await db.query("BEGIN");
++    try {
++      await db.query("DELETE FROM workflow_state");
++      await db.query("DELETE FROM owner_tasks");
++      await db.query("DELETE FROM customer_messages");
++      await db.query("DELETE FROM audit_events");
++
++      await db.query(
++        "INSERT INTO workflow_state (request_id, account_id, title, status, next_step, risk_summary) VALUES ($1, $2, $3, $4, $5, $6)",
++        [requestId, accountId, title, status, nextStep, riskSummary]
++      );
++
++      for (const owner of owners) {
++        await db.query(
++          "INSERT INTO owner_tasks (request_id, account_id, owner_group, title, due_at, status) VALUES ($1, $2, $3, $4, $5, $6)",
++          [requestId, accountId, owner, `${owner} recovery review`, dueAt, "open"]
++        );
++      }
++
++      await db.query(
++        "INSERT INTO customer_messages (request_id, account_id, body) VALUES ($1, $2, $3)",
++        [requestId, accountId, customerMessage]
++      );
++      await db.query(
++        "INSERT INTO audit_events (request_id, account_id, event, occurred_at, customer_visible) VALUES ($1, $2, $3, $4, $5)",
++        [requestId, accountId, auditEvent, now, true]
++      );
++
++      await db.query("COMMIT");
++    } catch (error) {
++      await db.query("ROLLBACK").catch(() => {});
++      throw error;
++    }
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
+-  run().then(() => console.log("workflow done")).catch((e) => { console.error(e); process.exit(1); });
++  run()
++    .then(() => console.log("workflow done"))
++    .catch((error) => {
++      console.error(error);
++      process.exit(1);
++    });
+ }

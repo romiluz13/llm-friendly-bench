@@ -1,0 +1,142 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..a2ed915 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,13 +1,129 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (db) => {
++    const a = (await db.collection("accounts").find({}).toArray())[0];
++    if (!a) throw new Error("No account found");
++
++    const nowDate = new Date(now);
++    const tier = a.tier;
++    const qualifyingTiers = ["strategic", "enterprise"];
++
++    // Derive risk signals
++    const signals = [];
++
++    // Regulatory hold: open regulatory flag
++    if (a.regulatoryFlags?.some((f) => f.status === "open")) {
++      signals.push("Regulatory hold");
++    }
++
++    // Overdue invoice: unpaid, past due, >= $25,000
++    if (
++      a.invoices?.some(
++        (inv) =>
++          inv.status !== "paid" &&
++          new Date(inv.dueDate) < nowDate &&
++          inv.amountCents >= 2500000
++      )
++    ) {
++      signals.push("Overdue invoice");
++    }
++
++    // Delayed shipment: no deliveredDate, past slaDate
++    if (
++      a.shipments?.some(
++        (s) => !s.deliveredDate && new Date(s.slaDate) < nowDate
++      )
++    ) {
++      signals.push("Delayed shipment");
++    }
++
++    // Escalated support: open case with high or critical severity
++    if (
++      a.supportCases?.some(
++        (c) => c.status === "open" && ["high", "critical"].includes(c.severity)
++      )
++    ) {
++      signals.push("Escalated support");
++    }
++
++    // Usage decline: current <= prior * 0.7
++    if (
++      a.usage &&
++      a.usage.currentPeriodUnits <= a.usage.priorPeriodUnits * 0.7
++    ) {
++      signals.push("Usage decline");
++    }
++
++    const qualifies = qualifyingTiers.includes(tier) && signals.length > 0;
++
++    const status = qualifies
++      ? "At-risk escalation active with executive recovery owner routing and customer-visible audit history."
++      : "Monitoring — no escalation required.";
++
++    // Derive owners in fixed order (deduped)
++    const ownerSet = new Set();
++    if (signals.includes("Regulatory hold")) ownerSet.add("Legal");
++    if (signals.includes("Overdue invoice")) ownerSet.add("Finance");
++    if (signals.includes("Delayed shipment")) ownerSet.add("Customer Success");
++    if (signals.includes("Usage decline")) ownerSet.add("Customer Success");
++    if (signals.includes("Escalated support")) ownerSet.add("Support");
++
++    // Preserve fixed order: Legal, Finance, Customer Success, Support
++    const ORDER = ["Legal", "Finance", "Customer Success", "Support"];
++    const owners = ORDER.filter((o) => ownerSet.has(o));
++
++    const riskSummary = qualifies
++      ? `${signals.length} signals: ${signals.join(", ")}`
++      : "0 signals";
++
++    const topOwner = owners[0] ?? null;
++    const nextStep = qualifies
++      ? `${topOwner} recovery review by 16:00`
++      : "Continue standard monitoring.";
++
++    const dueAt = new Date(nowDate);
++    dueAt.setHours(16, 0, 0, 0);
++
++    // Clear and persist
++    await db.collection("workflow_state").deleteMany({});
++    await db.collection("owner_tasks").deleteMany({});
++    await db.collection("customer_messages").deleteMany({});
++    await db.collection("audit_events").deleteMany({});
++
++    await db.collection("workflow_state").insertOne({
++      status,
++      risk_summary: riskSummary,
++      next_step: nextStep,
++      updated_at: nowDate,
++    });
++
++    if (qualifies) {
++      for (const owner of owners) {
++        await db.collection("owner_tasks").insertOne({
++          owner_group: owner,
++          title: `${owner} recovery review for ${a.name}`,
++          due_at: dueAt,
++          status: "open",
++        });
++      }
++
++      await db.collection("customer_messages").insertOne({
++        body:
++          `Dear ${a.name} team, we have identified elevated risk signals on your account and have activated our ` +
++          `executive recovery process. Our teams are actively reviewing your account to ensure continuity of service. ` +
++          `A dedicated representative will be in touch shortly to address any concerns.`,
++        created_at: nowDate,
++      });
++
++      await db.collection("audit_events").insertOne({
++        event: "escalation_activated",
++        description: `Escalation workflow activated for ${a.name}. ${riskSummary}.`,
++        customer_visible: true,
++        created_at: nowDate,
++      });
++    }
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

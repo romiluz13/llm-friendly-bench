@@ -1,0 +1,106 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..09ccacd 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,15 +1,92 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++import { RULES, qualifies, signalsOf, ownersOf } from "./derive.mjs";
++
++function toFacts(doc) {
++  return {
++    account: {
++      accountId: doc._id,
++      name: doc.name,
++      tier: doc.tier,
++      region: doc.region
++    },
++    contract: doc.contract,
++    contacts: doc.contacts,
++    invoices: doc.invoices,
++    shipments: doc.shipments,
++    regulatoryFlags: doc.regulatoryFlags,
++    supportCases: doc.supportCases,
++    usage: doc.usage
++  };
++}
++
++function deriveExpected(facts, now) {
++  const signalNames = signalsOf(facts, now);
++  const qualifiesForEscalation = qualifies(facts, now);
++  const owners = qualifiesForEscalation ? ownersOf(facts, now) : [];
++
++  return {
++    status: qualifiesForEscalation ? RULES.escalationStatus : RULES.monitorStatus,
++    nextStep: qualifiesForEscalation ? `${owners[0]} recovery review by 16:00` : "Continue standard monitoring.",
++    owners,
++    signals: signalNames,
++    riskSummary: `${signalNames.length} signals: ${signalNames.join(", ")}`,
++    expectsEscalation: qualifiesForEscalation
++  };
++}
++
++function customerMessage(expected) {
++  if (expected.expectsEscalation) {
++    const signalNames = expected.signals.join(", ");
++    return `Your account has been flagged for escalation due to the following active risk signals: ${signalNames}. Our team is coordinating recovery efforts across all responsible groups. A dedicated representative will contact you shortly to outline the recovery plan and next steps. We are committed to resolving these issues as quickly as possible.`;
++  }
++
++  return "Your account is currently being monitored. No escalation is required at this time. Thank you for your continued partnership.";
++}
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (client) => {
++    const { rows } = await client.query("SELECT doc FROM accounts LIMIT 1");
++    const doc = rows[0].doc;
++    const facts = toFacts(doc);
++    const expected = deriveExpected(facts, now);
++    const accountId = doc._id;
++    const requestId = doc.request?.requestId;
++    const title = doc.request?.title || "Strategic account rescue";
++
++    await client.query("DELETE FROM workflow_state WHERE account_id = $1", [accountId]);
++    await client.query("DELETE FROM owner_tasks WHERE account_id = $1", [accountId]);
++    await client.query("DELETE FROM customer_messages WHERE account_id = $1", [accountId]);
++    await client.query("DELETE FROM audit_events WHERE account_id = $1", [accountId]);
++
++    await client.query(
++      "INSERT INTO workflow_state (request_id, account_id, title, status, next_step, risk_summary) VALUES ($1, $2, $3, $4, $5, $6)",
++      [requestId, accountId, title, expected.status, expected.nextStep, expected.riskSummary]
++    );
++
++    for (const owner of expected.owners) {
++      await client.query(
++        "INSERT INTO owner_tasks (request_id, account_id, owner_group, title, due_at, status) VALUES ($1, $2, $3, $4, $5, $6)",
++        [requestId, accountId, owner, `${owner} recovery review`, now, "open"]
++      );
++    }
++
++    await client.query(
++      "INSERT INTO customer_messages (request_id, account_id, body) VALUES ($1, $2, $3)",
++      [requestId, accountId, customerMessage(expected)]
++    );
++
++    await client.query(
++      "INSERT INTO audit_events (request_id, account_id, event, occurred_at, customer_visible) VALUES ($1, $2, $3, $4, $5)",
++      [requestId, accountId, `Rescue workflow executed. Status: ${expected.status}`, now, true]
++    );
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
+-  run().then(() => console.log("workflow done")).catch((e) => { console.error(e); process.exit(1); });
++  run()
++    .then(() => console.log("workflow done"))
++    .catch((e) => {
++      console.error(e);
++      process.exit(1);
++    });
+ }

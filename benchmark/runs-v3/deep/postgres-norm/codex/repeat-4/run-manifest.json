@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "3.0.0",
+  "suiteId": "ast-bench-v3",
+  "executionMode": "live-db",
+  "dbNamespace": "astbench_deep_postgres_norm_codex_r4",
+  "scenarioId": "strategic-account-rescue",
+  "expectsEscalation": true,
+  "shape": "deep",
+  "lane": "postgres-norm",
+  "agentId": "codex",
+  "repeat": 4,
+  "model": "gpt-5.4-mini",
+  "agentVersion": "codex-cli 0.130.0",
+  "status": "passed",
+  "startedAt": "2026-06-24T14:53:48.399Z",
+  "finishedAt": "2026-06-24T14:57:11.278Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-v3/deep/postgres-norm/codex/repeat-4/workspace",
+    "prompt": "benchmark/runs-v3/deep/postgres-norm/codex/repeat-4/prompt.md",
+    "rawTranscript": "benchmark/runs-v3/deep/postgres-norm/codex/repeat-4/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs-v3/deep/postgres-norm/codex/repeat-4/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs-v3/deep/postgres-norm/codex/repeat-4/diff.patch",
+    "tests": "benchmark/runs-v3/deep/postgres-norm/codex/repeat-4/tests.log",
+    "dbBefore": "benchmark/runs-v3/deep/postgres-norm/codex/repeat-4/db-before/seed.json",
+    "dbAfter": "benchmark/runs-v3/deep/postgres-norm/codex/repeat-4/db-after/final.json"
+  },
+  "metrics": {
+    "elapsedMs": 202879,
+    "transcriptBytes": 2639694,
+    "tokens": {
+      "inputTokens": 949994,
+      "outputTokens": 24905,
+      "cachedInputTokens": 875648,
+      "totalTokens": 974899,
+      "tokensRead": 949994,
+      "costUsd": 2.624035,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 974899,
+    "diffBytes": 3362,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "liveDbWritten": true,
+    "liveStateRows": 1,
+    "liveTaskRows": 4,
+    "retrySignals": 914,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-v3/deep/postgres-norm/codex/repeat-4/prompt.md",
+      "sha256": "b30da58b68ec0e7da0d01c252e5ea3e21da9096e1cfdb19cda6271ac3bbcc2d7"
+    },
+    {
+      "path": "benchmark/runs-v3/deep/postgres-norm/codex/repeat-4/raw-transcript/codex.jsonl",
+      "sha256": "0c996717d074c2ffb6ff008f7086e0b86b4cb7a7a08408f6d0c9420cdbd54d29"
+    },
+    {
+      "path": "benchmark/runs-v3/deep/postgres-norm/codex/repeat-4/diff.patch",
+      "sha256": "b52da3fdd56d476d58691f3be5c7fa623a0c0f70845aae1437b3947320841e52"
+    },
+    {
+      "path": "benchmark/runs-v3/deep/postgres-norm/codex/repeat-4/tests.log",
+      "sha256": "5a89a6c65f674e9b6de70d8a058f33c45525d93fc0a34acd4bee4c72ef01c421"
+    },
+    {
+      "path": "benchmark/runs-v3/deep/postgres-norm/codex/repeat-4/db-before/seed.json",
+      "sha256": "677dc781b6eb8636c4c7d37b077493dc40e9d13a8460d875daefc3db83d6eeee"
+    },
+    {
+      "path": "benchmark/runs-v3/deep/postgres-norm/codex/repeat-4/db-after/final.json",
+      "sha256": "0aefcf5ba0a6dd08c699dd09d9e98e7a104fc2957912d2eed5c71e402374a592"
+    }
+  ]
+}

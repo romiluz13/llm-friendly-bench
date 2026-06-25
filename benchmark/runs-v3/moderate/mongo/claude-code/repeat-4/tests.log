@@ -1,0 +1,14 @@
+
+> ast-bench-v3-mongo@1.0.0 test
+> node tests/acceptance.test.mjs
+
+file:///Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v3/moderate/mongo/claude-code/repeat-4/workspace/src/workflow.mjs:10
+  throw new Error("workflow not implemented");
+        ^
+
+Error: workflow not implemented
+    at run (file:///Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v3/moderate/mongo/claude-code/repeat-4/workspace/src/workflow.mjs:10:9)
+    at file:///Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v3/moderate/mongo/claude-code/repeat-4/workspace/tests/acceptance.test.mjs:13:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+
+Node.js v24.15.0

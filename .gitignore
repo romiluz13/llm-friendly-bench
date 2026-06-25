@@ -12,7 +12,13 @@ yarn-error.log*
 pnpm-debug.log*
 .superpowers/
 .claude/
-# AST-Bench v3 live-run artifacts (regenerable; mid-run; contain symlinked node_modules)
-benchmark/runs-v3/
+# AST-Bench v3 live-run artifacts: ignore the bulky/regenerable parts
+# (agent workspaces with symlinked node_modules, raw transcripts, db dumps),
+# but COMMIT the per-run manifests + progress log so every run is auditable.
+benchmark/runs-v3/**/workspace/
+benchmark/runs-v3/**/raw-transcript/
+benchmark/runs-v3/**/db-before/
+benchmark/runs-v3/**/db-after/
+benchmark/runs-v3/**/screenshots/
 benchmark/.prove-v3/
 benchmark/.cheat-test/

@@ -1,0 +1,122 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..cf87628 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,13 +1,109 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++
++const QUALIFYING_TIERS = ["strategic", "enterprise"];
++const HIGH_SUPPORT_SEVERITIES = ["high", "critical"];
++const INVOICE_HIGH_CENTS = 2_500_000;
++const USAGE_DROP_FRACTION = 0.30;
++
++const OWNER_FOR_CATEGORY = {
++  regulatory: "Legal",
++  invoice: "Finance",
++  shipment: "Customer Success",
++  usage: "Customer Success",
++  support: "Support"
++};
++const OWNER_ORDER = ["Legal", "Finance", "Customer Success", "Support"];
++const SIGNAL_ORDER = ["regulatory", "invoice", "shipment", "support", "usage"];
++const SIGNAL_NAME = {
++  regulatory: "Regulatory hold",
++  invoice: "Overdue invoice",
++  shipment: "Delayed shipment",
++  support: "Escalated support",
++  usage: "Usage decline"
++};
++
++const ESCALATION_STATUS = "At-risk escalation active with executive recovery owner routing and customer-visible audit history.";
++const MONITOR_STATUS = "Monitoring — no escalation required.";
++
++function toIso(v) { return v instanceof Date ? v.toISOString() : String(v); }
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (c) => {
++    const acct = (await c.query("SELECT * FROM accounts LIMIT 1")).rows[0];
++    const invoices = (await c.query("SELECT invoice_id, amount_cents, due_date, status FROM invoices")).rows
++      .map(i => ({ invoiceId: i.invoice_id, amountCents: Number(i.amount_cents), dueDate: toIso(i.due_date), status: i.status }));
++    const shipments = (await c.query("SELECT shipment_id, sla_date, delivered_date, status FROM shipments")).rows
++      .map(s => ({ shipmentId: s.shipment_id, slaDate: toIso(s.sla_date), deliveredDate: s.delivered_date ? toIso(s.delivered_date) : null, status: s.status }));
++    const regulatoryFlags = (await c.query("SELECT flag_id, type, status FROM regulatory_flags")).rows
++      .map(r => ({ flagId: r.flag_id, type: r.type, status: r.status }));
++    const supportCases = (await c.query("SELECT case_id, severity, status FROM support_cases")).rows
++      .map(s => ({ caseId: s.case_id, severity: s.severity, status: s.status }));
++    const u = (await c.query("SELECT prior_period_units, current_period_units FROM usage_periods LIMIT 1")).rows[0] || {};
++    const usage = { priorPeriodUnits: Number(u.prior_period_units), currentPeriodUnits: Number(u.current_period_units) };
++
++    const nowMs = Date.parse(now);
++    const fired = {};
++
++    const overdueInvoice = invoices.find(
++      inv => inv.status !== "paid" && Date.parse(inv.dueDate) < nowMs && inv.amountCents >= INVOICE_HIGH_CENTS
++    );
++    if (overdueInvoice) fired.invoice = true;
++
++    const lateShipment = shipments.find(sh => !sh.deliveredDate && Date.parse(sh.slaDate) < nowMs);
++    if (lateShipment) fired.shipment = true;
++
++    const openReg = regulatoryFlags.find(f => f.status === "open");
++    if (openReg) fired.regulatory = true;
++
++    const escalatedCase = supportCases.find(c => c.status === "open" && HIGH_SUPPORT_SEVERITIES.includes(c.severity));
++    if (escalatedCase) fired.support = true;
++
++    if (usage.priorPeriodUnits > 0 && usage.currentPeriodUnits <= usage.priorPeriodUnits * (1 - USAGE_DROP_FRACTION)) {
++      fired.usage = true;
++    }
++
++    const signals = SIGNAL_ORDER.filter(cat => fired[cat]).map(cat => ({ category: cat, name: SIGNAL_NAME[cat] }));
++    const tierOk = QUALIFYING_TIERS.includes(String(acct.tier || "").toLowerCase());
++    const qualifying = tierOk && signals.length >= 1;
++
++    const ownersSet = new Set(Object.keys(fired).map(cat => OWNER_FOR_CATEGORY[cat]));
++    const owners = qualifying ? OWNER_ORDER.filter(o => ownersSet.has(o)) : [];
++
++    const status = qualifying ? ESCALATION_STATUS : MONITOR_STATUS;
++    const riskSummary = `${signals.length} signals: ${signals.map(s => s.name).join(", ")}`;
++    const nextStep = qualifying ? `${owners[0]} recovery review by 16:00` : "Continue standard monitoring.";
++
++    await c.query("BEGIN");
++    await c.query("DELETE FROM audit_events");
++    await c.query("DELETE FROM customer_messages");
++    await c.query("DELETE FROM owner_tasks");
++    await c.query("DELETE FROM workflow_state");
++
++    await c.query(
++      "INSERT INTO workflow_state (status, next_step, risk_summary) VALUES ($1, $2, $3)",
++      [status, nextStep, riskSummary]
++    );
++
++    for (const owner of owners) {
++      await c.query(
++        "INSERT INTO owner_tasks (owner_group, title, due_at, status) VALUES ($1, $2, $3, $4)",
++        [owner, `${owner} recovery review`, now, "open"]
++      );
++    }
++
++    if (qualifying) {
++      await c.query(
++        "INSERT INTO customer_messages (body) VALUES ($1)",
++        ["Your account has been flagged for expedited review. Our dedicated recovery team has been assigned and will be in contact shortly to address your concerns and ensure continuity of service."]
++      );
++      await c.query(
++        "INSERT INTO audit_events (event, customer_visible) VALUES ($1, $2)",
++        ["escalation_initiated", true]
++      );
++    }
++
++    await c.query("COMMIT");
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

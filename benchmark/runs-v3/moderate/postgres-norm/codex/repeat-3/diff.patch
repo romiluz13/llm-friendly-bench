@@ -1,0 +1,77 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..eb85711 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,15 +1,63 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++import { RULES, qualifies, signalsOf, ownersOf } from "./derive.mjs";
++import { readFactsFromDb } from "../tests/facts.mjs";
++
++const CUSTOMER_MESSAGE = "Our team has opened a priority recovery effort on your account and will follow up shortly.";
++const AUDIT_EVENT = "escalation_opened";
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (db) => {
++    const facts = await readFactsFromDb(db);
++    const accountId = facts.account.accountId;
++    const requestId = `req-${accountId}`;
++    const qualified = qualifies(facts, now);
++    const signals = signalsOf(facts, now);
++    const owners = qualified ? ownersOf(facts, now) : [];
++    const status = qualified ? RULES.escalationStatus : RULES.monitorStatus;
++    const riskSummary = `${signals.length} signals: ${signals.join(", ")}`;
++    const nextStep = qualified ? `${owners[0]} recovery review by 16:00` : "Continue standard monitoring.";
++
++    await db.query("BEGIN");
++    try {
++      await db.query("DELETE FROM audit_events");
++      await db.query("DELETE FROM customer_messages");
++      await db.query("DELETE FROM owner_tasks");
++      await db.query("DELETE FROM workflow_state");
++
++      await db.query(
++        "INSERT INTO workflow_state (request_id, account_id, title, status, next_step, risk_summary) VALUES ($1, $2, $3, $4, $5, $6)",
++        [requestId, accountId, facts.account.name || accountId, status, nextStep, riskSummary]
++      );
++
++      for (const ownerGroup of owners) {
++        await db.query(
++          "INSERT INTO owner_tasks (request_id, account_id, owner_group, title, due_at, status) VALUES ($1, $2, $3, $4, $5, $6)",
++          [requestId, accountId, ownerGroup, `${ownerGroup} recovery owner task`, now, "open"]
++        );
++      }
++
++      if (qualified) {
++        await db.query(
++          "INSERT INTO customer_messages (request_id, account_id, body) VALUES ($1, $2, $3)",
++          [requestId, accountId, CUSTOMER_MESSAGE]
++        );
++        await db.query(
++          "INSERT INTO audit_events (request_id, account_id, event, occurred_at, customer_visible) VALUES ($1, $2, $3, $4, $5)",
++          [requestId, accountId, AUDIT_EVENT, now, true]
++        );
++      }
++
++      await db.query("COMMIT");
++    } catch (error) {
++      await db.query("ROLLBACK");
++      throw error;
++    }
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
+-  run().then(() => console.log("workflow done")).catch((e) => { console.error(e); process.exit(1); });
++  run().then(() => console.log("workflow done")).catch((e) => {
++    console.error(e);
++    process.exit(1);
++  });
+ }

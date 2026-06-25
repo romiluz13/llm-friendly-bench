@@ -1,0 +1,99 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..cc939aa 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -3,11 +3,91 @@
+ // owner_tasks, customer_messages, audit_events back to the live database.
+ //
+ // export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++import { RULES, qualifies, signalsOf, ownersOf } from "./derive.mjs";
++
++function parseJsonArray(value) {
++  if (value == null) return [];
++  if (Array.isArray(value)) return value;
++  if (typeof value === "string") return value ? JSON.parse(value) : [];
++  return value;
++}
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (db) => {
++    const [requestResult, accountResult] = await Promise.all([
++      db.query(
++        "SELECT request_id, title, invoices_json, shipments_json, regulatory_json, support_json, prior_period_units, current_period_units FROM workflow_requests LIMIT 1"
++      ),
++      db.query("SELECT account_id, name, tier, region FROM accounts LIMIT 1")
++    ]);
++
++    const request = requestResult.rows[0];
++    const account = accountResult.rows[0];
++    if (!request || !account) {
++      throw new Error("workflow facts not found");
++    }
++
++    const facts = {
++      account: {
++        accountId: account.account_id,
++        name: account.name,
++        tier: account.tier,
++        region: account.region
++      },
++      invoices: parseJsonArray(request.invoices_json),
++      shipments: parseJsonArray(request.shipments_json),
++      regulatoryFlags: parseJsonArray(request.regulatory_json),
++      supportCases: parseJsonArray(request.support_json),
++      usage: {
++        priorPeriodUnits: Number(request.prior_period_units),
++        currentPeriodUnits: Number(request.current_period_units)
++      }
++    };
++
++    const isQualifying = qualifies(facts, now);
++    const signals = signalsOf(facts, now);
++    const owners = isQualifying ? ownersOf(facts, now) : [];
++    const status = isQualifying ? RULES.escalationStatus : RULES.monitorStatus;
++    const riskSummary = `${signals.length} signals: ${signals.join(", ")}`;
++    const nextStep = isQualifying ? `${owners[0]} recovery review by 16:00` : "Continue standard monitoring.";
++
++    await db.query("BEGIN");
++    try {
++      await db.query("DELETE FROM workflow_state");
++      await db.query("DELETE FROM owner_tasks");
++      await db.query("DELETE FROM customer_messages");
++      await db.query("DELETE FROM audit_events");
++
++      await db.query(
++        "INSERT INTO workflow_state (request_id, account_id, title, status, next_step, risk_summary) VALUES ($1, $2, $3, $4, $5, $6)",
++        [request.request_id, account.account_id, account.name || request.title || account.account_id, status, nextStep, riskSummary]
++      );
++
++      for (const ownerGroup of owners) {
++        await db.query(
++          "INSERT INTO owner_tasks (request_id, account_id, owner_group, title, due_at, status) VALUES ($1, $2, $3, $4, $5, $6)",
++          [request.request_id, account.account_id, ownerGroup, `${ownerGroup} recovery owner task`, now, "open"]
++        );
++      }
++
++      if (isQualifying) {
++        await db.query(
++          "INSERT INTO customer_messages (request_id, account_id, body) VALUES ($1, $2, $3)",
++          [request.request_id, account.account_id, "Our team has opened a priority recovery effort on your account and will follow up shortly."]
++        );
++        await db.query(
++          "INSERT INTO audit_events (request_id, account_id, event, occurred_at, customer_visible) VALUES ($1, $2, $3, $4, $5)",
++          [request.request_id, account.account_id, "escalation_opened", now, true]
++        );
++      }
++
++      await db.query("COMMIT");
++    } catch (error) {
++      await db.query("ROLLBACK");
++      throw error;
++    }
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

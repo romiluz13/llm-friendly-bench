@@ -1,0 +1,161 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..b2a983e 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,15 +1,147 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import pg from "pg";
++import { withDb } from "./db.mjs";
++
++pg.types.setTypeParser(3802, (v) => v);
++
++const SIGNAL_DISPLAY_ORDER = [
++  "Regulatory hold",
++  "Overdue invoice",
++  "Delayed shipment",
++  "Escalated support",
++  "Usage decline",
++];
++
++const SIGNAL_OWNERS = {
++  "Regulatory hold": "Legal",
++  "Overdue invoice": "Finance",
++  "Delayed shipment": "Customer Success",
++  "Usage decline": "Customer Success",
++  "Escalated support": "Support",
++};
++
++const OWNER_ORDER = ["Legal", "Finance", "Customer Success", "Support"];
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  const nowDate = new Date(now);
++
++  await withDb(async (client) => {
++    const { rows: accounts } = await client.query("SELECT * FROM accounts");
++    const { rows: requests } = await client.query("SELECT * FROM workflow_requests");
++
++    for (const account of accounts) {
++      const request = requests.find((r) => r.account_id === account.account_id);
++      if (!request) continue;
++
++      const { request_id, account_id } = request;
++      const invoices = JSON.parse(request.invoices_json || "[]");
++      const shipments = JSON.parse(request.shipments_json || "[]");
++      const regulatory = JSON.parse(request.regulatory_json || "[]");
++      const support = JSON.parse(request.support_json || "[]");
++      const priorUnits = Number(request.prior_period_units);
++      const currentUnits = Number(request.current_period_units);
++
++      const activeSignals = [];
++
++      if (regulatory.some((f) => f.status === "open")) {
++        activeSignals.push("Regulatory hold");
++      }
++
++      const overdueInvoice = invoices.find(
++        (inv) =>
++          inv.status !== "paid" &&
++          new Date(inv.dueDate) < nowDate &&
++          inv.amountCents >= 2500000
++      );
++      if (overdueInvoice) activeSignals.push("Overdue invoice");
++
++      const delayedShipment = shipments.find(
++        (s) => !s.deliveredDate && new Date(s.slaDate) < nowDate
++      );
++      if (delayedShipment) activeSignals.push("Delayed shipment");
++
++      if (support.some((s) => s.status === "open" && ["high", "critical"].includes(s.severity))) {
++        activeSignals.push("Escalated support");
++      }
++
++      if (priorUnits > 0 && currentUnits <= priorUnits * 0.7) {
++        activeSignals.push("Usage decline");
++      }
++
++      const sortedSignals = SIGNAL_DISPLAY_ORDER.filter((s) => activeSignals.includes(s));
++
++      const qualifyingTiers = ["strategic", "enterprise"];
++      const qualifies = qualifyingTiers.includes(account.tier) && sortedSignals.length > 0;
++
++      let status, nextStep, riskSummary, owners;
++
++      if (qualifies) {
++        status =
++          "At-risk escalation active with executive recovery owner routing and customer-visible audit history.";
++        riskSummary = `${sortedSignals.length} signals: ${sortedSignals.join(", ")}`;
++
++        const ownerSet = new Set();
++        for (const signal of sortedSignals) {
++          if (SIGNAL_OWNERS[signal]) ownerSet.add(SIGNAL_OWNERS[signal]);
++        }
++        owners = OWNER_ORDER.filter((o) => ownerSet.has(o));
++        nextStep = `${owners[0]} recovery review by 16:00`;
++      } else {
++        status = "Monitoring — no escalation required.";
++        riskSummary = "0 signals";
++        owners = [];
++        nextStep = "Continue standard monitoring.";
++      }
++
++      const dueAt = new Date(nowDate);
++      dueAt.setUTCHours(16, 0, 0, 0);
++
++      await client.query("DELETE FROM workflow_state WHERE request_id = $1", [request_id]);
++      await client.query("DELETE FROM owner_tasks WHERE request_id = $1", [request_id]);
++      await client.query("DELETE FROM customer_messages WHERE request_id = $1", [request_id]);
++      await client.query("DELETE FROM audit_events WHERE request_id = $1", [request_id]);
++
++      await client.query(
++        "INSERT INTO workflow_state (request_id, account_id, title, status, next_step, risk_summary) VALUES ($1, $2, $3, $4, $5, $6)",
++        [request_id, account_id, request.title, status, nextStep, riskSummary]
++      );
++
++      for (const owner of owners) {
++        await client.query(
++          "INSERT INTO owner_tasks (request_id, account_id, owner_group, title, due_at, status) VALUES ($1, $2, $3, $4, $5, $6)",
++          [request_id, account_id, owner, `${owner} recovery action required`, dueAt.toISOString(), "open"]
++        );
++      }
++
++      const messageBody = qualifies
++        ? `We are actively reviewing your account and have identified areas that require immediate attention. Our dedicated team has been engaged to address each issue and will work to resolve them as quickly as possible. We appreciate your continued partnership and will keep you informed of our progress.`
++        : `Your account is currently in good standing and is being monitored by our team. No immediate action is required at this time. We will continue to review your account regularly and reach out if anything requires attention.`;
++
++      await client.query(
++        "INSERT INTO customer_messages (request_id, account_id, body) VALUES ($1, $2, $3)",
++        [request_id, account_id, messageBody]
++      );
++
++      await client.query(
++        "INSERT INTO audit_events (request_id, account_id, event, occurred_at, customer_visible) VALUES ($1, $2, $3, $4, $5)",
++        [
++          request_id,
++          account_id,
++          qualifies
++            ? "Escalation workflow initiated and owner routing completed."
++            : "Account monitoring review completed with no escalation required.",
++          now,
++          true,
++        ]
++      );
++    }
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
+-  run().then(() => console.log("workflow done")).catch((e) => { console.error(e); process.exit(1); });
++  run()
++    .then(() => console.log("workflow done"))
++    .catch((e) => {
++      console.error(e);
++      process.exit(1);
++    });
+ }

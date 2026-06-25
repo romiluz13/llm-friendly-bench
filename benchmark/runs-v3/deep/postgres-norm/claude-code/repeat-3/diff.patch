@@ -1,0 +1,95 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..52d0b03 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,13 +1,82 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (client) => {
++    const nowDate = new Date(now);
++
++    const account = (await client.query("SELECT * FROM accounts LIMIT 1")).rows[0];
++    const request = (await client.query("SELECT * FROM workflow_requests WHERE account_id = $1 LIMIT 1", [account.account_id])).rows[0];
++    const invoices = (await client.query("SELECT invoice_id, amount_cents, due_date, status FROM invoices WHERE account_id = $1", [account.account_id])).rows;
++    const shipments = (await client.query("SELECT shipment_id, sla_date, delivered_date FROM shipments WHERE account_id = $1", [account.account_id])).rows;
++    const regulatoryFlags = (await client.query("SELECT flag_id, status FROM regulatory_flags WHERE account_id = $1", [account.account_id])).rows;
++    const supportCases = (await client.query("SELECT case_id, severity, status FROM support_cases WHERE account_id = $1", [account.account_id])).rows;
++    const usage = (await client.query("SELECT prior_period_units, current_period_units FROM usage_periods WHERE account_id = $1 LIMIT 1", [account.account_id])).rows[0];
++
++    const signals = [];
++
++    if (regulatoryFlags.some(f => f.status === "open")) signals.push("Regulatory hold");
++
++    if (invoices.some(i => i.status !== "paid" && new Date(i.due_date) < nowDate && Number(i.amount_cents) >= 2500000))
++      signals.push("Overdue invoice");
++
++    if (shipments.some(s => !s.delivered_date && new Date(s.sla_date) < nowDate))
++      signals.push("Delayed shipment");
++
++    if (supportCases.some(s => s.status === "open" && (s.severity === "high" || s.severity === "critical")))
++      signals.push("Escalated support");
++
++    if (usage && Number(usage.current_period_units) <= Number(usage.prior_period_units) * 0.7)
++      signals.push("Usage decline");
++
++    const qualifies = ["strategic", "enterprise"].includes(account.tier) && signals.length > 0;
++
++    const status = qualifies
++      ? "At-risk escalation active with executive recovery owner routing and customer-visible audit history."
++      : "Monitoring — no escalation required.";
++
++    const SIGNAL_TO_OWNER = {
++      "Regulatory hold": "Legal",
++      "Overdue invoice": "Finance",
++      "Delayed shipment": "Customer Success",
++      "Usage decline": "Customer Success",
++      "Escalated support": "Support",
++    };
++    const OWNER_ORDER = ["Legal", "Finance", "Customer Success", "Support"];
++    const ownerSet = new Set(signals.map(s => SIGNAL_TO_OWNER[s]));
++    const owners = qualifies ? OWNER_ORDER.filter(o => ownerSet.has(o)) : [];
++
++    const riskSummary = signals.length > 0 ? `${signals.length} signals: ${signals.join(", ")}` : null;
++    const nextStep = qualifies ? `${owners[0]} recovery review by 16:00` : "Continue standard monitoring.";
++
++    const accountId = account.account_id;
++    const requestId = request.request_id;
++    const dueAt = new Date(now);
++    dueAt.setUTCHours(16, 0, 0, 0);
++
++    await client.query(
++      "INSERT INTO workflow_state (request_id, account_id, title, status, next_step, risk_summary) VALUES ($1, $2, $3, $4, $5, $6)",
++      [requestId, accountId, request.title, status, nextStep, riskSummary]
++    );
++
++    for (const owner of owners) {
++      await client.query(
++        "INSERT INTO owner_tasks (request_id, account_id, owner_group, title, due_at, status) VALUES ($1, $2, $3, $4, $5, $6)",
++        [requestId, accountId, owner, `${owner} recovery review`, dueAt.toISOString(), "open"]
++      );
++    }
++
++    if (qualifies) {
++      const body = `Dear ${account.name} team, we have identified ${signals.length} active risk signal${signals.length !== 1 ? "s" : ""} on your account and have launched our executive recovery process. Our teams — ${owners.join(", ")} — are now engaged and working toward resolution. You will receive a follow-up update within 24 hours. Thank you for your continued partnership.`;
++      await client.query(
++        "INSERT INTO customer_messages (request_id, account_id, body) VALUES ($1, $2, $3)",
++        [requestId, accountId, body]
++      );
++      await client.query(
++        "INSERT INTO audit_events (request_id, account_id, event, occurred_at, customer_visible) VALUES ($1, $2, $3, $4, $5)",
++        [requestId, accountId, `Escalation workflow initiated: ${riskSummary}`, now, true]
++      );
++    }
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

@@ -1,0 +1,193 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..df36233 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,15 +1,181 @@
+ // Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
++// facts, derive the answer per ../RULES.md, and persist workflow_state,
+ // owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++import { RULES, qualifies, signalsOf, ownersOf } from "./derive.mjs";
++
++const OUTPUT_TABLES = ["audit_events", "customer_messages", "owner_tasks", "workflow_state"];
++const DEFAULT_TITLE = "Strategic account rescue";
++const TABLE_COLUMN_CACHE = new Map();
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (c) => {
++    const facts = await readFacts(c);
++    const accountId = facts.account.accountId;
++    const requestId = `req-${accountId}`;
++    const title = DEFAULT_TITLE;
++    const qualified = qualifies(facts, now);
++    const signals = signalsOf(facts, now);
++    const owners = qualified ? ownersOf(facts, now) : [];
++    const status = qualified ? RULES.escalationStatus : RULES.monitorStatus;
++    const nextStep = qualified ? `${owners[0]} recovery review by 16:00` : "Continue standard monitoring.";
++    const riskSummary = `${signals.length} signals: ${signals.join(", ")}`;
++    const dueAt = reviewDueAt(now);
++
++    await c.query("BEGIN");
++    try {
++      for (const table of OUTPUT_TABLES) {
++        await c.query(`DELETE FROM ${quoteIdent(table)}`);
++      }
++
++      await insertRow(c, "workflow_state", {
++        request_id: requestId,
++        account_id: accountId,
++        title,
++        status,
++        next_step: nextStep,
++        risk_summary: riskSummary
++      });
++
++      for (const ownerGroup of owners) {
++        await insertRow(c, "owner_tasks", {
++          request_id: requestId,
++          account_id: accountId,
++          owner_group: ownerGroup,
++          title: `${ownerGroup} recovery review`,
++          due_at: dueAt,
++          status: "open"
++        });
++      }
++
++      await insertRow(c, "customer_messages", {
++        request_id: requestId,
++        account_id: accountId,
++        body: qualified
++          ? "We have opened an executive recovery review. We are coordinating the right teams, focusing on the active risks, and will share the next update by 16:00."
++          : "We are continuing standard monitoring for the account. The team will keep watching the active indicators and will intervene quickly if conditions change."
++      });
++
++      await insertRow(c, "audit_events", {
++        request_id: requestId,
++        account_id: accountId,
++        event: qualified
++          ? "Executive recovery review activated."
++          : "Standard monitoring continues.",
++        occurred_at: now,
++        customer_visible: true
++      });
++
++      await c.query("COMMIT");
++    } catch (error) {
++      await c.query("ROLLBACK");
++      throw error;
++    }
++  });
++}
++
++async function readFacts(c) {
++  const account = (await c.query("SELECT * FROM accounts LIMIT 1")).rows[0];
++  if (!account) {
++    throw new Error("missing account facts");
++  }
++
++  const invoices = (await c.query("SELECT invoice_id, amount_cents, due_date, status FROM invoices")).rows.map((row) => ({
++    invoiceId: row.invoice_id,
++    amountCents: Number(row.amount_cents),
++    dueDate: toIso(row.due_date),
++    status: row.status
++  }));
++
++  const shipments = (await c.query("SELECT shipment_id, sla_date, delivered_date, status FROM shipments")).rows.map((row) => ({
++    shipmentId: row.shipment_id,
++    slaDate: toIso(row.sla_date),
++    deliveredDate: row.delivered_date ? toIso(row.delivered_date) : null,
++    status: row.status
++  }));
++
++  const regulatoryFlags = (await c.query("SELECT flag_id, type, status FROM regulatory_flags")).rows.map((row) => ({
++    flagId: row.flag_id,
++    type: row.type,
++    status: row.status
++  }));
++
++  const supportCases = (await c.query("SELECT case_id, severity, status FROM support_cases")).rows.map((row) => ({
++    caseId: row.case_id,
++    severity: row.severity,
++    status: row.status
++  }));
++
++  const usageRow = (await c.query("SELECT prior_period_units, current_period_units FROM usage_periods LIMIT 1")).rows[0] || {};
++
++  return {
++    account: {
++      accountId: account.account_id,
++      name: account.name,
++      tier: account.tier,
++      region: account.region
++    },
++    contract: {},
++    contacts: [],
++    invoices,
++    shipments,
++    regulatoryFlags,
++    supportCases,
++    usage: {
++      priorPeriodUnits: Number(usageRow.prior_period_units),
++      currentPeriodUnits: Number(usageRow.current_period_units)
++    }
++  };
++}
++
++async function insertRow(c, table, row) {
++  const columns = await getTableColumns(c, table);
++  const entries = columns.filter((column) => Object.prototype.hasOwnProperty.call(row, column)).map((column) => [column, row[column]]);
++  if (entries.length === 0) {
++    return;
++  }
++
++  const columnSql = entries.map(([column]) => quoteIdent(column)).join(", ");
++  const valueSql = entries.map((_, index) => `$${index + 1}`).join(", ");
++  const values = entries.map(([, value]) => value);
++  await c.query(`INSERT INTO ${quoteIdent(table)} (${columnSql}) VALUES (${valueSql})`, values);
++}
++
++async function getTableColumns(c, table) {
++  if (!TABLE_COLUMN_CACHE.has(table)) {
++    const { rows } = await c.query(
++      `
++        SELECT column_name
++        FROM information_schema.columns
++        WHERE table_schema = current_schema()
++          AND table_name = $1
++        ORDER BY ordinal_position
++      `,
++      [table]
++    );
++    TABLE_COLUMN_CACHE.set(table, rows.map((row) => row.column_name));
++  }
++
++  return TABLE_COLUMN_CACHE.get(table);
++}
++
++function reviewDueAt(iso) {
++  const date = new Date(iso);
++  date.setUTCHours(16, 0, 0, 0);
++  return date.toISOString();
++}
++
++function quoteIdent(value) {
++  return `"${String(value).replaceAll("\"", "\"\"")}"`;
++}
++
++function toIso(value) {
++  return value instanceof Date ? value.toISOString() : String(value);
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
+-  run().then(() => console.log("workflow done")).catch((e) => { console.error(e); process.exit(1); });
++  run().then(() => console.log("workflow done")).catch((e) => {
++    console.error(e);
++    process.exit(1);
++  });
+ }

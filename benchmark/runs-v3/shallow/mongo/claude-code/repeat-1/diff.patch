@@ -1,0 +1,166 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..406e89f 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,15 +1,152 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++
++const QUALIFYING_TIERS = new Set(["strategic", "enterprise"]);
++
++const SIGNAL_DISPLAY_ORDER = [
++  "Regulatory hold",
++  "Overdue invoice",
++  "Delayed shipment",
++  "Escalated support",
++  "Usage decline",
++];
++
++const SIGNAL_TO_OWNER = {
++  "Regulatory hold": "Legal",
++  "Overdue invoice": "Finance",
++  "Delayed shipment": "Customer Success",
++  "Usage decline": "Customer Success",
++  "Escalated support": "Support",
++};
++
++const OWNER_ORDER = ["Legal", "Finance", "Customer Success", "Support"];
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (db) => {
++    const nowDate = new Date(now);
++    const account = (await db.collection("accounts").find({}).toArray())[0];
++
++    const {
++      tier,
++      invoices = [],
++      shipments = [],
++      regulatoryFlags = [],
++      supportCases = [],
++      usage = {},
++    } = account;
++
++    const activeSignals = new Set();
++
++    if (regulatoryFlags.some((f) => f.status === "open")) {
++      activeSignals.add("Regulatory hold");
++    }
++
++    if (
++      invoices.some(
++        (inv) =>
++          inv.status !== "paid" &&
++          new Date(inv.dueDate) < nowDate &&
++          inv.amountCents >= 2500000
++      )
++    ) {
++      activeSignals.add("Overdue invoice");
++    }
++
++    if (shipments.some((s) => !s.deliveredDate && new Date(s.slaDate) < nowDate)) {
++      activeSignals.add("Delayed shipment");
++    }
++
++    if (
++      supportCases.some(
++        (c) => c.status === "open" && ["high", "critical"].includes(c.severity)
++      )
++    ) {
++      activeSignals.add("Escalated support");
++    }
++
++    if (
++      usage.currentPeriodUnits !== undefined &&
++      usage.priorPeriodUnits !== undefined &&
++      usage.currentPeriodUnits <= usage.priorPeriodUnits * 0.7
++    ) {
++      activeSignals.add("Usage decline");
++    }
++
++    const qualifies = QUALIFYING_TIERS.has(tier) && activeSignals.size > 0;
++    const activeSignalList = SIGNAL_DISPLAY_ORDER.filter((s) => activeSignals.has(s));
++
++    const status = qualifies
++      ? "At-risk escalation active with executive recovery owner routing and customer-visible audit history."
++      : "Monitoring — no escalation required.";
++
++    const riskSummary = qualifies
++      ? `${activeSignalList.length} signals: ${activeSignalList.join(", ")}`
++      : "0 signals";
++
++    const ownerSet = new Set();
++    for (const signal of activeSignalList) {
++      if (SIGNAL_TO_OWNER[signal]) ownerSet.add(SIGNAL_TO_OWNER[signal]);
++    }
++    const owners = OWNER_ORDER.filter((o) => ownerSet.has(o));
++
++    const topOwner = owners[0] || "";
++    const nextStep = qualifies
++      ? `${topOwner} recovery review by 16:00`
++      : "Continue standard monitoring.";
++
++    await Promise.all([
++      db.collection("workflow_state").deleteMany({}),
++      db.collection("owner_tasks").deleteMany({}),
++      db.collection("customer_messages").deleteMany({}),
++      db.collection("audit_events").deleteMany({}),
++    ]);
++
++    await db.collection("workflow_state").insertOne({
++      account_id: account._id,
++      status,
++      next_step: nextStep,
++      risk_summary: riskSummary,
++      created_at: nowDate,
++    });
++
++    if (owners.length > 0) {
++      const dueAt = new Date(nowDate);
++      dueAt.setHours(16, 0, 0, 0);
++      await db.collection("owner_tasks").insertMany(
++        owners.map((owner) => ({
++          account_id: account._id,
++          owner_group: owner,
++          title: `${owner} recovery review for ${account.name}`,
++          due_at: dueAt,
++          status: "open",
++        }))
++      );
++    }
++
++    const customerMessage = qualifies
++      ? `We have identified ${activeSignalList.length} areas requiring immediate attention for your account. Our team has assigned dedicated recovery owners to coordinate resolution across each risk area. We will keep you updated with progress and next steps throughout this process.`
++      : `Your account is under standard monitoring. No escalation is required at this time.`;
++
++    await db.collection("customer_messages").insertOne({
++      account_id: account._id,
++      body: customerMessage,
++      created_at: nowDate,
++    });
++
++    await db.collection("audit_events").insertOne({
++      account_id: account._id,
++      event: "rescue_workflow_executed",
++      detail: status,
++      customer_visible: true,
++      created_at: nowDate,
++    });
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
+-  run().then(() => console.log("workflow done")).catch((e) => { console.error(e); process.exit(1); });
++  run()
++    .then(() => console.log("workflow done"))
++    .catch((e) => {
++      console.error(e);
++      process.exit(1);
++    });
+ }

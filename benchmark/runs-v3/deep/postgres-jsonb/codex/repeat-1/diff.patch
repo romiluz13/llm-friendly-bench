@@ -1,0 +1,102 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..14908e4 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,15 +1,88 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++import { RULES, qualifies, signalsOf, ownersOf } from "./derive.mjs";
++
++function buildFacts(doc) {
++  return {
++    account: { tier: doc.tier },
++    invoices: doc.invoices ?? [],
++    shipments: doc.shipments ?? [],
++    regulatoryFlags: doc.regulatoryFlags ?? [],
++    supportCases: doc.supportCases ?? [],
++    usage: doc.usage ?? {}
++  };
++}
++
++function customerMessage(accountName, isQualified) {
++  if (isQualified) {
++    return `Dear ${accountName}, we have identified multiple risk signals on your account and have started an executive recovery process. Our teams are coordinating across billing, logistics, support, and compliance to address the issues quickly and keep you updated.`;
++  }
++  return `Dear ${accountName}, your account is currently under standard monitoring. No escalation is required at this time, and we will continue to watch for any changes.`;
++}
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (client) => {
++    const { rows } = await client.query("SELECT doc FROM accounts LIMIT 1");
++    const doc = rows[0]?.doc;
++    if (!doc) throw new Error("No account found");
++
++    const facts = buildFacts(doc);
++    const isQualified = qualifies(facts, now);
++    const signals = signalsOf(facts, now);
++    const owners = isQualified ? ownersOf(facts, now) : [];
++    const status = isQualified ? RULES.escalationStatus : RULES.monitorStatus;
++    const nextStep = isQualified ? `${owners[0]} recovery review by 16:00` : "Continue standard monitoring.";
++    const riskSummary = `${signals.length} signals: ${signals.join(", ")}`;
++    const dueAt = new Date(now);
++    dueAt.setUTCHours(16, 0, 0, 0);
++    const message = customerMessage(doc.name || "customer", isQualified);
++    const auditEvent = isQualified ? "Escalation workflow initiated" : "Account monitoring check completed";
++
++    await client.query("BEGIN");
++    try {
++      await client.query("DELETE FROM workflow_state");
++      await client.query("DELETE FROM owner_tasks");
++      await client.query("DELETE FROM customer_messages");
++      await client.query("DELETE FROM audit_events");
++
++      await client.query(
++        `INSERT INTO workflow_state (request_id, account_id, title, status, next_step, risk_summary)
++         VALUES ($1, $2, $3, $4, $5, $6)`,
++        [doc.request.requestId, doc._id, doc.request.title, status, nextStep, riskSummary]
++      );
++
++      for (const owner of owners) {
++        await client.query(
++          `INSERT INTO owner_tasks (request_id, account_id, owner_group, title, due_at, status)
++           VALUES ($1, $2, $3, $4, $5, $6)`,
++          [doc.request.requestId, doc._id, owner, `${owner} recovery review`, dueAt.toISOString(), "open"]
++        );
++      }
++
++      await client.query(
++        `INSERT INTO customer_messages (request_id, account_id, body)
++         VALUES ($1, $2, $3)`,
++        [doc.request.requestId, doc._id, message]
++      );
++
++      await client.query(
++        `INSERT INTO audit_events (request_id, account_id, event, occurred_at, customer_visible)
++         VALUES ($1, $2, $3, $4, $5)`,
++        [doc.request.requestId, doc._id, auditEvent, now, true]
++      );
++
++      await client.query("COMMIT");
++    } catch (error) {
++      await client.query("ROLLBACK").catch(() => {});
++      throw error;
++    }
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
+-  run().then(() => console.log("workflow done")).catch((e) => { console.error(e); process.exit(1); });
++  run()
++    .then(() => console.log("workflow done"))
++    .catch((e) => {
++      console.error(e);
++      process.exit(1);
++    });
+ }

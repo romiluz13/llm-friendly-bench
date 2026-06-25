@@ -1,0 +1,100 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..a9df2df 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,15 +1,86 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++import { RULES, qualifies, signalsOf, ownersOf } from "./derive.mjs";
++import { readFactsFromDb } from "../tests/facts.mjs";
++
++function dueAt1600Utc(now) {
++  const dueAt = new Date(now);
++  dueAt.setUTCHours(16, 0, 0, 0);
++  if (Date.parse(now) > dueAt.getTime()) {
++    dueAt.setUTCDate(dueAt.getUTCDate() + 1);
++  }
++  return dueAt.toISOString();
++}
++
++function customerMessage(accountName, isQualified) {
++  const subject = accountName || "your account";
++  if (isQualified) {
++    return `We have opened a priority recovery review for ${subject}. Our team is coordinating the right specialists, working through the active issues, and will keep you informed as we make progress.`;
++  }
++
++  return `Your account is currently being monitored closely. No escalation is required at this time, and we will continue to watch for any changes in account health or service conditions.`;
++}
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (client) => {
++    const facts = await readFactsFromDb(client);
++    const accountId = facts.account.accountId;
++    const requestId = `req-${accountId}`;
++    const title = facts.account.name || "Strategic account rescue";
++
++    const isQualified = qualifies(facts, now);
++    const signals = signalsOf(facts, now);
++    const owners = isQualified ? ownersOf(facts, now) : [];
++    const status = isQualified ? RULES.escalationStatus : RULES.monitorStatus;
++    const nextStep = isQualified ? `${owners[0]} recovery review by 16:00` : "Continue standard monitoring.";
++    const riskSummary = `${signals.length} signals: ${signals.join(", ")}`;
++    const dueAt = dueAt1600Utc(now);
++    const message = customerMessage(facts.account.name, isQualified);
++    const auditEvent = isQualified
++      ? "Recovery review opened and owner routing completed."
++      : "Monitoring review completed with no escalation required.";
++
++    await client.query("BEGIN");
++    try {
++      await client.query("DELETE FROM workflow_state");
++      await client.query("DELETE FROM owner_tasks");
++      await client.query("DELETE FROM customer_messages");
++      await client.query("DELETE FROM audit_events");
++
++      await client.query(
++        "INSERT INTO workflow_state (request_id, account_id, title, status, next_step, risk_summary) VALUES ($1, $2, $3, $4, $5, $6)",
++        [requestId, accountId, title, status, nextStep, riskSummary]
++      );
++
++      for (const owner of owners) {
++        await client.query(
++          "INSERT INTO owner_tasks (request_id, account_id, owner_group, title, due_at, status) VALUES ($1, $2, $3, $4, $5, $6)",
++          [requestId, accountId, owner, `${owner} recovery review`, dueAt, "open"]
++        );
++      }
++
++      await client.query(
++        "INSERT INTO customer_messages (request_id, account_id, body) VALUES ($1, $2, $3)",
++        [requestId, accountId, message]
++      );
++
++      await client.query(
++        "INSERT INTO audit_events (request_id, account_id, event, occurred_at, customer_visible) VALUES ($1, $2, $3, $4, $5)",
++        [requestId, accountId, auditEvent, now, true]
++      );
++
++      await client.query("COMMIT");
++    } catch (error) {
++      await client.query("ROLLBACK").catch(() => {});
++      throw error;
++    }
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
+-  run().then(() => console.log("workflow done")).catch((e) => { console.error(e); process.exit(1); });
++  run()
++    .then(() => console.log("workflow done"))
++    .catch((e) => {
++      console.error(e);
++      process.exit(1);
++    });
+ }

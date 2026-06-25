@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "3.0.0",
+  "suiteId": "ast-bench-v3",
+  "executionMode": "live-db",
+  "dbNamespace": "astbench_moderate_postgres_jsonb_codex_r5",
+  "scenarioId": "strategic-account-rescue",
+  "expectsEscalation": true,
+  "shape": "moderate",
+  "lane": "postgres-jsonb",
+  "agentId": "codex",
+  "repeat": 5,
+  "model": "gpt-5.4-mini",
+  "agentVersion": "codex-cli 0.130.0",
+  "status": "passed",
+  "startedAt": "2026-06-24T22:57:06.976Z",
+  "finishedAt": "2026-06-24T23:06:26.967Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-v3/moderate/postgres-jsonb/codex/repeat-5/workspace",
+    "prompt": "benchmark/runs-v3/moderate/postgres-jsonb/codex/repeat-5/prompt.md",
+    "rawTranscript": "benchmark/runs-v3/moderate/postgres-jsonb/codex/repeat-5/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs-v3/moderate/postgres-jsonb/codex/repeat-5/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs-v3/moderate/postgres-jsonb/codex/repeat-5/diff.patch",
+    "tests": "benchmark/runs-v3/moderate/postgres-jsonb/codex/repeat-5/tests.log",
+    "dbBefore": "benchmark/runs-v3/moderate/postgres-jsonb/codex/repeat-5/db-before/seed.json",
+    "dbAfter": "benchmark/runs-v3/moderate/postgres-jsonb/codex/repeat-5/db-after/final.json"
+  },
+  "metrics": {
+    "elapsedMs": 559991,
+    "transcriptBytes": 1272048,
+    "tokens": {
+      "inputTokens": 2322191,
+      "outputTokens": 32602,
+      "cachedInputTokens": 2219520,
+      "totalTokens": 2354793,
+      "tokensRead": 2322191,
+      "costUsd": 6.1314975,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 2354793,
+    "diffBytes": 4208,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/workflow.mjs"
+    ],
+    "cheatSignals": [],
+    "liveDbWritten": true,
+    "liveStateRows": 1,
+    "liveTaskRows": 4,
+    "retrySignals": 479,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-v3/moderate/postgres-jsonb/codex/repeat-5/prompt.md",
+      "sha256": "9bc51bb47230b8f237f6804100e372d624588d11108123c44b0de78f0c27f357"
+    },
+    {
+      "path": "benchmark/runs-v3/moderate/postgres-jsonb/codex/repeat-5/raw-transcript/codex.jsonl",
+      "sha256": "d22a01657435d6a474d976f134be581bb0ba47bbdf1777aeefd7282378ab2636"
+    },
+    {
+      "path": "benchmark/runs-v3/moderate/postgres-jsonb/codex/repeat-5/diff.patch",
+      "sha256": "4162356921710de9ff4904f004a5b1277339ffb9448d0098b99e36262e827072"
+    },
+    {
+      "path": "benchmark/runs-v3/moderate/postgres-jsonb/codex/repeat-5/tests.log",
+      "sha256": "aa26739022c6590af8dfe54708875f3c8d03248a31bdf35c42279246758f3ca9"
+    },
+    {
+      "path": "benchmark/runs-v3/moderate/postgres-jsonb/codex/repeat-5/db-before/seed.json",
+      "sha256": "860c64eeaee744d34b3cffcaea548f46f97ea7d05143c6f58440117d08828817"
+    },
+    {
+      "path": "benchmark/runs-v3/moderate/postgres-jsonb/codex/repeat-5/db-after/final.json",
+      "sha256": "2caf9b2873a8b2fdc36f6e63c2033c90dcbb4a1bc7107d9893a8f62d94f6c139"
+    }
+  ]
+}

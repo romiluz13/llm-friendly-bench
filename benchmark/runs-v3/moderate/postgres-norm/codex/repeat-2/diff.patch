@@ -1,0 +1,66 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..8b29888 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -3,11 +3,58 @@
+ // owner_tasks, customer_messages, audit_events back to the live database.
+ //
+ // export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++import { signalsOf, ownersOf, qualifies, RULES } from "./derive.mjs";
++import { readFactsFromDb } from "../tests/facts.mjs";
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (c) => {
++    const facts = await readFactsFromDb(c);
++    const accountId = facts.account.accountId;
++    const requestId = `req-${accountId}`;
++    const q = qualifies(facts, now);
++    const signals = signalsOf(facts, now);
++    const owners = q ? ownersOf(facts, now) : [];
++    const status = q ? RULES.escalationStatus : RULES.monitorStatus;
++    const nextStep = q ? `${owners[0]} recovery review by 16:00` : "Continue standard monitoring.";
++    const riskSummary = `${signals.length} signals: ${signals.join(", ")}`;
++
++    await c.query("BEGIN");
++    try {
++      await c.query("DELETE FROM workflow_state");
++      await c.query("DELETE FROM owner_tasks");
++      await c.query("DELETE FROM customer_messages");
++      await c.query("DELETE FROM audit_events");
++
++      await c.query(
++        "INSERT INTO workflow_state (request_id, account_id, title, status, next_step, risk_summary) VALUES ($1, $2, $3, $4, $5, $6)",
++        [requestId, accountId, facts.account.name || accountId, status, nextStep, riskSummary]
++      );
++
++      for (const ownerGroup of owners) {
++        await c.query(
++          "INSERT INTO owner_tasks (request_id, account_id, owner_group, title, due_at, status) VALUES ($1, $2, $3, $4, $5, $6)",
++          [requestId, accountId, ownerGroup, `${ownerGroup} recovery owner task`, now, "open"]
++        );
++      }
++
++      if (q) {
++        await c.query(
++          "INSERT INTO customer_messages (request_id, account_id, body) VALUES ($1, $2, $3)",
++          [requestId, accountId, "Our team has opened a priority recovery effort on your account and will follow up shortly."]
++        );
++        await c.query(
++          "INSERT INTO audit_events (request_id, account_id, event, occurred_at, customer_visible) VALUES ($1, $2, $3, $4, $5)",
++          [requestId, accountId, "escalation_opened", now, true]
++        );
++      }
++
++      await c.query("COMMIT");
++    } catch (error) {
++      await c.query("ROLLBACK");
++      throw error;
++    }
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

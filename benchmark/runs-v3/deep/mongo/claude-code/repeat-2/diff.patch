@@ -1,0 +1,93 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..cf9e9a8 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,13 +1,80 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++import { qualifies, signalsOf, ownersOf, RULES } from "./derive.mjs";
++
++async function readFacts(db) {
++  const a = (await db.collection("accounts").find({}).toArray())[0];
++  return {
++    account: { accountId: a._id, name: a.name, tier: a.tier, region: a.region },
++    contract: a.contract,
++    contacts: a.contacts,
++    invoices: a.invoices,
++    shipments: a.shipments,
++    regulatoryFlags: a.regulatoryFlags,
++    supportCases: a.supportCases,
++    usage: a.usage,
++  };
++}
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (db) => {
++    const facts = await readFacts(db);
++
++    const isQualified = qualifies(facts, now);
++    const signals = signalsOf(facts, now);
++    const owners = ownersOf(facts, now);
++
++    const status = isQualified ? RULES.escalationStatus : RULES.monitorStatus;
++    const riskSummary =
++      signals.length > 0
++        ? `${signals.length} signals: ${signals.join(", ")}`
++        : "0 signals";
++    const topOwner = owners[0] || null;
++    const nextStep =
++      isQualified && topOwner
++        ? `${topOwner} recovery review by 16:00`
++        : "Continue standard monitoring.";
++
++    await Promise.all([
++      db.collection("workflow_state").deleteMany({}),
++      db.collection("owner_tasks").deleteMany({}),
++      db.collection("customer_messages").deleteMany({}),
++      db.collection("audit_events").deleteMany({}),
++    ]);
++
++    await db.collection("workflow_state").insertOne({
++      status,
++      next_step: nextStep,
++      risk_summary: riskSummary,
++      updated_at: now,
++    });
++
++    if (owners.length > 0) {
++      await db.collection("owner_tasks").insertMany(
++        owners.map((owner) => ({
++          owner_group: owner,
++          title: `${owner} recovery review`,
++          due_at: now.slice(0, 11) + "16:00:00.000Z",
++          status: "open",
++        }))
++      );
++    }
++
++    const customerBody = isQualified
++      ? `Your account has been escalated for priority review. Our team has been assigned and is actively working to resolve the identified concerns. A representative will contact you with next steps.`
++      : `Your account is currently under standard monitoring. No escalation is required at this time.`;
++
++    await db.collection("customer_messages").insertOne({
++      body: customerBody,
++      created_at: now,
++    });
++
++    await db.collection("audit_events").insertOne({
++      event: isQualified ? "escalation_initiated" : "monitoring_check",
++      status,
++      customer_visible: true,
++      created_at: now,
++    });
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

@@ -1,0 +1,42 @@
+
+> ast-bench-v3-postgres-norm@1.0.0 test
+> node tests/acceptance.test.mjs
+
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Owner routing (derived)
++ actual - expected
+
+  [
+    'Legal',
+    'Finance',
+    'Customer Success',
+    'Support',
++   'Legal',
++   'Finance',
++   'Customer Success',
++   'Support'
+  ]
+
+    at file:///Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v3/deep/postgres-norm/claude-code/repeat-3/workspace/tests/acceptance.test.mjs:20:1
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: [
+    'Legal',
+    'Finance',
+    'Customer Success',
+    'Support',
+    'Legal',
+    'Finance',
+    'Customer Success',
+    'Support'
+  ],
+  expected: [ 'Legal', 'Finance', 'Customer Success', 'Support' ],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.15.0

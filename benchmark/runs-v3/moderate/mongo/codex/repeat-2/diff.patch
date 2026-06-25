@@ -1,0 +1,108 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..bb7eeca 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,15 +1,95 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++import { RULES, qualifies, ownersOf, signalsOf } from "./derive.mjs";
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  return withDb(async (db) => {
++    const account = await db.collection("accounts").findOne({});
++    if (!account) {
++      throw new Error("No account found in live database");
++    }
++
++    const facts = {
++      account,
++      invoices: account.invoices || [],
++      shipments: account.shipments || [],
++      regulatoryFlags: account.regulatoryFlags || [],
++      supportCases: account.supportCases || [],
++      usage: account.usage || {}
++    };
++
++    const signals = signalsOf(facts, now);
++    const isQualified = qualifies(facts, now);
++    const owners = isQualified ? ownersOf(facts, now) : [];
++    const status = isQualified ? RULES.escalationStatus : RULES.monitorStatus;
++    const riskSummary = `${signals.length} signals: ${signals.join(", ")}`;
++    const nextStep = isQualified ? `${owners[0]} recovery review by 16:00` : "Continue standard monitoring.";
++    const createdAt = now;
++    const dueAt = isQualified ? computeDueAt(now) : null;
++
++    const customerMessage = isQualified
++      ? `We have opened a recovery review for your account and are coordinating across ${owners.join(", ")}. We identified the following issues: ${signals.join(", ")}. We will continue to provide updates through the portal as the team works through the plan.`
++      : "Your account is being monitored under our standard process. No escalation is required at this time, and we will continue to watch for changes in account health and service conditions.";
++
++    const auditEvent = {
++      event_type: isQualified ? "escalation_initiated" : "monitoring_check",
++      description: isQualified
++        ? `Strategic account rescue workflow initiated. ${riskSummary}. Assigned to: ${owners.join(", ")}.`
++        : "Account reviewed. No escalation required.",
++      customer_visible: true,
++      created_at: createdAt
++    };
++
++    await Promise.all([
++      db.collection("workflow_state").deleteMany({}),
++      db.collection("owner_tasks").deleteMany({}),
++      db.collection("customer_messages").deleteMany({}),
++      db.collection("audit_events").deleteMany({})
++    ]);
++
++    await db.collection("workflow_state").insertOne({
++      status,
++      next_step: nextStep,
++      risk_summary: riskSummary,
++      created_at: createdAt
++    });
++
++    if (owners.length > 0) {
++      await db.collection("owner_tasks").insertMany(
++        owners.map((owner) => ({
++          owner_group: owner,
++          title: `${owner} recovery action for ${account.name}`,
++          due_at: dueAt,
++          status: "open",
++          created_at: createdAt
++        }))
++      );
++    }
++
++    await db.collection("customer_messages").insertOne({
++      body: customerMessage,
++      created_at: createdAt
++    });
++
++    await db.collection("audit_events").insertOne(auditEvent);
++
++    return {
++      status,
++      nextStep,
++      riskSummary,
++      owners
++    };
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
+   run().then(() => console.log("workflow done")).catch((e) => { console.error(e); process.exit(1); });
+ }
++
++function computeDueAt(now) {
++  const dueAt = new Date(now);
++  dueAt.setUTCHours(16, 0, 0, 0);
++  if (Date.parse(now) >= dueAt.getTime()) {
++    dueAt.setUTCDate(dueAt.getUTCDate() + 1);
++  }
++  return dueAt.toISOString();
++}

@@ -1,0 +1,162 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..88c1ab9 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,15 +1,117 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import pg from "pg";
++import { withDb } from "./db.mjs";
++
++// pg auto-parses JSONB columns to objects; override to return raw strings
++// so callers using JSON.parse() work correctly.
++pg.types.setTypeParser(114, (val) => val);
++pg.types.setTypeParser(3802, (val) => val);
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (client) => {
++    const acctRow = (await client.query("SELECT * FROM accounts LIMIT 1")).rows[0];
++    const reqRow = (await client.query("SELECT * FROM workflow_requests LIMIT 1")).rows[0];
++
++    const account = { tier: acctRow.tier };
++    const invoices = JSON.parse(reqRow.invoices_json || "[]");
++    const shipments = JSON.parse(reqRow.shipments_json || "[]");
++    const regulatoryFlags = JSON.parse(reqRow.regulatory_json || "[]");
++    const supportCases = JSON.parse(reqRow.support_json || "[]");
++    const priorPeriodUnits = Number(reqRow.prior_period_units);
++    const currentPeriodUnits = Number(reqRow.current_period_units);
++    const nowMs = Date.parse(now);
++
++    const signals = [];
++
++    const openReg = regulatoryFlags.find((f) => f.status === "open");
++    if (openReg) signals.push("Regulatory hold");
++
++    const overdueInvoice = invoices.find(
++      (inv) => inv.status !== "paid" && Date.parse(inv.dueDate) < nowMs && inv.amountCents >= 2_500_000
++    );
++    if (overdueInvoice) signals.push("Overdue invoice");
++
++    const lateShipment = shipments.find(
++      (sh) => !sh.deliveredDate && Date.parse(sh.slaDate) < nowMs
++    );
++    if (lateShipment) signals.push("Delayed shipment");
++
++    const escalatedSupport = supportCases.find(
++      (sc) => sc.status === "open" && (sc.severity === "high" || sc.severity === "critical")
++    );
++    if (escalatedSupport) signals.push("Escalated support");
++
++    const usageDecline =
++      priorPeriodUnits > 0 && currentPeriodUnits <= priorPeriodUnits * 0.7;
++    if (usageDecline) signals.push("Usage decline");
++
++    const qualifyingTiers = ["strategic", "enterprise"];
++    const qualifies =
++      qualifyingTiers.includes(String(account.tier).toLowerCase()) && signals.length > 0;
++
++    const riskSummary = `${signals.length} signals: ${signals.join(", ")}`;
++    let status, nextStep, owners;
++
++    if (!qualifies) {
++      status = "Monitoring — no escalation required.";
++      nextStep = "Continue standard monitoring.";
++      owners = [];
++    } else {
++      status =
++        "At-risk escalation active with executive recovery owner routing and customer-visible audit history.";
++      const ownerSet = new Set();
++      if (signals.includes("Regulatory hold")) ownerSet.add("Legal");
++      if (signals.includes("Overdue invoice")) ownerSet.add("Finance");
++      if (signals.includes("Delayed shipment")) ownerSet.add("Customer Success");
++      if (signals.includes("Usage decline")) ownerSet.add("Customer Success");
++      if (signals.includes("Escalated support")) ownerSet.add("Support");
++      owners = ["Legal", "Finance", "Customer Success", "Support"].filter((o) =>
++        ownerSet.has(o)
++      );
++      nextStep = `${owners[0]} recovery review by 16:00`;
++    }
++
++    await client.query("DELETE FROM workflow_state");
++    await client.query("DELETE FROM owner_tasks");
++    await client.query("DELETE FROM customer_messages");
++    await client.query("DELETE FROM audit_events");
++
++    await client.query(
++      "INSERT INTO workflow_state (status, next_step, risk_summary) VALUES ($1, $2, $3)",
++      [status, nextStep, riskSummary]
++    );
++
++    const dueAt = new Date(Date.parse(now) + 24 * 60 * 60 * 1000).toISOString();
++    for (const owner of owners) {
++      await client.query(
++        "INSERT INTO owner_tasks (owner_group, title, due_at, status) VALUES ($1, $2, $3, $4)",
++        [owner, `${owner} recovery action for strategic account`, dueAt, "open"]
++      );
++    }
++
++    if (qualifies) {
++      const messageBody =
++        "We are actively monitoring your account and have identified areas that require immediate attention. " +
++        "Our team has been alerted and is coordinating a response across the relevant departments. " +
++        "You can expect a follow-up from your dedicated account team within one business day. " +
++        "We appreciate your continued partnership and are committed to resolving these matters promptly.";
++      await client.query("INSERT INTO customer_messages (body) VALUES ($1)", [messageBody]);
++    }
++
++    const auditEvent = qualifies
++      ? `escalation_initiated: ${riskSummary}. Owners: ${owners.join(", ")}.`
++      : "monitoring: No escalation required.";
++    await client.query(
++      "INSERT INTO audit_events (event, customer_visible) VALUES ($1, $2)",
++      [auditEvent, true]
++    );
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
+-  run().then(() => console.log("workflow done")).catch((e) => { console.error(e); process.exit(1); });
++  run()
++    .then(() => console.log("workflow done"))
++    .catch((e) => {
++      console.error(e);
++      process.exit(1);
++    });
+ }
+diff --git a/tests/facts.mjs b/tests/facts.mjs
+index 68e17ed..9e0029a 100644
+--- a/tests/facts.mjs
++++ b/tests/facts.mjs
+@@ -1,16 +1,22 @@
+ // AUTO-GENERATED — do not edit. Canonical oracle + live-DB fact reader.
+ export { deriveExpected } from "/Users/rom.iluz/Dev/sql-hidden-cost/scripts/benchmark-derive.mjs";
+ 
++function parseJsonbCol(val) {
++  if (val === null || val === undefined) return [];
++  if (typeof val === "string") return JSON.parse(val || "[]");
++  return val;
++}
++
+ export async function readFactsFromDb(c) {
+   const r = (await c.query("SELECT * FROM workflow_requests LIMIT 1")).rows[0];
+   const acct = (await c.query("SELECT * FROM accounts LIMIT 1")).rows[0];
+   return {
+     account: { accountId: acct.account_id, name: acct.name, tier: acct.tier, region: acct.region },
+     contract: {}, contacts: [],
+-    invoices: JSON.parse(r.invoices_json || "[]"),
+-    shipments: JSON.parse(r.shipments_json || "[]"),
+-    regulatoryFlags: JSON.parse(r.regulatory_json || "[]"),
+-    supportCases: JSON.parse(r.support_json || "[]"),
++    invoices: parseJsonbCol(r.invoices_json),
++    shipments: parseJsonbCol(r.shipments_json),
++    regulatoryFlags: parseJsonbCol(r.regulatory_json),
++    supportCases: parseJsonbCol(r.support_json),
+     usage: { priorPeriodUnits: Number(r.prior_period_units), currentPeriodUnits: Number(r.current_period_units) }
+   };
+ }

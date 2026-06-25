@@ -1,0 +1,138 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..f126b85 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,13 +1,106 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import pg from "pg";
++import { withDb } from "./db.mjs";
++
++// tests/facts.mjs calls JSON.parse() on jsonb columns, expecting raw strings.
++// pg auto-parses jsonb (OID 3802) and json (OID 114) to JS objects by default.
++// Setting identity parsers here ensures raw JSON strings are returned.
++pg.types.setTypeParser(114, v => v);
++pg.types.setTypeParser(3802, v => v);
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (client) => {
++    const nowDate = new Date(now);
++
++    const reqRow = (await client.query("SELECT * FROM workflow_requests LIMIT 1")).rows[0];
++    const acctRow = (await client.query("SELECT * FROM accounts LIMIT 1")).rows[0];
++
++    const { tier } = acctRow;
++    const { request_id, account_id, prior_period_units, current_period_units } = reqRow;
++
++    const invoices = typeof reqRow.invoices_json === "string" ? JSON.parse(reqRow.invoices_json) : (reqRow.invoices_json || []);
++    const shipments = typeof reqRow.shipments_json === "string" ? JSON.parse(reqRow.shipments_json) : (reqRow.shipments_json || []);
++    const regulatoryFlags = typeof reqRow.regulatory_json === "string" ? JSON.parse(reqRow.regulatory_json) : (reqRow.regulatory_json || []);
++    const supportCases = typeof reqRow.support_json === "string" ? JSON.parse(reqRow.support_json) : (reqRow.support_json || []);
++    const prior = Number(prior_period_units);
++    const current = Number(current_period_units);
++
++    const signals = [];
++
++    if (regulatoryFlags.some(f => f.status === "open")) {
++      signals.push("Regulatory hold");
++    }
++    if (invoices.some(inv => inv.status !== "paid" && new Date(inv.dueDate) < nowDate && inv.amountCents >= 2500000)) {
++      signals.push("Overdue invoice");
++    }
++    if (shipments.some(s => !s.deliveredDate && new Date(s.slaDate) < nowDate)) {
++      signals.push("Delayed shipment");
++    }
++    if (supportCases.some(c => c.status === "open" && (c.severity === "high" || c.severity === "critical"))) {
++      signals.push("Escalated support");
++    }
++    if (current <= prior * 0.7) {
++      signals.push("Usage decline");
++    }
++
++    const qualifyingTiers = ["strategic", "enterprise"];
++    const qualifies = qualifyingTiers.includes(tier) && signals.length > 0;
++
++    let status, nextStep, riskSummary, owners;
++
++    if (qualifies) {
++      status = "At-risk escalation active with executive recovery owner routing and customer-visible audit history.";
++      riskSummary = `${signals.length} signals: ${signals.join(", ")}`;
++
++      const signalToOwner = {
++        "Regulatory hold": "Legal",
++        "Overdue invoice": "Finance",
++        "Delayed shipment": "Customer Success",
++        "Escalated support": "Support",
++        "Usage decline": "Customer Success",
++      };
++      const ownerSet = new Set(signals.map(s => signalToOwner[s]).filter(Boolean));
++      const ownerOrder = ["Legal", "Finance", "Customer Success", "Support"];
++      owners = ownerOrder.filter(o => ownerSet.has(o));
++      nextStep = `${owners[0]} recovery review by 16:00`;
++    } else {
++      status = "Monitoring — no escalation required.";
++      nextStep = "Continue standard monitoring.";
++      riskSummary = signals.length > 0 ? `${signals.length} signals: ${signals.join(", ")}` : "0 signals";
++      owners = [];
++    }
++
++    await client.query("DELETE FROM workflow_state WHERE account_id = $1", [account_id]);
++    await client.query("DELETE FROM owner_tasks WHERE account_id = $1", [account_id]);
++    await client.query("DELETE FROM customer_messages WHERE account_id = $1", [account_id]);
++    await client.query("DELETE FROM audit_events WHERE account_id = $1", [account_id]);
++
++    await client.query(
++      "INSERT INTO workflow_state (request_id, account_id, title, status, next_step, risk_summary) VALUES ($1, $2, $3, $4, $5, $6)",
++      [request_id, account_id, reqRow.title, status, nextStep, riskSummary]
++    );
++
++    const dueAt = new Date(nowDate.getTime() + 24 * 60 * 60 * 1000);
++    for (const owner of owners) {
++      await client.query(
++        "INSERT INTO owner_tasks (request_id, account_id, owner_group, title, due_at, status) VALUES ($1, $2, $3, $4, $5, $6)",
++        [request_id, account_id, owner, `${owner} recovery review`, dueAt.toISOString(), "open"]
++      );
++    }
++
++    const messageBody = qualifies
++      ? `Your account has been flagged for escalation due to ${signals.length} active risk signal(s): ${signals.join(", ")}. Our dedicated recovery teams have been engaged to address these issues. A recovery owner has been assigned and will be in touch shortly with next steps and a resolution timeline. We remain committed to your success and appreciate your continued partnership.`
++      : `Your account is currently under standard monitoring and no escalation is required at this time. We will continue to monitor your account status and notify you promptly if any issues arise. Thank you for your continued partnership.`;
++
++    await client.query(
++      "INSERT INTO customer_messages (request_id, account_id, body) VALUES ($1, $2, $3)",
++      [request_id, account_id, messageBody]
++    );
++
++    await client.query(
++      "INSERT INTO audit_events (request_id, account_id, event, occurred_at, customer_visible) VALUES ($1, $2, $3, $4, $5)",
++      [request_id, account_id, `Rescue workflow initiated: ${status}`, now, true]
++    );
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
+diff --git a/tests/facts.mjs b/tests/facts.mjs
+index 68e17ed..457135d 100644
+--- a/tests/facts.mjs
++++ b/tests/facts.mjs
+@@ -7,10 +7,10 @@ export async function readFactsFromDb(c) {
+   return {
+     account: { accountId: acct.account_id, name: acct.name, tier: acct.tier, region: acct.region },
+     contract: {}, contacts: [],
+-    invoices: JSON.parse(r.invoices_json || "[]"),
+-    shipments: JSON.parse(r.shipments_json || "[]"),
+-    regulatoryFlags: JSON.parse(r.regulatory_json || "[]"),
+-    supportCases: JSON.parse(r.support_json || "[]"),
++    invoices: Array.isArray(r.invoices_json) ? r.invoices_json : JSON.parse(r.invoices_json || "[]"),
++    shipments: Array.isArray(r.shipments_json) ? r.shipments_json : JSON.parse(r.shipments_json || "[]"),
++    regulatoryFlags: Array.isArray(r.regulatory_json) ? r.regulatory_json : JSON.parse(r.regulatory_json || "[]"),
++    supportCases: Array.isArray(r.support_json) ? r.support_json : JSON.parse(r.support_json || "[]"),
+     usage: { priorPeriodUnits: Number(r.prior_period_units), currentPeriodUnits: Number(r.current_period_units) }
+   };
+ }

@@ -1,0 +1,90 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..4f963a9 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,13 +1,77 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++import { qualifies, signalsOf, ownersOf, RULES } from "./derive.mjs";
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (client) => {
++    const { rows: accounts } = await client.query("SELECT account_id, doc FROM accounts");
++
++    for (const { account_id, doc } of accounts) {
++      const requestId = doc.request?.requestId ?? `req-${account_id}`;
++
++      const facts = {
++        account: { tier: doc.tier },
++        invoices: doc.invoices,
++        shipments: doc.shipments,
++        regulatoryFlags: doc.regulatoryFlags,
++        supportCases: doc.supportCases,
++        usage: doc.usage,
++      };
++
++      const q = qualifies(facts, now);
++      const signals = signalsOf(facts, now);
++      const owners = q ? ownersOf(facts, now) : [];
++      const topOwner = owners[0] ?? null;
++
++      const status = q ? RULES.escalationStatus : RULES.monitorStatus;
++      const riskSummary = `${signals.length} signals: ${signals.join(", ")}`;
++      const nextStep = q ? `${topOwner} recovery review by 16:00` : "Continue standard monitoring.";
++
++      await client.query(
++        `INSERT INTO workflow_state (request_id, account_id, title, status, next_step, risk_summary)
++         VALUES ($1, $2, $3, $4, $5, $6)`,
++        [requestId, account_id, doc.request?.title ?? "Strategic account rescue", status, nextStep, riskSummary]
++      );
++
++      if (q) {
++        const nowDate = new Date(now);
++        const dueAt = new Date(Date.UTC(nowDate.getUTCFullYear(), nowDate.getUTCMonth(), nowDate.getUTCDate(), 16, 0, 0, 0));
++
++        for (const owner of owners) {
++          await client.query(
++            `INSERT INTO owner_tasks (request_id, account_id, owner_group, title, due_at, status)
++             VALUES ($1, $2, $3, $4, $5, $6)`,
++            [
++              requestId,
++              account_id,
++              owner,
++              `${owner} recovery action for ${doc.name ?? account_id}`,
++              dueAt.toISOString(),
++              "open",
++            ]
++          );
++        }
++
++        const body = `Dear ${doc.name ?? "Valued Customer"}, we have identified ${signals.length} active concern${signals.length !== 1 ? "s" : ""} affecting your account (${signals.join(", ")}) and have engaged our ${owners.join(", ")} teams to work with you toward resolution. Your dedicated recovery team will be in contact shortly to coordinate next steps and ensure a positive outcome.`;
++
++        await client.query(
++          `INSERT INTO customer_messages (request_id, account_id, body) VALUES ($1, $2, $3)`,
++          [requestId, account_id, body]
++        );
++
++        await client.query(
++          `INSERT INTO audit_events (request_id, account_id, event, occurred_at, customer_visible)
++           VALUES ($1, $2, $3, $4, $5)`,
++          [
++            requestId,
++            account_id,
++            `Escalation initiated: ${riskSummary}. Recovery owners assigned: ${owners.join(", ")}.`,
++            now,
++            true,
++          ]
++        );
++      }
++    }
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

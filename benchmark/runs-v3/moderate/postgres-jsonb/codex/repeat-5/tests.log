@@ -1,0 +1,5 @@
+
+> ast-bench-v3-postgres-jsonb@1.0.0 test
+> node tests/acceptance.test.mjs
+
+AST-Bench V3 acceptance passed: postgres-jsonb

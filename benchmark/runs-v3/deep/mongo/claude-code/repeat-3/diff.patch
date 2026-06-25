@@ -1,0 +1,136 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..14ab451 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,13 +1,123 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++
++const QUALIFYING_TIERS = new Set(["strategic", "enterprise"]);
++
++const SIGNAL_ORDER = [
++  "Regulatory hold",
++  "Overdue invoice",
++  "Delayed shipment",
++  "Escalated support",
++  "Usage decline",
++];
++
++const SIGNAL_TO_OWNER = {
++  "Regulatory hold": "Legal",
++  "Overdue invoice": "Finance",
++  "Delayed shipment": "Customer Success",
++  "Usage decline": "Customer Success",
++  "Escalated support": "Support",
++};
++
++const OWNER_ORDER = ["Legal", "Finance", "Customer Success", "Support"];
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  const nowDate = new Date(now);
++
++  await withDb(async (db) => {
++    const a = await db.collection("accounts").findOne({});
++
++    const activeSignals = [];
++
++    const hasRegHold = a.regulatoryFlags?.some((f) => f.status === "open");
++    if (hasRegHold) activeSignals.push("Regulatory hold");
++
++    const hasOverdueInvoice = a.invoices?.some(
++      (inv) =>
++        inv.status === "overdue" &&
++        inv.amountCents >= 2500000 &&
++        new Date(inv.dueDate) < nowDate
++    );
++    if (hasOverdueInvoice) activeSignals.push("Overdue invoice");
++
++    const hasDelayedShipment = a.shipments?.some(
++      (s) => !s.deliveredDate && new Date(s.slaDate) < nowDate
++    );
++    if (hasDelayedShipment) activeSignals.push("Delayed shipment");
++
++    const hasEscalatedSupport = a.supportCases?.some(
++      (c) => c.status === "open" && (c.severity === "high" || c.severity === "critical")
++    );
++    if (hasEscalatedSupport) activeSignals.push("Escalated support");
++
++    const { priorPeriodUnits, currentPeriodUnits } = a.usage || {};
++    if (priorPeriodUnits != null && currentPeriodUnits <= priorPeriodUnits * 0.7) {
++      activeSignals.push("Usage decline");
++    }
++
++    const qualifies = QUALIFYING_TIERS.has(a.tier) && activeSignals.length > 0;
++
++    const status = qualifies
++      ? "At-risk escalation active with executive recovery owner routing and customer-visible audit history."
++      : "Monitoring — no escalation required.";
++
++    const orderedSignals = SIGNAL_ORDER.filter((s) => activeSignals.includes(s));
++
++    const riskSummary = qualifies
++      ? `${orderedSignals.length} signals: ${orderedSignals.join(", ")}`
++      : "0 signals";
++
++    const ownerSet = new Set();
++    for (const sig of orderedSignals) {
++      const owner = SIGNAL_TO_OWNER[sig];
++      if (owner) ownerSet.add(owner);
++    }
++    const owners = OWNER_ORDER.filter((o) => ownerSet.has(o));
++
++    const topOwner = owners[0] ?? null;
++    const nextStep = qualifies
++      ? `${topOwner} recovery review by 16:00`
++      : "Continue standard monitoring.";
++
++    const dueAt = new Date(nowDate);
++    dueAt.setHours(16, 0, 0, 0);
++
++    await db.collection("workflow_state").deleteMany({});
++    await db.collection("owner_tasks").deleteMany({});
++    await db.collection("customer_messages").deleteMany({});
++    await db.collection("audit_events").deleteMany({});
++
++    await db.collection("workflow_state").insertOne({
++      status,
++      next_step: nextStep,
++      risk_summary: riskSummary,
++      created_at: nowDate,
++    });
++
++    if (qualifies) {
++      for (const owner of owners) {
++        await db.collection("owner_tasks").insertOne({
++          owner_group: owner,
++          title: `${owner} recovery review for ${a.name}`,
++          due_at: dueAt,
++          status: "open",
++          created_at: nowDate,
++        });
++      }
++
++      const signalList = orderedSignals.join(", ").toLowerCase();
++      await db.collection("customer_messages").insertOne({
++        body: `Dear ${a.name} team, we have identified concerns with your account related to ${signalList}. Our teams are actively working to resolve these issues and will be in touch shortly with next steps. We appreciate your patience and remain committed to your success.`,
++        created_at: nowDate,
++      });
++
++      await db.collection("audit_events").insertOne({
++        event: "escalation_initiated",
++        description: `Escalation workflow initiated. ${riskSummary}. Owners notified: ${owners.join(", ")}.`,
++        customer_visible: true,
++        created_at: nowDate,
++      });
++    }
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

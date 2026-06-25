@@ -1,0 +1,126 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..00cd343 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,15 +1,112 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++import { RULES, signalsOf, ownersOf, qualifies } from "./derive.mjs";
++
++function factsFromAccount(account) {
++  return {
++    account: {
++      accountId: account._id,
++      name: account.name,
++      tier: account.tier,
++      region: account.region
++    },
++    invoices: account.invoices || [],
++    shipments: account.shipments || [],
++    regulatoryFlags: account.regulatoryFlags || [],
++    supportCases: account.supportCases || [],
++    usage: account.usage || {}
++  };
++}
++
++function requestIdFor(account) {
++  return account.request?.requestId || `req-${account._id}`;
++}
++
++function deriveWorkflow(facts, now) {
++  const q = qualifies(facts, now);
++  const signals = signalsOf(facts, now);
++  const owners = q ? ownersOf(facts, now) : [];
++  const status = q ? RULES.escalationStatus : RULES.monitorStatus;
++  const nextStep = q ? `${owners[0]} recovery review by 16:00` : "Continue standard monitoring.";
++
++  return {
++    qualifies: q,
++    status,
++    owners,
++    signals,
++    riskSummary: `${signals.length} signals: ${signals.map((signal) => signal).join(", ")}`,
++    nextStep,
++    expectsEscalation: q
++  };
++}
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (db) => {
++    const account = await db.collection("accounts").findOne({});
++    if (!account) throw new Error("No account found");
++
++    const facts = factsFromAccount(account);
++    const expected = deriveWorkflow(facts, now);
++    const requestId = requestIdFor(account);
++    const accountId = account._id;
++
++    await db.collection("workflow_state").deleteMany({
++      $or: [{ request_id: requestId }, { requestId }]
++    });
++    await db.collection("owner_tasks").deleteMany({
++      $or: [{ request_id: requestId }, { requestId }]
++    });
++    await db.collection("customer_messages").deleteMany({
++      $or: [{ request_id: requestId }, { requestId }]
++    });
++    await db.collection("audit_events").deleteMany({
++      $or: [{ request_id: requestId }, { requestId }]
++    });
++
++    await db.collection("workflow_state").insertOne({
++      request_id: requestId,
++      account_id: accountId,
++      title: account.name || account.request?.title || accountId,
++      status: expected.status,
++      next_step: expected.nextStep,
++      risk_summary: expected.riskSummary
++    });
++
++    if (expected.owners.length) {
++      await db.collection("owner_tasks").insertMany(
++        expected.owners.map((ownerGroup) => ({
++          request_id: requestId,
++          account_id: accountId,
++          owner_group: ownerGroup,
++          title: `${ownerGroup} recovery owner task`,
++          due_at: now,
++          status: "open"
++        }))
++      );
++    }
++
++    if (expected.expectsEscalation) {
++      await db.collection("customer_messages").insertOne({
++        request_id: requestId,
++        account_id: accountId,
++        body: "Our team has opened a priority recovery effort on your account and will follow up shortly."
++      });
++
++      await db.collection("audit_events").insertOne({
++        request_id: requestId,
++        account_id: accountId,
++        event: "escalation_opened",
++        occurred_at: now,
++        customer_visible: true
++      });
++    }
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
+-  run().then(() => console.log("workflow done")).catch((e) => { console.error(e); process.exit(1); });
++  run()
++    .then(() => console.log("workflow done"))
++    .catch((e) => {
++      console.error(e);
++      process.exit(1);
++    });
+ }

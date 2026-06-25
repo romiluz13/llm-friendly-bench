@@ -1,0 +1,111 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..389af56 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,13 +1,98 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++import { RULES, qualifies, signalsOf, ownersOf } from "./derive.mjs";
++
++function toFacts(doc) {
++  return {
++    account: {
++      accountId: doc._id,
++      name: doc.name,
++      tier: doc.tier,
++      region: doc.region
++    },
++    contract: doc.contract,
++    contacts: doc.contacts,
++    invoices: doc.invoices,
++    shipments: doc.shipments,
++    regulatoryFlags: doc.regulatoryFlags,
++    supportCases: doc.supportCases,
++    usage: doc.usage
++  };
++}
++
++function customerMessage(isEscalated, signals) {
++  if (isEscalated) {
++    return `We have identified active risk signals on your account: ${signals.join(", ")}. Our recovery team is coordinating next steps and will follow up shortly with a clear plan and timeline.`;
++  }
++
++  return "Your account is currently being monitored and no escalation is required at this time. We will continue to watch for changes and reach out if anything needs attention.";
++}
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (client) => {
++    await client.query("BEGIN");
++    try {
++      const { rows } = await client.query("SELECT doc FROM accounts LIMIT 1");
++      const doc = rows[0]?.doc;
++      if (!doc) {
++        throw new Error("missing raw account facts");
++      }
++
++      const facts = toFacts(doc);
++      const accountId = doc._id;
++      const requestId = doc.request?.requestId || `req-${accountId}`;
++      const title = doc.request?.title || "Strategic account rescue";
++
++      const isEscalated = qualifies(facts, now);
++      const signalNames = signalsOf(facts, now);
++      const owners = isEscalated ? ownersOf(facts, now) : [];
++      const status = isEscalated ? RULES.escalationStatus : RULES.monitorStatus;
++      const riskSummary = `${signalNames.length} signals: ${signalNames.join(", ")}`;
++      const nextStep = isEscalated ? `${owners[0]} recovery review by 16:00` : "Continue standard monitoring.";
++      const dueAt = now;
++
++      await client.query("DELETE FROM audit_events");
++      await client.query("DELETE FROM customer_messages");
++      await client.query("DELETE FROM owner_tasks");
++      await client.query("DELETE FROM workflow_state");
++
++      await client.query(
++        "INSERT INTO workflow_state (request_id, account_id, title, status, next_step, risk_summary) VALUES ($1, $2, $3, $4, $5, $6)",
++        [requestId, accountId, title, status, nextStep, riskSummary]
++      );
++
++      for (const owner of owners) {
++        await client.query(
++          "INSERT INTO owner_tasks (request_id, account_id, owner_group, title, due_at, status) VALUES ($1, $2, $3, $4, $5, $6)",
++          [requestId, accountId, owner, `${owner} recovery review`, dueAt, "open"]
++        );
++      }
++
++      await client.query(
++        "INSERT INTO customer_messages (request_id, account_id, body) VALUES ($1, $2, $3)",
++        [requestId, accountId, customerMessage(isEscalated, signalNames)]
++      );
++
++      await client.query(
++        "INSERT INTO audit_events (request_id, account_id, event, occurred_at, customer_visible) VALUES ($1, $2, $3, $4, $5)",
++        [
++          requestId,
++          accountId,
++          isEscalated
++            ? "Priority recovery workflow opened."
++            : "Account review completed. No escalation required.",
++          now,
++          true
++        ]
++      );
++
++      await client.query("COMMIT");
++    } catch (error) {
++      try {
++        await client.query("ROLLBACK");
++      } catch {}
++      throw error;
++    }
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

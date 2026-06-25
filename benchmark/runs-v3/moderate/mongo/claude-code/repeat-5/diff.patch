@@ -1,0 +1,149 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..b9320c1 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,13 +1,136 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++
++const QUALIFYING_TIERS = ["strategic", "enterprise"];
++const HIGH_SEVERITIES = ["high", "critical"];
++const INVOICE_HIGH_CENTS = 2_500_000;
++const USAGE_DROP = 0.30;
++
++const SIGNAL_ORDER = ["regulatory", "invoice", "shipment", "support", "usage"];
++const SIGNAL_NAME = {
++  regulatory: "Regulatory hold",
++  invoice: "Overdue invoice",
++  shipment: "Delayed shipment",
++  support: "Escalated support",
++  usage: "Usage decline"
++};
++const OWNER_FOR = {
++  regulatory: "Legal",
++  invoice: "Finance",
++  shipment: "Customer Success",
++  usage: "Customer Success",
++  support: "Support"
++};
++const OWNER_ORDER = ["Legal", "Finance", "Customer Success", "Support"];
++
++function evaluateRisks(world, nowMs) {
++  const fired = {};
++
++  const overdueInv = (world.invoices || []).find(
++    (inv) => inv.status !== "paid" && Date.parse(inv.dueDate) < nowMs && inv.amountCents >= INVOICE_HIGH_CENTS
++  );
++  if (overdueInv) fired.invoice = `Overdue invoice of $${Math.round(overdueInv.amountCents / 100).toLocaleString("en-US")} requires immediate resolution.`;
++
++  const lateShip = (world.shipments || []).find(
++    (sh) => !sh.deliveredDate && Date.parse(sh.slaDate) < nowMs
++  );
++  if (lateShip) fired.shipment = `A shipment is past its committed delivery date and requires follow-up.`;
++
++  const openReg = (world.regulatoryFlags || []).find((f) => f.status === "open");
++  if (openReg) fired.regulatory = `An open regulatory hold of type "${openReg.type}" requires legal review.`;
++
++  const escalated = (world.supportCases || []).find(
++    (c) => c.status === "open" && HIGH_SEVERITIES.includes(c.severity)
++  );
++  if (escalated) fired.support = `An open ${escalated.severity}-severity support case requires urgent attention.`;
++
++  const u = world.usage || {};
++  if (
++    typeof u.priorPeriodUnits === "number" &&
++    typeof u.currentPeriodUnits === "number" &&
++    u.priorPeriodUnits > 0 &&
++    u.currentPeriodUnits <= u.priorPeriodUnits * (1 - USAGE_DROP)
++  ) {
++    const drop = Math.round((1 - u.currentPeriodUnits / u.priorPeriodUnits) * 100);
++    fired.usage = `Usage has declined ${drop}% period-over-period, indicating possible churn risk.`;
++  }
++
++  return fired;
++}
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  const nowMs = Date.parse(now);
++
++  await withDb(async (db) => {
++    const a = (await db.collection("accounts").find({}).toArray())[0];
++    const world = {
++      account: { tier: a.tier, name: a.name },
++      invoices: a.invoices,
++      shipments: a.shipments,
++      regulatoryFlags: a.regulatoryFlags,
++      supportCases: a.supportCases,
++      usage: a.usage
++    };
++
++    const fired = evaluateRisks(world, nowMs);
++    const signals = SIGNAL_ORDER.filter((c) => fired[c]).map((c) => ({ category: c, name: SIGNAL_NAME[c] }));
++
++    const tierOk = QUALIFYING_TIERS.includes(String(world.account.tier).toLowerCase());
++    const qualifies = tierOk && signals.length >= 1;
++
++    const owners = qualifies
++      ? OWNER_ORDER.filter((o) => new Set(Object.keys(fired).map((c) => OWNER_FOR[c])).has(o))
++      : [];
++
++    const status = qualifies
++      ? "At-risk escalation active with executive recovery owner routing and customer-visible audit history."
++      : "Monitoring — no escalation required.";
++
++    const riskSummary = `${signals.length} signals: ${signals.map((s) => s.name).join(", ")}`;
++    const nextStep = qualifies ? `${owners[0]} recovery review by 16:00` : "Continue standard monitoring.";
++
++    const dueAt = new Date(nowMs + 24 * 60 * 60 * 1000).toISOString();
++
++    await db.collection("workflow_state").deleteMany({});
++    await db.collection("owner_tasks").deleteMany({});
++    await db.collection("customer_messages").deleteMany({});
++    await db.collection("audit_events").deleteMany({});
++
++    await db.collection("workflow_state").insertOne({ status, next_step: nextStep, risk_summary: riskSummary });
++
++    if (qualifies) {
++      await db.collection("owner_tasks").insertMany(
++        owners.map((owner) => ({
++          owner_group: owner,
++          title: `${owner} — Strategic account recovery review`,
++          due_at: dueAt,
++          status: "open"
++        }))
++      );
++
++      const signalLines = signals.map((s) => `• ${s.name}: ${fired[s.category]}`).join("\n");
++      await db.collection("customer_messages").insertOne({
++        body: `Dear ${world.account.name} team,\n\nWe have identified several areas requiring immediate attention for your account. Our teams are actively engaged to resolve the following concerns:\n\n${signalLines}\n\nA dedicated recovery team has been assigned and will be in contact within 24 hours to coordinate next steps. We appreciate your partnership and are committed to resolving these issues promptly.\n\nBest regards,\nCustomer Success`
++      });
++
++      await db.collection("audit_events").insertOne({
++        event_type: "escalation_initiated",
++        description: `Account escalation initiated. ${riskSummary}. Owners assigned: ${owners.join(", ")}.`,
++        customer_visible: true,
++        created_at: now
++      });
++    } else {
++      await db.collection("customer_messages").insertOne({
++        body: `Dear ${world.account.name} team,\n\nYour account is currently in good standing. We continue to monitor your account health and will proactively reach out if any action is required.\n\nThank you for your continued partnership.\n\nBest regards,\nCustomer Success`
++      });
++
++      await db.collection("audit_events").insertOne({
++        event_type: "monitoring_check",
++        description: `Account reviewed. No escalation required. ${riskSummary}.`,
++        customer_visible: false,
++        created_at: now
++      });
++    }
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

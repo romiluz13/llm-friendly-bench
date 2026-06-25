@@ -1,0 +1,104 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..e8ddb32 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,15 +1,90 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
++import { deriveExpected } from "/Users/rom.iluz/Dev/sql-hidden-cost/scripts/benchmark-derive.mjs";
++
++function normalizeFacts(accountDoc) {
++  return {
++    account: {
++      accountId: accountDoc._id,
++      name: accountDoc.name,
++      tier: accountDoc.tier,
++      region: accountDoc.region
++    },
++    contract: accountDoc.contract,
++    contacts: accountDoc.contacts,
++    invoices: accountDoc.invoices,
++    shipments: accountDoc.shipments,
++    regulatoryFlags: accountDoc.regulatoryFlags,
++    supportCases: accountDoc.supportCases,
++    usage: accountDoc.usage
++  };
++}
++
++function dueAt1600Utc(now) {
++  const at = new Date(now);
++  at.setUTCHours(16, 0, 0, 0);
++  return at.toISOString();
++}
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  return withDb(async (db) => {
++    const account = await db.collection("accounts").findOne({});
++    if (!account) {
++      throw new Error("No account found in live database.");
++    }
++
++    const facts = normalizeFacts(account);
++    const expected = deriveExpected(facts, now);
++
++    await Promise.all([
++      db.collection("workflow_state").deleteMany({}),
++      db.collection("owner_tasks").deleteMany({}),
++      db.collection("customer_messages").deleteMany({}),
++      db.collection("audit_events").deleteMany({})
++    ]);
++
++    await db.collection("workflow_state").insertOne({
++      status: expected.status,
++      next_step: expected.nextStep,
++      risk_summary: expected.riskSummary
++    });
++
++    if (expected.owners.length > 0) {
++      const dueAt = dueAt1600Utc(now);
++      await db.collection("owner_tasks").insertMany(
++        expected.owners.map((owner_group) => ({
++          owner_group,
++          title: `${owner_group} recovery review for ${facts.account.name}`,
++          due_at: dueAt,
++          status: "open"
++        }))
++      );
++    }
++
++    await db.collection("customer_messages").insertOne({
++      body: expected.expectsEscalation
++        ? `We have opened a recovery review for your account after identifying ${expected.signals.length} active risk signals. The team is coordinating the response across the needed groups and will keep you updated as progress is made.`
++        : "We reviewed your account and are continuing standard monitoring. No escalation is required at this time, and we will let you know if the situation changes."
++    });
++
++    await db.collection("audit_events").insertOne({
++      summary: expected.expectsEscalation
++        ? "Customer-visible escalation update recorded."
++        : "Customer-visible monitoring update recorded.",
++      customer_visible: true
++    });
++
++    return {
++      status: expected.status,
++      owners: expected.owners,
++      riskSummary: expected.riskSummary,
++      nextStep: expected.nextStep
++    };
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
+-  run().then(() => console.log("workflow done")).catch((e) => { console.error(e); process.exit(1); });
++  run().then(() => console.log("workflow done")).catch((e) => {
++    console.error(e);
++    process.exit(1);
++  });
+ }

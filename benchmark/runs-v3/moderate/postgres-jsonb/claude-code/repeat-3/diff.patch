@@ -1,0 +1,138 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..0097e14 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,13 +1,125 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (c) => {
++    const doc = (await c.query("SELECT doc FROM accounts LIMIT 1")).rows[0].doc;
++    const nowDate = new Date(now);
++
++    const tier = doc.tier;
++    const qualifyingTiers = ["strategic", "enterprise"];
++
++    // Derive risk signals
++    const signals = [];
++
++    // Regulatory hold: any regulatory flag with status "open"
++    if ((doc.regulatoryFlags || []).some(f => f.status === "open")) {
++      signals.push("Regulatory hold");
++    }
++
++    // Overdue invoice: unpaid invoice past due date AND amount >= $25,000
++    if ((doc.invoices || []).some(inv => {
++      const isPaid = inv.status === "paid";
++      if (isPaid) return false;
++      const pastDue = new Date(inv.dueDate) < nowDate;
++      const bigEnough = inv.amountCents >= 2500000;
++      return pastDue && bigEnough;
++    })) {
++      signals.push("Overdue invoice");
++    }
++
++    // Delayed shipment: no delivered date AND past SLA date
++    if ((doc.shipments || []).some(s => {
++      return !s.deliveredDate && new Date(s.slaDate) < nowDate;
++    })) {
++      signals.push("Delayed shipment");
++    }
++
++    // Escalated support: open support case with severity high or critical
++    if ((doc.supportCases || []).some(sc => {
++      return sc.status === "open" && ["high", "critical"].includes(sc.severity);
++    })) {
++      signals.push("Escalated support");
++    }
++
++    // Usage decline: current period units <= prior period units * 0.7
++    const usage = doc.usage;
++    if (usage && usage.currentPeriodUnits <= usage.priorPeriodUnits * 0.7) {
++      signals.push("Usage decline");
++    }
++
++    const qualifies = qualifyingTiers.includes(tier) && signals.length > 0;
++
++    // Derive owner routing (deduplicated, fixed order)
++    const ownerSet = new Set();
++    const ownerOrder = ["Legal", "Finance", "Customer Success", "Support"];
++    if (signals.includes("Regulatory hold")) ownerSet.add("Legal");
++    if (signals.includes("Overdue invoice")) ownerSet.add("Finance");
++    if (signals.includes("Delayed shipment")) ownerSet.add("Customer Success");
++    if (signals.includes("Usage decline")) ownerSet.add("Customer Success");
++    if (signals.includes("Escalated support")) ownerSet.add("Support");
++    const owners = ownerOrder.filter(o => ownerSet.has(o));
++
++    const status = qualifies
++      ? "At-risk escalation active with executive recovery owner routing and customer-visible audit history."
++      : "Monitoring — no escalation required.";
++
++    const riskSummary = signals.length > 0
++      ? `${signals.length} signals: ${signals.join(", ")}`
++      : "0 signals";
++
++    const topOwner = qualifies && owners.length > 0 ? owners[0] : null;
++    const nextStep = qualifies
++      ? `${topOwner} recovery review by 16:00`
++      : "Continue standard monitoring.";
++
++    const accountId = doc._id;
++    const requestId = doc.request?.requestId || `req-${accountId}`;
++    const title = doc.request?.title || "Strategic account rescue";
++
++    // Due 24 hours from now
++    const dueAt = new Date(nowDate.getTime() + 24 * 60 * 60 * 1000).toISOString();
++
++    // Clear existing records
++    await c.query("DELETE FROM workflow_state");
++    await c.query("DELETE FROM owner_tasks");
++    await c.query("DELETE FROM customer_messages");
++    await c.query("DELETE FROM audit_events");
++
++    // Persist workflow_state
++    await c.query(
++      "INSERT INTO workflow_state (request_id, account_id, title, status, next_step, risk_summary) VALUES ($1,$2,$3,$4,$5,$6)",
++      [requestId, accountId, title, status, nextStep, riskSummary]
++    );
++
++    // Persist owner_tasks (only if qualifying)
++    if (qualifies) {
++      for (const owner of owners) {
++        await c.query(
++          "INSERT INTO owner_tasks (request_id, account_id, owner_group, title, due_at, status) VALUES ($1,$2,$3,$4,$5,$6)",
++          [requestId, accountId, owner, `${owner} recovery review`, dueAt, "open"]
++        );
++      }
++    }
++
++    // Persist customer_messages (only if qualifying)
++    if (qualifies) {
++      const signalNames = signals.join(", ").toLowerCase();
++      const body = `We are reaching out regarding your account. Our team has identified ${signals.length} area${signals.length > 1 ? "s" : ""} requiring immediate attention: ${signalNames}. Our dedicated recovery team has been engaged and will be in contact with you shortly to discuss next steps and ensure your continued success with our platform. Please expect outreach from our team within the next business day.`;
++      await c.query(
++        "INSERT INTO customer_messages (request_id, account_id, body) VALUES ($1,$2,$3)",
++        [requestId, accountId, body]
++      );
++    }
++
++    // Persist audit_events (always one customer-visible event)
++    const eventText = qualifies
++      ? `Account risk assessment completed. ${signals.length} signal${signals.length > 1 ? "s" : ""} detected. Recovery workflow initiated.`
++      : "Account risk assessment completed. No escalation required. Continuing standard monitoring.";
++    await c.query(
++      "INSERT INTO audit_events (request_id, account_id, event, occurred_at, customer_visible) VALUES ($1,$2,$3,$4,$5)",
++      [requestId, accountId, eventText, nowDate.toISOString(), true]
++    );
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

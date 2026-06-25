@@ -1,0 +1,143 @@
+diff --git a/src/workflow.mjs b/src/workflow.mjs
+index a5b85ad..85edc3b 100644
+--- a/src/workflow.mjs
++++ b/src/workflow.mjs
+@@ -1,15 +1,129 @@
+-// Implement the rescue workflow. Connect via src/db.mjs, read raw account
+-// facts, derive the answer per ../RULES.md, and PERSIST workflow_state,
+-// owner_tasks, customer_messages, audit_events back to the live database.
+-//
+-// export an async function run() that performs the full read->derive->persist.
+-import { withDb, cfg } from "./db.mjs";
++import { withDb } from "./db.mjs";
+ 
+ export async function run(now = "2026-06-18T12:00:00.000Z") {
+-  // TODO: implement against the live database in cfg.
+-  throw new Error("workflow not implemented");
++  await withDb(async (client) => {
++    const row = (await client.query("SELECT doc FROM accounts LIMIT 1")).rows[0];
++    const doc = row.doc;
++
++    const accountId = doc._id;
++    const requestId = doc.request.requestId;
++    const tier = doc.tier;
++    const nowDate = new Date(now);
++
++    // Derive risk signals in display order
++    const signals = [];
++
++    const hasRegHold = (doc.regulatoryFlags || []).some((f) => f.status === "open");
++    if (hasRegHold) signals.push("Regulatory hold");
++
++    const hasOverdueInvoice = (doc.invoices || []).some((inv) => {
++      const unpaid = inv.status !== "paid";
++      const pastDue = new Date(inv.dueDate) < nowDate;
++      const bigEnough = inv.amountCents >= 2500000;
++      return unpaid && pastDue && bigEnough;
++    });
++    if (hasOverdueInvoice) signals.push("Overdue invoice");
++
++    const hasDelayedShipment = (doc.shipments || []).some(
++      (s) => !s.deliveredDate && new Date(s.slaDate) < nowDate
++    );
++    if (hasDelayedShipment) signals.push("Delayed shipment");
++
++    const hasEscalatedSupport = (doc.supportCases || []).some(
++      (c) => c.status === "open" && (c.severity === "high" || c.severity === "critical")
++    );
++    if (hasEscalatedSupport) signals.push("Escalated support");
++
++    const usage = doc.usage || {};
++    const hasUsageDecline =
++      usage.currentPeriodUnits !== undefined &&
++      usage.priorPeriodUnits !== undefined &&
++      usage.currentPeriodUnits <= usage.priorPeriodUnits * 0.7;
++    if (hasUsageDecline) signals.push("Usage decline");
++
++    const qualifies =
++      (tier === "strategic" || tier === "enterprise") && signals.length > 0;
++
++    const status = qualifies
++      ? "At-risk escalation active with executive recovery owner routing and customer-visible audit history."
++      : "Monitoring — no escalation required.";
++
++    const riskSummary = qualifies
++      ? `${signals.length} signals: ${signals.join(", ")}`
++      : `${signals.length} signals: ${signals.join(", ")}`;
++
++    // Owners in fixed order, deduped
++    const owners = [];
++    if (signals.includes("Regulatory hold") && !owners.includes("Legal")) owners.push("Legal");
++    if (signals.includes("Overdue invoice") && !owners.includes("Finance")) owners.push("Finance");
++    if (
++      (signals.includes("Delayed shipment") || signals.includes("Usage decline")) &&
++      !owners.includes("Customer Success")
++    )
++      owners.push("Customer Success");
++    if (signals.includes("Escalated support") && !owners.includes("Support")) owners.push("Support");
++
++    const topOwner = owners[0] || null;
++    const nextStep = qualifies
++      ? `${topOwner} recovery review by 16:00`
++      : "Continue standard monitoring.";
++
++    // Clear any prior run state
++    await client.query("DELETE FROM workflow_state");
++    await client.query("DELETE FROM owner_tasks");
++    await client.query("DELETE FROM customer_messages");
++    await client.query("DELETE FROM audit_events");
++
++    // Persist workflow_state
++    await client.query(
++      `INSERT INTO workflow_state (request_id, account_id, title, status, next_step, risk_summary)
++       VALUES ($1, $2, $3, $4, $5, $6)`,
++      [requestId, accountId, doc.request.title, status, nextStep, riskSummary]
++    );
++
++    // Persist owner_tasks in fixed order
++    if (qualifies) {
++      const dueAt = new Date(now);
++      dueAt.setUTCHours(16, 0, 0, 0);
++      for (const owner of owners) {
++        await client.query(
++          `INSERT INTO owner_tasks (request_id, account_id, owner_group, title, due_at, status)
++           VALUES ($1, $2, $3, $4, $5, $6)`,
++          [requestId, accountId, owner, `${owner} recovery review`, dueAt.toISOString(), "open"]
++        );
++      }
++    }
++
++    // Persist customer_messages (no internal ids/codes)
++    const customerMsg = qualifies
++      ? `Dear Northwind Strategic team, we have identified multiple risk signals on your account and have initiated our executive recovery program. Our cross-functional teams are actively coordinating to address outstanding concerns across regulatory compliance, billing, logistics, and support. You can expect dedicated outreach from your assigned recovery owners by end of business today. We are committed to resolving these matters promptly and ensuring your continued success with our platform. Thank you for your patience.`
++      : `Your account is being monitored according to our standard procedures. No escalation is required at this time. Please reach out to your account team with any questions.`;
++
++    await client.query(
++      `INSERT INTO customer_messages (request_id, account_id, body) VALUES ($1, $2, $3)`,
++      [requestId, accountId, customerMsg]
++    );
++
++    // Persist audit_events (customer-visible)
++    await client.query(
++      `INSERT INTO audit_events (request_id, account_id, event, occurred_at, customer_visible)
++       VALUES ($1, $2, $3, $4, $5)`,
++      [
++        requestId,
++        accountId,
++        qualifies ? "Escalation workflow initiated" : "Account monitoring check completed",
++        now,
++        true,
++      ]
++    );
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
+-  run().then(() => console.log("workflow done")).catch((e) => { console.error(e); process.exit(1); });
++  run()
++    .then(() => console.log("workflow done"))
++    .catch((e) => {
++      console.error(e);
++      process.exit(1);
++    });
+ }
