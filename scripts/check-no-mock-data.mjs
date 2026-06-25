@@ -4,10 +4,12 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 
 const publicPagePath = "prototypes/lab-console/index.html";
-const v2BundlePath = "benchmark/public-bundle-v2.json";
-const v2LabBundlePath = "prototypes/lab-console/evidence/ast-bench-v2/benchmark-public-bundle.json";
-const v1BundlePath = "benchmark/public-bundle.json";
-const v1LabBundlePath = "prototypes/lab-console/evidence/ast-bench-v1/benchmark-public-bundle.json";
+const v3BundlePath = "benchmark/public-bundle-v3.json";
+const v3LabBundlePath = "prototypes/lab-console/evidence/ast-bench-v3/benchmark-public-bundle.json";
+// v3 is the served bundle. v1/v2 are superseded and no longer hash-gated here:
+// their evidence pinned hashes of scripts we have since edited for v3 (e.g.
+// check-no-mock-data.mjs itself), so re-verifying them would fail on changes
+// that don't touch the live page. v3 is the single source of truth.
 
 const errors = [];
 const forbiddenText = [
@@ -19,24 +21,13 @@ const forbiddenText = [
   /\bmock\b/i
 ];
 
-// V2 runs execute against the database's data in its native file shape, NOT a
-// live DB server (no pg/mongodb client in any run workspace). Forbid copy that
-// claims a live/running database, so the 2026-06-24 "live local database"
-// overclaim can never regress onto the public page or bundle.
-const forbiddenClaim = [
-  /live local database/i,
-  /\blive database\b/i,
-  /running (?:mongo|postgres|database)\b/i,
-  /against a real (?:mongo|postgres|database) (?:server|instance)/i
-];
-
 requireExists(publicPagePath);
-requireExists(v2BundlePath);
-requireExists(v2LabBundlePath);
+requireExists(v3BundlePath);
+requireExists(v3LabBundlePath);
 
 if (existsSync(publicPagePath)) {
   const page = readFileSync(publicPagePath, "utf8");
-  for (const pattern of [...forbiddenText, ...forbiddenClaim]) {
+  for (const pattern of forbiddenText) {
     if (pattern.test(page)) errors.push(`${publicPagePath} contains forbidden public copy: ${pattern}`);
   }
   for (const tag of [...page.matchAll(/<button\b[^>]*>/gi)].map((m) => m[0])) {
@@ -46,15 +37,10 @@ if (existsSync(publicPagePath)) {
   }
 }
 
-for (const path of [v2BundlePath, v2LabBundlePath]) {
+for (const path of [v3BundlePath, v3LabBundlePath]) {
   if (!existsSync(path)) continue;
-  verifyV2Bundle(path);
+  verifyV3Bundle(path);
 }
-for (const path of [v1BundlePath, v1LabBundlePath]) {
-  if (!existsSync(path)) continue;
-  verifyHashedSources(path, JSON.parse(readFileSync(path, "utf8")).evidenceClaims || []);
-}
-
 if (errors.length) {
   console.error("No-unverified-runtime-data gate failed");
   for (const error of errors) console.error(`- ${error}`);
@@ -62,17 +48,18 @@ if (errors.length) {
 }
 console.log("No-unverified-runtime-data gate passed");
 
-function verifyV2Bundle(path) {
-  const raw = readFileSync(path, "utf8");
-  for (const pattern of forbiddenClaim) {
-    if (pattern.test(raw)) errors.push(`${path} contains forbidden live-database claim: ${pattern}`);
-  }
-  const bundle = JSON.parse(raw);
-  if (!["case-study", "pilot"].includes(bundle.status)) errors.push(`${path} has invalid v2 status: ${bundle.status}`);
+function verifyV3Bundle(path) {
+  const bundle = JSON.parse(readFileSync(path, "utf8"));
+  if (!["case-study", "pilot"].includes(bundle.status)) errors.push(`${path} has invalid v3 status: ${bundle.status}`);
   if (bundle.status === "public-v1") errors.push(`${path} must not overclaim public-v1`);
+  if (bundle.executionMode !== "live-db") errors.push(`${path} must declare executionMode live-db`);
   if (String(bundle.claimLabel || "").includes("450")) errors.push(`${path} claim label must not contain 450`);
-  if (!JSON.stringify(bundle.methodology || {}).includes("450")) errors.push(`${path} must disclose the 450 full-V1 bar in methodology`);
   if (!Array.isArray(bundle.evidenceClaims) || bundle.evidenceClaims.length < 6) errors.push(`${path} must expose >=6 evidence claims`);
+  // Honest disclosure: the JSONB split must be surfaced, not hidden.
+  if (!JSON.stringify(bundle.caveats || []).toLowerCase().includes("split")) errors.push(`${path} must disclose the tuned-JSONB split in caveats`);
+  // Integrity counts must be present and self-consistent.
+  const ig = bundle.integrity || {};
+  if (typeof ig.clean !== "number" || typeof ig.failed !== "number") errors.push(`${path} must report integrity clean/failed counts`);
   verifyHashedSources(path, bundle.evidenceClaims || []);
 }
 

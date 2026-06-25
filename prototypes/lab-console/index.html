@@ -3,108 +3,106 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Which database is easier for AI to build on? MongoDB vs Postgres — a real benchmark</title>
+<title>Which database is easier for AI to build on? MongoDB vs Postgres — a live-database benchmark</title>
 <style>
-  :root { --mg:#00684A; --pg:#b9c2ca; --ink:#0e1b16; --muted:#5b6670; --line:#e3e6ea; --bg:#f7f9fa; }
+  :root { --mg:#00684A; --norm:#c9712d; --jsonb:#b9962a; --ink:#0e1b16; --muted:#5b6670; --line:#e3e6ea; --bg:#f7f9fa; }
   * { box-sizing:border-box; }
   body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:#fff; line-height:1.5; }
   .wrap { max-width:1040px; margin:0 auto; padding:0 20px; }
   header.bar { background:var(--mg); color:#fff; padding:11px 0; font-weight:700; font-size:13px; }
-  header.bar .wrap { display:flex; justify-content:space-between; align-items:center; }
-  .hero { padding:54px 0 30px; }
+  header.bar .wrap { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .hero { padding:52px 0 28px; }
   .kicker { color:var(--muted); font-weight:700; text-transform:uppercase; font-size:11px; letter-spacing:.7px; }
-  .hero h1 { font-size:40px; line-height:1.08; font-weight:800; margin:10px 0 8px; color:var(--ink); }
+  .hero h1 { font-size:38px; line-height:1.1; font-weight:800; margin:10px 0 8px; }
   .hero h1 em { color:var(--mg); font-style:normal; }
-  .badge { display:inline-block; background:var(--mg); color:#fff; font-size:11px; font-weight:800; padding:5px 11px; border-radius:999px; letter-spacing:.4px; }
-  .statement { font-size:17px; color:#27323a; max-width:760px; margin-top:12px; }
+  .badge { display:inline-block; background:var(--mg); color:#fff; font-size:11px; font-weight:800; padding:5px 11px; border-radius:999px; }
+  .statement { font-size:17px; color:#27323a; max-width:780px; margin-top:12px; }
   section { padding:30px 0; border-top:1px solid var(--line); }
   h2 { font-size:23px; font-weight:800; margin:0 0 4px; }
   .sub { color:var(--muted); font-size:14px; margin:0 0 18px; }
+  .explain { background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:20px 22px; }
+  .explain .tag { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--mg); margin-bottom:10px; }
+  .explain p { margin:0 0 11px; font-size:15px; color:#27323a; } .explain p:last-child { margin-bottom:0; } .explain b { color:var(--ink); }
   .twin { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
-  @media (max-width:720px){ .twin { grid-template-columns:1fr; } .hero h1{font-size:30px;} }
+  @media (max-width:760px){ .twin { grid-template-columns:1fr; } .hero h1{font-size:29px;} }
   .acard { border:1px solid var(--line); border-radius:12px; padding:16px; }
   .acard h3 { margin:0 0 2px; font-size:16px; }
-  .acard .agree { font-size:10px; font-weight:800; color:var(--mg); }
-  .legend { display:flex; gap:14px; font-size:11px; font-weight:700; margin:10px 0; color:var(--muted); }
+  .acard .model { font-size:11px; color:var(--muted); font-weight:600; }
+  .legend { display:flex; flex-wrap:wrap; gap:12px; font-size:11px; font-weight:700; margin:10px 0; color:var(--muted); }
   .sw { display:inline-block; width:10px; height:10px; border-radius:2px; vertical-align:middle; margin-right:4px; }
-  .sw.mg{background:var(--mg);} .sw.pg{background:var(--pg);}
-  .groups { display:flex; gap:16px; align-items:flex-end; height:130px; padding-top:14px; }
+  .sw.mg{background:var(--mg);} .sw.norm{background:var(--norm);} .sw.jsonb{background:var(--jsonb);}
+  .groups { display:flex; gap:18px; align-items:flex-end; height:150px; padding-top:18px; }
   .group { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; }
-  .pair { display:flex; gap:6px; align-items:flex-end; height:96px; }
-  .b { width:22px; border-radius:4px 4px 0 0; height:0; transition:height .9s cubic-bezier(.2,.7,.2,1); position:relative; }
-  .b.mg{background:var(--mg);} .b.pg{background:var(--pg);}
+  .triple { display:flex; gap:5px; align-items:flex-end; height:108px; }
+  .b { width:20px; border-radius:4px 4px 0 0; height:0; transition:height .9s cubic-bezier(.2,.7,.2,1); position:relative; }
+  .b.mg{background:var(--mg);} .b.norm{background:var(--norm);} .b.jsonb{background:var(--jsonb);}
   .b .v { position:absolute; top:-15px; left:50%; transform:translateX(-50%); font-size:9px; font-weight:800; white-space:nowrap; color:var(--muted); }
   .glabel { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; }
-  .lower { font-size:11px; color:var(--muted); margin-top:6px; }
+  .lower { font-size:11px; color:var(--muted); margin-top:8px; }
   @media (prefers-reduced-motion: reduce){ .b { transition:none; } }
+  .cost { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  @media (max-width:760px){ .cost { grid-template-columns:1fr; } }
+  .costcard { border:1px solid var(--line); border-radius:12px; padding:16px; }
+  .costrow { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--line); font-size:14px; }
+  .costrow:last-child { border-bottom:0; } .costrow b { font-weight:800; }
+  .assume { font-size:11px; color:var(--muted); margin-top:10px; }
   .shapes { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
-  @media (max-width:720px){ .shapes{grid-template-columns:1fr;} }
-  .shape { border:1px solid var(--line); border-radius:10px; padding:14px; text-align:center; }
-  .shape .pct { font-size:30px; font-weight:800; color:var(--mg); }
-  .shape .name { font-weight:700; text-transform:uppercase; font-size:11px; color:var(--muted); }
-  .trend { margin-top:14px; font-weight:700; }
-  .trend-note { font-weight:400; font-size:14px; color:#27323a; margin:10px 0 0; max-width:760px; }
-  .trend-note b { color:var(--ink); }
-  .why { background:#0e1b16; color:#cfe8df; border-radius:10px; padding:14px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; margin-bottom:10px; }
-  .why .pg { color:#ffd9b0; } .why .mg { color:#9fe0c2; } .why .note { color:#7a857f; font-size:10px; margin-top:6px; }
-  .method li { margin:6px 0; color:#27323a; font-size:14px; }
+  @media (max-width:760px){ .shapes{grid-template-columns:1fr;} }
+  .shape { border:1px solid var(--line); border-radius:10px; padding:14px; }
+  .shape .name { font-weight:700; text-transform:uppercase; font-size:11px; color:var(--muted); margin-bottom:8px; }
+  .shape .line { display:flex; justify-content:space-between; font-size:13px; padding:3px 0; }
+  .method li { margin:7px 0; color:#27323a; font-size:14px; }
   .ev { border:1px solid var(--line); border-radius:8px; padding:12px; margin-bottom:8px; }
   .ev .q { font-weight:700; } .ev .verdict { color:var(--muted); font-size:13px; margin:4px 0; }
   .ev .src { font-family:ui-monospace,monospace; font-size:10px; color:#8a949c; word-break:break-all; }
   button { font:inherit; cursor:pointer; border:1px solid var(--mg); background:#fff; color:var(--mg); font-weight:700; border-radius:8px; padding:9px 16px; }
   .hidden { display:none; }
   .claim { color:#cfe8df; font-size:12px; font-weight:700; }
-  .explain { background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:20px 22px; }
-  .explain .tag { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--mg); margin-bottom:10px; }
-  .explain p { margin:0 0 11px; font-size:15px; color:#27323a; }
-  .explain p:last-child { margin-bottom:0; }
-  .explain b { color:var(--ink); }
   .fail-closed { max-width:620px; margin:80px auto; text-align:center; }
-  .status-banner { background:#fff8e6; border:1px solid #e8d8a0; border-radius:10px; padding:14px 18px; margin:22px 0 0; font-size:14px; color:#5a4a1a; }
-  .status-banner b { color:#3d3210; }
-  .status-banner .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:#d99a00; margin-right:7px; vertical-align:middle; animation:pulse 1.6s ease-in-out infinite; }
-  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.35;} }
-  @media (prefers-reduced-motion: reduce){ .status-banner .dot { animation:none; } }
   footer { padding:30px 0; color:var(--muted); font-size:12px; }
 </style>
 </head>
 <body>
-  <!-- claim scope: 3 database designs × 2 AI assistants × 5 repeats = 60 real runs (rendered from bundle.claimLabel) -->
+  <!-- claim scope: 3 database designs × 2 AI assistants × 5 repeats = 90 live-database runs (rendered from bundle.claimLabel) -->
   <header class="bar"><div class="wrap"><span>AI-Friendly Database Benchmark</span><span id="claim-label" class="claim"></span></div></header>
   <main id="app" class="wrap">
-    <div class="status-banner" id="status-banner">
-      <span class="dot"></span><b>Live update:</b> a tougher, fully reproducible version of this benchmark is running right now. It rebuilds the test against <b>real databases</b> (not files), removes any hints that could let the AI shortcut the answer, and adds a <b>tuned Postgres design</b> so Postgres gets its fairest shot. The numbers below are from our <b>earlier pilot</b>; we'll publish the stronger results when the run finishes. We're showing you this mid-flight on purpose — that's the honesty bar we hold ourselves to.
-    </div>
     <div class="hero" id="hero"></div>
-    <section id="primer"><h2>What this is, in plain words</h2><div class="explain" id="primer-card">
-      <div class="tag">30-second version</div>
-      <p>AI coding assistants (like the ones built into modern code editors) can now write working software. To do it, the AI has to <b>read and understand where your data lives</b> before it can write a single line.</p>
-      <p>We gave two different AI assistants the <b>exact same job</b>, twice: once where the data lived in <b>MongoDB</b>, and once where the same data lived in <b>Postgres</b>. These are the two most popular ways to store data. They organize it differently: MongoDB keeps everything about one thing together in a single record; Postgres splits it across many connected tables that the AI must stitch back together.</p>
-      <p>We then measured how much work each AI had to do to finish the job — how much it had to read, how long it took, how much it cost. <b>Same result, same test, every time.</b> The one thing we deliberately changed was the shape of the data, so the differences you see line up with that choice.</p>
-      <p class="sub" style="margin:4px 0 0">A note for the technically-minded: each run uses the database's own data in its native shape (one document for MongoDB, related tables for Postgres), and the AI's work is checked against it. It is a focused pilot study, not yet a final verdict on every app — see "How we kept it honest" below for exactly what we did and didn't prove.</p>
-    </div></section>
-    <section><h2>Same job, two databases — here's the difference</h2><p class="sub" id="agent-sub">Shorter bar is better — it means less work for the AI. We only ever compare each AI assistant to itself.</p><div class="twin" id="agent-graphs"><div class="acard" id="agent-graph-claude-code"></div><div class="acard" id="agent-graph-codex"></div></div>
-    <p class="sub" id="metric-key" style="margin-top:14px"><b>Text read</b> — how much the AI had to read to finish. <b>Cost</b> — the bill for that work. <b>Time</b> — how long it took. <b>False starts</b> — tries that errored and had to be redone.</p></section>
-    <section id="shape-story"><h2>Does the gap grow as the database gets more complex?</h2><p class="sub">We built the same feature on three Postgres designs, from simple to detailed. MongoDB stays one record every time; Postgres spreads the data across more and more connected tables.</p><div class="shapes" id="shape-cards"></div><div class="trend" id="shape-trend"></div></section>
-    <section id="why-panel"><h2>Why the difference happens</h2><p class="sub">These are approximate counts, scanned from each AI's recorded work session — a directional indicator, not an exact tally. On Postgres, a <em>JOIN</em> is the step that stitches separate tables back together; the AI writes one for every connection it needs.</p><div id="why-rows"></div></section>
+    <section id="primer"><h2>What this is, in plain words</h2><div class="explain" id="primer-card"></div></section>
+    <section><h2>Same feature, three database designs — here's the AI's effort</h2><p class="sub" id="agent-sub">Shorter bar is better — less work for the AI. Each assistant is compared only to itself.</p><div class="twin" id="agent-graphs"><div class="acard" id="agent-graph-claude-code"></div><div class="acard" id="agent-graph-codex"></div></div>
+    <p class="sub" id="metric-key" style="margin-top:14px"></p></section>
+    <section id="cost-panel"><h2>What that costs at scale</h2><p class="sub" id="cost-sub"></p><div class="cost" id="cost-cards"></div><p class="assume" id="cost-assume"></p></section>
+    <section id="shape-story"><h2>Does it change as the database gets more complex?</h2><p class="sub">Three Postgres normalized depths, same feature. Numbers are extra AI reading vs MongoDB at that depth.</p><div class="shapes" id="shape-cards"></div></section>
     <section id="methodology"><h2>How we kept it honest</h2><ul class="method" id="method-list"></ul></section>
-    <section id="evidence-drawer"><h2>Inspect the evidence</h2><p class="sub">Every number on this page comes from a real file you can open. Each file is fingerprinted, so if anyone changed a number after the fact, this page would refuse to load it.</p><button id="inspect-evidence" data-action="toggle-evidence">Show evidence sources</button><div id="evidence-list" class="hidden"></div></section>
+    <section id="evidence-drawer"><h2>Inspect the evidence</h2><p class="sub">Every number comes from a real file you can open, fingerprinted so it can't be quietly changed.</p><button id="inspect-evidence" data-action="toggle-evidence">Show evidence sources</button><div id="evidence-list" class="hidden"></div></section>
     <footer id="foot"></footer>
   </main>
 <script>
-  const BUNDLE_URL = "evidence/ast-bench-v2/benchmark-public-bundle.json";
+  const BUNDLE_URL = "evidence/ast-bench-v3/benchmark-public-bundle.json";
   const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c]));
+  const usd = (n) => "$" + Number(n || 0).toLocaleString("en-US", { maximumFractionDigits: 0 });
 
   fetch(BUNDLE_URL, { cache: "no-store" })
     .then((r) => { if (!r.ok) throw new Error("bundle " + r.status); return r.json(); })
     .then((b) => render(b))
     .catch((e) => { document.body.innerHTML = `<div class="fail-closed"><h1>Evidence unavailable</h1><p>${esc(e.message)}</p><p>This page fails closed instead of rendering unverified claims.</p></div>`; });
 
+  const LANES = [
+    { key: "mongo", cls: "mg", label: "MongoDB" },
+    { key: "postgres-norm", cls: "norm", label: "Postgres (normalized)" },
+    { key: "postgres-jsonb", cls: "jsonb", label: "Postgres (tuned JSON)" }
+  ];
+  const METRICS = [
+    { lane: "medianTokensRead", label: "text read", kind: "compact" },
+    { lane: "medianCostUsd", label: "cost", kind: "usd" },
+    { lane: "medianElapsedMs", label: "time", kind: "time" }
+  ];
+
   function render(b) {
     document.getElementById("claim-label").textContent = b.claimLabel || "";
-    renderHero(b); renderAgentGraphs(b); renderShapeStory(b); renderWhyPanel(b); renderMethodology(b); renderEvidence(b);
-    document.getElementById("foot").textContent = `${b.progress?.passedLaneRuns || 0} of ${b.progress?.requiredLaneRuns || 60} real runs completed · pilot study · every comparison is each AI assistant measured against itself.`;
+    renderHero(b); renderPrimer(b); renderGraphs(b); renderCost(b); renderShapes(b); renderMethod(b); renderEvidence(b);
+    const ig = b.integrity || {};
+    document.getElementById("foot").textContent = `${ig.clean || 0} of ${ig.total || 0} runs clean · live-database pilot · every comparison is each AI assistant measured against itself.`;
     requestAnimationFrame(() => requestAnimationFrame(() => {
       document.querySelectorAll(".b").forEach((el) => { el.style.height = el.dataset.h + "px"; });
     }));
@@ -117,86 +115,96 @@
     const h = b.hero || {};
     document.getElementById("hero").innerHTML =
       `<div class="kicker">${esc(h.kicker)}</div>
-       <h1>Both AI assistants did measurably less database work on <em>MongoDB</em>.</h1>
-       ${h.agentsAgree ? `<span class="badge" id="agreement-badge">✓ Two different AI assistants, same conclusion</span>` : `<span class="badge" id="agreement-badge">Per-agent detail below</span>`}
+       <h1>It's the <em>data shape</em> that saves AI work — not the database brand.</h1>
+       ${h.agentsAgree ? `<span class="badge" id="agreement-badge">✓ Both assistants agree on normalized Postgres</span>` : `<span class="badge" id="agreement-badge">Per-assistant detail below</span>`}
        <p class="statement">${esc(h.statement)}</p>`;
   }
 
-  const METRICS = [
-    { key: "TokensRead", lane: "medianTokensRead", label: "text read" },
-    { key: "CostUsd", lane: "medianCostUsd", label: "cost" },
-    { key: "ElapsedMs", lane: "medianElapsedMs", label: "time" },
-    { key: "RetrySignals", lane: "medianRetrySignals", label: "false starts" }
-  ];
-  function renderAgentGraphs(b) {
+  function renderPrimer(b) {
+    const p = b.primer || {};
+    document.getElementById("primer-card").innerHTML =
+      `<div class="tag">30-second version</div>
+       <p>${esc(p.whatChanged)}</p>
+       <p>${esc(p.threeLanes)}</p>`;
+  }
+
+  function fmt(kind, n) {
+    if (kind === "usd") return "$" + (Math.round(n * 100) / 100);
+    if (kind === "time") { const s = n / 1000; return s < 90 ? Math.round(s) + "s" : (Math.round(s / 6) / 10) + " min"; }
+    return Intl.NumberFormat("en-US", { notation: "compact" }).format(Math.round(n));
+  }
+
+  function renderGraphs(b) {
     const order = ["claude-code", "codex"];
-    const perAgent = (b.databaseVerdict?.perAgent || []).slice().sort((a, z) => order.indexOf(a.agentId) - order.indexOf(z.agentId));
-    const labelFor = (id) => (b.agents || []).find((a) => a.id === id)?.label || id;
-    if (perAgent.length === 0) {
-      document.getElementById("agent-graphs").innerHTML = `<p class="sub">Agent comparison graphs appear once both lanes have captured runs. Runs are still being collected.</p>`;
-      return;
-    }
-    document.getElementById("agent-graphs").innerHTML = perAgent.map((a) => {
+    const agents = (b.agents || []).slice().sort((a, z) => order.indexOf(a.agentId) - order.indexOf(z.agentId));
+    if (!agents.length) { document.getElementById("agent-graphs").innerHTML = `<p class="sub">Results appear once runs are scored.</p>`; return; }
+    document.getElementById("agent-graphs").innerHTML = agents.map((a) => {
       const groups = METRICS.map((m) => {
-        const mv = Number(a.mongo?.[m.lane] || 0), pv = Number(a.postgres?.[m.lane] || 0);
-        const max = Math.max(mv, pv, 1);
-        const mh = Math.round((mv / max) * 90), ph = Math.round((pv / max) * 90);
-        const fmt = (n) => {
-          if (m.lane === "medianCostUsd") return "$" + (Math.round(n * 100) / 100);
-          if (m.lane === "medianElapsedMs") {
-            const sec = n / 1000;
-            return sec < 90 ? Math.round(sec) + "s" : (Math.round(sec / 6) / 10) + " min";
-          }
-          if (m.lane === "medianRetrySignals") return String(Math.round(n));
-          return Intl.NumberFormat("en-US", { notation: "compact" }).format(Math.round(n));
-        };
-        return `<div class="group"><div class="pair">
-          <div class="b mg" data-h="${mh}" style="height:${reduceMotion ? mh : 0}px"><span class="v">${fmt(mv)}</span></div>
-          <div class="b pg" data-h="${ph}" style="height:${reduceMotion ? ph : 0}px"><span class="v">${fmt(pv)}</span></div>
-        </div><div class="glabel">${m.label}</div></div>`;
+        const vals = LANES.map((L) => Number(a.lanes?.[L.key]?.[m.lane] || 0));
+        const max = Math.max(...vals, 1);
+        const bars = LANES.map((L, i) => {
+          const hgt = Math.round((vals[i] / max) * 100);
+          return `<div class="b ${L.cls}" data-h="${hgt}" style="height:${reduceMotion ? hgt : 0}px"><span class="v">${fmt(m.kind, vals[i])}</span></div>`;
+        }).join("");
+        return `<div class="group"><div class="triple">${bars}</div><div class="glabel">${m.label}</div></div>`;
       }).join("");
+      const norm = a.vsMongo?.["postgres-norm"]?.tokensPct, js = a.vsMongo?.["postgres-jsonb"]?.tokensPct;
+      const sign = (x) => (x > 0 ? "+" : "") + x + "%";
       return `<div class="acard" id="agent-graph-${esc(a.agentId)}">
-        <h3>${esc(labelFor(a.agentId))} ${a.mongoWins ? `<span class="agree">· less work on MongoDB</span>` : ""}</h3>
-        <div class="legend"><span><span class="sw mg"></span>MongoDB</span><span><span class="sw pg"></span>Postgres</span></div>
+        <h3>${esc(a.label)}</h3><div class="model">on ${esc(a.model)}</div>
+        <div class="legend">${LANES.map((L) => `<span><span class="sw ${L.cls}"></span>${esc(L.label)}</span>`).join("")}</div>
         <div class="groups">${groups}</div>
-        <div class="lower">Each bar is this AI's typical run. A taller Postgres bar = more work for the very same result.</div>
+        <div class="lower">vs MongoDB: normalized Postgres <b>${sign(norm)}</b> text read · tuned JSON Postgres <b>${sign(js)}</b>.</div>
       </div>`;
     }).join("");
+    document.getElementById("metric-key").innerHTML = `<b>Text read</b> — how much the AI had to read to finish. <b>Cost</b> — the bill for that work. <b>Time</b> — how long it took. Three bars per metric: one for each database design.`;
   }
 
-  function renderShapeStory(b) {
-    const byShape = b.shapeVerdict?.depthTrend?.tokensReadPctByShape || {};
-    const order = ["shallow", "moderate", "deep"];
-    const niceName = { shallow: "Simple", moderate: "Standard", deep: "Detailed" };
-    document.getElementById("shape-cards").innerHTML = order.map((s) => {
-      const pct = byShape[s];
-      return `<div class="shape"><div class="name">${esc(niceName[s] || s)}</div><div class="pct">${pct == null ? "—" : (pct > 0 ? "+" : "") + pct + "%"}</div><div class="lower">more reading on Postgres</div></div>`;
+  function renderCost(b) {
+    const order = ["claude-code", "codex"];
+    const agents = (b.agents || []).slice().sort((a, z) => order.indexOf(a.agentId) - order.indexOf(z.agentId));
+    const tpm = b.projectionAssumptions?.agentTasksPerMonth || 1000;
+    document.getElementById("cost-sub").textContent = `If your team runs ${tpm.toLocaleString("en-US")} AI build-tasks a month, here's the monthly bill per database design (each assistant vs its own MongoDB cost).`;
+    document.getElementById("cost-cards").innerHTML = agents.map((a) => {
+      const p = a.projection || {};
+      const row = (label, monthly, delta) => {
+        const d = delta == null ? "" : (delta > 0 ? `+${usd(delta)}/mo` : `−${usd(Math.abs(delta))}/mo`);
+        return `<div class="costrow"><span>${esc(label)}</span><span><b>${usd(monthly)}</b> ${d ? `<span style="color:var(--muted)">(${d})</span>` : ""}</span></div>`;
+      };
+      return `<div class="costcard"><h3>${esc(a.label)} <span class="model">on ${esc(a.model)}</span></h3>
+        ${row("MongoDB", p.mongoMonthlyUsd, null)}
+        ${row("Postgres (normalized)", p["postgres-norm"]?.monthlyUsd, p["postgres-norm"]?.monthlyDeltaVsMongoUsd)}
+        ${row("Postgres (tuned JSON)", p["postgres-jsonb"]?.monthlyUsd, p["postgres-jsonb"]?.monthlyDeltaVsMongoUsd)}
+      </div>`;
     }).join("");
-    const grows = b.shapeVerdict?.depthTrend?.growsWithDepth;
-    document.getElementById("shape-trend").innerHTML = grows
-      ? `<span style="color:var(--mg)">↑ The MongoDB advantage gets bigger as the Postgres design gets more complex.</span>`
-      : `<span style="color:var(--muted)">MongoDB came out ahead at every level of complexity — but the size of the gap did not grow in a straight line. We report it exactly as the runs came out, not the tidier story we expected.</span>
-         <p class="trend-note">You might expect the most detailed design to be the hardest, but it isn't always. What drives the AI's extra work is <b>how many tables this particular job has to touch</b> — not the total number of tables in the database. The detailed design has more tables overall, but several just sit on the side (logs, settings) and never get read for this task. So the gap follows the work the job actually requires, not raw table count.</p>`;
+    document.getElementById("cost-assume").textContent = `Assumptions you can change: ${tpm.toLocaleString("en-US")} tasks/month. ${b.projectionAssumptions?.note || ""}`;
   }
 
-  function renderWhyPanel(b) {
-    const niceName = { shallow: "Simple design", moderate: "Standard design", deep: "Detailed design" };
-    document.getElementById("why-rows").innerHTML = (b.whyHighlights || []).map((w) =>
-      `<div class="why"><div><b>${esc(niceName[w.shape] || w.shape)}</b></div>
-        <div class="pg">Postgres — ${esc(w.postgres?.summary)}</div>
-        <div class="mg">MongoDB — ${esc(w.mongo?.summary)}</div>
-        <div class="note">${esc(w.traceNote || "")}</div></div>`).join("");
+  function renderShapes(b) {
+    const order = ["claude-code", "codex"];
+    const agents = (b.agents || []).slice().sort((a, z) => order.indexOf(a.agentId) - order.indexOf(z.agentId));
+    const niceShape = { shallow: "Simple (8 tables)", moderate: "Standard (12 tables)", deep: "Detailed (17 tables)" };
+    const shapes = ["shallow", "moderate", "deep"];
+    document.getElementById("shape-cards").innerHTML = shapes.map((sh) => {
+      const lines = agents.map((a) => {
+        const row = (a.perShape || []).find((x) => x.shape === sh) || {};
+        const n = row["postgres-norm"]?.tokensPct, j = row["postgres-jsonb"]?.tokensPct;
+        const s = (x) => x == null ? "—" : (x > 0 ? "+" : "") + x + "%";
+        return `<div class="line"><span>${esc(a.label)}</span><span>norm <b>${s(n)}</b> · json <b>${s(j)}</b></span></div>`;
+      }).join("");
+      return `<div class="shape"><div class="name">${esc(niceShape[sh] || sh)}</div>${lines}</div>`;
+    }).join("");
   }
 
-  function renderMethodology(b) {
+  function renderMethod(b) {
     const m = b.methodology || {};
-    const items = [m.dataModel, m.withinAgentOnly, m.tokenMetric, m.cheaperModelStillWorks, m.whyAgentsDiffer, m.sameOutcome, m.idiomaticPostgres, m.fullV1Scope, m.pathToOfficial].filter(Boolean);
+    const items = [m.shapeWins, m.liveDb, m.deLeaked, m.withinAgentOnly, m.cheaperModels, m.honestSplit, m.limits, m.pathToOfficial].filter(Boolean);
     document.getElementById("method-list").innerHTML = items.map((t) => `<li>${esc(t)}</li>`).join("");
   }
 
   function renderEvidence(b) {
     document.getElementById("evidence-list").innerHTML = (b.evidenceClaims || []).map((c) =>
-      `<div class="ev"><div class="q">${esc(c.question)}</div><div class="verdict">${esc(c.verdict)}</div>${(c.sources||[]).map((s)=>`<div class="src">${esc(s.path)} · ${esc((s.sha256||"").slice(0,12))}…</div>`).join("")}</div>`).join("");
+      `<div class="ev"><div class="q">${esc(c.question)}</div><div class="verdict">${esc(c.verdict)}</div>${(c.sources || []).map((s) => `<div class="src">${esc(s.path)} · ${esc((s.sha256 || "").slice(0, 12))}…</div>`).join("")}</div>`).join("");
   }
 </script>
 </body>

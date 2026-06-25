@@ -4,7 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "npm run benchmark:score && npm run benchmark:bundle",
+    "build": "npm run benchmark:score:v3 && npm run benchmark:bundle:v3 && npm run benchmark:ui:test && npm run proof:no-mock",
+    "benchmark:score:v3": "node scripts/benchmark-score-v3.mjs",
+    "benchmark:bundle:v3": "node scripts/benchmark-build-bundle-v3.mjs",
+    "benchmark:batch:v3": "node scripts/benchmark-batch-v3.mjs --repeats 5",
     "deploy": "npx wrangler deploy",
     "deploy:pages": "npx wrangler pages deploy prototypes/lab-console --project-name=llm-friendly-bench",
     "proof:all": "npm run proof:run && npm run proof:validate && npm run proof:gates && npm run proof:bundle && npm run proof:no-mock",

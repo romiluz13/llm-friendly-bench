@@ -1,0 +1,358 @@
+{
+  "schemaVersion": "3.0.0",
+  "suiteId": "ast-bench-v3",
+  "status": "pilot",
+  "executionMode": "live-db",
+  "generatedAt": "2026-06-25T06:11:44.115Z",
+  "claimLabel": "3 database designs × 2 AI assistants × 5 repeats = 90 live-database runs",
+  "hero": {
+    "kicker": "2 AI coding assistants · same feature · real MongoDB + Postgres · 81 clean runs",
+    "headline": "It's the data shape that saves AI work — not the database brand.",
+    "statement": "Both AI assistants did more work on normalized, multi-table Postgres than on MongoDB. Reshaping Postgres into a single JSON-style document recovers much of the difference — but that means hand-building the document model and giving up the relational structure Postgres is chosen for, and it didn't help both assistants equally.",
+    "agentsAgree": true
+  },
+  "primer": {
+    "whatChanged": "Every run here is a real AI coding session against a real database — live MongoDB and live Postgres, not files. The AI must work out the answer from raw business facts (we removed any pre-filled answers), and it has to save its results back into the live database for the test to pass.",
+    "threeLanes": "We tested three database designs for the same feature: MongoDB (one document), normalized Postgres (the textbook many-table design), and tuned Postgres (one table with a JSON column shaped like the document). The third is the design a seasoned Postgres engineer would reach for — the fair fight."
+  },
+  "agents": [
+    {
+      "agentId": "claude-code",
+      "label": "Claude Code",
+      "model": "sonnet (Sonnet 4.6)",
+      "lanes": {
+        "mongo": {
+          "label": "MongoDB",
+          "cleanRepeats": 14,
+          "medianTokensRead": 464000.5,
+          "medianCostUsd": 0.8544513,
+          "medianElapsedMs": 202853
+        },
+        "postgres-norm": {
+          "label": "Postgres (normalized)",
+          "cleanRepeats": 11,
+          "medianTokensRead": 986224,
+          "medianCostUsd": 1.2343106999999993,
+          "medianElapsedMs": 333980
+        },
+        "postgres-jsonb": {
+          "label": "Postgres (tuned JSONB)",
+          "cleanRepeats": 14,
+          "medianTokensRead": 682901,
+          "medianCostUsd": 1.0907740499999998,
+          "medianElapsedMs": 292876.5
+        }
+      },
+      "vsMongo": {
+        "postgres-norm": {
+          "tokensPct": 113,
+          "costPct": 44,
+          "timePct": 65
+        },
+        "postgres-jsonb": {
+          "tokensPct": 47,
+          "costPct": 28,
+          "timePct": 44
+        }
+      },
+      "perShape": [
+        {
+          "shape": "shallow",
+          "mongoTokens": 454337,
+          "postgres-norm": {
+            "medianTokensRead": 1165731,
+            "tokensPct": 157
+          },
+          "postgres-jsonb": {
+            "medianTokensRead": 611949,
+            "tokensPct": 35
+          }
+        },
+        {
+          "shape": "moderate",
+          "mongoTokens": 498809,
+          "postgres-norm": {
+            "medianTokensRead": 767458,
+            "tokensPct": 54
+          },
+          "postgres-jsonb": {
+            "medianTokensRead": 735230,
+            "tokensPct": 47
+          }
+        },
+        {
+          "shape": "deep",
+          "mongoTokens": 400565,
+          "postgres-norm": {
+            "medianTokensRead": 826403,
+            "tokensPct": 106
+          },
+          "postgres-jsonb": {
+            "medianTokensRead": 1128712,
+            "tokensPct": 182
+          }
+        }
+      ],
+      "projection": {
+        "tasksPerMonth": 1000,
+        "mongoMonthlyUsd": 854.45,
+        "postgres-norm": {
+          "monthlyUsd": 1234.31,
+          "monthlyDeltaVsMongoUsd": 379.86
+        },
+        "postgres-jsonb": {
+          "monthlyUsd": 1090.77,
+          "monthlyDeltaVsMongoUsd": 236.32
+        }
+      }
+    },
+    {
+      "agentId": "codex",
+      "label": "Codex",
+      "model": "gpt-5.4-mini",
+      "lanes": {
+        "mongo": {
+          "label": "MongoDB",
+          "cleanRepeats": 15,
+          "medianTokensRead": 2139674,
+          "medianCostUsd": 5.676735,
+          "medianElapsedMs": 487869
+        },
+        "postgres-norm": {
+          "label": "Postgres (normalized)",
+          "cleanRepeats": 13,
+          "medianTokensRead": 2637862,
+          "medianCostUsd": 7.197295,
+          "medianElapsedMs": 419282
+        },
+        "postgres-jsonb": {
+          "label": "Postgres (tuned JSONB)",
+          "cleanRepeats": 14,
+          "medianTokensRead": 1824930.5,
+          "medianCostUsd": 4.872506250000001,
+          "medianElapsedMs": 316519.5
+        }
+      },
+      "vsMongo": {
+        "postgres-norm": {
+          "tokensPct": 23,
+          "costPct": 27,
+          "timePct": -14
+        },
+        "postgres-jsonb": {
+          "tokensPct": -15,
+          "costPct": -14,
+          "timePct": -35
+        }
+      },
+      "perShape": [
+        {
+          "shape": "shallow",
+          "mongoTokens": 1785345,
+          "postgres-norm": {
+            "medianTokensRead": 2202550,
+            "tokensPct": 23
+          },
+          "postgres-jsonb": {
+            "medianTokensRead": 1632252,
+            "tokensPct": -9
+          }
+        },
+        {
+          "shape": "moderate",
+          "mongoTokens": 2376372,
+          "postgres-norm": {
+            "medianTokensRead": 3010418,
+            "tokensPct": 27
+          },
+          "postgres-jsonb": {
+            "medianTokensRead": 2098592,
+            "tokensPct": -12
+          }
+        },
+        {
+          "shape": "deep",
+          "mongoTokens": 2139674,
+          "postgres-norm": {
+            "medianTokensRead": 2282838,
+            "tokensPct": 7
+          },
+          "postgres-jsonb": {
+            "medianTokensRead": 1753661.5,
+            "tokensPct": -18
+          }
+        }
+      ],
+      "projection": {
+        "tasksPerMonth": 1000,
+        "mongoMonthlyUsd": 5676.74,
+        "postgres-norm": {
+          "monthlyUsd": 7197.3,
+          "monthlyDeltaVsMongoUsd": 1520.56
+        },
+        "postgres-jsonb": {
+          "monthlyUsd": 4872.51,
+          "monthlyDeltaVsMongoUsd": -804.23
+        }
+      }
+    }
+  ],
+  "laneOrder": [
+    "mongo",
+    "postgres-norm",
+    "postgres-jsonb"
+  ],
+  "laneLabels": {
+    "mongo": "MongoDB",
+    "postgres-norm": "Postgres (normalized)",
+    "postgres-jsonb": "Postgres (tuned JSONB)"
+  },
+  "projectionAssumptions": {
+    "agentTasksPerMonth": 1000,
+    "note": "Illustrative scale-up of the measured per-task cost difference. Assumptions are shown so you can change them; the per-task numbers are measured, the monthly figure is arithmetic."
+  },
+  "methodology": {
+    "shapeWins": "The pattern that holds across both assistants: the normalized, multi-table Postgres design costs the AI the most work. The closer the database is to a single document shaped around how the feature reads it, the less the AI has to do. MongoDB gives that shape by default; Postgres can match it with a hand-built JSON design.",
+    "liveDb": "Every run is a real coding session against a real database — live MongoDB and live Postgres in Docker. The AI connects, reads the raw facts, derives the answer, and writes results back; the test then reads the live database to check. An automated check confirms the writes actually landed in the database, so a run can't pass by faking it with a local file.",
+    "deLeaked": "The data contains only raw business facts — no pre-filled status, owners, or risk flags. The AI must derive the answer from the rules. Control cases with deliberately different correct answers confirm an assistant can't pass by copying.",
+    "withinAgentOnly": "Within-agent comparison only: we compare each assistant to itself across the three designs. We never put one assistant's numbers next to the other's — the two tools count their internal work in different units, so only each one's own design-to-design difference is meaningful.",
+    "cheaperModels": "Both assistants ran on small, low-cost models (not the flagship tier). The cheaper models still built correct, working code against real databases — more evidence you don't need the most expensive AI to build well.",
+    "honestSplit": "Honest result: tuned JSON-style Postgres split the two assistants. One still did clearly more work than on MongoDB; the other did slightly less. We report it exactly as measured — the document shape helps, but how much depends on the assistant.",
+    "limits": "This is a focused pilot on one feature with cheap models: 81 clean runs out of 90 attempted (9 were rejected by the integrity checks and excluded). Per-design depth trends are not a perfectly straight line — real measurement is noisy, and we show it as-is.",
+    "pathToOfficial": "To become officially-endorsed material this still needs an independent Postgres-fairness review and a formal sign-off. The tuned-JSON design strengthens the fairness story but does not replace outside review."
+  },
+  "integrity": {
+    "total": 90,
+    "clean": 81,
+    "failed": 9,
+    "reasons": {
+      "protected-file-modified": 3,
+      "test-failed": 4,
+      "off-contract-files": 2
+    }
+  },
+  "evidenceClaims": [
+    {
+      "id": "live-db",
+      "question": "Are the runs really against live databases?",
+      "verdict": "Yes. Each run connects to a real MongoDB or Postgres database, reads raw facts, and writes results back. An automated check reads the live database afterward and rejects any run whose results didn't actually land there.",
+      "sources": [
+        {
+          "path": "scripts/benchmark-livedb.mjs",
+          "exists": true,
+          "bytes": 12436,
+          "sha256": "87b0ea86b0032f4b3af110d6a82ef77b76c92d4fba2b9b8d0629e357b3721356"
+        },
+        {
+          "path": "scripts/benchmark-run-v3.mjs",
+          "exists": true,
+          "bytes": 14618,
+          "sha256": "e241851322d8df9888ff03fa1bdcebc2ee340665a20787232b250db614b426f4"
+        }
+      ]
+    },
+    {
+      "id": "de-leak",
+      "question": "Could the AI pass by copying the answer?",
+      "verdict": "No. The data holds only raw facts; the answer is derived from rules. Control cases with different correct answers are rejected if an assistant just copies a status — proven before any scored run.",
+      "sources": [
+        {
+          "path": "scripts/benchmark-derive.mjs",
+          "exists": true,
+          "bytes": 9959,
+          "sha256": "541468de01bb7a625f93446de2cffd64417dd75044256db275df4832bf0344c9"
+        },
+        {
+          "path": "scripts/benchmark-prove-v3.mjs",
+          "exists": true,
+          "bytes": 2722,
+          "sha256": "3c9a184ea7cdb084241667cce0a5868cb116574ec17e9ab122f0fbd257a74286"
+        }
+      ]
+    },
+    {
+      "id": "fair-postgres",
+      "question": "Did Postgres get a fair design?",
+      "verdict": "Yes. Besides the textbook normalized design, we added a tuned single-table JSON design with an index — what a seasoned Postgres engineer would actually build. Results are reported for both.",
+      "sources": [
+        {
+          "path": "scripts/benchmark-livedb.mjs",
+          "exists": true,
+          "bytes": 12436,
+          "sha256": "87b0ea86b0032f4b3af110d6a82ef77b76c92d4fba2b9b8d0629e357b3721356"
+        },
+        {
+          "path": "docs/superpowers/specs/2026-06-24-live-db-3lane-benchmark-design.md",
+          "exists": true,
+          "bytes": 10050,
+          "sha256": "0afdbddee4f1d135601cf8f9ffe7fd3b36206b811ad5e3a67087cdece23a25eb"
+        }
+      ]
+    },
+    {
+      "id": "real-runs",
+      "question": "Where do the numbers come from?",
+      "verdict": "From real captured run records — token counts from each tool's own session logs, fingerprinted so they can't be altered. 81 clean runs scored; 9 rejected by integrity checks and excluded.",
+      "sources": [
+        {
+          "path": "benchmark/results/summary-v3.json",
+          "exists": true,
+          "bytes": 4843,
+          "sha256": "a29cdaa1674d9393fa4755eea1619af81ceb9e56cea4f90d9cbb4daefbe8137e"
+        },
+        {
+          "path": "benchmark/evidence-v3/mongo-shallow-codex-r1-manifest.json",
+          "exists": true,
+          "bytes": 2893,
+          "sha256": "ed0d9a1f759e35196a946018e0d824a198c38f287e1e952750a463cb8df9798d"
+        },
+        {
+          "path": "benchmark/evidence-v3/postgres-norm-shallow-codex-r1-manifest.json",
+          "exists": true,
+          "bytes": 3010,
+          "sha256": "09d8f5aead5dbcd2d3e3f8d27b78ffaa4ec407298f94205ac6241898178b294a"
+        },
+        {
+          "path": "benchmark/evidence-v3/postgres-jsonb-shallow-codex-r1-manifest.json",
+          "exists": true,
+          "bytes": 3036,
+          "sha256": "a938d0eec14cfabba77c381c2fae18be4287f3021c03b5209ab33378f477a9dc"
+        }
+      ]
+    },
+    {
+      "id": "within-agent",
+      "question": "Is this comparing databases, not AIs?",
+      "verdict": "Yes. Each assistant is compared only to itself across the three database designs. One assistant's numbers are never stacked against the other's, because the two tools count work in different units.",
+      "sources": [
+        {
+          "path": "scripts/benchmark-score-v3.mjs",
+          "exists": true,
+          "bytes": 5788,
+          "sha256": "58fc3221a11010ef05a6b116867922a64c708d0dc3d6c6f68fe3bdac6d2172b1"
+        }
+      ]
+    },
+    {
+      "id": "anti-cheat",
+      "question": "Can a run cheat the test?",
+      "verdict": "The assistant may only edit the workflow file. Editing the database helper or the test, or adding a file-based shortcut, is auto-detected and fails the run. A separate check confirms results landed in the live database.",
+      "sources": [
+        {
+          "path": "scripts/benchmark-run-v3.mjs",
+          "exists": true,
+          "bytes": 14618,
+          "sha256": "e241851322d8df9888ff03fa1bdcebc2ee340665a20787232b250db614b426f4"
+        }
+      ]
+    }
+  ],
+  "caveats": [
+    "Within-agent comparison only. Each agent is measured against itself across the three database designs; one agent's absolute numbers are never compared to the other's, because the two CLIs count tokens incompatibly.",
+    "Tuned JSON-style Postgres split the two assistants: clearly worse than MongoDB for one, slightly better for the other. Shown, not hidden.",
+    "Integrity: 81/90 runs clean; 9 rejected (3 protected-file-modified, 4 test-failed, 2 off-contract-files).",
+    "One cell (shallow normalized Postgres, Claude) has only 2 clean repeats — the cheap model repeatedly tripped the integrity guard on that lane.",
+    "Per-design depth trend is not perfectly monotonic; reported as measured.",
+    "Focused pilot, cheap models, one feature. Not yet officially-endorsed material."
+  ]
+}

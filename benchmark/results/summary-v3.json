@@ -1,0 +1,191 @@
+{
+  "schemaVersion": "3.0.0",
+  "suiteId": "ast-bench-v3",
+  "generatedAt": "2026-06-25T06:11:43.918Z",
+  "executionMode": "live-db",
+  "lanes": [
+    "mongo",
+    "postgres-norm",
+    "postgres-jsonb"
+  ],
+  "shapes": [
+    "shallow",
+    "moderate",
+    "deep"
+  ],
+  "agents": [
+    {
+      "id": "claude-code",
+      "label": "Claude Code",
+      "model": "sonnet (Sonnet 4.6)",
+      "agentId": "claude-code",
+      "lanes": {
+        "mongo": {
+          "cleanRepeats": 14,
+          "medianTokensRead": 464000.5,
+          "medianCostUsd": 0.8544513,
+          "medianElapsedMs": 202853,
+          "medianRetrySignals": 40.5
+        },
+        "postgres-norm": {
+          "cleanRepeats": 11,
+          "medianTokensRead": 986224,
+          "medianCostUsd": 1.2343106999999993,
+          "medianElapsedMs": 333980,
+          "medianRetrySignals": 79
+        },
+        "postgres-jsonb": {
+          "cleanRepeats": 14,
+          "medianTokensRead": 682901,
+          "medianCostUsd": 1.0907740499999998,
+          "medianElapsedMs": 292876.5,
+          "medianRetrySignals": 67
+        }
+      },
+      "vsMongo": {
+        "postgres-norm": {
+          "tokensPct": 113,
+          "costPct": 44,
+          "timePct": 65
+        },
+        "postgres-jsonb": {
+          "tokensPct": 47,
+          "costPct": 28,
+          "timePct": 44
+        }
+      },
+      "perShape": [
+        {
+          "shape": "shallow",
+          "mongoTokens": 454337,
+          "postgres-norm": {
+            "medianTokensRead": 1165731,
+            "tokensPct": 157
+          },
+          "postgres-jsonb": {
+            "medianTokensRead": 611949,
+            "tokensPct": 35
+          }
+        },
+        {
+          "shape": "moderate",
+          "mongoTokens": 498809,
+          "postgres-norm": {
+            "medianTokensRead": 767458,
+            "tokensPct": 54
+          },
+          "postgres-jsonb": {
+            "medianTokensRead": 735230,
+            "tokensPct": 47
+          }
+        },
+        {
+          "shape": "deep",
+          "mongoTokens": 400565,
+          "postgres-norm": {
+            "medianTokensRead": 826403,
+            "tokensPct": 106
+          },
+          "postgres-jsonb": {
+            "medianTokensRead": 1128712,
+            "tokensPct": 182
+          }
+        }
+      ]
+    },
+    {
+      "id": "codex",
+      "label": "Codex",
+      "model": "gpt-5.4-mini",
+      "agentId": "codex",
+      "lanes": {
+        "mongo": {
+          "cleanRepeats": 15,
+          "medianTokensRead": 2139674,
+          "medianCostUsd": 5.676735,
+          "medianElapsedMs": 487869,
+          "medianRetrySignals": 329
+        },
+        "postgres-norm": {
+          "cleanRepeats": 13,
+          "medianTokensRead": 2637862,
+          "medianCostUsd": 7.197295,
+          "medianElapsedMs": 419282,
+          "medianRetrySignals": 513
+        },
+        "postgres-jsonb": {
+          "cleanRepeats": 14,
+          "medianTokensRead": 1824930.5,
+          "medianCostUsd": 4.872506250000001,
+          "medianElapsedMs": 316519.5,
+          "medianRetrySignals": 456
+        }
+      },
+      "vsMongo": {
+        "postgres-norm": {
+          "tokensPct": 23,
+          "costPct": 27,
+          "timePct": -14
+        },
+        "postgres-jsonb": {
+          "tokensPct": -15,
+          "costPct": -14,
+          "timePct": -35
+        }
+      },
+      "perShape": [
+        {
+          "shape": "shallow",
+          "mongoTokens": 1785345,
+          "postgres-norm": {
+            "medianTokensRead": 2202550,
+            "tokensPct": 23
+          },
+          "postgres-jsonb": {
+            "medianTokensRead": 1632252,
+            "tokensPct": -9
+          }
+        },
+        {
+          "shape": "moderate",
+          "mongoTokens": 2376372,
+          "postgres-norm": {
+            "medianTokensRead": 3010418,
+            "tokensPct": 27
+          },
+          "postgres-jsonb": {
+            "medianTokensRead": 2098592,
+            "tokensPct": -12
+          }
+        },
+        {
+          "shape": "deep",
+          "mongoTokens": 2139674,
+          "postgres-norm": {
+            "medianTokensRead": 2282838,
+            "tokensPct": 7
+          },
+          "postgres-jsonb": {
+            "medianTokensRead": 1753661.5,
+            "tokensPct": -18
+          }
+        }
+      ]
+    }
+  ],
+  "integrity": {
+    "total": 90,
+    "clean": 81,
+    "failed": 9,
+    "reasons": {
+      "protected-file-modified": 3,
+      "test-failed": 4,
+      "off-contract-files": 2
+    }
+  },
+  "findings": {
+    "normalizedPostgresWorseOnBothAgents": true,
+    "tunedJsonbSplitsAgents": true
+  },
+  "caveat": "Within-agent comparison only. Each agent is measured against itself across the three database designs; one agent's absolute numbers are never compared to the other's, because the two CLIs count tokens incompatibly."
+}

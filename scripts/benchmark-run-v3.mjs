@@ -218,12 +218,21 @@ function runAgent({ agentId, workspace, prompt, outDir, model }) {
     throw new Error(`No adapter for ${agentId}`);
   }
 
-  const result = spawnSync(command, args, { cwd, encoding: "utf8", maxBuffer: 96 * 1024 * 1024 });
+  // Per-run watchdog: a single agent CLI can hang indefinitely (observed a
+  // Codex exec stuck ~7h). spawnSync kills the child on timeout and returns,
+  // so the batch marks the cell failed and moves on instead of stalling.
+  const AGENT_TIMEOUT_MS = Number(process.env.ASTBENCH_AGENT_TIMEOUT_MS || 15 * 60 * 1000);
+  const result = spawnSync(command, args, {
+    cwd, encoding: "utf8", maxBuffer: 96 * 1024 * 1024,
+    timeout: AGENT_TIMEOUT_MS, killSignal: "SIGKILL"
+  });
   mkdirSync(dirname(transcriptPath), { recursive: true });
   writeFileSync(transcriptPath, result.stdout || "");
   writeFileSync(stderrPath, result.stderr || "");
+  const timedOut = result.error && result.error.code === "ETIMEDOUT";
   return {
-    status: result.status, transcriptPath, stderrPath,
+    status: timedOut ? 124 : result.status, transcriptPath, stderrPath,
+    timedOut: Boolean(timedOut),
     transcriptText: result.stdout || "", stderrText: result.stderr || "",
     stdoutBytes: Buffer.byteLength(result.stdout || "", "utf8"),
     stderrBytes: Buffer.byteLength(result.stderr || "", "utf8")
