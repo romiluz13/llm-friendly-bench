@@ -20,19 +20,24 @@ Each cell directory contains:
 
 `batch-progress.log` is the chronological run-by-run log of the whole batch.
 
-## What's intentionally NOT committed (regenerable, bulky)
+Additionally, the **full agent transcripts and live-DB snapshots are
+published** for every cell:
 
-To keep the repo light, these are git-ignored:
+- **`raw-transcript/<agent>.jsonl`** — the complete, unedited agent session
+  (every model turn, tool call, and command). `<agent>-stderr.log` alongside.
+- **`db-before/seed.json`** — the live-database state seeded before the run.
+- **`db-after/final.json`** — the live-database state dumped after the run
+  (what the agent actually persisted).
 
-- `**/workspace/` — the per-run agent workspace (contains a symlinked
-  `node_modules`).
-- `**/raw-transcript/` — the full agent session transcripts (large).
-- `**/db-before/`, `**/db-after/` — the live-DB snapshots.
+Every one of these is fingerprinted by the `evidenceSha256` array in that
+cell's `run-manifest.json`, so any tampering is detectable. Nothing about a
+run's verdict requires trusting an unpublished file.
 
-The `evidenceSha256` array in each `run-manifest.json` still fingerprints those
-files, so their integrity is provable; the committed manifest + diff + test log
-are enough to audit *what each run did and whether it passed honestly*. To
-regenerate the full artifacts, re-run the cell:
+## What's intentionally NOT committed
+
+Only the per-run agent **workspace** (`**/workspace/`) is git-ignored — it
+contains a symlinked `node_modules` and is fully regenerable from the committed
+inputs. To recreate it (and re-run the cell end-to-end against live Docker):
 
 ```sh
 npm run db:up   # live MongoDB :27018 + Postgres :5433

@@ -1,0 +1,5 @@
+Reading additional input from stdin...
+2026-06-24T12:27:31.500150Z ERROR codex_core::session: failed to load skill /Users/rom.iluz/.agents/skills/higgsfield-generate/SKILL.md: invalid description: exceeds maximum length of 1024 characters
+2026-06-24T12:27:36.516412Z ERROR codex_models_manager::manager: failed to refresh available models: timeout waiting for child process to exit
+2026-06-24T12:27:41.608790Z ERROR codex_memories_write::phase2::job: failed to claim job: error returned from database: (code: 1) no such table: jobs
+2026-06-24T12:28:09.224351Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[server]: Failed to connect to MongoDB instance using the connection string from the config: connect ENETUNREACH 65.63.95.160:27017")

@@ -1,0 +1,10 @@
+Reading additional input from stdin...
+2026-06-24T13:34:30.058001Z ERROR codex_core::session: failed to load skill /Users/rom.iluz/.agents/skills/higgsfield-generate/SKILL.md: invalid description: exceeds maximum length of 1024 characters
+2026-06-24T13:34:35.067005Z ERROR codex_models_manager::manager: failed to refresh available models: timeout waiting for child process to exit
+2026-06-24T13:34:39.336657Z ERROR codex_memories_write::phase2::job: failed to claim job: error returned from database: (code: 1) no such table: jobs
+2026-06-24T13:35:03.384633Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[server]: Failed to connect to MongoDB instance using the connection string from the config: connect ENETUNREACH 65.63.95.160:27017")
+2026-06-24T13:39:43.374298Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[tool]: Error executing find: Error: Not connected to MongoDB")
+2026-06-24T13:39:43.410115Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[tool]: Error executing find: Error: Not connected to MongoDB")
+2026-06-24T13:39:43.422306Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[tool]: Error executing find: Error: Not connected to MongoDB")
+2026-06-24T13:39:43.434067Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[tool]: Error executing find: Error: Not connected to MongoDB")
+2026-06-24T13:39:43.445275Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[tool]: Error executing find: Error: Not connected to MongoDB")

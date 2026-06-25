@@ -1,0 +1,8 @@
+Reading additional input from stdin...
+2026-06-24T11:13:41.625895Z ERROR codex_core::session: failed to load skill /Users/rom.iluz/.agents/skills/higgsfield-generate/SKILL.md: invalid description: exceeds maximum length of 1024 characters
+2026-06-24T11:13:46.644007Z ERROR codex_models_manager::manager: failed to refresh available models: timeout waiting for child process to exit
+2026-06-24T11:13:49.458813Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when Client(HttpRequest(HttpRequest("http/request failed: error sending request for url (https://developers.openai.com/mcp)")))
+2026-06-24T11:13:51.874553Z ERROR codex_memories_write::phase2::job: failed to claim job: error returned from database: (code: 1) no such table: jobs
+2026-06-24T11:14:15.824386Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[server]: Failed to connect to MongoDB instance using the connection string from the config: connect ENETUNREACH 65.63.93.232:27017")
+2026-06-24T11:14:42.027944Z ERROR codex_core::session: failed to load skill /Users/rom.iluz/.agents/skills/higgsfield-generate/SKILL.md: invalid description: exceeds maximum length of 1024 characters
+2026-06-24T11:15:11.794991Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[server]: Failed to connect to MongoDB instance using the connection string from the config: connect ENETUNREACH 65.63.128.3:27017")

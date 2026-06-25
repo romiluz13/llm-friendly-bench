@@ -1,0 +1,4 @@
+Implemented `src/workflow.mjs` to read the live account, derive qualification/owners/signals from the rule helper, compute the exact `status`, `risk_summary`, `next_step`, customer message, and audit event, and replace the four output collections in Mongo. The change is in [src/workflow.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v3/moderate/mongo/codex/repeat-2/workspace/src/workflow.mjs).
+
+`npm test` still cannot finish in this sandbox because the Node process cannot connect to `127.0.0.1:27018` (`EPERM` from `MongoClient`). I did verify that the module imports cleanly and that the pure rule derivation matches the live fact bundle and [RULES.md](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v3/moderate/mongo/codex/repeat-2/workspace/RULES.md): 5 signals, owners `Legal`, `Finance`, `Customer Success`, `Support`, next step `Legal recovery review by 16:00`.
+

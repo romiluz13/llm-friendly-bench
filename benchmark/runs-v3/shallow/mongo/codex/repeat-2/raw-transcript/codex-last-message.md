@@ -1,0 +1,6 @@
+Implemented only `src/workflow.mjs`: it now reads the live `accounts` document, normalizes it into the fact bundle that `src/derive.mjs` expects, derives the risk set/owners/status, and writes deterministic docs to `workflow_state`, `owner_tasks`, `customer_messages`, and `audit_events`. See [src/workflow.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v3/shallow/mongo/codex/repeat-2/workspace/src/workflow.mjs#L4), [src/workflow.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v3/shallow/mongo/codex/repeat-2/workspace/src/workflow.mjs#L7), [src/workflow.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v3/shallow/mongo/codex/repeat-2/workspace/src/workflow.mjs#L31), and [src/workflow.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-v3/shallow/mongo/codex/repeat-2/workspace/src/workflow.mjs#L52).
+
+`npm test` did not pass in this sandbox. The blocker is environmental: Node cannot open the repo’s Mongo loopback socket, so the test dies at `MongoServerSelectionError: connect EPERM 127.0.0.1:27018`. A plain localhost server probe also fails with `listen EPERM`, so there is no code-side fix available inside this sandbox for the database connection itself.
+
+If you can run this in an environment where `127.0.0.1:27018` is reachable, the workflow is ready for the acceptance test.
+
