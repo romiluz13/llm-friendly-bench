@@ -20,3 +20,7 @@ pnpm-debug.log*
 benchmark/runs-v3/**/workspace/
 benchmark/.prove-v3/
 benchmark/.cheat-test/
+# Build-Bench live-run artifacts: same policy as v3 — publish everything
+# auditable, ignore the regenerable per-run workspace.
+benchmark/runs-buildbench/**/workspace/
+benchmark/.prove-buildbench/
