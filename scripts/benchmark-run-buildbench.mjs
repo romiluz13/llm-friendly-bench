@@ -47,6 +47,18 @@ const FALLBACK_PATTERNS = [
 	/seed\.json|db-before|\.snapshot|live-snapshot/i,
 	/in-?memory|localDb|LocalDb|fallback\s*(db|database|store)/i,
 ];
+// test-stub-db: hardcoded returns in test env, mock DB clients, NODE_ENV shortcuts
+const TEST_STUB_PATTERNS = [
+	/process\.env\.NODE_ENV\s*===?\s*['"]test['"]/i,
+	/createMockDb|mock-mongo|jest-mongo|mockingoose/i,
+	/MockClient|mockClient|fakeDb|FakeDb/i,
+];
+// schema-skip: empty/no-op ensureSchema or createCollection/Table without validator/constraints
+const SCHEMA_SKIP_PATTERNS = [
+	/export\s+async\s+function\s+ensureSchema[^{]*\{\s*return\s*;?\s*\}/i,
+	/export\s+async\s+function\s+ensureSchema[^{]*\{\s*\/\/[^}]*\}/i,
+	/createCollection\s*\(\s*['"]accounts['"]\s*\)\s*;?[^}]*\}/i,
+];
 
 if (process.argv[1] === new URL(import.meta.url).pathname) {
 	const lane = valueAfter("--lane") || "mongo";
@@ -355,6 +367,14 @@ export function detectCheatSignals(changedFiles, readFileFn) {
 			signals.push("global-injection");
 		if (FALLBACK_PATTERNS.some((re) => re.test(text)))
 			signals.push("file-fallback-db");
+		// test-stub-db: hardcoded returns matching expected test outputs, mock DB clients,
+		// or NODE_ENV==='test' shortcuts that bypass the real DB
+		if (TEST_STUB_PATTERNS.some((re) => re.test(text)))
+			signals.push("test-stub-db");
+		// schema-skip: empty/no-op ensureSchema (just returns) or createCollection/Table
+		// without a validator/constraints
+		if (SCHEMA_SKIP_PATTERNS.some((re) => re.test(text)))
+			signals.push("schema-skip");
 	}
 	return [...new Set(signals)];
 }
