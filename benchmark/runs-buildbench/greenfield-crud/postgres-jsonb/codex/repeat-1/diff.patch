@@ -1,0 +1,152 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index c8fe0b6..1640042 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -1,24 +1,99 @@
+-// Implement CRUD for the accounts resource against the live DB.
+-// Each function receives the pg client (with search_path set to the run schema) from src/db.mjs.
+-// Call ensureSchema(db) from src/schema.mjs before the first write.
+ import { ensureSchema } from "./schema.mjs";
+ 
+-// Create a accounts record. Return the created document.
++const ALLOWED_TIERS = new Set(["strategic", "midmarket", "standard"]);
++const ALLOWED_STATUSES = new Set(["active", "at-risk", "churned"]);
++
++function requireNonEmptyString(value, field) {
++  if (typeof value !== "string" || value.trim() === "") {
++    throw new Error(`${field} is required`);
++  }
++  return value;
++}
++
++function normalizeCreatedAt(value) {
++  const date = value === undefined ? new Date() : new Date(value);
++  if (Number.isNaN(date.getTime())) {
++    throw new Error("createdAt must be a valid date");
++  }
++  return date.toISOString();
++}
++
++function buildDoc(data = {}, existing = {}) {
++  const input = data ?? {};
++  const accountId = requireNonEmptyString(input.accountId ?? existing.accountId, "accountId");
++  const name = requireNonEmptyString(input.name ?? existing.name, "name");
++  const tier = requireNonEmptyString(input.tier ?? existing.tier, "tier");
++  const status = requireNonEmptyString(input.status ?? existing.status, "status");
++
++  if (!ALLOWED_TIERS.has(tier)) {
++    throw new Error("tier must be one of strategic, midmarket, standard");
++  }
++
++  if (!ALLOWED_STATUSES.has(status)) {
++    throw new Error("status must be one of active, at-risk, churned");
++  }
++
++  return {
++    accountId,
++    name,
++    tier,
++    status,
++    createdAt: normalizeCreatedAt(input.createdAt ?? existing.createdAt),
++  };
++}
++
+ export async function createAccounts(db, data) {
+-  throw new Error("createAccounts not implemented");
++  await ensureSchema(db);
++
++  const doc = buildDoc(data ?? {});
++  const result = await db.query(
++    "INSERT INTO accounts (account_id, doc) VALUES ($1, $2::jsonb) RETURNING doc",
++    [doc.accountId, doc],
++  );
++
++  return result.rows[0]?.doc ?? null;
+ }
+ 
+-// Read a accounts by its id. Return the document or null.
+ export async function getAccounts(db, id) {
+-  throw new Error("getAccounts not implemented");
++  await ensureSchema(db);
++
++  const result = await db.query(
++    "SELECT doc FROM accounts WHERE account_id = $1",
++    [id],
++  );
++
++  return result.rows[0]?.doc ?? null;
+ }
+ 
+-// Update a accounts by id with partial data. Return the updated document.
+ export async function updateAccounts(db, id, data) {
+-  throw new Error("updateAccounts not implemented");
++  await ensureSchema(db);
++
++  const existingResult = await db.query(
++    "SELECT doc FROM accounts WHERE account_id = $1",
++    [id],
++  );
++
++  const existing = existingResult.rows[0]?.doc;
++  if (!existing) {
++    return null;
++  }
++
++  const doc = buildDoc({ ...(data ?? {}), accountId: id }, existing);
++  const result = await db.query(
++    "UPDATE accounts SET doc = $2::jsonb WHERE account_id = $1 RETURNING doc",
++    [id, doc],
++  );
++
++  return result.rows[0]?.doc ?? null;
+ }
+ 
+-// Delete a accounts by id. Return true if deleted.
+ export async function deleteAccounts(db, id) {
+-  throw new Error("deleteAccounts not implemented");
++  await ensureSchema(db);
++
++  const result = await db.query(
++    "DELETE FROM accounts WHERE account_id = $1",
++    [id],
++  );
++
++  return result.rowCount > 0;
+ }
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 547fd32..2f10ee3 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -1,11 +1,27 @@
+-// Create the accounts table with a JSONB doc column.
+-// Export an async function ensureSchema(client) that runs CREATE TABLE IF NOT EXISTS.
+-// Design: account_id TEXT PRIMARY KEY + doc JSONB NOT NULL + a GIN index on doc.
+ import { withDb } from "./db.mjs";
+ 
+ export async function ensureSchema(client) {
+-  // TODO: create the accounts table with a JSONB doc column + GIN index.
+-  throw new Error("schema not implemented");
++  await client.query(`
++    CREATE TABLE IF NOT EXISTS accounts (
++      account_id TEXT PRIMARY KEY,
++      doc JSONB NOT NULL,
++      CONSTRAINT accounts_doc_is_object CHECK (jsonb_typeof(doc) = 'object'),
++      CONSTRAINT accounts_doc_has_account_id CHECK (doc ? 'accountId' AND jsonb_typeof(doc->'accountId') = 'string' AND doc->>'accountId' <> ''),
++      CONSTRAINT accounts_doc_has_name CHECK (doc ? 'name' AND jsonb_typeof(doc->'name') = 'string' AND doc->>'name' <> ''),
++      CONSTRAINT accounts_doc_has_tier CHECK (doc ? 'tier' AND jsonb_typeof(doc->'tier') = 'string' AND (doc->>'tier') IN ('strategic', 'midmarket', 'standard')),
++      CONSTRAINT accounts_doc_has_status CHECK (doc ? 'status' AND jsonb_typeof(doc->'status') = 'string' AND (doc->>'status') IN ('active', 'at-risk', 'churned')),
++      CONSTRAINT accounts_doc_has_created_at CHECK (doc ? 'createdAt' AND jsonb_typeof(doc->'createdAt') = 'string' AND (doc->>'createdAt')::timestamptz IS NOT NULL),
++      CONSTRAINT accounts_doc_account_id_matches CHECK (account_id = doc->>'accountId'),
++      CONSTRAINT accounts_doc_tier_valid CHECK (doc->>'tier' IN ('strategic', 'midmarket', 'standard')),
++      CONSTRAINT accounts_doc_status_valid CHECK (doc->>'status' IN ('active', 'at-risk', 'churned'))
++    )
++  `);
++
++  await client.query(`
++    CREATE INDEX IF NOT EXISTS accounts_doc_gin_idx
++    ON accounts
++    USING GIN (doc)
++  `);
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
