@@ -1,102 +1,107 @@
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index 64e621f..575f4df 100644
+index 64e621f..63984f4 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
-@@ -3,22 +3,64 @@
+@@ -2,23 +2,66 @@
+ // Each function receives the MongoDB db handle from src/db.mjs.
  // Call ensureSchema(db) from src/schema.mjs before the first write.
  import { ensureSchema } from "./schema.mjs";
- 
-+const COLLECTION = "accounts";
-+const UPDATABLE_FIELDS = ["name", "tier", "status", "createdAt"];
++import { ObjectId } from "mongodb";
 +
++const COLLECTION = "accounts";
++
++function buildAccountDoc(data) {
++  return {
++    _id: new ObjectId(),
++    accountId: data.accountId,
++    name: data.name,
++    tier: data.tier,
++    status: data.status,
++    createdAt: data.createdAt ?? new Date(),
++  };
++}
++
++function buildUpdateDoc(data) {
++  const update = {};
++
++  if (data.name !== undefined) update.name = data.name;
++  if (data.tier !== undefined) update.tier = data.tier;
++  if (data.status !== undefined) update.status = data.status;
++  if (data.createdAt !== undefined) update.createdAt = data.createdAt;
++
++  return update;
++}
+ 
  // Create a accounts record. Return the created document.
--export async function createAccounts(db, data) {
+ export async function createAccounts(db, data) {
 -  throw new Error("createAccounts not implemented");
-+export async function createAccounts(db, data = {}) {
 +  await ensureSchema(db);
 +
 +  const collection = db.collection(COLLECTION);
-+  const input = data ?? {};
-+  const existing = await collection.findOne(
-+    { accountId: input.accountId },
-+    { projection: { createdAt: 1 } },
-+  );
-+  const createdAt = input.createdAt ?? (existing?.createdAt instanceof Date ? existing.createdAt : undefined) ?? new Date();
-+  const document = {
-+    accountId: input.accountId,
-+    name: input.name,
-+    tier: input.tier,
-+    status: input.status,
-+    createdAt,
-+  };
++  const document = buildAccountDoc(data);
 +
-+  await collection.replaceOne({ accountId: document.accountId }, document, { upsert: true });
-+  return await collection.findOne({ accountId: document.accountId });
++  if (typeof document.accountId === "string") {
++    await collection.deleteMany({ accountId: document.accountId });
++  }
++
++  await collection.insertOne(document);
++  return document;
  }
  
  // Read a accounts by its id. Return the document or null.
  export async function getAccounts(db, id) {
 -  throw new Error("getAccounts not implemented");
-+  return await db.collection(COLLECTION).findOne({ accountId: id });
++  return db.collection(COLLECTION).findOne({ accountId: id });
  }
  
  // Update a accounts by id with partial data. Return the updated document.
--export async function updateAccounts(db, id, data) {
+ export async function updateAccounts(db, id, data) {
 -  throw new Error("updateAccounts not implemented");
-+export async function updateAccounts(db, id, data = {}) {
-+  await ensureSchema(db);
-+
-+  const input = data ?? {};
-+  const patch = {};
-+  for (const field of UPDATABLE_FIELDS) {
-+    if (input[field] !== undefined) {
-+      patch[field] = input[field];
-+    }
++  const update = buildUpdateDoc(data);
++  if (Object.keys(update).length === 0) {
++    return getAccounts(db, id);
 +  }
 +
-+  if (Object.keys(patch).length === 0) {
-+    return await getAccounts(db, id);
-+  }
-+
-+  return await db.collection(COLLECTION).findOneAndUpdate(
-+    { accountId: id },
-+    { $set: patch },
-+    { returnDocument: "after" },
-+  );
++  const collection = db.collection(COLLECTION);
++  await collection.updateMany({ accountId: id }, { $set: update });
++  return getAccounts(db, id);
  }
  
  // Delete a accounts by id. Return true if deleted.
  export async function deleteAccounts(db, id) {
 -  throw new Error("deleteAccounts not implemented");
-+  await ensureSchema(db);
-+
-+  const result = await db.collection(COLLECTION).deleteOne({ accountId: id });
++  const result = await db.collection(COLLECTION).deleteMany({ accountId: id });
 +  return result.deletedCount > 0;
  }
 diff --git a/src/schema.mjs b/src/schema.mjs
-index 04d5e94..1ae9f64 100644
+index 04d5e94..d25b1cc 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -10,9 +10,47 @@
- //   createdAt: date (required)
+@@ -1,18 +1,41 @@
+-// Create the accounts collection with a validator.
+-// Export an async function ensureSchema(db) that creates the collection
+-// with a JSON schema validator matching the accounts fields.
+-//
+-// Fields:
+-//   accountId: string (required)
+-//   name: string (required)
+-//   tier: string (required) — one of ["strategic","midmarket","standard"]
+-//   status: string (required) — one of ["active","at-risk","churned"]
+-//   createdAt: date (required)
  import { withDb } from "./db.mjs";
  
 +const COLLECTION = "accounts";
-+const ACCOUNT_VALIDATOR = {
++const VALIDATOR = {
 +  $jsonSchema: {
 +    bsonType: "object",
 +    required: ["accountId", "name", "tier", "status", "createdAt"],
++    additionalProperties: false,
 +    properties: {
++      _id: { bsonType: "objectId" },
 +      accountId: { bsonType: "string" },
 +      name: { bsonType: "string" },
-+      tier: {
-+        bsonType: "string",
-+        enum: ["strategic", "midmarket", "standard"],
-+      },
-+      status: {
-+        bsonType: "string",
-+        enum: ["active", "at-risk", "churned"],
-+      },
++      tier: { bsonType: "string", enum: ["strategic", "midmarket", "standard"] },
++      status: { bsonType: "string", enum: ["active", "at-risk", "churned"] },
 +      createdAt: { bsonType: "date" },
 +    },
 +  },
@@ -105,25 +110,24 @@ index 04d5e94..1ae9f64 100644
  export async function ensureSchema(db) {
 -  // TODO: create the accounts collection with a validator.
 -  throw new Error("schema not implemented");
-+  const collections = await db.listCollections({ name: COLLECTION }, { nameOnly: true });
-+  const existing = Array.isArray(collections) ? collections : await collections.toArray();
-+
-+  if (existing.length === 0) {
++  try {
 +    await db.createCollection(COLLECTION, {
-+      validator: ACCOUNT_VALIDATOR,
++      validator: VALIDATOR,
 +      validationLevel: "strict",
 +      validationAction: "error",
 +    });
-+  } else {
++  } catch (error) {
++    if (error?.code !== 48 && error?.codeName !== "NamespaceExists") {
++      throw error;
++    }
++
 +    await db.command({
 +      collMod: COLLECTION,
-+      validator: ACCOUNT_VALIDATOR,
++      validator: VALIDATOR,
 +      validationLevel: "strict",
 +      validationAction: "error",
 +    });
 +  }
-+
-+  await db.collection(COLLECTION).createIndex({ accountId: 1 }, { unique: true });
  }
  
  if (import.meta.url === `file://${process.argv[1]}`) {

@@ -10,8 +10,8 @@
   "model": "gpt-5.4-mini",
   "agentVersion": "codex-cli 0.144.0-alpha.4",
   "status": "passed",
-  "startedAt": "2026-07-12T23:28:42.794Z",
-  "finishedAt": "2026-07-12T23:32:37.620Z",
+  "startedAt": "2026-07-13T12:31:14.886Z",
+  "finishedAt": "2026-07-13T12:35:53.603Z",
   "artifacts": {
     "workspace": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-3/workspace",
     "prompt": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-3/prompt.md",
@@ -23,19 +23,19 @@
     "dbAfter": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-3/db-after/final.json"
   },
   "metrics": {
-    "elapsedMs": 234826,
-    "transcriptBytes": 419511,
+    "elapsedMs": 278717,
+    "transcriptBytes": 607950,
     "tokens": {
-      "inputTokens": 691466,
-      "outputTokens": 26319,
-      "cachedInputTokens": 634880,
-      "totalTokens": 717785,
-      "tokensRead": 691466,
-      "costUsd": 1.9918550000000002,
+      "inputTokens": 1076952,
+      "outputTokens": 29110,
+      "cachedInputTokens": 1031168,
+      "totalTokens": 1106062,
+      "tokensRead": 1076952,
+      "costUsd": 2.9834800000000006,
       "source": "measured"
     },
-    "estimatedTranscriptTokens": 717785,
-    "diffBytes": 4107,
+    "estimatedTranscriptTokens": 1106062,
+    "diffBytes": 3470,
     "filesChanged": 2,
     "changedFiles": [
       "src/accounts.mjs",
@@ -44,7 +44,7 @@
     "cheatSignals": [],
     "liveDbWritten": true,
     "collectionExists": true,
-    "retrySignals": 53,
+    "retrySignals": 117,
     "testStatus": "passed",
     "agentExitCode": 0,
     "testsExitCode": 0,
@@ -57,11 +57,11 @@
     },
     {
       "path": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-3/raw-transcript/codex.jsonl",
-      "sha256": "37ffb26449233c239164ccd8736474c6e7e93d96106812a835895c05060ce851"
+      "sha256": "00d0b068db1436b71676c7d52abf14db631676d0a8a933c5fbca0726e138451d"
     },
     {
       "path": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-3/diff.patch",
-      "sha256": "cb896f067a2b6d6ac2da5d93cd8878d1d0bbff943ba8528dc82d54832d872198"
+      "sha256": "c1468cd7b7a48a0fa60ff2b0a34d82e8d4876c7223a4611ffdac46edbd6de55e"
     },
     {
       "path": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-3/tests.log",

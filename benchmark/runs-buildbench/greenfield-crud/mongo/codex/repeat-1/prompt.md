@@ -6,8 +6,8 @@ Your job: design the schema for the **accounts** resource and implement CRUD
 
 Steps:
 1. Read `RULES.md` for the field definitions and constraints.
-2. Implement `src/schema.mjs` — export `ensureSchema(db)` that creates the collection
-   with a validator matching the fields.
+2. Implement `src/schema.mjs` — export `ensureSchema(db)` that creates the collection with a validator
+   matching the fields.
 3. Implement `src/accounts.mjs` — export `createAccounts`, `getAccounts`,
    `updateAccounts`, `deleteAccounts`. Each takes the db handle from `src/db.mjs`.
 4. Run `npm test` until it passes. The test calls your handlers AND queries the

@@ -1,126 +1,111 @@
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index 64e621f..46cf8cd 100644
+index 64e621f..79827a5 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
-@@ -3,22 +3,65 @@
+@@ -3,22 +3,54 @@
  // Call ensureSchema(db) from src/schema.mjs before the first write.
  import { ensureSchema } from "./schema.mjs";
  
-+const collectionName = "accounts";
-+const mutableFields = ["name", "tier", "status"];
++const COLLECTION = "accounts";
 +
-+function buildAccountDocument(data, createdAt = data.createdAt ?? new Date()) {
-+  return {
-+    accountId: data.accountId,
-+    name: data.name,
-+    tier: data.tier,
-+    status: data.status,
-+    createdAt,
-+  };
-+}
-+
-+function pickMutableFields(data) {
-+  const update = {};
-+  for (const field of mutableFields) {
-+    if (data[field] !== undefined) {
-+      update[field] = data[field];
-+    }
-+  }
-+  return update;
++function pickDefined(data, keys) {
++  return Object.fromEntries(keys.filter((key) => data[key] !== undefined).map((key) => [key, data[key]]));
 +}
 +
  // Create a accounts record. Return the created document.
  export async function createAccounts(db, data) {
 -  throw new Error("createAccounts not implemented");
 +  await ensureSchema(db);
-+  const collection = db.collection(collectionName);
-+  const document = buildAccountDocument(data);
 +
-+  await collection.deleteMany({ accountId: document.accountId });
-+  await collection.insertOne(document);
++  const collection = db.collection(COLLECTION);
++  await collection.deleteMany({ accountId: data.accountId });
 +
-+  return await collection.findOne({ accountId: document.accountId });
++  const doc = {
++    accountId: data.accountId,
++    name: data.name,
++    tier: data.tier,
++    status: data.status,
++    createdAt: data.createdAt ?? new Date(),
++  };
++
++  const result = await collection.insertOne(doc);
++  return { ...doc, _id: result.insertedId };
  }
  
  // Read a accounts by its id. Return the document or null.
  export async function getAccounts(db, id) {
 -  throw new Error("getAccounts not implemented");
-+  return await db.collection(collectionName).findOne({ accountId: id });
++  return db.collection(COLLECTION).findOne({ accountId: id });
  }
  
  // Update a accounts by id with partial data. Return the updated document.
  export async function updateAccounts(db, id, data) {
 -  throw new Error("updateAccounts not implemented");
 +  await ensureSchema(db);
-+  const update = pickMutableFields(data);
-+  if (Object.keys(update).length === 0) {
-+    return await getAccounts(db, id);
++
++  const patch = pickDefined(data, ["name", "tier", "status"]);
++  if (Object.keys(patch).length === 0) {
++    return db.collection(COLLECTION).findOne({ accountId: id });
 +  }
 +
-+  const collection = db.collection(collectionName);
-+  const result = await collection.updateOne({ accountId: id }, { $set: update });
-+  if (result.matchedCount === 0) {
-+    return null;
-+  }
-+
-+  return await collection.findOne({ accountId: id });
++  const collection = db.collection(COLLECTION);
++  await collection.updateMany({ accountId: id }, { $set: patch });
++  return collection.findOne({ accountId: id });
  }
  
  // Delete a accounts by id. Return true if deleted.
  export async function deleteAccounts(db, id) {
 -  throw new Error("deleteAccounts not implemented");
-+  const result = await db.collection(collectionName).deleteMany({ accountId: id });
++  await ensureSchema(db);
++
++  const result = await db.collection(COLLECTION).deleteMany({ accountId: id });
 +  return result.deletedCount > 0;
  }
 diff --git a/src/schema.mjs b/src/schema.mjs
-index 04d5e94..5d3267f 100644
+index 04d5e94..66eafcc 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -1,18 +1,37 @@
--// Create the accounts collection with a validator.
--// Export an async function ensureSchema(db) that creates the collection
--// with a JSON schema validator matching the accounts fields.
--//
--// Fields:
--//   accountId: string (required)
--//   name: string (required)
--//   tier: string (required) — one of ["strategic","midmarket","standard"]
--//   status: string (required) — one of ["active","at-risk","churned"]
--//   createdAt: date (required)
+@@ -10,9 +10,43 @@
+ //   createdAt: date (required)
  import { withDb } from "./db.mjs";
  
-+const schema = {
-+  bsonType: "object",
-+  required: ["accountId", "name", "tier", "status", "createdAt"],
-+  additionalProperties: false,
-+  properties: {
-+    _id: { bsonType: "objectId" },
-+    accountId: { bsonType: "string" },
-+    name: { bsonType: "string" },
-+    tier: { bsonType: "string", enum: ["strategic", "midmarket", "standard"] },
-+    status: { bsonType: "string", enum: ["active", "at-risk", "churned"] },
-+    createdAt: { bsonType: "date" },
-+  },
-+};
++const COLLECTION = "accounts";
 +
-+const collectionOptions = {
-+  validator: { $jsonSchema: schema },
-+  validationLevel: "strict",
-+  validationAction: "error",
++const validator = {
++  $jsonSchema: {
++    bsonType: "object",
++    required: ["accountId", "name", "tier", "status", "createdAt"],
++    additionalProperties: false,
++    properties: {
++      _id: { bsonType: "objectId" },
++      accountId: { bsonType: "string" },
++      name: { bsonType: "string" },
++      tier: { bsonType: "string", enum: ["strategic", "midmarket", "standard"] },
++      status: { bsonType: "string", enum: ["active", "at-risk", "churned"] },
++      createdAt: { bsonType: "date" },
++    },
++  },
 +};
 +
  export async function ensureSchema(db) {
 -  // TODO: create the accounts collection with a validator.
 -  throw new Error("schema not implemented");
++  const options = {
++    validator,
++    validationLevel: "strict",
++    validationAction: "error",
++  };
++
 +  try {
-+    await db.createCollection("accounts", collectionOptions);
++    await db.createCollection(COLLECTION, options);
 +  } catch (error) {
 +    if (error?.code !== 48 && error?.codeName !== "NamespaceExists") {
 +      throw error;
 +    }
++
 +    await db.command({
-+      collMod: "accounts",
-+      ...collectionOptions,
++      collMod: COLLECTION,
++      ...options,
 +    });
 +  }
  }

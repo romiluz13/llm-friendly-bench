@@ -30,3 +30,6 @@
 2026-07-13 00:21:04 [29/30] PASS greenfield-crud/postgres-jsonb/claude-code/r5 tok=818887 model=sonnet
 2026-07-13 00:25:56 [30/30] PASS greenfield-crud/postgres-jsonb/codex/r5 tok=1176159 model=gpt-5.4-mini
 2026-07-13 00:25:56 BATCH DONE — passed=28 failed=2 skipped=2 of 30
+2026-07-13 11:52:49 BATCH START 2026-07-13 11:52:49 — 5 cells (1 lanes × 1 agents × 5 repeats), pace=15000ms
+2026-07-13 11:57:46 [1/5] PASS greenfield-crud/mongo/codex/r1 tok=1205755 model=gpt-5.4-mini
+2026-07-13 12:01:56 [2/5] PASS greenfield-crud/mongo/codex/r2 tok=890762 model=gpt-5.4-mini

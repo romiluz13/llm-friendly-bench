@@ -1,12 +1,12 @@
-Implemented the schema and CRUD handlers.
+Implemented in [src/schema.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-4/workspace/src/schema.mjs#L3) and [src/accounts.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-4/workspace/src/accounts.mjs#L6).
 
-- `src/schema.mjs` now creates or updates `accounts` with a JSON schema validator that պահանջs `accountId`, `name`, `tier`, `status`, and `createdAt`, and enforces the allowed `tier`/`status` enums with strict validation. [src/schema.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-4/workspace/src/schema.mjs#L13)
-- `src/accounts.mjs` now exports `createAccounts`, `getAccounts`, `updateAccounts`, and `deleteAccounts` against the live Mongo collection. `createAccounts` fills `createdAt` when absent, and `updateAccounts` does a partial `$set` by `accountId`. [src/accounts.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-4/workspace/src/accounts.mjs#L6)
+- `ensureSchema(db)` now creates or updates the `accounts` collection with a `$jsonSchema` validator for `accountId`, `name`, `tier`, `status`, and `createdAt`.
+- `createAccounts`, `getAccounts`, `updateAccounts`, and `deleteAccounts` now operate on the live Mongo collection from `src/db.mjs`.
+- Create now sets `createdAt` automatically, validates the payload before writing, and replaces any existing row with the same `accountId` so reruns stay deterministic.
 
 Verification:
 - `node --check src/schema.mjs`
 - `node --check src/accounts.mjs`
-- Mocked CRUD flow in `node_repl` passed against a fake db object
-- `npm test` could not complete in this sandbox because TCP to `127.0.0.1:27018` is blocked with `EPERM`, even though Mongo is listening there from Docker
+- `npm test` could not complete in this sandbox because MongoDB is unreachable here: `MongoServerSelectionError: connect EPERM 127.0.0.1:27018`
 
-If you want, I can keep iterating once the live Mongo socket is reachable from the test runner.
+If you run this in an environment with loopback access to the configured Mongo instance, `npm test` should be the final check.

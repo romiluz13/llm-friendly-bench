@@ -1,5 +1,5 @@
 Reading additional input from stdin...
-2026-07-13T00:08:01.377311Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7010 column 1; body: {
+2026-07-13T12:22:45.627530Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7010 column 1; body: {
   "data": [
     {
       "status": "succeeded",
@@ -7009,7 +7009,7 @@ Reading additional input from stdin...
   ],
   "object": "list"
 }
-2026-07-13T00:11:02.746850Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7010 column 1; body: {
+2026-07-13T12:22:46.018641Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7010 column 1; body: {
   "data": [
     {
       "status": "succeeded",
@@ -14019,7 +14019,8 @@ Reading additional input from stdin...
   ],
   "object": "list"
 }
-2026-07-13T00:14:04.040486Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7010 column 1; body: {
+2026-07-13T12:23:29.295994Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[server]: Failed to connect to MongoDB instance using the connection string from the config: connect ENETUNREACH 65.63.93.232:27017")
+2026-07-13T12:25:46.926219Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7010 column 1; body: {
   "data": [
     {
       "status": "succeeded",

@@ -1,10 +1,9 @@
-Implemented the live MongoDB CRUD slice and schema validator.
+**Implemented**
+- `src/schema.mjs` now creates or `collMod`s the live `accounts` collection with a strict JSON-schema validator for `accountId`, `name`, `tier`, `status`, and `createdAt`. The validator starts at [this line](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-1/workspace/src/schema.mjs#L5), and the idempotent bootstrap logic starts at [this line](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-1/workspace/src/schema.mjs#L35).
+- `src/accounts.mjs` now does live CRUD against MongoDB, defaults `createdAt` on create, updates by `accountId`, and deletes by `accountId`. The helper/build logic starts at [this line](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-1/workspace/src/accounts.mjs#L8), and the CRUD exports start at [this line](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-1/workspace/src/accounts.mjs#L31).
 
-- Schema creation and validator live in [src/schema.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-1/workspace/src/schema.mjs#L13) and [src/schema.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-1/workspace/src/schema.mjs#L27).
-- CRUD handlers live in [src/accounts.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-1/workspace/src/accounts.mjs#L23), [src/accounts.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-1/workspace/src/accounts.mjs#L40), [src/accounts.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-1/workspace/src/accounts.mjs#L45), and [src/accounts.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-1/workspace/src/accounts.mjs#L66).
-- `createAccounts` stamps `createdAt` when missing, `getAccounts` reads by `accountId`, `updateAccounts` applies partial updates, and `deleteAccounts` deletes by `accountId`.
-- I verified both edited files parse cleanly with `node --check`.
-- I could not complete `npm test` in this sandbox because the Node runtime cannot reach the live MongoDB socket here: `MongoServerSelectionError: connect EPERM 127.0.0.1:27018`.
+**Verification**
+- `node --input-type=module` import check passed for the edited modules.
+- `npm test` did not complete here because the sandbox cannot reach the configured MongoDB endpoint at `127.0.0.1:27018`; the driver fails with `MongoServerSelectionError: connect EPERM`.
 
-Next step: rerun `npm test` in an environment that can reach `127.0.0.1:27018`.
-
+If you can run this in an environment with access to the configured MongoDB instance, I can re-run `npm test` and confirm the live-db path end to end.
