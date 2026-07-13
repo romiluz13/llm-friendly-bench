@@ -1,0 +1,85 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index 64e621f..21dbf2f 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -1,24 +1,26 @@
+-// Implement CRUD for the accounts resource against the live DB.
+-// Each function receives the MongoDB db handle from src/db.mjs.
+-// Call ensureSchema(db) from src/schema.mjs before the first write.
+ import { ensureSchema } from "./schema.mjs";
+ 
+-// Create a accounts record. Return the created document.
+ export async function createAccounts(db, data) {
+-  throw new Error("createAccounts not implemented");
++  await ensureSchema(db);
++  const doc = { ...data, createdAt: data.createdAt ?? new Date() };
++  const result = await db.collection("accounts").insertOne(doc);
++  return { _id: result.insertedId, ...doc };
+ }
+ 
+-// Read a accounts by its id. Return the document or null.
+ export async function getAccounts(db, id) {
+-  throw new Error("getAccounts not implemented");
++  return db.collection("accounts").findOne({ accountId: id });
+ }
+ 
+-// Update a accounts by id with partial data. Return the updated document.
+ export async function updateAccounts(db, id, data) {
+-  throw new Error("updateAccounts not implemented");
++  const result = await db.collection("accounts").findOneAndUpdate(
++    { accountId: id },
++    { $set: data },
++    { returnDocument: "after" }
++  );
++  return result;
+ }
+ 
+-// Delete a accounts by id. Return true if deleted.
+ export async function deleteAccounts(db, id) {
+-  throw new Error("deleteAccounts not implemented");
++  const result = await db.collection("accounts").deleteOne({ accountId: id });
++  return result.deletedCount > 0;
+ }
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 04d5e94..9884c82 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -1,18 +1,26 @@
+-// Create the accounts collection with a validator.
+-// Export an async function ensureSchema(db) that creates the collection
+-// with a JSON schema validator matching the accounts fields.
+-//
+-// Fields:
+-//   accountId: string (required)
+-//   name: string (required)
+-//   tier: string (required) — one of ["strategic","midmarket","standard"]
+-//   status: string (required) — one of ["active","at-risk","churned"]
+-//   createdAt: date (required)
+ import { withDb } from "./db.mjs";
+ 
++const validator = {
++  $jsonSchema: {
++    bsonType: "object",
++    required: ["accountId", "name", "tier", "status", "createdAt"],
++    properties: {
++      accountId: { bsonType: "string" },
++      name: { bsonType: "string" },
++      tier: { bsonType: "string", enum: ["strategic", "midmarket", "standard"] },
++      status: { bsonType: "string", enum: ["active", "at-risk", "churned"] },
++      createdAt: { bsonType: "date" },
++    },
++  },
++};
++
+ export async function ensureSchema(db) {
+-  // TODO: create the accounts collection with a validator.
+-  throw new Error("schema not implemented");
++  const collections = await db.listCollections({ name: "accounts" }).toArray();
++  if (collections.length === 0) {
++    await db.createCollection("accounts", { validator });
++  } else {
++    await db.command({ collMod: "accounts", validator });
++  }
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

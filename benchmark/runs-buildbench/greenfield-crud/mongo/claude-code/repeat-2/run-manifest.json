@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "build-bench",
+  "executionMode": "live-db",
+  "dbNamespace": "buildbench_greenfield-crud_mongo_claude-code_r2",
+  "taskType": "greenfield-crud",
+  "lane": "mongo",
+  "agentId": "claude-code",
+  "repeat": 2,
+  "model": "sonnet",
+  "agentVersion": "2.1.207 (Claude Code)",
+  "status": "passed",
+  "startedAt": "2026-07-12T23:07:23.276Z",
+  "finishedAt": "2026-07-12T23:09:16.302Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-buildbench/greenfield-crud/mongo/claude-code/repeat-2/workspace",
+    "prompt": "benchmark/runs-buildbench/greenfield-crud/mongo/claude-code/repeat-2/prompt.md",
+    "rawTranscript": "benchmark/runs-buildbench/greenfield-crud/mongo/claude-code/repeat-2/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs-buildbench/greenfield-crud/mongo/claude-code/repeat-2/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs-buildbench/greenfield-crud/mongo/claude-code/repeat-2/diff.patch",
+    "tests": "benchmark/runs-buildbench/greenfield-crud/mongo/claude-code/repeat-2/tests.log",
+    "dbBefore": "benchmark/runs-buildbench/greenfield-crud/mongo/claude-code/repeat-2/db-before/seed.json",
+    "dbAfter": "benchmark/runs-buildbench/greenfield-crud/mongo/claude-code/repeat-2/db-after/final.json"
+  },
+  "metrics": {
+    "elapsedMs": 113026,
+    "transcriptBytes": 287807,
+    "tokens": {
+      "inputTokens": 65,
+      "outputTokens": 571,
+      "cachedInputTokens": 899505,
+      "totalTokens": 636,
+      "tokensRead": 899570,
+      "costUsd": 1.1261672999999996,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 636,
+    "diffBytes": 3203,
+    "filesChanged": 2,
+    "changedFiles": [
+      "src/accounts.mjs",
+      "src/schema.mjs"
+    ],
+    "cheatSignals": [],
+    "liveDbWritten": true,
+    "collectionExists": true,
+    "retrySignals": 67,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0,
+    "timedOut": false
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/mongo/claude-code/repeat-2/prompt.md",
+      "sha256": "a04887b7f68e9fb05a2073e2449c5f3f4ce8400c05a9021ae0db87edd93b19ab"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/mongo/claude-code/repeat-2/raw-transcript/claude-code.jsonl",
+      "sha256": "da68057984988a10bdf6acbb12ff05efd7faeb61d49f9f75a4c99476b5592769"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/mongo/claude-code/repeat-2/diff.patch",
+      "sha256": "386053b7981913da4514cea0dea738766e26adbf3340a39b3f891739c96cf75f"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/mongo/claude-code/repeat-2/tests.log",
+      "sha256": "3489e491f56e20f135880106f4207aef8ea31bc33b968df1f2483396e4f6f296"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/mongo/claude-code/repeat-2/db-before/seed.json",
+      "sha256": "c4e77742ad885604e0f170961f858e0af494af9ceb0cc2d99f7338abcef4ffff"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/mongo/claude-code/repeat-2/db-after/final.json",
+      "sha256": "b7cc0ef0fb95d1fbf23ecbf6a92eab8d3e4c72dec396f5dbd71789dd4fa28f99"
+    }
+  ]
+}

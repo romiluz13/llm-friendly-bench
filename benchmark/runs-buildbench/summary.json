@@ -1,0 +1,151 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "build-bench",
+  "taskType": "greenfield-crud",
+  "generatedAt": "2026-07-13T00:34:29.466Z",
+  "executionMode": "live-db",
+  "lanes": [
+    "mongo",
+    "postgres-norm",
+    "postgres-jsonb"
+  ],
+  "agents": [
+    {
+      "agentId": "claude-code",
+      "lanes": {
+        "mongo": {
+          "cleanRepeats": 5,
+          "totalRepeats": 5,
+          "failCount": 0,
+          "medianTokensRead": 861229,
+          "iqrTokensRead": 281781,
+          "medianOutputTokens": 446,
+          "medianRetrySignals": 63,
+          "medianElapsedMs": 142360,
+          "medianDiffBytes": 3336,
+          "medianFilesChanged": 2
+        },
+        "postgres-norm": {
+          "cleanRepeats": 5,
+          "totalRepeats": 5,
+          "failCount": 0,
+          "medianTokensRead": 397024,
+          "iqrTokensRead": 42317,
+          "medianOutputTokens": 189,
+          "medianRetrySignals": 24,
+          "medianElapsedMs": 81965,
+          "medianDiffBytes": 3916,
+          "medianFilesChanged": 2
+        },
+        "postgres-jsonb": {
+          "cleanRepeats": 5,
+          "totalRepeats": 5,
+          "failCount": 0,
+          "medianTokensRead": 746052,
+          "iqrTokensRead": 237396,
+          "medianOutputTokens": 356,
+          "medianRetrySignals": 55,
+          "medianElapsedMs": 108569,
+          "medianDiffBytes": 3049,
+          "medianFilesChanged": 2
+        }
+      },
+      "vsMongo": {
+        "postgres-norm": {
+          "tokensPct": -54,
+          "medianTokensRead": 397024
+        },
+        "postgres-jsonb": {
+          "tokensPct": -13,
+          "medianTokensRead": 746052
+        }
+      }
+    },
+    {
+      "agentId": "codex",
+      "lanes": {
+        "mongo": {
+          "cleanRepeats": 3,
+          "totalRepeats": 5,
+          "failCount": 2,
+          "medianTokensRead": 1365469,
+          "iqrTokensRead": 810639,
+          "medianOutputTokens": 28294,
+          "medianRetrySignals": 87,
+          "medianElapsedMs": 296284,
+          "medianDiffBytes": 4097,
+          "medianFilesChanged": 2
+        },
+        "postgres-norm": {
+          "cleanRepeats": 5,
+          "totalRepeats": 5,
+          "failCount": 0,
+          "medianTokensRead": 442854,
+          "iqrTokensRead": 31807,
+          "medianOutputTokens": 15213,
+          "medianRetrySignals": 25,
+          "medianElapsedMs": 173419,
+          "medianDiffBytes": 3519,
+          "medianFilesChanged": 2
+        },
+        "postgres-jsonb": {
+          "cleanRepeats": 5,
+          "totalRepeats": 5,
+          "failCount": 0,
+          "medianTokensRead": 790640,
+          "iqrTokensRead": 389666,
+          "medianOutputTokens": 26399,
+          "medianRetrySignals": 50,
+          "medianElapsedMs": 224193,
+          "medianDiffBytes": 5432,
+          "medianFilesChanged": 2
+        }
+      },
+      "vsMongo": {
+        "postgres-norm": {
+          "tokensPct": -68,
+          "medianTokensRead": 442854
+        },
+        "postgres-jsonb": {
+          "tokensPct": -42,
+          "medianTokensRead": 790640
+        }
+      }
+    }
+  ],
+  "hypotheses": {
+    "H1": {
+      "statement": "MongoDB requires less agent work (tokensRead) than any relational lane, within-agent",
+      "verdict": "refuted",
+      "perAgent": [
+        {
+          "agentId": "claude-code",
+          "pgNormPct": -54,
+          "pgJsonbPct": -13
+        },
+        {
+          "agentId": "codex",
+          "pgNormPct": -68,
+          "pgJsonbPct": -42
+        }
+      ]
+    },
+    "H2": {
+      "statement": "Relational penalty grows with normalization depth (pg-norm > pg-jsonb > mongo)",
+      "verdict": "refuted",
+      "perAgent": [
+        {
+          "agentId": "claude-code",
+          "pgNormTokens": 397024,
+          "pgJsonbTokens": 746052
+        },
+        {
+          "agentId": "codex",
+          "pgNormTokens": 442854,
+          "pgJsonbTokens": 790640
+        }
+      ]
+    }
+  },
+  "caveat": "Within-agent comparison only. Each agent is measured against itself across the three database designs; one agent's absolute numbers are never compared to the other's, because the two CLIs count tokens incompatibly."
+}

@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "build-bench",
+  "executionMode": "live-db",
+  "dbNamespace": "buildbench_greenfield-crud_postgres-norm_claude-code_r2",
+  "taskType": "greenfield-crud",
+  "lane": "postgres-norm",
+  "agentId": "claude-code",
+  "repeat": 2,
+  "model": "sonnet",
+  "agentVersion": "2.1.207 (Claude Code)",
+  "status": "passed",
+  "startedAt": "2026-07-12T23:15:56.826Z",
+  "finishedAt": "2026-07-12T23:17:18.791Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-buildbench/greenfield-crud/postgres-norm/claude-code/repeat-2/workspace",
+    "prompt": "benchmark/runs-buildbench/greenfield-crud/postgres-norm/claude-code/repeat-2/prompt.md",
+    "rawTranscript": "benchmark/runs-buildbench/greenfield-crud/postgres-norm/claude-code/repeat-2/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs-buildbench/greenfield-crud/postgres-norm/claude-code/repeat-2/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs-buildbench/greenfield-crud/postgres-norm/claude-code/repeat-2/diff.patch",
+    "tests": "benchmark/runs-buildbench/greenfield-crud/postgres-norm/claude-code/repeat-2/tests.log",
+    "dbBefore": "benchmark/runs-buildbench/greenfield-crud/postgres-norm/claude-code/repeat-2/db-before/seed.json",
+    "dbAfter": "benchmark/runs-buildbench/greenfield-crud/postgres-norm/claude-code/repeat-2/db-after/final.json"
+  },
+  "metrics": {
+    "elapsedMs": 81965,
+    "transcriptBytes": 146570,
+    "tokens": {
+      "inputTokens": 38,
+      "outputTokens": 240,
+      "cachedInputTokens": 436696,
+      "totalTokens": 278,
+      "tokensRead": 436734,
+      "costUsd": 0.5774892,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 278,
+    "diffBytes": 3889,
+    "filesChanged": 2,
+    "changedFiles": [
+      "src/accounts.mjs",
+      "src/schema.mjs"
+    ],
+    "cheatSignals": [],
+    "liveDbWritten": true,
+    "collectionExists": true,
+    "retrySignals": 25,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0,
+    "timedOut": false
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/postgres-norm/claude-code/repeat-2/prompt.md",
+      "sha256": "15f0f83183dba6e9eac012d3a5fee104456c6de96af4d624d4c4ab746dcce274"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/postgres-norm/claude-code/repeat-2/raw-transcript/claude-code.jsonl",
+      "sha256": "611019a03e7fa3d1da2c8675e312ed44a4b668a056980dbef16d6b62a30d917e"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/postgres-norm/claude-code/repeat-2/diff.patch",
+      "sha256": "286ee03a7a45b07032d2893ca32e4eceb825f988b4dfab3c993f10c2a8e7211f"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/postgres-norm/claude-code/repeat-2/tests.log",
+      "sha256": "e0f2fa665b6d67ffaa8490a61fbd91297128b7f4b3dbfe386c96408fdf810245"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/postgres-norm/claude-code/repeat-2/db-before/seed.json",
+      "sha256": "7a8c7b07b752d5a88976e47f6502f987d5cedc84766ab3397b6b8beb7234e994"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/postgres-norm/claude-code/repeat-2/db-after/final.json",
+      "sha256": "213248b0771cd6adce4f3e50ee4e0795e44df1cad42c14218ca70f7d3bfbf084"
+    }
+  ]
+}

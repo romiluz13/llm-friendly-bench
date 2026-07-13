@@ -1,0 +1,129 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index 64e621f..575f4df 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -3,22 +3,64 @@
+ // Call ensureSchema(db) from src/schema.mjs before the first write.
+ import { ensureSchema } from "./schema.mjs";
+ 
++const COLLECTION = "accounts";
++const UPDATABLE_FIELDS = ["name", "tier", "status", "createdAt"];
++
+ // Create a accounts record. Return the created document.
+-export async function createAccounts(db, data) {
+-  throw new Error("createAccounts not implemented");
++export async function createAccounts(db, data = {}) {
++  await ensureSchema(db);
++
++  const collection = db.collection(COLLECTION);
++  const input = data ?? {};
++  const existing = await collection.findOne(
++    { accountId: input.accountId },
++    { projection: { createdAt: 1 } },
++  );
++  const createdAt = input.createdAt ?? (existing?.createdAt instanceof Date ? existing.createdAt : undefined) ?? new Date();
++  const document = {
++    accountId: input.accountId,
++    name: input.name,
++    tier: input.tier,
++    status: input.status,
++    createdAt,
++  };
++
++  await collection.replaceOne({ accountId: document.accountId }, document, { upsert: true });
++  return await collection.findOne({ accountId: document.accountId });
+ }
+ 
+ // Read a accounts by its id. Return the document or null.
+ export async function getAccounts(db, id) {
+-  throw new Error("getAccounts not implemented");
++  return await db.collection(COLLECTION).findOne({ accountId: id });
+ }
+ 
+ // Update a accounts by id with partial data. Return the updated document.
+-export async function updateAccounts(db, id, data) {
+-  throw new Error("updateAccounts not implemented");
++export async function updateAccounts(db, id, data = {}) {
++  await ensureSchema(db);
++
++  const input = data ?? {};
++  const patch = {};
++  for (const field of UPDATABLE_FIELDS) {
++    if (input[field] !== undefined) {
++      patch[field] = input[field];
++    }
++  }
++
++  if (Object.keys(patch).length === 0) {
++    return await getAccounts(db, id);
++  }
++
++  return await db.collection(COLLECTION).findOneAndUpdate(
++    { accountId: id },
++    { $set: patch },
++    { returnDocument: "after" },
++  );
+ }
+ 
+ // Delete a accounts by id. Return true if deleted.
+ export async function deleteAccounts(db, id) {
+-  throw new Error("deleteAccounts not implemented");
++  await ensureSchema(db);
++
++  const result = await db.collection(COLLECTION).deleteOne({ accountId: id });
++  return result.deletedCount > 0;
+ }
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 04d5e94..1ae9f64 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -10,9 +10,47 @@
+ //   createdAt: date (required)
+ import { withDb } from "./db.mjs";
+ 
++const COLLECTION = "accounts";
++const ACCOUNT_VALIDATOR = {
++  $jsonSchema: {
++    bsonType: "object",
++    required: ["accountId", "name", "tier", "status", "createdAt"],
++    properties: {
++      accountId: { bsonType: "string" },
++      name: { bsonType: "string" },
++      tier: {
++        bsonType: "string",
++        enum: ["strategic", "midmarket", "standard"],
++      },
++      status: {
++        bsonType: "string",
++        enum: ["active", "at-risk", "churned"],
++      },
++      createdAt: { bsonType: "date" },
++    },
++  },
++};
++
+ export async function ensureSchema(db) {
+-  // TODO: create the accounts collection with a validator.
+-  throw new Error("schema not implemented");
++  const collections = await db.listCollections({ name: COLLECTION }, { nameOnly: true });
++  const existing = Array.isArray(collections) ? collections : await collections.toArray();
++
++  if (existing.length === 0) {
++    await db.createCollection(COLLECTION, {
++      validator: ACCOUNT_VALIDATOR,
++      validationLevel: "strict",
++      validationAction: "error",
++    });
++  } else {
++    await db.command({
++      collMod: COLLECTION,
++      validator: ACCOUNT_VALIDATOR,
++      validationLevel: "strict",
++      validationAction: "error",
++    });
++  }
++
++  await db.collection(COLLECTION).createIndex({ accountId: 1 }, { unique: true });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

@@ -1,0 +1,3 @@
+Build-Bench acceptance passed: postgres-jsonb/accounts CRUD
+npm notice run build-bench-postgres-jsonb-greenfield-crud@1.0.0 test
+npm notice run node tests/acceptance.test.mjs

@@ -1,0 +1,111 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index c8fe0b6..7e216e3 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -3,22 +3,80 @@
+ // Call ensureSchema(db) from src/schema.mjs before the first write.
+ import { ensureSchema } from "./schema.mjs";
+ 
++function toAccount(row) {
++  if (!row) return null;
++  const createdAt = row.created_at instanceof Date ? row.created_at.toISOString().slice(0, 10) : row.created_at;
++  return {
++    accountId: row.account_id,
++    name: row.name,
++    tier: row.tier,
++    status: row.status,
++    createdAt,
++  };
++}
++
++function normalizeCreatedAt(value) {
++  if (value == null) return null;
++  if (value instanceof Date) return value.toISOString().slice(0, 10);
++  return value;
++}
++
+ // Create a accounts record. Return the created document.
+ export async function createAccounts(db, data) {
+-  throw new Error("createAccounts not implemented");
++  await ensureSchema(db);
++  const result = await db.query(
++    `
++      INSERT INTO accounts (account_id, name, tier, status, created_at)
++      VALUES ($1, $2, $3, $4, COALESCE($5::date, CURRENT_DATE))
++      RETURNING account_id, name, tier, status, created_at
++    `,
++    [data.accountId, data.name, data.tier, data.status, normalizeCreatedAt(data.createdAt ?? data.created_at)],
++  );
++  return toAccount(result.rows[0]);
+ }
+ 
+ // Read a accounts by its id. Return the document or null.
+ export async function getAccounts(db, id) {
+-  throw new Error("getAccounts not implemented");
++  await ensureSchema(db);
++  const result = await db.query(
++    `
++      SELECT account_id, name, tier, status, created_at
++      FROM accounts
++      WHERE account_id = $1
++    `,
++    [id],
++  );
++  return toAccount(result.rows[0]);
+ }
+ 
+ // Update a accounts by id with partial data. Return the updated document.
+ export async function updateAccounts(db, id, data) {
+-  throw new Error("updateAccounts not implemented");
++  await ensureSchema(db);
++  const result = await db.query(
++    `
++      UPDATE accounts
++      SET
++        name = COALESCE($2, name),
++        tier = COALESCE($3, tier),
++        status = COALESCE($4, status),
++        created_at = COALESCE($5::date, created_at)
++      WHERE account_id = $1
++      RETURNING account_id, name, tier, status, created_at
++    `,
++    [
++      id,
++      data.name ?? null,
++      data.tier ?? null,
++      data.status ?? null,
++      normalizeCreatedAt(data.createdAt ?? data.created_at),
++    ],
++  );
++  return toAccount(result.rows[0]);
+ }
+ 
+ // Delete a accounts by id. Return true if deleted.
+ export async function deleteAccounts(db, id) {
+-  throw new Error("deleteAccounts not implemented");
++  await ensureSchema(db);
++  const result = await db.query(`DELETE FROM accounts WHERE account_id = $1`, [id]);
++  return result.rowCount > 0;
+ }
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 2e99fed..42b5a3a 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -10,8 +10,15 @@
+ import { withDb } from "./db.mjs";
+ 
+ export async function ensureSchema(client) {
+-  // TODO: create the accounts table.
+-  throw new Error("schema not implemented");
++  await client.query(`
++    CREATE TABLE IF NOT EXISTS accounts (
++      account_id TEXT PRIMARY KEY,
++      name TEXT NOT NULL,
++      tier TEXT NOT NULL CHECK (tier IN ('strategic', 'midmarket', 'standard')),
++      status TEXT NOT NULL CHECK (status IN ('active', 'at-risk', 'churned')),
++      created_at DATE NOT NULL DEFAULT CURRENT_DATE
++    )
++  `);
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

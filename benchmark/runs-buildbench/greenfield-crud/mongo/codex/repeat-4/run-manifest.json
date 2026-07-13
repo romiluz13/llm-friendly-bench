@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "build-bench",
+  "executionMode": "live-db",
+  "dbNamespace": "buildbench_greenfield-crud_mongo_codex_r4",
+  "taskType": "greenfield-crud",
+  "lane": "mongo",
+  "agentId": "codex",
+  "repeat": 4,
+  "model": "gpt-5.4-mini",
+  "agentVersion": "codex-cli 0.144.0-alpha.4",
+  "status": "failed",
+  "startedAt": "2026-07-12T23:48:00.581Z",
+  "finishedAt": "2026-07-12T23:55:08.246Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-4/workspace",
+    "prompt": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-4/prompt.md",
+    "rawTranscript": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-4/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-4/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-4/diff.patch",
+    "tests": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-4/tests.log",
+    "dbBefore": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-4/db-before/seed.json",
+    "dbAfter": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-4/db-after/final.json"
+  },
+  "metrics": {
+    "elapsedMs": 427665,
+    "transcriptBytes": 477201,
+    "tokens": {
+      "inputTokens": 1819224,
+      "outputTokens": 35911,
+      "cachedInputTokens": 1763968,
+      "totalTokens": 1855135,
+      "tokensRead": 1819224,
+      "costUsd": 4.907170000000001,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 1855135,
+    "diffBytes": 3373,
+    "filesChanged": 2,
+    "changedFiles": [
+      "src/accounts.mjs",
+      "src/schema.mjs"
+    ],
+    "cheatSignals": [],
+    "liveDbWritten": true,
+    "collectionExists": true,
+    "retrySignals": 121,
+    "testStatus": "failed",
+    "agentExitCode": 0,
+    "testsExitCode": 1,
+    "timedOut": false
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-4/prompt.md",
+      "sha256": "a04887b7f68e9fb05a2073e2449c5f3f4ce8400c05a9021ae0db87edd93b19ab"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-4/raw-transcript/codex.jsonl",
+      "sha256": "857ad49d5b33f8fcf51811895c76cda59dd9a96621b67ce8872524ce47a5e520"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-4/diff.patch",
+      "sha256": "a96be774ad1c67931836013e926f4f9fbb43e5a3a4a38b79e601e7e89ab1b704"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-4/tests.log",
+      "sha256": "fde30e4fa87cab4843507ddd12167331b407baf58aa616f4933da56916c30f0a"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-4/db-before/seed.json",
+      "sha256": "bb58d9500cc6ff99a01ed1026610a7475f8a580849f73c9f1b1d86dfb84d1184"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/mongo/codex/repeat-4/db-after/final.json",
+      "sha256": "b7cc0ef0fb95d1fbf23ecbf6a92eab8d3e4c72dec396f5dbd71789dd4fa28f99"
+    }
+  ]
+}

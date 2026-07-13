@@ -1,0 +1,119 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index c8fe0b6..3fae135 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -3,22 +3,88 @@
+ // Call ensureSchema(db) from src/schema.mjs before the first write.
+ import { ensureSchema } from "./schema.mjs";
+ 
++function toAccount(row) {
++  return row && {
++    accountId: row.account_id,
++    name: row.name,
++    tier: row.tier,
++    status: row.status,
++    createdAt: row.created_at,
++  };
++}
++
+ // Create a accounts record. Return the created document.
+ export async function createAccounts(db, data) {
+-  throw new Error("createAccounts not implemented");
++  await ensureSchema(db);
++  const input = data ?? {};
++  const columns = ["account_id", "name", "tier", "status"];
++  const values = [input.accountId, input.name, input.tier, input.status];
++
++  if (input.createdAt !== undefined) {
++    columns.push("created_at");
++    values.push(input.createdAt);
++  }
++
++  const placeholders = columns.map((_, index) => `$${index + 1}`).join(", ");
++  const result = await db.query(
++    `INSERT INTO accounts (${columns.join(", ")}) VALUES (${placeholders}) RETURNING *`,
++    values,
++  );
++
++  return toAccount(result.rows[0]);
+ }
+ 
+ // Read a accounts by its id. Return the document or null.
+ export async function getAccounts(db, id) {
+-  throw new Error("getAccounts not implemented");
++  await ensureSchema(db);
++  const result = await db.query("SELECT * FROM accounts WHERE account_id = $1", [id]);
++  return toAccount(result.rows[0]) || null;
+ }
+ 
+ // Update a accounts by id with partial data. Return the updated document.
+ export async function updateAccounts(db, id, data) {
+-  throw new Error("updateAccounts not implemented");
++  await ensureSchema(db);
++  const input = data ?? {};
++
++  const assignments = [];
++  const values = [];
++
++  if (input.name !== undefined) {
++    values.push(input.name);
++    assignments.push(`name = $${values.length}`);
++  }
++
++  if (input.tier !== undefined) {
++    values.push(input.tier);
++    assignments.push(`tier = $${values.length}`);
++  }
++
++  if (input.status !== undefined) {
++    values.push(input.status);
++    assignments.push(`status = $${values.length}`);
++  }
++
++  if (input.createdAt !== undefined) {
++    values.push(input.createdAt);
++    assignments.push(`created_at = $${values.length}`);
++  }
++
++  if (assignments.length === 0) {
++    return getAccounts(db, id);
++  }
++
++  values.push(id);
++  const result = await db.query(
++    `UPDATE accounts SET ${assignments.join(", ")} WHERE account_id = $${values.length} RETURNING *`,
++    values,
++  );
++
++  return toAccount(result.rows[0]) || null;
+ }
+ 
+ // Delete a accounts by id. Return true if deleted.
+ export async function deleteAccounts(db, id) {
+-  throw new Error("deleteAccounts not implemented");
++  await ensureSchema(db);
++  const result = await db.query("DELETE FROM accounts WHERE account_id = $1 RETURNING account_id", [id]);
++  return result.rowCount > 0;
+ }
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 2e99fed..880e509 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -10,8 +10,15 @@
+ import { withDb } from "./db.mjs";
+ 
+ export async function ensureSchema(client) {
+-  // TODO: create the accounts table.
+-  throw new Error("schema not implemented");
++  await client.query(`
++    CREATE TABLE IF NOT EXISTS accounts (
++      account_id text PRIMARY KEY,
++      name text NOT NULL,
++      tier text NOT NULL CHECK (tier IN ('strategic', 'midmarket', 'standard')),
++      status text NOT NULL CHECK (status IN ('active', 'at-risk', 'churned')),
++      created_at date NOT NULL DEFAULT CURRENT_DATE
++    )
++  `);
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

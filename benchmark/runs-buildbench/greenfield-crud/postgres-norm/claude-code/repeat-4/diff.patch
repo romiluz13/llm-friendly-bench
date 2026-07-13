@@ -1,0 +1,107 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index c8fe0b6..7443ddf 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -1,24 +1,52 @@
+-// Implement CRUD for the accounts resource against the live DB.
+-// Each function receives the pg client (with search_path set to the run schema) from src/db.mjs.
+-// Call ensureSchema(db) from src/schema.mjs before the first write.
+-import { ensureSchema } from "./schema.mjs";
++function rowToAccount(row) {
++  return {
++    accountId: row.account_id,
++    name: row.name,
++    tier: row.tier,
++    status: row.status,
++    createdAt: row.created_at,
++  };
++}
++
++function toSnakeCase(camel) {
++  return camel.replace(/[A-Z]/g, c => '_' + c.toLowerCase());
++}
+ 
+-// Create a accounts record. Return the created document.
+-export async function createAccounts(db, data) {
+-  throw new Error("createAccounts not implemented");
++export async function createAccounts(client, data) {
++  const { accountId, name, tier, status } = data;
++  const { rows } = await client.query(
++    `INSERT INTO accounts (account_id, name, tier, status, created_at)
++     VALUES ($1, $2, $3, $4, NOW())
++     RETURNING account_id, name, tier, status, created_at`,
++    [accountId, name, tier, status]
++  );
++  return rowToAccount(rows[0]);
+ }
+ 
+-// Read a accounts by its id. Return the document or null.
+-export async function getAccounts(db, id) {
+-  throw new Error("getAccounts not implemented");
++export async function getAccounts(client, accountId) {
++  const { rows } = await client.query(
++    'SELECT account_id, name, tier, status, created_at FROM accounts WHERE account_id = $1',
++    [accountId]
++  );
++  return rows[0] ? rowToAccount(rows[0]) : null;
+ }
+ 
+-// Update a accounts by id with partial data. Return the updated document.
+-export async function updateAccounts(db, id, data) {
+-  throw new Error("updateAccounts not implemented");
++export async function updateAccounts(client, accountId, updates) {
++  const fields = Object.keys(updates);
++  const setClauses = fields.map((f, i) => `${toSnakeCase(f)} = $${i + 2}`).join(', ');
++  const values = fields.map(f => updates[f]);
++  const { rows } = await client.query(
++    `UPDATE accounts SET ${setClauses} WHERE account_id = $1
++     RETURNING account_id, name, tier, status, created_at`,
++    [accountId, ...values]
++  );
++  return rows[0] ? rowToAccount(rows[0]) : null;
+ }
+ 
+-// Delete a accounts by id. Return true if deleted.
+-export async function deleteAccounts(db, id) {
+-  throw new Error("deleteAccounts not implemented");
++export async function deleteAccounts(client, accountId) {
++  const { rowCount } = await client.query(
++    'DELETE FROM accounts WHERE account_id = $1',
++    [accountId]
++  );
++  return rowCount > 0;
+ }
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 2e99fed..2600185 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -1,19 +1,11 @@
+-// Create the accounts table with columns matching the fields.
+-// Export an async function ensureSchema(client) that runs CREATE TABLE IF NOT EXISTS.
+-//
+-// Fields (use snake_case column names):
+-//   accountId: string (required)
+-//   name: string (required)
+-//   tier: string (required) — CHECK (tier IN ['strategic','midmarket','standard'])
+-//   status: string (required) — CHECK (status IN ['active','at-risk','churned'])
+-//   createdAt: date (required)
+-import { withDb } from "./db.mjs";
+-
+-export async function ensureSchema(client) {
+-  // TODO: create the accounts table.
+-  throw new Error("schema not implemented");
+-}
+-
+-if (import.meta.url === `file://${process.argv[1]}`) {
+-  withDb((client) => ensureSchema(client)).then(() => console.log("schema ready")).catch((e) => { console.error(e); process.exit(1); });
++export async function ensureSchema(db) {
++  await db.query(`
++    CREATE TABLE IF NOT EXISTS accounts (
++      account_id  TEXT        PRIMARY KEY,
++      name        TEXT        NOT NULL,
++      tier        TEXT        NOT NULL CHECK (tier IN ('strategic','midmarket','standard')),
++      status      TEXT        NOT NULL CHECK (status IN ('active','at-risk','churned')),
++      created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
++    )
++  `);
+ }

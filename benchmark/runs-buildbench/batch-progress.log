@@ -1,0 +1,32 @@
+2026-07-12 22:57:57 BATCH START 2026-07-12 22:57:57 — 30 cells (3 lanes × 2 agents × 5 repeats), pace=15000ms
+2026-07-12 23:00:22 [1/30] PASS greenfield-crud/mongo/claude-code/r1 tok=615424 model=sonnet
+2026-07-12 23:00:37 [2/30] SKIP (already clean) greenfield-crud/mongo/codex/r1
+2026-07-12 23:01:53 [3/30] PASS greenfield-crud/postgres-norm/claude-code/r1 tok=376197 model=sonnet
+2026-07-12 23:05:14 [4/30] PASS greenfield-crud/postgres-norm/codex/r1 tok=442854 model=gpt-5.4-mini
+2026-07-12 23:07:06 [5/30] PASS greenfield-crud/postgres-jsonb/claude-code/r1 tok=828669 model=sonnet
+2026-07-12 23:07:21 [6/30] SKIP (already clean) greenfield-crud/postgres-jsonb/codex/r1
+2026-07-12 23:09:16 [7/30] PASS greenfield-crud/mongo/claude-code/r2 tok=899570 model=sonnet
+2026-07-12 23:15:41 [8/30] PASS greenfield-crud/mongo/codex/r2 tok=1502105 model=gpt-5.4-mini
+2026-07-12 23:17:18 [9/30] PASS greenfield-crud/postgres-norm/claude-code/r2 tok=436734 model=sonnet
+2026-07-12 23:19:28 [10/30] PASS greenfield-crud/postgres-norm/codex/r2 tok=420358 model=gpt-5.4-mini
+2026-07-12 23:21:18 [11/30] PASS greenfield-crud/postgres-jsonb/claude-code/r2 tok=746052 model=sonnet
+2026-07-12 23:24:31 [12/30] PASS greenfield-crud/postgres-jsonb/codex/r2 tok=678691 model=gpt-5.4-mini
+2026-07-12 23:28:26 [13/30] PASS greenfield-crud/mongo/claude-code/r3 tok=897205 model=sonnet
+2026-07-12 23:32:38 [14/30] PASS greenfield-crud/mongo/codex/r3 tok=691466 model=gpt-5.4-mini
+2026-07-12 23:35:34 [15/30] PASS greenfield-crud/postgres-norm/claude-code/r3 tok=394417 model=sonnet
+2026-07-12 23:38:50 [16/30] PASS greenfield-crud/postgres-norm/codex/r3 tok=452165 model=gpt-5.4-mini
+2026-07-12 23:41:07 [17/30] PASS greenfield-crud/postgres-jsonb/claude-code/r3 tok=466543 model=sonnet
+2026-07-12 23:44:03 [18/30] PASS greenfield-crud/postgres-jsonb/codex/r3 tok=666625 model=gpt-5.4-mini
+2026-07-12 23:47:44 [19/30] PASS greenfield-crud/mongo/claude-code/r4 tok=861229 model=sonnet
+2026-07-12 23:55:08 [20/30] FAIL greenfield-crud/mongo/codex/r4 (status=failed)
+2026-07-12 23:56:49 [21/30] PASS greenfield-crud/postgres-norm/claude-code/r4 tok=498982 model=sonnet
+2026-07-12 23:58:43 [22/30] PASS greenfield-crud/postgres-norm/codex/r4 tok=372074 model=gpt-5.4-mini
+2026-07-13 00:00:59 [23/30] PASS greenfield-crud/postgres-jsonb/claude-code/r4 tok=581491 model=sonnet
+2026-07-13 00:05:53 [24/30] PASS greenfield-crud/postgres-jsonb/codex/r4 tok=1068357 model=gpt-5.4-mini
+2026-07-13 00:07:43 [25/30] PASS greenfield-crud/mongo/claude-code/r5 tok=595430 model=sonnet
+2026-07-13 00:14:14 [26/30] FAIL greenfield-crud/mongo/codex/r5 (status=failed)
+2026-07-13 00:15:51 [27/30] PASS greenfield-crud/postgres-norm/claude-code/r5 tok=397024 model=sonnet
+2026-07-13 00:19:00 [28/30] PASS greenfield-crud/postgres-norm/codex/r5 tok=501045 model=gpt-5.4-mini
+2026-07-13 00:21:04 [29/30] PASS greenfield-crud/postgres-jsonb/claude-code/r5 tok=818887 model=sonnet
+2026-07-13 00:25:56 [30/30] PASS greenfield-crud/postgres-jsonb/codex/r5 tok=1176159 model=gpt-5.4-mini
+2026-07-13 00:25:56 BATCH DONE — passed=28 failed=2 skipped=2 of 30

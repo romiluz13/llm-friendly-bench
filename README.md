@@ -29,7 +29,7 @@ A v2 pilot (60 runs) produced a directional, within-agent finding that MongoDB t
 **Three lanes** (one lane-independent fact `world`, shaped three ways):
 
 | Lane | Shape on disk |
-|------|----------------|
+| ------ | ---------------- |
 | `mongo` | One access-pattern-shaped document per account in collection `accounts`. |
 | `postgres-norm` | Normalized relational tables, with a **shape gradient** (see below). |
 | `postgres-jsonb` | One row per account: `account_id` + a JSONB `doc` column + a **GIN index** on `doc`. |
@@ -37,7 +37,7 @@ A v2 pilot (60 runs) produced a directional, within-agent finding that MongoDB t
 **Postgres-norm shape gradient** (how deep the relational design is):
 
 | Shape | Tables | Character |
-|-------|--------|-----------|
+| ------- | -------- | ----------- |
 | `shallow` | 8 | Child facts denormalized onto the request row (`*_json` columns). |
 | `moderate` | 12 | 1-to-many child tables (invoices / shipments / regulatory / support / usage). |
 | `deep` | 17 | Full normalization including a `contact_x_owner_group` **many-to-many junction** plus `owner_candidate_groups` — extra reconstruction burden. |
@@ -127,7 +127,7 @@ Live runs land under `benchmark/runs-v3/<shape>/<lane>/<agent>/repeat-<n>/` (eac
 **v3 script map:**
 
 | Script | Role |
-|--------|------|
+| -------- | ------ |
 | `scripts/benchmark-derive.mjs` | Derivation oracle + de-leaked scenarios (primary + negative controls). Single source of truth for the correct answer. |
 | `scripts/benchmark-livedb.mjs` | Lane adapters: seed / dump / teardown against the live MongoDB & Postgres. |
 | `scripts/benchmark-workspace-v3.mjs` | Generates the per-cell agent workspace (drivers, `src/db.mjs`, `tests/`, `RULES.md`, `db-config.json`). |
@@ -135,6 +135,59 @@ Live runs land under `benchmark/runs-v3/<shape>/<lane>/<agent>/repeat-<n>/` (eac
 | `scripts/benchmark-batch-v3.mjs` | Resumable full 90-cell batch with pacing and a progress log. |
 | `scripts/benchmark-prove-v3.mjs` | No-agent contract proof (stub fails / reference passes / copy fails). |
 | `scripts/benchmark-reference-solutions.mjs` | Reference workflow per lane, used only by the proof. |
+
+---
+
+## Build-Bench commands
+
+Build-Bench is the comprehensive build-task benchmark (alongside v3). P1 is greenfield-CRUD across 3 lanes (mongo / postgres-norm / postgres-jsonb) × 2 agents × 5 repeats = 30 cells. Full design: `docs/specs/2026-07-11-build-bench-design.md`.
+
+Prove the contract (no agent — stub fails, reference passes, per lane):
+
+```sh
+npm run buildbench:prove
+```
+
+Run a single cell:
+
+```sh
+npm run buildbench:run -- --lane mongo --agent codex --repeat 1
+```
+
+Run the full resumable P1 batch:
+
+```sh
+npm run buildbench:batch
+# optional: --lanes mongo,postgres-jsonb  --agents codex  --repeats 5  --pace-ms 15000  --force
+```
+
+Score the batch (medians + IQR, within-agent deltas, H1/H2 hypothesis verdicts):
+
+```sh
+npm run buildbench:score
+```
+
+Run the test suite:
+
+```sh
+npm run buildbench:test:workspace   # workspace generator
+npm run buildbench:test:anticheat   # test-stub-db + schema-skip scans
+npm run buildbench:test:batch       # alreadyClean resumability logic
+npm run buildbench:test:score       # scoring structure + hypothesis verdicts
+```
+
+Live runs land under `benchmark/runs-buildbench/<taskType>/<lane>/<agent>/repeat-<n>/`. Progress: `benchmark/runs-buildbench/batch-progress.log`. Summary: `benchmark/runs-buildbench/summary.json`.
+
+**Build-Bench script map:**
+
+| Script | Role |
+| -------- | ------ |
+| `scripts/benchmark-workspace-buildbench.mjs` | Multi-file workspace generator (schema + model stubs, protected db.mjs + tests). |
+| `scripts/benchmark-run-buildbench.mjs` | Runs one cell: empty namespace → workspace → freeze git → agent → live-DB acceptance → capture. |
+| `scripts/benchmark-batch-buildbench.mjs` | Resumable P1 batch (30 cells) with pacing + progress log. |
+| `scripts/benchmark-score-buildbench.mjs` | Scoring: medians + IQR, within-agent deltas, H1/H2 verdicts. |
+| `scripts/benchmark-buildbench-reference.mjs` | Reference solutions per lane (contract proof only). |
+| `scripts/benchmark-prove-buildbench.mjs` | No-agent contract proof across all lanes. |
 
 ---
 

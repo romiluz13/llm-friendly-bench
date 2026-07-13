@@ -1,0 +1,80 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index c8fe0b6..bc071b8 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -1,24 +1,34 @@
+-// Implement CRUD for the accounts resource against the live DB.
+-// Each function receives the pg client (with search_path set to the run schema) from src/db.mjs.
+-// Call ensureSchema(db) from src/schema.mjs before the first write.
+-import { ensureSchema } from "./schema.mjs";
+-
+-// Create a accounts record. Return the created document.
+ export async function createAccounts(db, data) {
+-  throw new Error("createAccounts not implemented");
++  const { accountId, name, tier, status } = data;
++  const createdAt = new Date().toISOString();
++  const doc = { accountId, name, tier, status, createdAt };
++  await db.query(
++    'INSERT INTO accounts (account_id, doc) VALUES ($1, $2)',
++    [accountId, JSON.stringify(doc)]
++  );
++  return doc;
+ }
+ 
+-// Read a accounts by its id. Return the document or null.
+-export async function getAccounts(db, id) {
+-  throw new Error("getAccounts not implemented");
++export async function getAccounts(db, accountId) {
++  const result = await db.query(
++    'SELECT doc FROM accounts WHERE account_id = $1',
++    [accountId]
++  );
++  return result.rows[0]?.doc ?? null;
+ }
+ 
+-// Update a accounts by id with partial data. Return the updated document.
+-export async function updateAccounts(db, id, data) {
+-  throw new Error("updateAccounts not implemented");
++export async function updateAccounts(db, accountId, updates) {
++  const result = await db.query(
++    'UPDATE accounts SET doc = doc || $2::jsonb WHERE account_id = $1 RETURNING doc',
++    [accountId, JSON.stringify(updates)]
++  );
++  return result.rows[0]?.doc ?? null;
+ }
+ 
+-// Delete a accounts by id. Return true if deleted.
+-export async function deleteAccounts(db, id) {
+-  throw new Error("deleteAccounts not implemented");
++export async function deleteAccounts(db, accountId) {
++  const result = await db.query(
++    'DELETE FROM accounts WHERE account_id = $1',
++    [accountId]
++  );
++  return result.rowCount > 0;
+ }
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 547fd32..b257f09 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -1,13 +1,8 @@
+-// Create the accounts table with a JSONB doc column.
+-// Export an async function ensureSchema(client) that runs CREATE TABLE IF NOT EXISTS.
+-// Design: account_id TEXT PRIMARY KEY + doc JSONB NOT NULL + a GIN index on doc.
+-import { withDb } from "./db.mjs";
+-
+-export async function ensureSchema(client) {
+-  // TODO: create the accounts table with a JSONB doc column + GIN index.
+-  throw new Error("schema not implemented");
+-}
+-
+-if (import.meta.url === `file://${process.argv[1]}`) {
+-  withDb((client) => ensureSchema(client)).then(() => console.log("schema ready")).catch((e) => { console.error(e); process.exit(1); });
++export async function ensureSchema(db) {
++  await db.query(`
++    CREATE TABLE IF NOT EXISTS accounts (
++      account_id TEXT PRIMARY KEY,
++      doc JSONB NOT NULL
++    )
++  `);
+ }

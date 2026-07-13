@@ -46,31 +46,50 @@ export async function ensureSchema(db) {
 `;
 
 function readFile(content) {
-  return () => content;
+	return () => content;
 }
 
 // 1) Clean source — no signals
 const clean = detectCheatSignals(["src/accounts.mjs"], readFile(CLEAN_SRC));
-assert.deepStrictEqual(clean, [], `clean source should have no signals, got: ${JSON.stringify(clean)}`);
+assert.deepStrictEqual(
+	clean,
+	[],
+	`clean source should have no signals, got: ${JSON.stringify(clean)}`,
+);
 
 // 2) test-stub-db: NODE_ENV test shortcut
 const stub = detectCheatSignals(["src/accounts.mjs"], readFile(TEST_STUB_SRC));
-assert(stub.includes("test-stub-db"), `NODE_ENV test shortcut should flag test-stub-db, got: ${JSON.stringify(stub)}`);
+assert(
+	stub.includes("test-stub-db"),
+	`NODE_ENV test shortcut should flag test-stub-db, got: ${JSON.stringify(stub)}`,
+);
 
 // 3) test-stub-db: mock DB client
 const mock = detectCheatSignals(["src/accounts.mjs"], readFile(MOCK_DB_SRC));
-assert(mock.includes("test-stub-db"), `mock DB client should flag test-stub-db, got: ${JSON.stringify(mock)}`);
+assert(
+	mock.includes("test-stub-db"),
+	`mock DB client should flag test-stub-db, got: ${JSON.stringify(mock)}`,
+);
 
 // 4) schema-skip: empty ensureSchema (just returns)
 const skip = detectCheatSignals(["src/schema.mjs"], readFile(SCHEMA_SKIP_SRC));
-assert(skip.includes("schema-skip"), `empty ensureSchema should flag schema-skip, got: ${JSON.stringify(skip)}`);
+assert(
+	skip.includes("schema-skip"),
+	`empty ensureSchema should flag schema-skip, got: ${JSON.stringify(skip)}`,
+);
 
 // 5) schema-skip: no-op createCollection without validator
 const noop = detectCheatSignals(["src/schema.mjs"], readFile(SCHEMA_NOOP_SRC));
-assert(noop.includes("schema-skip"), `createCollection without validator should flag schema-skip, got: ${JSON.stringify(noop)}`);
+assert(
+	noop.includes("schema-skip"),
+	`createCollection without validator should flag schema-skip, got: ${JSON.stringify(noop)}`,
+);
 
 // 6) protected file still flagged
 const protectedFile = detectCheatSignals(["src/db.mjs"], readFile("anything"));
-assert(protectedFile.includes("protected-file-modified"), `editing src/db.mjs should flag protected-file-modified`);
+assert(
+	protectedFile.includes("protected-file-modified"),
+	`editing src/db.mjs should flag protected-file-modified`,
+);
 
 console.log("build-bench anti-cheat scans ok");

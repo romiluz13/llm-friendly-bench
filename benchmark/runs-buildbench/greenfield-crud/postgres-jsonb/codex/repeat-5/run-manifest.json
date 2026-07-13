@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "build-bench",
+  "executionMode": "live-db",
+  "dbNamespace": "buildbench_greenfield-crud_postgres-jsonb_codex_r5",
+  "taskType": "greenfield-crud",
+  "lane": "postgres-jsonb",
+  "agentId": "codex",
+  "repeat": 5,
+  "model": "gpt-5.4-mini",
+  "agentVersion": "codex-cli 0.144.0-alpha.4",
+  "status": "passed",
+  "startedAt": "2026-07-13T00:21:19.705Z",
+  "finishedAt": "2026-07-13T00:25:56.553Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-buildbench/greenfield-crud/postgres-jsonb/codex/repeat-5/workspace",
+    "prompt": "benchmark/runs-buildbench/greenfield-crud/postgres-jsonb/codex/repeat-5/prompt.md",
+    "rawTranscript": "benchmark/runs-buildbench/greenfield-crud/postgres-jsonb/codex/repeat-5/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs-buildbench/greenfield-crud/postgres-jsonb/codex/repeat-5/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs-buildbench/greenfield-crud/postgres-jsonb/codex/repeat-5/diff.patch",
+    "tests": "benchmark/runs-buildbench/greenfield-crud/postgres-jsonb/codex/repeat-5/tests.log",
+    "dbBefore": "benchmark/runs-buildbench/greenfield-crud/postgres-jsonb/codex/repeat-5/db-before/seed.json",
+    "dbAfter": "benchmark/runs-buildbench/greenfield-crud/postgres-jsonb/codex/repeat-5/db-after/final.json"
+  },
+  "metrics": {
+    "elapsedMs": 276848,
+    "transcriptBytes": 246724,
+    "tokens": {
+      "inputTokens": 1176159,
+      "outputTokens": 28533,
+      "cachedInputTokens": 1129984,
+      "totalTokens": 1204692,
+      "tokensRead": 1176159,
+      "costUsd": 3.2257275000000005,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 1204692,
+    "diffBytes": 5180,
+    "filesChanged": 2,
+    "changedFiles": [
+      "src/accounts.mjs",
+      "src/schema.mjs"
+    ],
+    "cheatSignals": [],
+    "liveDbWritten": true,
+    "collectionExists": true,
+    "retrySignals": 62,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0,
+    "timedOut": false
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/postgres-jsonb/codex/repeat-5/prompt.md",
+      "sha256": "dcb1a6030a6e664e648175952c09e3add4126154ef54f46317c42d927a05e7ca"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/postgres-jsonb/codex/repeat-5/raw-transcript/codex.jsonl",
+      "sha256": "1737bb6576a9ddcc6b7bdce4f163bee24550364298ccfe79cb6acde651115551"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/postgres-jsonb/codex/repeat-5/diff.patch",
+      "sha256": "c3349f9785071df402b4f01a6887383500ccc3c19f444e42831db6e9baefd777"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/postgres-jsonb/codex/repeat-5/tests.log",
+      "sha256": "c13e5951361d849d5a3b7d59e88e4d4d8f72b49f38a87a5d2dc35cfe63655404"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/postgres-jsonb/codex/repeat-5/db-before/seed.json",
+      "sha256": "fd51e08af124e1198ff10ba5d88d83563fc21c4d4775d83e8f7aa52c344b7e92"
+    },
+    {
+      "path": "benchmark/runs-buildbench/greenfield-crud/postgres-jsonb/codex/repeat-5/db-after/final.json",
+      "sha256": "213248b0771cd6adce4f3e50ee4e0795e44df1cad42c14218ca70f7d3bfbf084"
+    }
+  ]
+}

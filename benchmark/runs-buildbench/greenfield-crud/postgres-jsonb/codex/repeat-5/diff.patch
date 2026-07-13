@@ -1,0 +1,189 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index c8fe0b6..1cbc1c9 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -3,22 +3,143 @@
+ // Call ensureSchema(db) from src/schema.mjs before the first write.
+ import { ensureSchema } from "./schema.mjs";
+ 
++const ALLOWED_TIERS = new Set(["strategic", "midmarket", "standard"]);
++const ALLOWED_STATUSES = new Set(["active", "at-risk", "churned"]);
++
++function stripUndefined(values) {
++  const result = {};
++  for (const [key, value] of Object.entries(values ?? {})) {
++    if (value !== undefined) {
++      result[key] = value;
++    }
++  }
++  return result;
++}
++
++function normalizeCreatedAt(value) {
++  if (value instanceof Date) {
++    return value.toISOString();
++  }
++  return value;
++}
++
++function isValidCreatedAt(value) {
++  if (value instanceof Date) {
++    return !Number.isNaN(value.getTime());
++  }
++  if (typeof value === "string") {
++    return !Number.isNaN(Date.parse(value));
++  }
++  return false;
++}
++
++function validateAccountDoc(doc) {
++  if (typeof doc.accountId !== "string" || doc.accountId.length === 0) {
++    throw new Error("accountId is required");
++  }
++  if (typeof doc.name !== "string" || doc.name.length === 0) {
++    throw new Error("name is required");
++  }
++  if (!ALLOWED_TIERS.has(doc.tier)) {
++    throw new Error("tier is invalid");
++  }
++  if (!ALLOWED_STATUSES.has(doc.status)) {
++    throw new Error("status is invalid");
++  }
++  if (!isValidCreatedAt(doc.createdAt)) {
++    throw new Error("createdAt is invalid");
++  }
++}
++
++function hydrateRow(row) {
++  if (!row) {
++    return null;
++  }
++  return { ...row.doc, accountId: row.account_id };
++}
++
+ // Create a accounts record. Return the created document.
+ export async function createAccounts(db, data) {
+-  throw new Error("createAccounts not implemented");
++  await ensureSchema(db);
++
++  const doc = {
++    ...stripUndefined(data),
++    accountId: data?.accountId,
++    createdAt: normalizeCreatedAt(data?.createdAt ?? new Date()),
++  };
++  validateAccountDoc(doc);
++
++  const result = await db.query(
++    `
++      INSERT INTO accounts (account_id, doc)
++      VALUES ($1, $2::jsonb)
++      ON CONFLICT (account_id) DO UPDATE
++      SET doc = EXCLUDED.doc
++      RETURNING account_id, doc
++    `,
++    [doc.accountId, doc],
++  );
++  return hydrateRow(result.rows[0]);
+ }
+ 
+ // Read a accounts by its id. Return the document or null.
+ export async function getAccounts(db, id) {
+-  throw new Error("getAccounts not implemented");
++  const result = await db.query(
++    `
++      SELECT account_id, doc
++      FROM accounts
++      WHERE account_id = $1
++    `,
++    [id],
++  );
++  return hydrateRow(result.rows[0]);
+ }
+ 
+ // Update a accounts by id with partial data. Return the updated document.
+ export async function updateAccounts(db, id, data) {
+-  throw new Error("updateAccounts not implemented");
++  const existing = await db.query(
++    `
++      SELECT account_id, doc
++      FROM accounts
++      WHERE account_id = $1
++    `,
++    [id],
++  );
++  const current = existing.rows[0];
++  if (!current) {
++    return null;
++  }
++
++  const doc = {
++    ...current.doc,
++    ...stripUndefined(data),
++    accountId: current.account_id,
++  };
++  if (doc.createdAt instanceof Date) {
++    doc.createdAt = doc.createdAt.toISOString();
++  }
++  validateAccountDoc(doc);
++
++  const result = await db.query(
++    `
++      UPDATE accounts
++      SET doc = $2::jsonb
++      WHERE account_id = $1
++      RETURNING account_id, doc
++    `,
++    [id, doc],
++  );
++  return hydrateRow(result.rows[0]);
+ }
+ 
+ // Delete a accounts by id. Return true if deleted.
+ export async function deleteAccounts(db, id) {
+-  throw new Error("deleteAccounts not implemented");
++  const result = await db.query(
++    `
++      DELETE FROM accounts
++      WHERE account_id = $1
++    `,
++    [id],
++  );
++  return result.rowCount > 0;
+ }
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 547fd32..0cf3b77 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -1,13 +1,27 @@
+ // Create the accounts table with a JSONB doc column.
+-// Export an async function ensureSchema(client) that runs CREATE TABLE IF NOT EXISTS.
++// Export an async function ensureSchema(db) that runs CREATE TABLE IF NOT EXISTS.
+ // Design: account_id TEXT PRIMARY KEY + doc JSONB NOT NULL + a GIN index on doc.
+ import { withDb } from "./db.mjs";
+ 
+-export async function ensureSchema(client) {
+-  // TODO: create the accounts table with a JSONB doc column + GIN index.
+-  throw new Error("schema not implemented");
++export async function ensureSchema(db) {
++  await db.query(`
++    CREATE TABLE IF NOT EXISTS accounts (
++      account_id TEXT PRIMARY KEY,
++      doc JSONB NOT NULL
++    )
++  `);
++  await db.query(`
++    CREATE INDEX IF NOT EXISTS accounts_doc_gin_idx
++    ON accounts
++    USING GIN (doc)
++  `);
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
+-  withDb((client) => ensureSchema(client)).then(() => console.log("schema ready")).catch((e) => { console.error(e); process.exit(1); });
++  withDb((client) => ensureSchema(client))
++    .then(() => console.log("schema ready"))
++    .catch((e) => {
++      console.error(e);
++      process.exit(1);
++    });
+ }
