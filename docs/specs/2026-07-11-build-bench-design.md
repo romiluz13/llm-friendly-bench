@@ -43,7 +43,7 @@ All tasks verified by tests passing **AND** live-DB writes/queries verified — 
 ### Agents (2)
 
 - Claude Code — Sonnet 4.6 (`--model sonnet`)
-- Codex — `gpt-5.4-mini`
+- Codex — `gpt-5.6-terra`
 - Pinned to cheap tiers deliberately (secondary thesis: you don't need the most expensive model to build well).
 - **Within-agent rule (non-negotiable):** only Claude-vs-Claude and Codex-vs-Codex comparisons are valid. Never compare absolute token counts across the two CLIs. `tokensRead = inputTokens + cachedInputTokens` normalizes within each agent's own reporting.
 

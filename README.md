@@ -53,7 +53,7 @@ MongoDB and `postgres-jsonb` stay one document across all shapes; only `postgres
 **Models are pinned to cheap tiers** — a deliberate secondary thesis: *you don't need the most expensive model to build well on MongoDB.*
 
 - Claude Code: **Sonnet 4.6** (`--model sonnet`)
-- Codex: **`gpt-5.4-mini`**
+- Codex: **`gpt-5.6-terra`**
 
 (Overridable via `ASTBENCH_CLAUDE_MODEL` / `ASTBENCH_CODEX_MODEL`.)
 

@@ -25,7 +25,7 @@ import { writeBuildBenchWorkspace } from "./benchmark-workspace-buildbench.mjs";
 
 const MODEL = {
 	"claude-code": process.env.ASTBENCH_CLAUDE_MODEL || "sonnet",
-	codex: process.env.ASTBENCH_CODEX_MODEL || "gpt-5.4-mini",
+	codex: process.env.ASTBENCH_CODEX_MODEL || "gpt-5.6-terra",
 };
 
 const AGENTS = ["claude-code", "codex"];
