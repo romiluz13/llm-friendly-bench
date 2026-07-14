@@ -24,3 +24,5 @@ benchmark/.cheat-test/
 # auditable, ignore the regenerable per-run workspace.
 benchmark/runs-buildbench/**/workspace/
 benchmark/.prove-buildbench/
+benchmark/runs-brownfield/**/workspace/
+benchmark/.prove-brownfield/
