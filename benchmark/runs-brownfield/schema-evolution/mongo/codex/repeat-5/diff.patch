@@ -1,0 +1,57 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index f2ada01..a4a6c29 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -12,6 +12,7 @@ export async function getAccounts(db, id) {
+ }
+ 
+ export async function updateAccounts(db, id, data) {
++  await ensureSchema(db);
+   await db.collection("accounts").updateOne({ accountId: id }, { $set: data });
+   return db.collection("accounts").findOne({ accountId: id });
+ }
+diff --git a/src/schema.mjs b/src/schema.mjs
+index e72f2c3..cb12f12 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -1,23 +1,27 @@
+ import { withDb } from "./db.mjs";
+ 
+ export async function ensureSchema(db) {
++  const validator = {
++    $jsonSchema: {
++      bsonType: "object",
++      required: ["accountId", "name", "tier", "status", "createdAt"],
++      properties: {
++        accountId: { bsonType: "string" },
++        name: { bsonType: "string" },
++        tier: { enum: ["strategic", "midmarket", "standard"] },
++        status: { enum: ["active", "at-risk", "churned"] },
++        createdAt: { bsonType: "date" },
++        riskScore: { bsonType: "int", minimum: 0, maximum: 100 },
++      },
++    },
++  };
+   const collections = await db.listCollections({ name: "accounts" }).toArray();
+   if (collections.length === 0) {
+     await db.createCollection("accounts", {
+-      validator: {
+-        $jsonSchema: {
+-          bsonType: "object",
+-          required: ["accountId", "name", "tier", "status", "createdAt"],
+-          properties: {
+-            accountId: { bsonType: "string" },
+-            name: { bsonType: "string" },
+-            tier: { enum: ["strategic", "midmarket", "standard"] },
+-            status: { enum: ["active", "at-risk", "churned"] },
+-            createdAt: { bsonType: "date" },
+-          },
+-        },
+-      },
++      validator,
+     });
++  } else {
++    await db.command({ collMod: "accounts", validator });
+   }
+ }
+ 

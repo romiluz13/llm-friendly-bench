@@ -1,0 +1,52 @@
+diff --git a/src/schema.mjs b/src/schema.mjs
+index e72f2c3..7e057d3 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -1,23 +1,32 @@
+ import { withDb } from "./db.mjs";
+ 
+ export async function ensureSchema(db) {
++  const validator = {
++    $jsonSchema: {
++      bsonType: "object",
++      required: ["accountId", "name", "tier", "status", "createdAt"],
++      properties: {
++        accountId: { bsonType: "string" },
++        name: { bsonType: "string" },
++        tier: { enum: ["strategic", "midmarket", "standard"] },
++        status: { enum: ["active", "at-risk", "churned"] },
++        riskScore: { bsonType: "int", minimum: 0, maximum: 100 },
++        createdAt: { bsonType: "date" },
++      },
++    },
++  };
+   const collections = await db.listCollections({ name: "accounts" }).toArray();
+   if (collections.length === 0) {
+-    await db.createCollection("accounts", {
+-      validator: {
+-        $jsonSchema: {
+-          bsonType: "object",
+-          required: ["accountId", "name", "tier", "status", "createdAt"],
+-          properties: {
+-            accountId: { bsonType: "string" },
+-            name: { bsonType: "string" },
+-            tier: { enum: ["strategic", "midmarket", "standard"] },
+-            status: { enum: ["active", "at-risk", "churned"] },
+-            createdAt: { bsonType: "date" },
+-          },
+-        },
+-      },
+-    });
++    await db.createCollection("accounts", { validator });
++  } else {
++    const existingRiskScore = collections[0].options?.validator?.$jsonSchema?.properties?.riskScore;
++    if (
++      existingRiskScore?.bsonType !== "int"
++      || existingRiskScore.minimum !== 0
++      || existingRiskScore.maximum !== 100
++    ) {
++      await db.command({ collMod: "accounts", validator });
++    }
+   }
+ }
+ 

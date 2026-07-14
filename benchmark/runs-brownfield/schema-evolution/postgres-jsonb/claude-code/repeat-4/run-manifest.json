@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "build-bench-brownfield",
+  "executionMode": "live-db",
+  "dbNamespace": "buildbench_brownfield_postgres-jsonb_claude-code_r4",
+  "taskType": "schema-evolution",
+  "lane": "postgres-jsonb",
+  "agentId": "claude-code",
+  "repeat": 4,
+  "model": "sonnet",
+  "agentVersion": "2.1.209 (Claude Code)",
+  "status": "passed",
+  "startedAt": "2026-07-14T13:07:25.627Z",
+  "finishedAt": "2026-07-14T13:09:53.513Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/claude-code/repeat-4/workspace",
+    "prompt": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/claude-code/repeat-4/prompt.md",
+    "rawTranscript": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/claude-code/repeat-4/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/claude-code/repeat-4/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/claude-code/repeat-4/diff.patch",
+    "tests": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/claude-code/repeat-4/tests.log",
+    "dbBefore": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/claude-code/repeat-4/db-before/seed.json",
+    "dbAfter": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/claude-code/repeat-4/db-after/final.json"
+  },
+  "metrics": {
+    "elapsedMs": 147886,
+    "transcriptBytes": 336977,
+    "tokens": {
+      "inputTokens": 61,
+      "outputTokens": 380,
+      "cachedInputTokens": 809745,
+      "totalTokens": 441,
+      "tokensRead": 809806,
+      "costUsd": 1.2326789999999999,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 441,
+    "diffBytes": 795,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/schema.mjs"
+    ],
+    "cheatSignals": [],
+    "liveDbWritten": true,
+    "fieldExists": true,
+    "retrySignals": 69,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0,
+    "timedOut": false
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/claude-code/repeat-4/prompt.md",
+      "sha256": "bce111969b73813cc883321b625edf679bf647616af54f37671ca86ce2eae472"
+    },
+    {
+      "path": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/claude-code/repeat-4/raw-transcript/claude-code.jsonl",
+      "sha256": "d15f86c907f54af85883e7fab3caa87829f759f7ccf61675821f36137a5d01c3"
+    },
+    {
+      "path": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/claude-code/repeat-4/diff.patch",
+      "sha256": "92d964f78bf9abbed5a214226e62bc6d01921e18ce3faca133d830c779173205"
+    },
+    {
+      "path": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/claude-code/repeat-4/tests.log",
+      "sha256": "cc695e130e9648102ac8e124c6e611c4449e5f03cb7cd8bfdacc4da881f20ff4"
+    },
+    {
+      "path": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/claude-code/repeat-4/db-before/seed.json",
+      "sha256": "4b1cc705ed1ce6f7974416946dd252f5c1f45c2358f2784fe1ea8bc7804efe8c"
+    },
+    {
+      "path": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/claude-code/repeat-4/db-after/final.json",
+      "sha256": "213248b0771cd6adce4f3e50ee4e0795e44df1cad42c14218ca70f7d3bfbf084"
+    }
+  ]
+}

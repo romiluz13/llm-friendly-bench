@@ -1,0 +1,32 @@
+2026-07-14 11:32:48 BATCH START 2026-07-14 11:32:48 — 30 cells (3 lanes × 2 agents × 5 repeats), pace=5000ms
+2026-07-14 11:34:47 [1/30] PASS schema-evolution/mongo/claude-code/r1 tok=447373 model=sonnet
+2026-07-14 11:41:37 [2/30] PASS schema-evolution/mongo/codex/r1 tok=1153432 model=gpt-5.6-terra
+2026-07-14 11:43:31 [3/30] PASS schema-evolution/postgres-norm/claude-code/r1 tok=432167 model=sonnet
+2026-07-14 11:47:06 [4/30] PASS schema-evolution/postgres-norm/codex/r1 tok=757570 model=gpt-5.6-terra
+2026-07-14 11:49:00 [5/30] PASS schema-evolution/postgres-jsonb/claude-code/r1 tok=685326 model=sonnet
+2026-07-14 11:54:55 [6/30] PASS schema-evolution/postgres-jsonb/codex/r1 tok=714179 model=gpt-5.6-terra
+2026-07-14 11:56:45 [7/30] PASS schema-evolution/mongo/claude-code/r2 tok=357980 model=sonnet
+2026-07-14 12:04:57 [8/30] PASS schema-evolution/mongo/codex/r2 tok=1469311 model=gpt-5.6-terra
+2026-07-14 12:06:52 [9/30] PASS schema-evolution/postgres-norm/claude-code/r2 tok=348027 model=sonnet
+2026-07-14 12:10:50 [10/30] PASS schema-evolution/postgres-norm/codex/r2 tok=657225 model=gpt-5.6-terra
+2026-07-14 12:12:01 [11/30] PASS schema-evolution/postgres-jsonb/claude-code/r2 tok=356136 model=sonnet
+2026-07-14 12:17:42 [12/30] PASS schema-evolution/postgres-jsonb/codex/r2 tok=728053 model=gpt-5.6-terra
+2026-07-14 12:26:10 [13/30] PASS schema-evolution/mongo/claude-code/r3 tok=383255 model=sonnet
+2026-07-14 12:37:09 [14/30] PASS schema-evolution/mongo/codex/r3 tok=1375930 model=gpt-5.6-terra
+2026-07-14 12:40:04 [15/30] PASS schema-evolution/postgres-norm/claude-code/r3 tok=1353712 model=sonnet
+2026-07-14 12:44:53 [16/30] PASS schema-evolution/postgres-norm/codex/r3 tok=795856 model=gpt-5.6-terra
+2026-07-14 12:46:45 [17/30] PASS schema-evolution/postgres-jsonb/claude-code/r3 tok=439339 model=sonnet
+2026-07-14 12:51:28 [18/30] PASS schema-evolution/postgres-jsonb/codex/r3 tok=742147 model=gpt-5.6-terra
+2026-07-14 12:53:22 [19/30] PASS schema-evolution/mongo/claude-code/r4 tok=333148 model=sonnet
+2026-07-14 13:02:28 [20/30] PASS schema-evolution/mongo/codex/r4 tok=2067074 model=gpt-5.6-terra
+2026-07-14 13:04:12 [21/30] PASS schema-evolution/postgres-norm/claude-code/r4 tok=586211 model=sonnet
+2026-07-14 13:07:20 [22/30] PASS schema-evolution/postgres-norm/codex/r4 tok=630224 model=gpt-5.6-terra
+2026-07-14 13:09:53 [23/30] PASS schema-evolution/postgres-jsonb/claude-code/r4 tok=809806 model=sonnet
+2026-07-14 13:16:59 [24/30] PASS schema-evolution/postgres-jsonb/codex/r4 tok=1201563 model=gpt-5.6-terra
+2026-07-14 13:21:44 [25/30] PASS schema-evolution/mongo/claude-code/r5 tok=1016605 model=sonnet
+2026-07-14 13:36:41 [26/30] PASS schema-evolution/mongo/codex/r5 tok=3158977 model=gpt-5.6-terra
+2026-07-14 13:38:07 [27/30] PASS schema-evolution/postgres-norm/claude-code/r5 tok=263111 model=sonnet
+2026-07-14 13:42:13 [28/30] PASS schema-evolution/postgres-norm/codex/r5 tok=711535 model=gpt-5.6-terra
+2026-07-14 13:44:08 [29/30] PASS schema-evolution/postgres-jsonb/claude-code/r5 tok=378672 model=sonnet
+2026-07-14 13:51:51 [30/30] PASS schema-evolution/postgres-jsonb/codex/r5 tok=1295981 model=gpt-5.6-terra
+2026-07-14 13:51:51 BATCH DONE — passed=30 failed=0 skipped=0 of 30

@@ -1,8 +1,10 @@
-Implemented the brownfield schema evolution.
+Implemented the schema evolution in [src/schema.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/mongo/codex/repeat-1/workspace/src/schema.mjs:4):
 
-- [src/schema.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/mongo/codex/repeat-1/workspace/src/schema.mjs#L3) adds a shared validator with optional `riskScore` bounded to `0..100` as an integer.
-- [src/schema.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/mongo/codex/repeat-1/workspace/src/schema.mjs#L18) now applies that validator with `collMod` when `accounts` already exists, so the schema evolves instead of only being set on first create.
-- [src/accounts.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/mongo/codex/repeat-1/workspace/src/accounts.mjs#L3) and [src/accounts.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/mongo/codex/repeat-1/workspace/src/accounts.mjs#L11) already preserve `riskScore` through the existing create/get pass-through, and [src/accounts.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/mongo/codex/repeat-1/workspace/src/accounts.mjs#L14) now re-runs schema setup before update.
+- Adds optional `riskScore` as BSON `int`, bounded `0–100`.
+- Applies the validator on both new collections and existing ones via `collMod`.
+- Left `accounts.mjs` unchanged: its existing create/get/update paths already preserve optional fields.
 
-`node` import/syntax checks pass. `npm test` still cannot complete in this sandbox because the shell cannot reach `127.0.0.1:27018`.
+Verified: syntax, diff hygiene, and both schema-application paths pass locally. Independent review found no issues.
+
+`npm test` could not reach its first assertion: it exits 1 because the sandbox blocks `127.0.0.1:27018` with `connect EPERM`. No fallback or test change was added.
 

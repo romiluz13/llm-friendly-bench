@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "build-bench-brownfield",
+  "executionMode": "live-db",
+  "dbNamespace": "buildbench_brownfield_mongo_claude-code_r5",
+  "taskType": "schema-evolution",
+  "lane": "mongo",
+  "agentId": "claude-code",
+  "repeat": 5,
+  "model": "sonnet",
+  "agentVersion": "2.1.209 (Claude Code)",
+  "status": "passed",
+  "startedAt": "2026-07-14T13:17:05.715Z",
+  "finishedAt": "2026-07-14T13:21:43.426Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/workspace",
+    "prompt": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/prompt.md",
+    "rawTranscript": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/diff.patch",
+    "tests": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/tests.log",
+    "dbBefore": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/db-before/seed.json",
+    "dbAfter": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/db-after/final.json"
+  },
+  "metrics": {
+    "elapsedMs": 277711,
+    "transcriptBytes": 481726,
+    "tokens": {
+      "inputTokens": 69,
+      "outputTokens": 444,
+      "cachedInputTokens": 1016536,
+      "totalTokens": 513,
+      "tokensRead": 1016605,
+      "costUsd": 1.1875392000000002,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 513,
+    "diffBytes": 1485,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/schema.mjs"
+    ],
+    "cheatSignals": [],
+    "liveDbWritten": true,
+    "fieldExists": true,
+    "retrySignals": 72,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0,
+    "timedOut": false
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/prompt.md",
+      "sha256": "c25c82e6f99ea17e0658bd6d9c617d5f5f0273101028c576a7999edcf199968d"
+    },
+    {
+      "path": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/raw-transcript/claude-code.jsonl",
+      "sha256": "c8a4abcd3d16b79c311d9c0fa76f8df3ad5b5a1ec8eda9a4330d1de2de3970ec"
+    },
+    {
+      "path": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/diff.patch",
+      "sha256": "a193951c76290459015f0b8a36376bc04be736045db8ba1d04f88b45477a1cd3"
+    },
+    {
+      "path": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/tests.log",
+      "sha256": "4ef9a538f7e15c4133ad39ff0e5698b0f03616832b7a82360d00009c2829b619"
+    },
+    {
+      "path": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/db-before/seed.json",
+      "sha256": "f97f4ed4045d8e16ebac4837f313835608944bf63526669899cbdf81475c403f"
+    },
+    {
+      "path": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/db-after/final.json",
+      "sha256": "b7cc0ef0fb95d1fbf23ecbf6a92eab8d3e4c72dec396f5dbd71789dd4fa28f99"
+    }
+  ]
+}

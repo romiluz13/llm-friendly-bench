@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "build-bench-brownfield",
+  "executionMode": "live-db",
+  "dbNamespace": "buildbench_brownfield_postgres-jsonb_codex_r3",
+  "taskType": "schema-evolution",
+  "lane": "postgres-jsonb",
+  "agentId": "codex",
+  "repeat": 3,
+  "model": "gpt-5.6-terra",
+  "agentVersion": "codex-cli 0.144.0-alpha.4",
+  "status": "passed",
+  "startedAt": "2026-07-14T12:46:50.409Z",
+  "finishedAt": "2026-07-14T12:51:28.058Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/workspace",
+    "prompt": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/prompt.md",
+    "rawTranscript": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/diff.patch",
+    "tests": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/tests.log",
+    "dbBefore": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/db-before/seed.json",
+    "dbAfter": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/db-after/final.json"
+  },
+  "metrics": {
+    "elapsedMs": 277649,
+    "transcriptBytes": 429642,
+    "tokens": {
+      "inputTokens": 742147,
+      "outputTokens": 11892,
+      "cachedInputTokens": 687360,
+      "totalTokens": 754039,
+      "tokensRead": 742147,
+      "costUsd": 1.9742875,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 754039,
+    "diffBytes": 2507,
+    "filesChanged": 2,
+    "changedFiles": [
+      "src/accounts.mjs",
+      "src/schema.mjs"
+    ],
+    "cheatSignals": [],
+    "liveDbWritten": true,
+    "fieldExists": true,
+    "retrySignals": 87,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0,
+    "timedOut": false
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/prompt.md",
+      "sha256": "bce111969b73813cc883321b625edf679bf647616af54f37671ca86ce2eae472"
+    },
+    {
+      "path": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/raw-transcript/codex.jsonl",
+      "sha256": "8253e96c1360948445bbd09ac6e83cc4fa61623bae7dea8e5a51eb27632cf213"
+    },
+    {
+      "path": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/diff.patch",
+      "sha256": "6701348e5052b4207c421c447a312903345f3ed16f49c590805559f2f3cf587d"
+    },
+    {
+      "path": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/tests.log",
+      "sha256": "cc695e130e9648102ac8e124c6e611c4449e5f03cb7cd8bfdacc4da881f20ff4"
+    },
+    {
+      "path": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/db-before/seed.json",
+      "sha256": "44d7df64bf9d90062c8eab3f2a90325810099caff8532e24276d7a5376cc44f6"
+    },
+    {
+      "path": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/db-after/final.json",
+      "sha256": "213248b0771cd6adce4f3e50ee4e0795e44df1cad42c14218ca70f7d3bfbf084"
+    }
+  ]
+}
