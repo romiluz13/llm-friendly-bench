@@ -1,0 +1,72 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index 9ea3403..6f56bcb 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -1,8 +1,16 @@
+ import { ensureSchema } from "./schema.mjs";
+ 
++function assertRiskScore(riskScore) {
++  if (riskScore === undefined) return;
++  if (!Number.isInteger(riskScore) || riskScore < 0 || riskScore > 100) {
++    throw new RangeError("riskScore must be an integer between 0 and 100");
++  }
++}
++
+ export async function createAccounts(client, data) {
+   await ensureSchema(client);
+   const doc = { ...data, createdAt: data.createdAt || new Date().toISOString() };
++  assertRiskScore(doc.riskScore);
+   await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
+   return doc;
+ }
+@@ -16,6 +24,7 @@ export async function updateAccounts(client, id, data) {
+   const existing = await getAccounts(client, id);
+   if (!existing) return null;
+   const updated = { ...existing, ...data };
++  assertRiskScore(updated.riskScore);
+   await client.query('UPDATE accounts SET doc = $1 WHERE account_id = $2 RETURNING doc', [JSON.stringify(updated), id]);
+   return updated;
+ }
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 1c7406e..18c8ea5 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -1,13 +1,37 @@
+ import { withDb } from "./db.mjs";
+ 
++const riskScoreCheck = `
++        NOT (doc ? 'riskScore')
++        OR (
++          jsonb_typeof(doc->'riskScore') = 'number'
++          AND (doc->>'riskScore') ~ '^[0-9]+$'
++          AND (doc->>'riskScore')::int BETWEEN 0 AND 100
++        )
++      `;
++
+ export async function ensureSchema(client) {
+   await client.query(`
+     CREATE TABLE IF NOT EXISTS accounts (
+       account_id TEXT PRIMARY KEY,
+       doc        JSONB NOT NULL,
+-      CONSTRAINT accounts_doc_key_match CHECK (doc->>'accountId' = account_id)
++      CONSTRAINT accounts_doc_key_match CHECK (doc->>'accountId' = account_id),
++      CONSTRAINT accounts_doc_risk_score_check CHECK (${riskScoreCheck})
+     )
+   `);
++  await client.query(`
++    DO $$
++    BEGIN
++      IF NOT EXISTS (
++        SELECT 1
++        FROM pg_constraint
++        WHERE conname = 'accounts_doc_risk_score_check'
++          AND conrelid = 'accounts'::regclass
++      ) THEN
++        ALTER TABLE accounts
++          ADD CONSTRAINT accounts_doc_risk_score_check CHECK (${riskScoreCheck});
++      END IF;
++    END $$;
++  `);
+   await client.query('CREATE INDEX IF NOT EXISTS idx_accounts_doc_gin ON accounts USING GIN (doc jsonb_path_ops)');
+ }
+ 
