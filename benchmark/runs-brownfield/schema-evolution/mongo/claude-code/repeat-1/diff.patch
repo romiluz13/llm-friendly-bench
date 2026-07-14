@@ -1,0 +1,12 @@
+diff --git a/src/schema.mjs b/src/schema.mjs
+index e72f2c3..e4fb672 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -14,6 +14,7 @@ export async function ensureSchema(db) {
+             tier: { enum: ["strategic", "midmarket", "standard"] },
+             status: { enum: ["active", "at-risk", "churned"] },
+             createdAt: { bsonType: "date" },
++            riskScore: { bsonType: "int", minimum: 0, maximum: 100 },
+           },
+         },
+       },
