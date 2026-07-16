@@ -1,0 +1,77 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index a676e3f..905a1f1 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -7,7 +7,7 @@ function rowToAccount(r) {
+ export async function createAccount(client, data) {
+   await ensureSchema(client);
+   const res = await client.query(
+-    'INSERT INTO accounts (account_id, name, tier, status) VALUES ($1, $2, $3, $4) RETURNING *',
++    'INSERT INTO accounts (account_id, name, tier, status) VALUES ($1, $2, $3, $4) ON CONFLICT (account_id) DO UPDATE SET name = EXCLUDED.name, tier = EXCLUDED.tier, status = EXCLUDED.status RETURNING *',
+     [data.accountId, data.name, data.tier, data.status]
+   );
+   return rowToAccount(res.rows[0]);
+diff --git a/src/orders.mjs b/src/orders.mjs
+index 246ea0a..43b8042 100644
+--- a/src/orders.mjs
++++ b/src/orders.mjs
+@@ -7,7 +7,7 @@ function rowToOrder(r) {
+ export async function createOrder(client, data) {
+   await ensureSchema(client);
+   const res = await client.query(
+-    'INSERT INTO orders (order_id, account_id, status, total_cents) VALUES ($1, $2, $3, $4) RETURNING *',
++    'INSERT INTO orders (order_id, account_id, status, total_cents) VALUES ($1, $2, $3, $4) ON CONFLICT (order_id) DO UPDATE SET account_id = EXCLUDED.account_id, status = EXCLUDED.status, total_cents = EXCLUDED.total_cents RETURNING *',
+     [data.orderId, data.accountId, data.status, data.totalCents || 0]
+   );
+   // Insert line items if provided
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 52d4b85..1d85f9e 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -17,6 +17,16 @@ export async function ensureSchema(client) {
+       total_cents INTEGER NOT NULL DEFAULT 0
+     )
+   `);
++  await client.query(`
++    CREATE TABLE IF NOT EXISTS shipments (
++      shipment_id TEXT PRIMARY KEY,
++      order_id TEXT NOT NULL REFERENCES orders(order_id),
++      carrier TEXT NOT NULL,
++      tracking_number TEXT NOT NULL,
++      status TEXT NOT NULL CHECK (status IN ('pending','in_transit','delivered','returned')),
++      shipped_at TIMESTAMPTZ
++    )
++  `);
+   await client.query(`
+     CREATE TABLE IF NOT EXISTS line_items (
+       line_item_id SERIAL PRIMARY KEY,
+diff --git a/src/shipments.mjs b/src/shipments.mjs
+new file mode 100644
+index 0000000..480d49e
+--- /dev/null
++++ b/src/shipments.mjs
+@@ -0,0 +1,24 @@
++import { ensureSchema } from "./schema.mjs";
++
++function rowToShipment(r) {
++  return { shipmentId: r.shipment_id, orderId: r.order_id, carrier: r.carrier, trackingNumber: r.tracking_number, status: r.status, shippedAt: r.shipped_at };
++}
++
++export async function createShipment(client, data) {
++  await ensureSchema(client);
++  const res = await client.query(
++    'INSERT INTO shipments (shipment_id, order_id, carrier, tracking_number, status, shipped_at) VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (shipment_id) DO UPDATE SET order_id = EXCLUDED.order_id, carrier = EXCLUDED.carrier, tracking_number = EXCLUDED.tracking_number, status = EXCLUDED.status, shipped_at = EXCLUDED.shipped_at RETURNING *',
++    [data.shipmentId, data.orderId, data.carrier, data.trackingNumber, data.status, data.shippedAt || null]
++  );
++  return rowToShipment(res.rows[0]);
++}
++
++export async function getShipment(client, shipmentId) {
++  const res = await client.query('SELECT * FROM shipments WHERE shipment_id = $1', [shipmentId]);
++  return res.rows[0] ? rowToShipment(res.rows[0]) : null;
++}
++
++export async function getShipmentsByOrder(client, orderId) {
++  const res = await client.query('SELECT * FROM shipments WHERE order_id = $1', [orderId]);
++  return res.rows.map(rowToShipment);
++}

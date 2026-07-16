@@ -1,0 +1,21 @@
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 458dba2..694d77a 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -37,6 +37,16 @@ export async function ensureSchema(client) {
+       CONSTRAINT cases_key_match CHECK (doc->>'caseId' = case_id)
+     )
+   `);
++
++  await client.query(`
++    CREATE TABLE IF NOT EXISTS shipments (
++      shipment_id TEXT PRIMARY KEY,
++      order_id TEXT NOT NULL REFERENCES orders(order_id),
++      doc JSONB NOT NULL,
++      CONSTRAINT shipments_key_match CHECK (doc->>'shipmentId' = shipment_id)
++    )
++  `);
++  await client.query('CREATE INDEX IF NOT EXISTS idx_shipments_doc ON shipments USING GIN (doc jsonb_path_ops)');
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

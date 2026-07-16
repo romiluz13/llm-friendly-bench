@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "build-bench-brownfield",
+  "executionMode": "live-db",
+  "dbNamespace": "buildbench_brownfield_postgres-norm_claude-code_r3",
+  "taskType": "new-entity",
+  "lane": "postgres-norm",
+  "agentId": "claude-code",
+  "repeat": 3,
+  "model": "sonnet",
+  "agentVersion": "2.1.211 (Claude Code)",
+  "status": "passed",
+  "startedAt": "2026-07-16T13:29:24.332Z",
+  "finishedAt": "2026-07-16T13:30:59.286Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-complex/new-entity/postgres-norm/claude-code/repeat-3/workspace",
+    "prompt": "benchmark/runs-complex/new-entity/postgres-norm/claude-code/repeat-3/prompt.md",
+    "rawTranscript": "benchmark/runs-complex/new-entity/postgres-norm/claude-code/repeat-3/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs-complex/new-entity/postgres-norm/claude-code/repeat-3/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs-complex/new-entity/postgres-norm/claude-code/repeat-3/diff.patch",
+    "tests": "benchmark/runs-complex/new-entity/postgres-norm/claude-code/repeat-3/tests.log",
+    "dbBefore": "benchmark/runs-complex/new-entity/postgres-norm/claude-code/repeat-3/db-before/seed.json",
+    "dbAfter": "benchmark/runs-complex/new-entity/postgres-norm/claude-code/repeat-3/db-after/final.json"
+  },
+  "metrics": {
+    "elapsedMs": 94954,
+    "transcriptBytes": 116370,
+    "tokens": {
+      "inputTokens": 23,
+      "outputTokens": 135,
+      "cachedInputTokens": 283675,
+      "totalTokens": 158,
+      "tokensRead": 283698,
+      "costUsd": 0.4835621999999999,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 158,
+    "diffBytes": 705,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/schema.mjs"
+    ],
+    "cheatSignals": [],
+    "liveDbWritten": true,
+    "fieldExists": true,
+    "retrySignals": 27,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0,
+    "timedOut": false
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-complex/new-entity/postgres-norm/claude-code/repeat-3/prompt.md",
+      "sha256": "d5b9db14761bbb5dc89233f375c4b9c4236e9e23c3b0712fdbf21ccb79e82f7a"
+    },
+    {
+      "path": "benchmark/runs-complex/new-entity/postgres-norm/claude-code/repeat-3/raw-transcript/claude-code.jsonl",
+      "sha256": "50e9ade1ade8e281f1fab692bf0981709d9a0c374cbc689c6ae348f44ed9f0ef"
+    },
+    {
+      "path": "benchmark/runs-complex/new-entity/postgres-norm/claude-code/repeat-3/diff.patch",
+      "sha256": "3580194bc84ce660881ed11aaa019ae6f32f1a59a18cf1caabd94dabc22451b6"
+    },
+    {
+      "path": "benchmark/runs-complex/new-entity/postgres-norm/claude-code/repeat-3/tests.log",
+      "sha256": "4e1f574bf1c747431b9e6c160a6c3073d99b6701f14fff444a48ee8de4bae9d1"
+    },
+    {
+      "path": "benchmark/runs-complex/new-entity/postgres-norm/claude-code/repeat-3/db-before/seed.json",
+      "sha256": "15bb5da236536f0ca11fd5bfb8ff53fd8baacfb165a9a928b012b010d9c4c34b"
+    },
+    {
+      "path": "benchmark/runs-complex/new-entity/postgres-norm/claude-code/repeat-3/db-after/final.json",
+      "sha256": "7146565a6ac010833c179cb9409d95599d91445bde2206fd0df9633b08c94e7f"
+    }
+  ]
+}

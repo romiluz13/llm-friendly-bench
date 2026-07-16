@@ -1,0 +1,53 @@
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 1064fcf..534cac4 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -13,7 +13,7 @@ export async function ensureSchema(db) {
+         tier: { enum: ["strategic", "midmarket", "standard"] },
+         status: { enum: ["active", "at-risk", "churned"] },
+       }
+-    }});
++    }}});
+   }
+   if (!names.includes("orders")) {
+     await db.createCollection("orders", { validator: { $jsonSchema: {
+@@ -25,7 +25,7 @@ export async function ensureSchema(db) {
+         totalCents: { bsonType: ["int", "double"] },
+         lineItems: { bsonType: "array", items: { bsonType: "object" } },
+       }
+-    }});
++    }}});
+   }
+   if (!names.includes("invoices")) {
+     await db.createCollection("invoices", { validator: { $jsonSchema: {
+@@ -36,7 +36,7 @@ export async function ensureSchema(db) {
+         amountCents: { bsonType: ["int", "double"] },
+         status: { enum: ["paid", "overdue", "pending"] },
+       }
+-    }});
++    }}});
+   }
+   if (!names.includes("support_cases")) {
+     await db.createCollection("support_cases", { validator: { $jsonSchema: {
+@@ -47,7 +47,20 @@ export async function ensureSchema(db) {
+         priority: { enum: ["low", "medium", "high", "critical"] },
+         status: { enum: ["open", "resolved", "escalated"] },
+       }
+-    }});
++    }}});
++  }
++  if (!names.includes("shipments")) {
++    await db.createCollection("shipments", { validator: { $jsonSchema: {
++      bsonType: "object", required: ["shipmentId", "orderId", "carrier", "trackingNumber", "status", "shippedAt"],
++      properties: {
++        shipmentId: { bsonType: "string" },
++        orderId: { bsonType: "string" },
++        carrier: { bsonType: "string" },
++        trackingNumber: { bsonType: "string" },
++        status: { enum: ["pending", "in_transit", "delivered", "returned"] },
++        shippedAt: { bsonType: "date" },
++      }
++    }}});
+   }
+ }
+ 

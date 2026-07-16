@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "build-bench-brownfield",
+  "executionMode": "live-db",
+  "dbNamespace": "buildbench_brownfield_postgres-norm_codex_r3",
+  "taskType": "new-entity",
+  "lane": "postgres-norm",
+  "agentId": "codex",
+  "repeat": 3,
+  "model": "gpt-5.6-terra",
+  "agentVersion": "codex-cli 0.144.0-alpha.4",
+  "status": "passed",
+  "startedAt": "2026-07-16T13:31:04.580Z",
+  "finishedAt": "2026-07-16T13:31:41.414Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-complex/new-entity/postgres-norm/codex/repeat-3/workspace",
+    "prompt": "benchmark/runs-complex/new-entity/postgres-norm/codex/repeat-3/prompt.md",
+    "rawTranscript": "benchmark/runs-complex/new-entity/postgres-norm/codex/repeat-3/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs-complex/new-entity/postgres-norm/codex/repeat-3/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs-complex/new-entity/postgres-norm/codex/repeat-3/diff.patch",
+    "tests": "benchmark/runs-complex/new-entity/postgres-norm/codex/repeat-3/tests.log",
+    "dbBefore": "benchmark/runs-complex/new-entity/postgres-norm/codex/repeat-3/db-before/seed.json",
+    "dbAfter": "benchmark/runs-complex/new-entity/postgres-norm/codex/repeat-3/db-after/final.json"
+  },
+  "metrics": {
+    "elapsedMs": 36834,
+    "transcriptBytes": 377435,
+    "tokens": {
+      "inputTokens": 86327,
+      "outputTokens": 1001,
+      "cachedInputTokens": 62720,
+      "totalTokens": 87328,
+      "tokensRead": 86327,
+      "costUsd": 0.22582750000000001,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 87328,
+    "diffBytes": 707,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/schema.mjs"
+    ],
+    "cheatSignals": [],
+    "liveDbWritten": true,
+    "fieldExists": true,
+    "retrySignals": 11,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0,
+    "timedOut": false
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-complex/new-entity/postgres-norm/codex/repeat-3/prompt.md",
+      "sha256": "d5b9db14761bbb5dc89233f375c4b9c4236e9e23c3b0712fdbf21ccb79e82f7a"
+    },
+    {
+      "path": "benchmark/runs-complex/new-entity/postgres-norm/codex/repeat-3/raw-transcript/codex.jsonl",
+      "sha256": "0c86eb2b85551ae3d523c84c9cc9c9a877d7a1f779a3ad8f8547effcb0dbcbf6"
+    },
+    {
+      "path": "benchmark/runs-complex/new-entity/postgres-norm/codex/repeat-3/diff.patch",
+      "sha256": "e115ccdbd951614568b86d6db35c49af44987159ca5ad949ec57d7a4b1c113ae"
+    },
+    {
+      "path": "benchmark/runs-complex/new-entity/postgres-norm/codex/repeat-3/tests.log",
+      "sha256": "4e1f574bf1c747431b9e6c160a6c3073d99b6701f14fff444a48ee8de4bae9d1"
+    },
+    {
+      "path": "benchmark/runs-complex/new-entity/postgres-norm/codex/repeat-3/db-before/seed.json",
+      "sha256": "cefba3ce69478afaf5e321cf893ba463828082b67d3a447ca74aa7d2acc54300"
+    },
+    {
+      "path": "benchmark/runs-complex/new-entity/postgres-norm/codex/repeat-3/db-after/final.json",
+      "sha256": "095305843a798e9e5372c373c2ee41742a0889d9febd721e34ea0a9377599d93"
+    }
+  ]
+}

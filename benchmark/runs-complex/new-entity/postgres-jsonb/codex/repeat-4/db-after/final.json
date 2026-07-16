@@ -1,0 +1,19 @@
+{
+  "collections": [
+    {
+      "name": "accounts"
+    },
+    {
+      "name": "orders"
+    },
+    {
+      "name": "shipments"
+    },
+    {
+      "name": "invoices"
+    },
+    {
+      "name": "support_cases"
+    }
+  ]
+}

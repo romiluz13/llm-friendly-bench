@@ -1,0 +1,3 @@
+Build-Bench complex brownfield acceptance passed: postgres-jsonb/new-entity
+npm notice run build-bench-postgres-jsonb-new-entity@1.0.0 test
+npm notice run node tests/acceptance.test.mjs

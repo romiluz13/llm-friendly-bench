@@ -1,0 +1,22 @@
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 458dba2..cd0d0e1 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -20,6 +20,17 @@ export async function ensureSchema(client) {
+   `);
+   await client.query('CREATE INDEX IF NOT EXISTS idx_orders_doc ON orders USING GIN (doc jsonb_path_ops)');
+ 
++  await client.query(`
++    CREATE TABLE IF NOT EXISTS shipments (
++      shipment_id TEXT PRIMARY KEY,
++      order_id TEXT NOT NULL REFERENCES orders(order_id),
++      doc JSONB NOT NULL,
++      CONSTRAINT shipments_key_match CHECK (doc->>'shipmentId' = shipment_id),
++      CONSTRAINT shipments_status_valid CHECK (doc->>'status' IN ('pending', 'in_transit', 'delivered', 'returned'))
++    )
++  `);
++  await client.query('CREATE INDEX IF NOT EXISTS idx_shipments_order_id ON shipments (order_id)');
++
+   await client.query(`
+     CREATE TABLE IF NOT EXISTS invoices (
+       invoice_id TEXT PRIMARY KEY,

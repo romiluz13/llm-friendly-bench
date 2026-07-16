@@ -1,0 +1,21 @@
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 52d4b85..dce2dbd 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -42,6 +42,16 @@ export async function ensureSchema(client) {
+       status TEXT NOT NULL CHECK (status IN ('open','resolved','escalated'))
+     )
+   `);
++  await client.query(`
++    CREATE TABLE IF NOT EXISTS shipments (
++      shipment_id TEXT PRIMARY KEY,
++      order_id TEXT NOT NULL REFERENCES orders(order_id),
++      carrier TEXT NOT NULL,
++      tracking_number TEXT NOT NULL,
++      status TEXT NOT NULL CHECK (status IN ('pending','in_transit','delivered','returned')),
++      shipped_at DATE NOT NULL
++    )
++  `);
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

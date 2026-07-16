@@ -1,0 +1,45 @@
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 458dba2..9c6e657 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -20,6 +20,16 @@ export async function ensureSchema(client) {
+   `);
+   await client.query('CREATE INDEX IF NOT EXISTS idx_orders_doc ON orders USING GIN (doc jsonb_path_ops)');
+ 
++  await client.query(`
++    CREATE TABLE IF NOT EXISTS shipments (
++      shipment_id TEXT PRIMARY KEY,
++      order_id TEXT NOT NULL,
++      doc JSONB NOT NULL,
++      CONSTRAINT shipments_key_match CHECK (doc->>'shipmentId' = shipment_id)
++    )
++  `);
++  await client.query('CREATE INDEX IF NOT EXISTS idx_shipments_doc ON shipments USING GIN (doc jsonb_path_ops)');
++
+   await client.query(`
+     CREATE TABLE IF NOT EXISTS invoices (
+       invoice_id TEXT PRIMARY KEY,
+diff --git a/src/shipments.mjs b/src/shipments.mjs
+new file mode 100644
+index 0000000..f3d1169
+--- /dev/null
++++ b/src/shipments.mjs
+@@ -0,0 +1,18 @@
++import { ensureSchema } from "./schema.mjs";
++
++export async function createShipment(client, data) {
++  await ensureSchema(client);
++  const doc = { ...data };
++  await client.query('INSERT INTO shipments (shipment_id, order_id, doc) VALUES ($1, $2, $3) RETURNING doc', [doc.shipmentId, doc.orderId, JSON.stringify(doc)]);
++  return doc;
++}
++
++export async function getShipment(client, shipmentId) {
++  const res = await client.query('SELECT doc FROM shipments WHERE shipment_id = $1', [shipmentId]);
++  return res.rows[0]?.doc || null;
++}
++
++export async function getShipmentsByOrder(client, orderId) {
++  const res = await client.query('SELECT doc FROM shipments WHERE order_id = $1', [orderId]);
++  return res.rows.map(r => r.doc);
++}

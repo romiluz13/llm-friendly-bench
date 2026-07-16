@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "build-bench-brownfield",
+  "executionMode": "live-db",
+  "dbNamespace": "buildbench_brownfield_mongo_codex_r4",
+  "taskType": "new-entity",
+  "lane": "mongo",
+  "agentId": "codex",
+  "repeat": 4,
+  "model": "gpt-5.6-terra",
+  "agentVersion": "codex-cli 0.144.0-alpha.4",
+  "status": "passed",
+  "startedAt": "2026-07-16T13:39:02.112Z",
+  "finishedAt": "2026-07-16T13:40:25.055Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-complex/new-entity/mongo/codex/repeat-4/workspace",
+    "prompt": "benchmark/runs-complex/new-entity/mongo/codex/repeat-4/prompt.md",
+    "rawTranscript": "benchmark/runs-complex/new-entity/mongo/codex/repeat-4/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs-complex/new-entity/mongo/codex/repeat-4/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs-complex/new-entity/mongo/codex/repeat-4/diff.patch",
+    "tests": "benchmark/runs-complex/new-entity/mongo/codex/repeat-4/tests.log",
+    "dbBefore": "benchmark/runs-complex/new-entity/mongo/codex/repeat-4/db-before/seed.json",
+    "dbAfter": "benchmark/runs-complex/new-entity/mongo/codex/repeat-4/db-after/final.json"
+  },
+  "metrics": {
+    "elapsedMs": 82943,
+    "transcriptBytes": 383213,
+    "tokens": {
+      "inputTokens": 180510,
+      "outputTokens": 1931,
+      "cachedInputTokens": 130048,
+      "totalTokens": 182441,
+      "tokensRead": 180510,
+      "costUsd": 0.47058500000000003,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 182441,
+    "diffBytes": 1910,
+    "filesChanged": 1,
+    "changedFiles": [
+      "src/schema.mjs"
+    ],
+    "cheatSignals": [],
+    "liveDbWritten": true,
+    "fieldExists": true,
+    "retrySignals": 19,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0,
+    "timedOut": false
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-complex/new-entity/mongo/codex/repeat-4/prompt.md",
+      "sha256": "d5b9db14761bbb5dc89233f375c4b9c4236e9e23c3b0712fdbf21ccb79e82f7a"
+    },
+    {
+      "path": "benchmark/runs-complex/new-entity/mongo/codex/repeat-4/raw-transcript/codex.jsonl",
+      "sha256": "463e46e053bbcb6a4f9754cae497ffc7a4e78bf89d370c6fc56d8cd9372a647c"
+    },
+    {
+      "path": "benchmark/runs-complex/new-entity/mongo/codex/repeat-4/diff.patch",
+      "sha256": "6c454456f38a00f1c5bad42ec131485de0a4430ee29f67b911ab0d6443f23e8e"
+    },
+    {
+      "path": "benchmark/runs-complex/new-entity/mongo/codex/repeat-4/tests.log",
+      "sha256": "a60e16486e50d9ff0ceeb73d33d3acdb93b3b2257c6f772884dd8fbb28781319"
+    },
+    {
+      "path": "benchmark/runs-complex/new-entity/mongo/codex/repeat-4/db-before/seed.json",
+      "sha256": "d4c8d78fe97cd5622df8d0eae967d4957a2ca8aa927d0d09b1805861d78879bf"
+    },
+    {
+      "path": "benchmark/runs-complex/new-entity/mongo/codex/repeat-4/db-after/final.json",
+      "sha256": "868daef64680fabe31d4815966df303c85adbde7477c7cdcfa279beeb0602b93"
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "build-bench-complex",
+  "taskType": "new-entity",
+  "generatedAt": "2026-07-16T14:11:46.096Z",
+  "executionMode": "live-db",
+  "model": {
+    "claude-code": "sonnet",
+    "codex": "gpt-5.6-terra"
+  },
+  "lanes": [
+    "mongo",
+    "postgres-norm",
+    "postgres-jsonb"
+  ],
+  "agents": [
+    {
+      "agentId": "claude-code",
+      "lanes": {
+        "mongo": {
+          "cleanRepeats": 5,
+          "totalRepeats": 5,
+          "failCount": 0,
+          "medianTokensRead": 513289,
+          "iqrTokensRead": 418268,
+          "medianElapsedMs": 214257,
+          "medianRetrySignals": 78,
+          "medianDiffBytes": 2549,
+          "medianFilesChanged": 2
+        },
+        "postgres-norm": {
+          "cleanRepeats": 5,
+          "totalRepeats": 5,
+          "failCount": 0,
+          "medianTokensRead": 306327,
+          "iqrTokensRead": 114003,
+          "medianElapsedMs": 95034,
+          "medianRetrySignals": 28,
+          "medianDiffBytes": 1970,
+          "medianFilesChanged": 2
+        },
+        "postgres-jsonb": {
+          "cleanRepeats": 5,
+          "totalRepeats": 5,
+          "failCount": 0,
+          "medianTokensRead": 325992,
+          "iqrTokensRead": 68973,
+          "medianElapsedMs": 117992,
+          "medianRetrySignals": 33,
+          "medianDiffBytes": 1600,
+          "medianFilesChanged": 2
+        }
+      },
+      "vsMongo": {
+        "postgres-norm": {
+          "tokensPct": -40,
+          "medianTokensRead": 306327
+        },
+        "postgres-jsonb": {
+          "tokensPct": -36,
+          "medianTokensRead": 325992
+        }
+      }
+    },
+    {
+      "agentId": "codex",
+      "lanes": {
+        "mongo": {
+          "cleanRepeats": 5,
+          "totalRepeats": 5,
+          "failCount": 0,
+          "medianTokensRead": 205069,
+          "iqrTokensRead": 1700,
+          "medianElapsedMs": 82943,
+          "medianRetrySignals": 22,
+          "medianDiffBytes": 1910,
+          "medianFilesChanged": 1
+        },
+        "postgres-norm": {
+          "cleanRepeats": 5,
+          "totalRepeats": 5,
+          "failCount": 0,
+          "medianTokensRead": 86344,
+          "iqrTokensRead": 118,
+          "medianElapsedMs": 39355,
+          "medianRetrySignals": 11,
+          "medianDiffBytes": 707,
+          "medianFilesChanged": 1
+        },
+        "postgres-jsonb": {
+          "cleanRepeats": 5,
+          "totalRepeats": 5,
+          "failCount": 0,
+          "medianTokensRead": 84860,
+          "iqrTokensRead": 103,
+          "medianElapsedMs": 45088,
+          "medianRetrySignals": 11,
+          "medianDiffBytes": 828,
+          "medianFilesChanged": 1
+        }
+      },
+      "vsMongo": {
+        "postgres-norm": {
+          "tokensPct": -58,
+          "medianTokensRead": 86344
+        },
+        "postgres-jsonb": {
+          "tokensPct": -59,
+          "medianTokensRead": 84860
+        }
+      }
+    }
+  ],
+  "hypotheses": {
+    "H1": {
+      "statement": "MongoDB requires less agent work (tokensRead) than any relational lane, within-agent",
+      "verdict": "refuted",
+      "perAgent": [
+        {
+          "agentId": "claude-code",
+          "pgNormPct": -40,
+          "pgJsonbPct": -36
+        },
+        {
+          "agentId": "codex",
+          "pgNormPct": -58,
+          "pgJsonbPct": -59
+        }
+      ]
+    },
+    "H2": {
+      "statement": "Relational penalty grows with normalization depth (pg-norm > pg-jsonb > mongo)",
+      "verdict": "inconclusive",
+      "perAgent": [
+        {
+          "agentId": "claude-code",
+          "pgNormTokens": 306327,
+          "pgJsonbTokens": 325992
+        },
+        {
+          "agentId": "codex",
+          "pgNormTokens": 86344,
+          "pgJsonbTokens": 84860
+        }
+      ]
+    }
+  },
+  "caveat": "Within-agent comparison only. Each agent is measured against itself across the three database designs; one agent's absolute numbers are never compared to the other's, because the two CLIs count tokens incompatibly."
+}
