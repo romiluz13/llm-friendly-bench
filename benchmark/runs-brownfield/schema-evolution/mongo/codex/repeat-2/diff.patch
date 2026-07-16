@@ -1,46 +1,12 @@
 diff --git a/src/schema.mjs b/src/schema.mjs
-index e72f2c3..2ef0182 100644
+index e72f2c3..ca0cad6 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -1,23 +1,26 @@
- import { withDb } from "./db.mjs";
- 
-+const accountsValidator = {
-+  $jsonSchema: {
-+    bsonType: "object",
-+    required: ["accountId", "name", "tier", "status", "createdAt"],
-+    properties: {
-+      accountId: { bsonType: "string" },
-+      name: { bsonType: "string" },
-+      tier: { enum: ["strategic", "midmarket", "standard"] },
-+      status: { enum: ["active", "at-risk", "churned"] },
-+      createdAt: { bsonType: "date" },
-+      riskScore: { bsonType: "int", minimum: 0, maximum: 100 },
-+    },
-+  },
-+};
-+
- export async function ensureSchema(db) {
-   const collections = await db.listCollections({ name: "accounts" }).toArray();
-   if (collections.length === 0) {
--    await db.createCollection("accounts", {
--      validator: {
--        $jsonSchema: {
--          bsonType: "object",
--          required: ["accountId", "name", "tier", "status", "createdAt"],
--          properties: {
--            accountId: { bsonType: "string" },
--            name: { bsonType: "string" },
--            tier: { enum: ["strategic", "midmarket", "standard"] },
--            status: { enum: ["active", "at-risk", "churned"] },
--            createdAt: { bsonType: "date" },
--          },
--        },
--      },
--    });
-+    await db.createCollection("accounts", { validator: accountsValidator });
-+  } else {
-+    await db.command({ collMod: "accounts", validator: accountsValidator });
-   }
- }
- 
+@@ -13,6 +13,7 @@ export async function ensureSchema(db) {
+             name: { bsonType: "string" },
+             tier: { enum: ["strategic", "midmarket", "standard"] },
+             status: { enum: ["active", "at-risk", "churned"] },
++            riskScore: { bsonType: "int", minimum: 0, maximum: 100 },
+             createdAt: { bsonType: "date" },
+           },
+         },

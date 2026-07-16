@@ -1,12 +1,8 @@
-Implemented `riskScore` as an optional integer from 0–100.
+Implemented `riskScore` as an optional integer constrained to 0–100.
 
-- [src/schema.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/workspace/src/schema.mjs:3) now enforces it in JSONB and migrates existing `accounts` tables idempotently.
-- [src/accounts.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/workspace/src/accounts.mjs:3) validates it on create/update; reads continue returning the stored document including `riskScore`.
-- No protected files or tests were changed.
+Updated:
 
-Verified:
+- `src/schema.mjs`: adds `risk_score`, including safe evolution for an existing table.
+- `src/accounts.mjs`: persists it on create and update; get continues returning it via the JSON document.
 
-- `npm test` passed.
-- A live database check confirmed the constraint is installed and rejects `riskScore: 101`.
-- `git diff --check` passed.
-
+Verified: `npm test` passes.

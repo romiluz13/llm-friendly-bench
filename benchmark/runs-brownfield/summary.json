@@ -2,7 +2,7 @@
   "schemaVersion": "1.0.0",
   "suiteId": "build-bench-brownfield",
   "taskType": "schema-evolution",
-  "generatedAt": "2026-07-16T00:57:07.857Z",
+  "generatedAt": "2026-07-16T11:50:10.758Z",
   "executionMode": "live-db",
   "model": {
     "claude-code": "sonnet",
@@ -18,47 +18,47 @@
       "agentId": "claude-code",
       "lanes": {
         "mongo": {
-          "cleanRepeats": 5,
+          "cleanRepeats": 3,
           "totalRepeats": 5,
-          "failCount": 0,
-          "medianTokensRead": 636130,
-          "iqrTokensRead": 158839,
-          "medianElapsedMs": 117143,
-          "medianRetrySignals": 47,
-          "medianDiffBytes": 1505,
+          "failCount": 2,
+          "medianTokensRead": 45984,
+          "iqrTokensRead": 727181,
+          "medianElapsedMs": 147381,
+          "medianRetrySignals": 8,
+          "medianDiffBytes": 1485,
           "medianFilesChanged": 1
         },
         "postgres-norm": {
-          "cleanRepeats": 5,
+          "cleanRepeats": 3,
           "totalRepeats": 5,
-          "failCount": 0,
-          "medianTokensRead": 416879,
-          "iqrTokensRead": 309098,
-          "medianElapsedMs": 89819,
-          "medianRetrySignals": 28,
+          "failCount": 2,
+          "medianTokensRead": 415560,
+          "iqrTokensRead": 346316,
+          "medianElapsedMs": 76322,
+          "medianRetrySignals": 27,
           "medianDiffBytes": 2524,
           "medianFilesChanged": 2
         },
         "postgres-jsonb": {
-          "cleanRepeats": 5,
+          "cleanRepeats": 3,
           "totalRepeats": 5,
-          "failCount": 0,
-          "medianTokensRead": 559321,
-          "iqrTokensRead": 496388,
-          "medianElapsedMs": 134917,
-          "medianRetrySignals": 51,
-          "medianDiffBytes": 785,
+          "failCount": 2,
+          "medianTokensRead": 361936,
+          "iqrTokensRead": 473679,
+          "medianElapsedMs": 111871,
+          "medianRetrySignals": 27,
+          "medianDiffBytes": 731,
           "medianFilesChanged": 1
         }
       },
       "vsMongo": {
         "postgres-norm": {
-          "tokensPct": -34,
-          "medianTokensRead": 416879
+          "tokensPct": 804,
+          "medianTokensRead": 415560
         },
         "postgres-jsonb": {
-          "tokensPct": -12,
-          "medianTokensRead": 559321
+          "tokensPct": 687,
+          "medianTokensRead": 361936
         }
       }
     },
@@ -69,21 +69,21 @@
           "cleanRepeats": 5,
           "totalRepeats": 5,
           "failCount": 0,
-          "medianTokensRead": 457677,
-          "iqrTokensRead": 569357,
-          "medianElapsedMs": 175532,
-          "medianRetrySignals": 67,
-          "medianDiffBytes": 1531,
+          "medianTokensRead": 83085,
+          "iqrTokensRead": 1687,
+          "medianElapsedMs": 40522,
+          "medianRetrySignals": 10,
+          "medianDiffBytes": 1470,
           "medianFilesChanged": 1
         },
         "postgres-norm": {
           "cleanRepeats": 5,
           "totalRepeats": 5,
           "failCount": 0,
-          "medianTokensRead": 540716,
-          "iqrTokensRead": 256379,
-          "medianElapsedMs": 172633,
-          "medianRetrySignals": 53,
+          "medianTokensRead": 83589,
+          "iqrTokensRead": 227,
+          "medianElapsedMs": 35936,
+          "medianRetrySignals": 10,
           "medianDiffBytes": 2441,
           "medianFilesChanged": 2
         },
@@ -91,22 +91,22 @@
           "cleanRepeats": 5,
           "totalRepeats": 5,
           "failCount": 0,
-          "medianTokensRead": 772367,
-          "iqrTokensRead": 76470,
-          "medianElapsedMs": 186883,
-          "medianRetrySignals": 97,
-          "medianDiffBytes": 2478,
+          "medianTokensRead": 83428,
+          "iqrTokensRead": 119,
+          "medianElapsedMs": 31931,
+          "medianRetrySignals": 10,
+          "medianDiffBytes": 1893,
           "medianFilesChanged": 2
         }
       },
       "vsMongo": {
         "postgres-norm": {
-          "tokensPct": 18,
-          "medianTokensRead": 540716
+          "tokensPct": 1,
+          "medianTokensRead": 83589
         },
         "postgres-jsonb": {
-          "tokensPct": 69,
-          "medianTokensRead": 772367
+          "tokensPct": 0,
+          "medianTokensRead": 83428
         }
       }
     }
@@ -118,29 +118,29 @@
       "perAgent": [
         {
           "agentId": "claude-code",
-          "pgNormPct": -34,
-          "pgJsonbPct": -12
+          "pgNormPct": 804,
+          "pgJsonbPct": 687
         },
         {
           "agentId": "codex",
-          "pgNormPct": 18,
-          "pgJsonbPct": 69
+          "pgNormPct": 1,
+          "pgJsonbPct": 0
         }
       ]
     },
     "H2": {
       "statement": "Relational penalty grows with normalization depth (pg-norm > pg-jsonb > mongo)",
-      "verdict": "refuted",
+      "verdict": "confirmed",
       "perAgent": [
         {
           "agentId": "claude-code",
-          "pgNormTokens": 416879,
-          "pgJsonbTokens": 559321
+          "pgNormTokens": 415560,
+          "pgJsonbTokens": 361936
         },
         {
           "agentId": "codex",
-          "pgNormTokens": 540716,
-          "pgJsonbTokens": 772367
+          "pgNormTokens": 83589,
+          "pgJsonbTokens": 83428
         }
       ]
     }

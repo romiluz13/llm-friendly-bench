@@ -1,13 +1,3 @@
-Implemented `riskScore` in [src/schema.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/mongo/codex/repeat-2/workspace/src/schema.mjs:3):
+Added optional `riskScore` to the MongoDB validator as an integer constrained to 0–100.
 
-- Optional BSON `int`, constrained to 0–100.
-- Applies the validator both to new collections and existing `accounts` collections via `collMod`.
-- Left `accounts.mjs` unchanged: its existing create spread, full-document get, and `$set` update already persist and return `riskScore`.
-
-Verified the live validator and ran:
-
-```text
-npm test
-Build-Bench brownfield acceptance passed: mongo/schema-evolution
-```
-
+Existing generic create/get/update code already preserves optional fields, so no CRUD rewrite was needed. `npm test` passes.

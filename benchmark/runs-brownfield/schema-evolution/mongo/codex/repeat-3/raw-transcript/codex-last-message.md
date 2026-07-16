@@ -1,12 +1,3 @@
-Implemented in [src/schema.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/mongo/codex/repeat-3/workspace/src/schema.mjs:14):
+Added optional `riskScore` to the MongoDB accounts validator as an integer constrained to 0–100.
 
-- Optional `riskScore` BSON integer, 0–100.
-- `collMod` updates the existing live collection’s validator.
-- Existing generic CRUD already carries `riskScore` through create/get/update, so no redundant `accounts.mjs` change was needed.
-
-Verified:
-
-- `npm test` — passed.
-- Live validator confirms `riskScore: int 0–100`.
-- Boundary probe accepted 0/100 and rejected -1/101/12.5.
-
+Existing generic CRUD already preserves optional fields in create, get, and update. `npm test` passes, including regression and `riskScore` coverage.

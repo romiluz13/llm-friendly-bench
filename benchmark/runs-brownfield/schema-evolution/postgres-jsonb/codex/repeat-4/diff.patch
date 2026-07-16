@@ -1,71 +1,38 @@
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index 9ea3403..729eb39 100644
+index 9ea3403..16609aa 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
-@@ -1,7 +1,15 @@
- import { ensureSchema } from "./schema.mjs";
- 
-+function validateRiskScore(data) {
-+  if (data.riskScore === undefined) return;
-+  if (!Number.isInteger(data.riskScore) || data.riskScore < 0 || data.riskScore > 100) {
-+    throw new TypeError("riskScore must be an integer between 0 and 100");
-+  }
-+}
-+
+@@ -3,7 +3,7 @@ import { ensureSchema } from "./schema.mjs";
  export async function createAccounts(client, data) {
    await ensureSchema(client);
-+  validateRiskScore(data);
    const doc = { ...data, createdAt: data.createdAt || new Date().toISOString() };
-   await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
+-  await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
++  await client.query('INSERT INTO accounts (account_id, doc, risk_score) VALUES ($1, $2, $3) RETURNING doc', [doc.accountId, JSON.stringify(doc), doc.riskScore ?? null]);
    return doc;
-@@ -15,6 +23,7 @@ export async function getAccounts(client, id) {
- export async function updateAccounts(client, id, data) {
+ }
+ 
+@@ -16,7 +16,7 @@ export async function updateAccounts(client, id, data) {
    const existing = await getAccounts(client, id);
    if (!existing) return null;
-+  validateRiskScore(data);
    const updated = { ...existing, ...data };
-   await client.query('UPDATE accounts SET doc = $1 WHERE account_id = $2 RETURNING doc', [JSON.stringify(updated), id]);
+-  await client.query('UPDATE accounts SET doc = $1 WHERE account_id = $2 RETURNING doc', [JSON.stringify(updated), id]);
++  await client.query('UPDATE accounts SET doc = $1, risk_score = $2 WHERE account_id = $3 RETURNING doc', [JSON.stringify(updated), updated.riskScore ?? null, id]);
    return updated;
+ }
+ 
 diff --git a/src/schema.mjs b/src/schema.mjs
-index 1c7406e..e8064b6 100644
+index 1c7406e..cd59540 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -1,13 +1,37 @@
- import { withDb } from "./db.mjs";
- 
-+const riskScoreCheck = `
-+  CHECK (
-+    NOT (doc ? 'riskScore') OR (
-+      jsonb_typeof(doc->'riskScore') = 'number'
-+      AND doc->>'riskScore' ~ '^(0|[1-9][0-9]?|100)$'
-+    )
-+  )
-+`;
-+
- export async function ensureSchema(client) {
-   await client.query(`
+@@ -5,9 +5,11 @@ export async function ensureSchema(client) {
      CREATE TABLE IF NOT EXISTS accounts (
        account_id TEXT PRIMARY KEY,
        doc        JSONB NOT NULL,
--      CONSTRAINT accounts_doc_key_match CHECK (doc->>'accountId' = account_id)
-+      CONSTRAINT accounts_doc_key_match CHECK (doc->>'accountId' = account_id),
-+      CONSTRAINT accounts_risk_score_valid ${riskScoreCheck}
++      risk_score INTEGER CHECK (risk_score BETWEEN 0 AND 100),
+       CONSTRAINT accounts_doc_key_match CHECK (doc->>'accountId' = account_id)
      )
    `);
-+  await client.query(`
-+    DO $$
-+    BEGIN
-+      IF NOT EXISTS (
-+        SELECT 1
-+        FROM pg_constraint
-+        WHERE conname = 'accounts_risk_score_valid'
-+          AND conrelid = 'accounts'::regclass
-+      ) THEN
-+        ALTER TABLE accounts ADD CONSTRAINT accounts_risk_score_valid ${riskScoreCheck};
-+      END IF;
-+    END
-+    $$;
-+  `);
++  await client.query('ALTER TABLE accounts ADD COLUMN IF NOT EXISTS risk_score INTEGER CHECK (risk_score BETWEEN 0 AND 100)');
    await client.query('CREATE INDEX IF NOT EXISTS idx_accounts_doc_gin ON accounts USING GIN (doc jsonb_path_ops)');
  }
  

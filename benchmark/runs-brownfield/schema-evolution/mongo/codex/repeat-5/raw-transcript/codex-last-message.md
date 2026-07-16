@@ -1,9 +1,5 @@
-Inspection confirms `accounts.mjs` already preserves a supplied `riskScore` on create, returns it on get, and applies it on update.
+Added optional `riskScore` validation (`int`, 0–100) and evolved existing collections with `collMod`.
 
-Recommended minimal design:
+`createAccounts`, `getAccounts`, and `updateAccounts` already pass arbitrary document fields through correctly, so no CRUD rewrite was needed.
 
-- Add optional `riskScore` to the JSON Schema as BSON `int`, minimum `0`, maximum `100`.
-- Update the live collection validator with `collMod` when `accounts` already exists; otherwise the change only affects newly created databases.
-- Leave the existing CRUD implementation intact and run the acceptance suite.
-
-Approve this design and I’ll implement and verify it.
+Verified: `npm test` passes.

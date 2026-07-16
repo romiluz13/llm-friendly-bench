@@ -1,5 +1,5 @@
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index f2ada01..cede8d1 100644
+index f2ada01..fbace0c 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
 @@ -2,7 +2,12 @@ import { ensureSchema } from "./schema.mjs";
@@ -10,8 +10,8 @@ index f2ada01..cede8d1 100644
 +  const { riskScore, ...account } = data;
 +  const doc = {
 +    ...account,
++    createdAt: data.createdAt || new Date(),
 +    ...(riskScore === undefined ? {} : { riskScore }),
-+    createdAt: account.createdAt || new Date(),
 +  };
    const result = await db.collection("accounts").insertOne(doc);
    return { _id: result.insertedId, ...doc };

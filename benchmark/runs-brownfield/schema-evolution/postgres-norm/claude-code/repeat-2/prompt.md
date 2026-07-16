@@ -19,3 +19,5 @@ Rules:
 - Edit files under `src/` EXCEPT `src/db.mjs`. Do NOT modify anything under `tests/`.
 - Do NOT add any file-based or in-memory fallback.
 - Make the smallest correct change — evolve the existing code, don't rewrite it.
+- Do NOT read skill files, run code reviews, or launch subagents. Just do the task directly.
+- Do NOT read any files outside this workspace directory.

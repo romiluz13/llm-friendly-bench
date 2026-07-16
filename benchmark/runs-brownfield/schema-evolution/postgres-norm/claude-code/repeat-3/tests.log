@@ -1,3 +1,20 @@
-Build-Bench brownfield acceptance passed: postgres-norm/schema-evolution
 npm notice run build-bench-postgres-norm-schema-evolution@1.0.0 test
 npm notice run node tests/acceptance.test.mjs
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: new: create with riskScore returns it
+    at file:///Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/postgres-norm/claude-code/repeat-3/workspace/tests/acceptance.test.mjs:36:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async withDb (file:///Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/postgres-norm/claude-code/repeat-3/workspace/src/db.mjs:10:16)
+    at async file:///Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/postgres-norm/claude-code/repeat-3/workspace/tests/acceptance.test.mjs:6:1 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.15.0

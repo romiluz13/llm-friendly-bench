@@ -1,12 +1,5 @@
-Implemented `riskScore` in the accounts schema and CRUD.
+Implemented `riskScore` across the existing accounts schema and CRUD.
 
-- Added nullable `risk_score INTEGER CHECK (risk_score BETWEEN 0 AND 100)` plus idempotent live-schema migration.
-- Added create/get/update mapping for `riskScore`.
-- Modified only `src/schema.mjs` and `src/accounts.mjs`.
-
-Verified fresh against the live database:
-
-```text
-npm test
-Build-Bench brownfield acceptance passed: postgres-norm/schema-evolution
-```
+- Added optional `risk_score INTEGER` with a 0–100 constraint and safe schema evolution.
+- Included `riskScore` in create, get, and update operations.
+- Verified with `npm test` — all acceptance and regression tests pass.

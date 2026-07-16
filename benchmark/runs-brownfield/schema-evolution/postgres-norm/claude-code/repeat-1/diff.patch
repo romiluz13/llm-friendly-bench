@@ -1,5 +1,5 @@
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index 165b795..8600a87 100644
+index 165b795..c2ed87b 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
 @@ -1,14 +1,14 @@
@@ -7,7 +7,7 @@ index 165b795..8600a87 100644
  
  function rowToAccount(r) {
 -  return { accountId: r.account_id, name: r.name, tier: r.tier, status: r.status, createdAt: r.created_at };
-+  return { accountId: r.account_id, name: r.name, tier: r.tier, status: r.status, createdAt: r.created_at, riskScore: r.risk_score ?? null };
++  return { accountId: r.account_id, name: r.name, tier: r.tier, status: r.status, createdAt: r.created_at, riskScore: r.risk_score !== undefined ? r.risk_score : null };
  }
  
  export async function createAccounts(client, data) {
@@ -16,7 +16,7 @@ index 165b795..8600a87 100644
 -    'INSERT INTO accounts (account_id, name, tier, status, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING *',
 -    [data.accountId, data.name, data.tier, data.status, data.createdAt || new Date()]
 +    'INSERT INTO accounts (account_id, name, tier, status, created_at, risk_score) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-+    [data.accountId, data.name, data.tier, data.status, data.createdAt || new Date(), data.riskScore ?? null]
++    [data.accountId, data.name, data.tier, data.status, data.createdAt || new Date(), data.riskScore !== undefined ? data.riskScore : null]
    );
    return rowToAccount(result.rows[0]);
  }
