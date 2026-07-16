@@ -29,21 +29,20 @@ index 165b795..8600a87 100644
    vals.push(id);
    await client.query(`UPDATE accounts SET ${sets.join(', ')} WHERE account_id = $${i}`, vals);
 diff --git a/src/schema.mjs b/src/schema.mjs
-index c734820..b47fc63 100644
+index c734820..254a9ac 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -7,9 +7,14 @@ export async function ensureSchema(client) {
+@@ -7,9 +7,13 @@ export async function ensureSchema(client) {
        name        TEXT        NOT NULL,
        tier        TEXT        NOT NULL CHECK (tier IN ('strategic', 'midmarket', 'standard')),
        status      TEXT        NOT NULL CHECK (status IN ('active', 'at-risk', 'churned')),
 -      created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 +      created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
-+      risk_score  INTEGER     CHECK (risk_score BETWEEN 0 AND 100)
++      risk_score  INTEGER     CHECK (risk_score >= 0 AND risk_score <= 100)
      )
    `);
 +  await client.query(`
-+    ALTER TABLE accounts ADD COLUMN IF NOT EXISTS
-+      risk_score INTEGER CHECK (risk_score BETWEEN 0 AND 100)
++    ALTER TABLE accounts ADD COLUMN IF NOT EXISTS risk_score INTEGER CHECK (risk_score >= 0 AND risk_score <= 100)
 +  `);
  }
  

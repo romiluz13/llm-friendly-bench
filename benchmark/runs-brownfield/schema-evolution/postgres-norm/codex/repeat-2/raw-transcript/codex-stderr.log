@@ -1,5 +1,5 @@
 Reading additional input from stdin...
-2026-07-14T12:06:59.831817Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7010 column 1; body: {
+2026-07-15T23:50:14.109878Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7105 column 1; body: {
   "data": [
     {
       "status": "succeeded",
@@ -2911,7 +2911,7 @@ Reading additional input from stdin...
         "global_fine_tune": false,
         "devtier_fine_tune": false
       },
-      "lifecycle_status": "deprecating",
+      "lifecycle_status": "deprecated",
       "deprecation": {
         "inference": 1783900800
       },
@@ -2949,7 +2949,7 @@ Reading additional input from stdin...
         "global_fine_tune": false,
         "devtier_fine_tune": false
       },
-      "lifecycle_status": "deprecating",
+      "lifecycle_status": "deprecated",
       "deprecation": {
         "inference": 1783900800
       },
@@ -2968,7 +2968,7 @@ Reading additional input from stdin...
         "global_fine_tune": false,
         "devtier_fine_tune": false
       },
-      "lifecycle_status": "deprecating",
+      "lifecycle_status": "deprecated",
       "deprecation": {
         "inference": 1783900800
       },
@@ -5689,7 +5689,7 @@ Reading additional input from stdin...
         "global_fine_tune": false,
         "devtier_fine_tune": false
       },
-      "lifecycle_status": "preview",
+      "lifecycle_status": "generally-available",
       "deprecation": {
         "inference": 1814400000
       },
@@ -5727,7 +5727,7 @@ Reading additional input from stdin...
         "global_fine_tune": false,
         "devtier_fine_tune": false
       },
-      "lifecycle_status": "preview",
+      "lifecycle_status": "generally-available",
       "deprecation": {
         "inference": 1814400000
       },
@@ -5885,6 +5885,101 @@ Reading additional input from stdin...
       },
       "id": "FW-Qwen3.6-27B",
       "created_at": 1781568000,
+      "object": "model"
+    },
+    {
+      "status": "succeeded",
+      "capabilities": {
+        "fine_tune": false,
+        "inference": true,
+        "completion": false,
+        "chat_completion": true,
+        "embeddings": false,
+        "global_fine_tune": false,
+        "devtier_fine_tune": false
+      },
+      "lifecycle_status": "generally-available",
+      "deprecation": {
+        "inference": 1817078400
+      },
+      "id": "FW-MiniMax-M3",
+      "created_at": 1783641600,
+      "object": "model"
+    },
+    {
+      "status": "succeeded",
+      "capabilities": {
+        "fine_tune": false,
+        "inference": true,
+        "completion": false,
+        "chat_completion": true,
+        "embeddings": false,
+        "global_fine_tune": false,
+        "devtier_fine_tune": false
+      },
+      "lifecycle_status": "generally-available",
+      "deprecation": {
+        "inference": 1817078400
+      },
+      "id": "FW-Qwen3-32B",
+      "created_at": 1783641600,
+      "object": "model"
+    },
+    {
+      "status": "succeeded",
+      "capabilities": {
+        "fine_tune": false,
+        "inference": true,
+        "completion": false,
+        "chat_completion": true,
+        "embeddings": false,
+        "global_fine_tune": false,
+        "devtier_fine_tune": false
+      },
+      "lifecycle_status": "generally-available",
+      "deprecation": {
+        "inference": 1817078400
+      },
+      "id": "FW-Qwen3.5-27B",
+      "created_at": 1783641600,
+      "object": "model"
+    },
+    {
+      "status": "succeeded",
+      "capabilities": {
+        "fine_tune": false,
+        "inference": true,
+        "completion": false,
+        "chat_completion": true,
+        "embeddings": false,
+        "global_fine_tune": false,
+        "devtier_fine_tune": false
+      },
+      "lifecycle_status": "generally-available",
+      "deprecation": {
+        "inference": 1817078400
+      },
+      "id": "FW-Qwen3.5-4B",
+      "created_at": 1783641600,
+      "object": "model"
+    },
+    {
+      "status": "succeeded",
+      "capabilities": {
+        "fine_tune": false,
+        "inference": true,
+        "completion": false,
+        "chat_completion": true,
+        "embeddings": false,
+        "global_fine_tune": false,
+        "devtier_fine_tune": false
+      },
+      "lifecycle_status": "generally-available",
+      "deprecation": {
+        "inference": 1817078400
+      },
+      "id": "FW-GPT-OSS-20B",
+      "created_at": 1783641600,
       "object": "model"
     },
     {
@@ -6053,7 +6148,7 @@ Reading additional input from stdin...
       },
       "lifecycle_status": "generally-available",
       "deprecation": {
-        "inference": 1818720000
+        "inference": 1834617600
       },
       "id": "DeepSeek-V4-Flash-2026-04-23",
       "created_at": 1777334400,
@@ -6091,7 +6186,7 @@ Reading additional input from stdin...
       },
       "lifecycle_status": "generally-available",
       "deprecation": {
-        "inference": 1818720000
+        "inference": 1834617600
       },
       "id": "DeepSeek-V4-Pro-2026-04-23",
       "created_at": 1777334400,
@@ -7009,12 +7104,7 @@ Reading additional input from stdin...
   ],
   "object": "list"
 }
-2026-07-14T12:07:27.280839Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[server]: Failed to connect to MongoDB instance using the connection string from the config: connect ENETUNREACH 65.63.95.160:27017")
-2026-07-14T12:07:49.780252Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[server]: Failed to connect to MongoDB instance using the connection string from the config: connect ENETUNREACH 65.63.93.232:27017")
-2026-07-14T12:07:59.469233Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[server]: Failed to connect to MongoDB instance using the connection string from the config: connect ENETUNREACH 65.63.93.232:27017")
-2026-07-14T12:09:15.358805Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[server]: Failed to connect to MongoDB instance using the connection string from the config: connect ENETUNREACH 65.63.93.232:27017")
-2026-07-14T12:09:24.040016Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[server]: Failed to connect to MongoDB instance using the connection string from the config: connect ENETUNREACH 65.63.93.232:27017")
-2026-07-14T12:10:01.140509Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7010 column 1; body: {
+2026-07-15T23:50:14.112683Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7105 column 1; body: {
   "data": [
     {
       "status": "succeeded",
@@ -9926,7 +10016,7 @@ Reading additional input from stdin...
         "global_fine_tune": false,
         "devtier_fine_tune": false
       },
-      "lifecycle_status": "deprecating",
+      "lifecycle_status": "deprecated",
       "deprecation": {
         "inference": 1783900800
       },
@@ -9964,7 +10054,7 @@ Reading additional input from stdin...
         "global_fine_tune": false,
         "devtier_fine_tune": false
       },
-      "lifecycle_status": "deprecating",
+      "lifecycle_status": "deprecated",
       "deprecation": {
         "inference": 1783900800
       },
@@ -9983,7 +10073,7 @@ Reading additional input from stdin...
         "global_fine_tune": false,
         "devtier_fine_tune": false
       },
-      "lifecycle_status": "deprecating",
+      "lifecycle_status": "deprecated",
       "deprecation": {
         "inference": 1783900800
       },
@@ -12704,7 +12794,7 @@ Reading additional input from stdin...
         "global_fine_tune": false,
         "devtier_fine_tune": false
       },
-      "lifecycle_status": "preview",
+      "lifecycle_status": "generally-available",
       "deprecation": {
         "inference": 1814400000
       },
@@ -12742,7 +12832,7 @@ Reading additional input from stdin...
         "global_fine_tune": false,
         "devtier_fine_tune": false
       },
-      "lifecycle_status": "preview",
+      "lifecycle_status": "generally-available",
       "deprecation": {
         "inference": 1814400000
       },
@@ -12900,6 +12990,101 @@ Reading additional input from stdin...
       },
       "id": "FW-Qwen3.6-27B",
       "created_at": 1781568000,
+      "object": "model"
+    },
+    {
+      "status": "succeeded",
+      "capabilities": {
+        "fine_tune": false,
+        "inference": true,
+        "completion": false,
+        "chat_completion": true,
+        "embeddings": false,
+        "global_fine_tune": false,
+        "devtier_fine_tune": false
+      },
+      "lifecycle_status": "generally-available",
+      "deprecation": {
+        "inference": 1817078400
+      },
+      "id": "FW-MiniMax-M3",
+      "created_at": 1783641600,
+      "object": "model"
+    },
+    {
+      "status": "succeeded",
+      "capabilities": {
+        "fine_tune": false,
+        "inference": true,
+        "completion": false,
+        "chat_completion": true,
+        "embeddings": false,
+        "global_fine_tune": false,
+        "devtier_fine_tune": false
+      },
+      "lifecycle_status": "generally-available",
+      "deprecation": {
+        "inference": 1817078400
+      },
+      "id": "FW-Qwen3-32B",
+      "created_at": 1783641600,
+      "object": "model"
+    },
+    {
+      "status": "succeeded",
+      "capabilities": {
+        "fine_tune": false,
+        "inference": true,
+        "completion": false,
+        "chat_completion": true,
+        "embeddings": false,
+        "global_fine_tune": false,
+        "devtier_fine_tune": false
+      },
+      "lifecycle_status": "generally-available",
+      "deprecation": {
+        "inference": 1817078400
+      },
+      "id": "FW-Qwen3.5-27B",
+      "created_at": 1783641600,
+      "object": "model"
+    },
+    {
+      "status": "succeeded",
+      "capabilities": {
+        "fine_tune": false,
+        "inference": true,
+        "completion": false,
+        "chat_completion": true,
+        "embeddings": false,
+        "global_fine_tune": false,
+        "devtier_fine_tune": false
+      },
+      "lifecycle_status": "generally-available",
+      "deprecation": {
+        "inference": 1817078400
+      },
+      "id": "FW-Qwen3.5-4B",
+      "created_at": 1783641600,
+      "object": "model"
+    },
+    {
+      "status": "succeeded",
+      "capabilities": {
+        "fine_tune": false,
+        "inference": true,
+        "completion": false,
+        "chat_completion": true,
+        "embeddings": false,
+        "global_fine_tune": false,
+        "devtier_fine_tune": false
+      },
+      "lifecycle_status": "generally-available",
+      "deprecation": {
+        "inference": 1817078400
+      },
+      "id": "FW-GPT-OSS-20B",
+      "created_at": 1783641600,
       "object": "model"
     },
     {
@@ -13068,7 +13253,7 @@ Reading additional input from stdin...
       },
       "lifecycle_status": "generally-available",
       "deprecation": {
-        "inference": 1818720000
+        "inference": 1834617600
       },
       "id": "DeepSeek-V4-Flash-2026-04-23",
       "created_at": 1777334400,
@@ -13106,7 +13291,7 @@ Reading additional input from stdin...
       },
       "lifecycle_status": "generally-available",
       "deprecation": {
-        "inference": 1818720000
+        "inference": 1834617600
       },
       "id": "DeepSeek-V4-Pro-2026-04-23",
       "created_at": 1777334400,

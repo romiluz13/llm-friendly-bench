@@ -1,8 +1,8 @@
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index 165b795..8600a87 100644
+index 165b795..cd691ac 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
-@@ -1,14 +1,14 @@
+@@ -1,14 +1,15 @@
  import { ensureSchema } from "./schema.mjs";
  
  function rowToAccount(r) {
@@ -12,15 +12,16 @@ index 165b795..8600a87 100644
  
  export async function createAccounts(client, data) {
    await ensureSchema(client);
++  const riskScore = data.riskScore !== undefined ? data.riskScore : null;
    const result = await client.query(
 -    'INSERT INTO accounts (account_id, name, tier, status, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING *',
 -    [data.accountId, data.name, data.tier, data.status, data.createdAt || new Date()]
 +    'INSERT INTO accounts (account_id, name, tier, status, created_at, risk_score) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-+    [data.accountId, data.name, data.tier, data.status, data.createdAt || new Date(), data.riskScore ?? null]
++    [data.accountId, data.name, data.tier, data.status, data.createdAt || new Date(), riskScore]
    );
    return rowToAccount(result.rows[0]);
  }
-@@ -25,6 +25,7 @@ export async function updateAccounts(client, id, data) {
+@@ -25,6 +26,7 @@ export async function updateAccounts(client, id, data) {
    if (data.name !== undefined) { sets.push(`name = $${i++}`); vals.push(data.name); }
    if (data.tier !== undefined) { sets.push(`tier = $${i++}`); vals.push(data.tier); }
    if (data.status !== undefined) { sets.push(`status = $${i++}`); vals.push(data.status); }

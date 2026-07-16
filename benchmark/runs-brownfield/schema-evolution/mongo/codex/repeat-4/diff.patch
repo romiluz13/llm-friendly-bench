@@ -1,8 +1,40 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index f2ada01..cede8d1 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -2,7 +2,12 @@ import { ensureSchema } from "./schema.mjs";
+ 
+ export async function createAccounts(db, data) {
+   await ensureSchema(db);
+-  const doc = { ...data, createdAt: data.createdAt || new Date() };
++  const { riskScore, ...account } = data;
++  const doc = {
++    ...account,
++    ...(riskScore === undefined ? {} : { riskScore }),
++    createdAt: account.createdAt || new Date(),
++  };
+   const result = await db.collection("accounts").insertOne(doc);
+   return { _id: result.insertedId, ...doc };
+ }
+@@ -12,7 +17,12 @@ export async function getAccounts(db, id) {
+ }
+ 
+ export async function updateAccounts(db, id, data) {
+-  await db.collection("accounts").updateOne({ accountId: id }, { $set: data });
++  const { riskScore, ...account } = data;
++  const update = {
++    ...account,
++    ...(riskScore === undefined ? {} : { riskScore }),
++  };
++  await db.collection("accounts").updateOne({ accountId: id }, { $set: update });
+   return db.collection("accounts").findOne({ accountId: id });
+ }
+ 
 diff --git a/src/schema.mjs b/src/schema.mjs
-index e72f2c3..7e057d3 100644
+index e72f2c3..cb12f12 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -1,23 +1,32 @@
+@@ -1,23 +1,27 @@
  import { withDb } from "./db.mjs";
  
  export async function ensureSchema(db) {
@@ -15,14 +47,14 @@ index e72f2c3..7e057d3 100644
 +        name: { bsonType: "string" },
 +        tier: { enum: ["strategic", "midmarket", "standard"] },
 +        status: { enum: ["active", "at-risk", "churned"] },
-+        riskScore: { bsonType: "int", minimum: 0, maximum: 100 },
 +        createdAt: { bsonType: "date" },
++        riskScore: { bsonType: "int", minimum: 0, maximum: 100 },
 +      },
 +    },
 +  };
    const collections = await db.listCollections({ name: "accounts" }).toArray();
    if (collections.length === 0) {
--    await db.createCollection("accounts", {
+     await db.createCollection("accounts", {
 -      validator: {
 -        $jsonSchema: {
 -          bsonType: "object",
@@ -36,17 +68,10 @@ index e72f2c3..7e057d3 100644
 -          },
 -        },
 -      },
--    });
-+    await db.createCollection("accounts", { validator });
++      validator,
+     });
 +  } else {
-+    const existingRiskScore = collections[0].options?.validator?.$jsonSchema?.properties?.riskScore;
-+    if (
-+      existingRiskScore?.bsonType !== "int"
-+      || existingRiskScore.minimum !== 0
-+      || existingRiskScore.maximum !== 100
-+    ) {
-+      await db.command({ collMod: "accounts", validator });
-+    }
++    await db.command({ collMod: "accounts", validator });
    }
  }
  

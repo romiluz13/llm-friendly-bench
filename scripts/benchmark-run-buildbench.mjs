@@ -300,7 +300,7 @@ function runAgent({ agentId, workspace, prompt, outDir, model }) {
 			workspace,
 			"--skip-git-repo-check",
 			"--sandbox",
-			"workspace-write",
+			"danger-full-access",
 			"-c",
 			`model=${JSON.stringify(model)}`,
 			"--json",

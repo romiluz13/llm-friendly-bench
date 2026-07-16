@@ -8,10 +8,10 @@
   "agentId": "claude-code",
   "repeat": 1,
   "model": "sonnet",
-  "agentVersion": "2.1.209 (Claude Code)",
+  "agentVersion": "2.1.210 (Claude Code)",
   "status": "passed",
-  "startedAt": "2026-07-14T11:41:42.972Z",
-  "finishedAt": "2026-07-14T11:43:31.350Z",
+  "startedAt": "2026-07-15T23:25:48.436Z",
+  "finishedAt": "2026-07-15T23:27:56.570Z",
   "artifacts": {
     "workspace": "benchmark/runs-brownfield/schema-evolution/postgres-norm/claude-code/repeat-1/workspace",
     "prompt": "benchmark/runs-brownfield/schema-evolution/postgres-norm/claude-code/repeat-1/prompt.md",
@@ -23,19 +23,19 @@
     "dbAfter": "benchmark/runs-brownfield/schema-evolution/postgres-norm/claude-code/repeat-1/db-after/final.json"
   },
   "metrics": {
-    "elapsedMs": 108378,
-    "transcriptBytes": 172374,
+    "elapsedMs": 128134,
+    "transcriptBytes": 178203,
     "tokens": {
-      "inputTokens": 35,
-      "outputTokens": 252,
-      "cachedInputTokens": 432132,
-      "totalTokens": 287,
-      "tokensRead": 432167,
-      "costUsd": 0.6746381999999999,
+      "inputTokens": 48,
+      "outputTokens": 439,
+      "cachedInputTokens": 724610,
+      "totalTokens": 487,
+      "tokensRead": 724658,
+      "costUsd": 0.8267421,
       "source": "measured"
     },
-    "estimatedTranscriptTokens": 287,
-    "diffBytes": 2498,
+    "estimatedTranscriptTokens": 487,
+    "diffBytes": 2524,
     "filesChanged": 2,
     "changedFiles": [
       "src/accounts.mjs",
@@ -44,7 +44,7 @@
     "cheatSignals": [],
     "liveDbWritten": true,
     "fieldExists": true,
-    "retrySignals": 20,
+    "retrySignals": 51,
     "testStatus": "passed",
     "agentExitCode": 0,
     "testsExitCode": 0,
@@ -57,11 +57,11 @@
     },
     {
       "path": "benchmark/runs-brownfield/schema-evolution/postgres-norm/claude-code/repeat-1/raw-transcript/claude-code.jsonl",
-      "sha256": "e272b3f6542a8fdc5907acc7c23576f129efef760bcfd95496f5d25c0c3cd311"
+      "sha256": "1dd082c466717db5d467a8b23b770d930143abdd8b7101e9a6de8a6663ec1087"
     },
     {
       "path": "benchmark/runs-brownfield/schema-evolution/postgres-norm/claude-code/repeat-1/diff.patch",
-      "sha256": "f8475807656769c55b86834b3778baf2e852a9542468f0a2e85f094991f3678f"
+      "sha256": "5bcdc81f8d6c4423ed3da9914a595c463fb91cf8fc81c03e07f1c02a5458cc07"
     },
     {
       "path": "benchmark/runs-brownfield/schema-evolution/postgres-norm/claude-code/repeat-1/tests.log",

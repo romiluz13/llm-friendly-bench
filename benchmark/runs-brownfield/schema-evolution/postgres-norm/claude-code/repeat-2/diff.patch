@@ -1,5 +1,5 @@
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index 165b795..1532594 100644
+index 165b795..8600a87 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
 @@ -1,14 +1,14 @@
@@ -7,7 +7,7 @@ index 165b795..1532594 100644
  
  function rowToAccount(r) {
 -  return { accountId: r.account_id, name: r.name, tier: r.tier, status: r.status, createdAt: r.created_at };
-+  return { accountId: r.account_id, name: r.name, tier: r.tier, status: r.status, createdAt: r.created_at, riskScore: r.risk_score };
++  return { accountId: r.account_id, name: r.name, tier: r.tier, status: r.status, createdAt: r.created_at, riskScore: r.risk_score ?? null };
  }
  
  export async function createAccounts(client, data) {
@@ -29,20 +29,15 @@ index 165b795..1532594 100644
    vals.push(id);
    await client.query(`UPDATE accounts SET ${sets.join(', ')} WHERE account_id = $${i}`, vals);
 diff --git a/src/schema.mjs b/src/schema.mjs
-index c734820..f65cb01 100644
+index c734820..bfbfb2e 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -7,9 +7,13 @@ export async function ensureSchema(client) {
-       name        TEXT        NOT NULL,
-       tier        TEXT        NOT NULL CHECK (tier IN ('strategic', 'midmarket', 'standard')),
-       status      TEXT        NOT NULL CHECK (status IN ('active', 'at-risk', 'churned')),
--      created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
-+      created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
-+      risk_score  INTEGER     CHECK (risk_score BETWEEN 0 AND 100)
+@@ -10,6 +10,9 @@ export async function ensureSchema(client) {
+       created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
      )
    `);
 +  await client.query(`
-+    ALTER TABLE accounts ADD COLUMN IF NOT EXISTS risk_score INTEGER CHECK (risk_score BETWEEN 0 AND 100)
++    ALTER TABLE accounts ADD COLUMN IF NOT EXISTS risk_score INTEGER CHECK (risk_score >= 0 AND risk_score <= 100)
 +  `);
  }
  

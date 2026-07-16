@@ -1,15 +1,12 @@
-Implemented the `riskScore` schema and CRUD changes in [schema.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/postgres-norm/codex/repeat-1/workspace/src/schema.mjs:10) and [accounts.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/postgres-norm/codex/repeat-1/workspace/src/accounts.mjs:4).
+Implemented `riskScore` in the accounts schema and CRUD.
 
-- Nullable integer `risk_score`, constrained to `0–100`, with an idempotent migration for existing tables.
-- Create, get, and update support `riskScore`.
-- Legacy accounts retain their previous returned object shape when no score exists.
-- Only the two allowed `src/` files changed.
+- Added nullable `risk_score INTEGER CHECK (risk_score BETWEEN 0 AND 100)` plus idempotent live-schema migration.
+- Added create/get/update mapping for `riskScore`.
+- Modified only `src/schema.mjs` and `src/accounts.mjs`.
 
-`git diff --check` and both source syntax checks passed. `npm test` remains blocked by the sandbox before any test code runs:
+Verified fresh against the live database:
 
 ```text
-Error: connect EPERM 127.0.0.1:5433
+npm test
+Build-Bench brownfield acceptance passed: postgres-norm/schema-evolution
 ```
-
-So live-database acceptance could not be confirmed in this environment.
-

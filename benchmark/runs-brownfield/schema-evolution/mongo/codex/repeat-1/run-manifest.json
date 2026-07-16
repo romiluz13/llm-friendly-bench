@@ -10,8 +10,8 @@
   "model": "gpt-5.6-terra",
   "agentVersion": "codex-cli 0.144.0-alpha.4",
   "status": "passed",
-  "startedAt": "2026-07-14T11:34:53.460Z",
-  "finishedAt": "2026-07-14T11:41:37.147Z",
+  "startedAt": "2026-07-15T23:22:46.868Z",
+  "finishedAt": "2026-07-15T23:25:42.400Z",
   "artifacts": {
     "workspace": "benchmark/runs-brownfield/schema-evolution/mongo/codex/repeat-1/workspace",
     "prompt": "benchmark/runs-brownfield/schema-evolution/mongo/codex/repeat-1/prompt.md",
@@ -23,19 +23,19 @@
     "dbAfter": "benchmark/runs-brownfield/schema-evolution/mongo/codex/repeat-1/db-after/final.json"
   },
   "metrics": {
-    "elapsedMs": 403687,
-    "transcriptBytes": 614958,
+    "elapsedMs": 175532,
+    "transcriptBytes": 422753,
     "tokens": {
-      "inputTokens": 1153432,
-      "outputTokens": 13429,
-      "cachedInputTokens": 1050624,
-      "totalTokens": 1166861,
-      "tokensRead": 1153432,
-      "costUsd": 3.0178700000000003,
+      "inputTokens": 457677,
+      "outputTokens": 9919,
+      "cachedInputTokens": 376064,
+      "totalTokens": 467596,
+      "tokensRead": 457677,
+      "costUsd": 1.2433825000000003,
       "source": "measured"
     },
-    "estimatedTranscriptTokens": 1166861,
-    "diffBytes": 1511,
+    "estimatedTranscriptTokens": 467596,
+    "diffBytes": 1537,
     "filesChanged": 1,
     "changedFiles": [
       "src/schema.mjs"
@@ -43,7 +43,7 @@
     "cheatSignals": [],
     "liveDbWritten": true,
     "fieldExists": true,
-    "retrySignals": 148,
+    "retrySignals": 41,
     "testStatus": "passed",
     "agentExitCode": 0,
     "testsExitCode": 0,
@@ -56,11 +56,11 @@
     },
     {
       "path": "benchmark/runs-brownfield/schema-evolution/mongo/codex/repeat-1/raw-transcript/codex.jsonl",
-      "sha256": "1fd37ad997c2c6d2f53f6914674bbc996154f6da61dda44df3d58bc2186d9032"
+      "sha256": "9b995eafa847dc97182dac1514f402ef8589311f5e25eca7d10a36514d7b8965"
     },
     {
       "path": "benchmark/runs-brownfield/schema-evolution/mongo/codex/repeat-1/diff.patch",
-      "sha256": "e13c7db117f76f26231bff79059e603f656fb3c2138c89eb204f2e07b849655e"
+      "sha256": "b9bf6b069bf49ae7992158359486162a8d9d8b3205e2beaebccc3f893dda6745"
     },
     {
       "path": "benchmark/runs-brownfield/schema-evolution/mongo/codex/repeat-1/tests.log",

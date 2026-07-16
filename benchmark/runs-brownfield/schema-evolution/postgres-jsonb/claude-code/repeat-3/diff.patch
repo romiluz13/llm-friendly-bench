@@ -1,25 +1,45 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index 9ea3403..ec75a66 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -1,7 +1,15 @@
+ import { ensureSchema } from "./schema.mjs";
+ 
++function validateRiskScore(riskScore) {
++  if (riskScore === undefined || riskScore === null) return;
++  if (!Number.isInteger(riskScore) || riskScore < 0 || riskScore > 100) {
++    throw new Error(`riskScore must be an integer between 0 and 100, got: ${riskScore}`);
++  }
++}
++
+ export async function createAccounts(client, data) {
+   await ensureSchema(client);
++  if (data.riskScore !== undefined) validateRiskScore(data.riskScore);
+   const doc = { ...data, createdAt: data.createdAt || new Date().toISOString() };
+   await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
+   return doc;
+@@ -13,6 +21,7 @@ export async function getAccounts(client, id) {
+ }
+ 
+ export async function updateAccounts(client, id, data) {
++  if (data.riskScore !== undefined) validateRiskScore(data.riskScore);
+   const existing = await getAccounts(client, id);
+   if (!existing) return null;
+   const updated = { ...existing, ...data };
 diff --git a/src/schema.mjs b/src/schema.mjs
-index 1c7406e..2ddc885 100644
+index 1c7406e..0e16956 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -9,6 +9,20 @@ export async function ensureSchema(client) {
+@@ -5,7 +5,11 @@ export async function ensureSchema(client) {
+     CREATE TABLE IF NOT EXISTS accounts (
+       account_id TEXT PRIMARY KEY,
+       doc        JSONB NOT NULL,
+-      CONSTRAINT accounts_doc_key_match CHECK (doc->>'accountId' = account_id)
++      CONSTRAINT accounts_doc_key_match CHECK (doc->>'accountId' = account_id),
++      CONSTRAINT accounts_risk_score_range CHECK (
++        doc->>'riskScore' IS NULL OR
++        (doc->>'riskScore')::int BETWEEN 0 AND 100
++      )
      )
    `);
    await client.query('CREATE INDEX IF NOT EXISTS idx_accounts_doc_gin ON accounts USING GIN (doc jsonb_path_ops)');
-+  await client.query(`
-+    DO $$
-+    BEGIN
-+      IF NOT EXISTS (
-+        SELECT 1 FROM pg_constraint
-+        WHERE conname = 'accounts_risk_score_range'
-+      ) THEN
-+        ALTER TABLE accounts
-+        ADD CONSTRAINT accounts_risk_score_range
-+        CHECK (doc->>'riskScore' IS NULL OR ((doc->>'riskScore')::int BETWEEN 0 AND 100));
-+      END IF;
-+    END;
-+    $$
-+  `);
- }
- 
- if (import.meta.url === `file://${process.argv[1]}`) {

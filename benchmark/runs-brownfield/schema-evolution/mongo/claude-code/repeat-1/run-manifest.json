@@ -8,10 +8,10 @@
   "agentId": "claude-code",
   "repeat": 1,
   "model": "sonnet",
-  "agentVersion": "2.1.209 (Claude Code)",
+  "agentVersion": "2.1.210 (Claude Code)",
   "status": "passed",
-  "startedAt": "2026-07-14T11:32:49.617Z",
-  "finishedAt": "2026-07-14T11:34:47.152Z",
+  "startedAt": "2026-07-15T23:20:43.238Z",
+  "finishedAt": "2026-07-15T23:22:40.381Z",
   "artifacts": {
     "workspace": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-1/workspace",
     "prompt": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-1/prompt.md",
@@ -23,18 +23,18 @@
     "dbAfter": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-1/db-after/final.json"
   },
   "metrics": {
-    "elapsedMs": 117535,
-    "transcriptBytes": 184271,
+    "elapsedMs": 117143,
+    "transcriptBytes": 331949,
     "tokens": {
-      "inputTokens": 36,
-      "outputTokens": 218,
-      "cachedInputTokens": 447337,
-      "totalTokens": 254,
-      "tokensRead": 447373,
-      "costUsd": 0.7487598000000001,
+      "inputTokens": 144,
+      "outputTokens": 228,
+      "cachedInputTokens": 666567,
+      "totalTokens": 372,
+      "tokensRead": 666711,
+      "costUsd": 1.2178836,
       "source": "measured"
     },
-    "estimatedTranscriptTokens": 254,
+    "estimatedTranscriptTokens": 372,
     "diffBytes": 1485,
     "filesChanged": 1,
     "changedFiles": [
@@ -43,7 +43,7 @@
     "cheatSignals": [],
     "liveDbWritten": true,
     "fieldExists": true,
-    "retrySignals": 15,
+    "retrySignals": 53,
     "testStatus": "passed",
     "agentExitCode": 0,
     "testsExitCode": 0,
@@ -56,7 +56,7 @@
     },
     {
       "path": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-1/raw-transcript/claude-code.jsonl",
-      "sha256": "06f03dd554388327db91cfdabe70fee0479a26b3bd6c7fda6b5a81a74675e65d"
+      "sha256": "c4ece5cf0bc05945f9fa03d3ee54338991d60f31d196735380126d22334ba436"
     },
     {
       "path": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-1/diff.patch",

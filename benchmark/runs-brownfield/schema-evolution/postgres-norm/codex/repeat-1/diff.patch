@@ -1,15 +1,13 @@
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index 165b795..d1d1e20 100644
+index 165b795..984fa94 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
-@@ -1,14 +1,16 @@
+@@ -1,14 +1,14 @@
  import { ensureSchema } from "./schema.mjs";
  
  function rowToAccount(r) {
 -  return { accountId: r.account_id, name: r.name, tier: r.tier, status: r.status, createdAt: r.created_at };
-+  const account = { accountId: r.account_id, name: r.name, tier: r.tier, status: r.status, createdAt: r.created_at };
-+  if (r.risk_score !== null && r.risk_score !== undefined) account.riskScore = r.risk_score;
-+  return account;
++  return { accountId: r.account_id, name: r.name, tier: r.tier, status: r.status, riskScore: r.risk_score, createdAt: r.created_at };
  }
  
  export async function createAccounts(client, data) {
@@ -22,7 +20,7 @@ index 165b795..d1d1e20 100644
    );
    return rowToAccount(result.rows[0]);
  }
-@@ -25,6 +27,7 @@ export async function updateAccounts(client, id, data) {
+@@ -25,6 +25,7 @@ export async function updateAccounts(client, id, data) {
    if (data.name !== undefined) { sets.push(`name = $${i++}`); vals.push(data.name); }
    if (data.tier !== undefined) { sets.push(`tier = $${i++}`); vals.push(data.tier); }
    if (data.status !== undefined) { sets.push(`status = $${i++}`); vals.push(data.status); }

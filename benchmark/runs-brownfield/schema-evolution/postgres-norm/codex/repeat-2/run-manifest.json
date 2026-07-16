@@ -10,8 +10,8 @@
   "model": "gpt-5.6-terra",
   "agentVersion": "codex-cli 0.144.0-alpha.4",
   "status": "passed",
-  "startedAt": "2026-07-14T12:06:58.051Z",
-  "finishedAt": "2026-07-14T12:10:50.511Z",
+  "startedAt": "2026-07-15T23:50:12.726Z",
+  "finishedAt": "2026-07-15T23:51:11.103Z",
   "artifacts": {
     "workspace": "benchmark/runs-brownfield/schema-evolution/postgres-norm/codex/repeat-2/workspace",
     "prompt": "benchmark/runs-brownfield/schema-evolution/postgres-norm/codex/repeat-2/prompt.md",
@@ -23,18 +23,18 @@
     "dbAfter": "benchmark/runs-brownfield/schema-evolution/postgres-norm/codex/repeat-2/db-after/final.json"
   },
   "metrics": {
-    "elapsedMs": 232460,
-    "transcriptBytes": 424553,
+    "elapsedMs": 58377,
+    "transcriptBytes": 391059,
     "tokens": {
-      "inputTokens": 657225,
-      "outputTokens": 7686,
-      "cachedInputTokens": 569088,
-      "totalTokens": 664911,
-      "tokensRead": 657225,
-      "costUsd": 1.7199225,
+      "inputTokens": 169218,
+      "outputTokens": 3844,
+      "cachedInputTokens": 136448,
+      "totalTokens": 173062,
+      "tokensRead": 169218,
+      "costUsd": 0.46148500000000003,
       "source": "measured"
     },
-    "estimatedTranscriptTokens": 664911,
+    "estimatedTranscriptTokens": 173062,
     "diffBytes": 2449,
     "filesChanged": 2,
     "changedFiles": [
@@ -44,7 +44,7 @@
     "cheatSignals": [],
     "liveDbWritten": true,
     "fieldExists": true,
-    "retrySignals": 96,
+    "retrySignals": 30,
     "testStatus": "passed",
     "agentExitCode": 0,
     "testsExitCode": 0,
@@ -57,7 +57,7 @@
     },
     {
       "path": "benchmark/runs-brownfield/schema-evolution/postgres-norm/codex/repeat-2/raw-transcript/codex.jsonl",
-      "sha256": "d84d774c3b12e9715f7a139d73d573d55179f62620e744856b24b6df08b9aedd"
+      "sha256": "a8f774dfa9f038814e61f99bcd673d33b7c2b657694a9acb37a84d1079c78e41"
     },
     {
       "path": "benchmark/runs-brownfield/schema-evolution/postgres-norm/codex/repeat-2/diff.patch",

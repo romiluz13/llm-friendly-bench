@@ -1,7 +1,12 @@
-Implemented the JSONB-backed `riskScore` evolution:
+Implemented `riskScore` as an optional integer from 0–100.
 
-- Added optional integer 0–100 schema validation with an existing-table migration in [schema.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/workspace/src/schema.mjs:9).
-- Added create/update validation in [accounts.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/workspace/src/accounts.mjs:3). Reads already return the JSONB document, including `riskScore`.
+- [src/schema.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/workspace/src/schema.mjs:3) now enforces it in JSONB and migrates existing `accounts` tables idempotently.
+- [src/accounts.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-3/workspace/src/accounts.mjs:3) validates it on create/update; reads continue returning the stored document including `riskScore`.
+- No protected files or tests were changed.
 
-`node --check` and `git diff --check` passed. `npm test` cannot reach the required live PostgreSQL database in this sandbox: `connect EPERM 127.0.0.1:5433`, before any test assertions run. Re-run `npm test` where that local database connection is permitted to complete acceptance verification.
+Verified:
+
+- `npm test` passed.
+- A live database check confirmed the constraint is installed and rejects `riskScore: 101`.
+- `git diff --check` passed.
 

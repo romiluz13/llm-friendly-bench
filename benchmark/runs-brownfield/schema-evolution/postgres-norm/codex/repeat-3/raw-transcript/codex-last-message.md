@@ -1,9 +1,8 @@
-Implemented the minimal `riskScore` evolution in:
+Implemented `riskScore` across the existing live schema and CRUD:
 
-- [src/schema.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/postgres-norm/codex/repeat-3/workspace/src/schema.mjs:10): nullable `INTEGER` constrained to `0–100`, plus an idempotent migration for existing tables.
-- [src/accounts.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/postgres-norm/codex/repeat-3/workspace/src/accounts.mjs:4): create, get, and update now handle `riskScore`.
+- [`src/schema.mjs`](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/postgres-norm/codex/repeat-3/workspace/src/schema.mjs:10) adds nullable `INTEGER` `risk_score` with a 0–100 check and migrates existing tables.
+- [`src/accounts.mjs`](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/postgres-norm/codex/repeat-3/workspace/src/accounts.mjs:4) maps, creates, reads, and updates `riskScore`.
 
-No tests or DB configuration were modified. Both changed modules pass syntax checks.
+Verified live schema: nullable integer with the required check constraint.
 
-`npm test` remains blocked before application code runs: the sandbox denies the real PostgreSQL connection with `connect EPERM 127.0.0.1:5433`. Run it in an environment permitted to reach that local database to confirm the acceptance suite.
-
+`npm test` passes: `Build-Bench brownfield acceptance passed: postgres-norm/schema-evolution`.

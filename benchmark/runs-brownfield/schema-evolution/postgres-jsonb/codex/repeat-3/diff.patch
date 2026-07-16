@@ -1,42 +1,45 @@
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index 9ea3403..650714c 100644
+index 9ea3403..c7404a6 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
-@@ -1,6 +1,13 @@
+@@ -1,7 +1,14 @@
  import { ensureSchema } from "./schema.mjs";
  
-+function validateRiskScore(data) {
-+  if ("riskScore" in data && data.riskScore !== undefined && (!Number.isInteger(data.riskScore) || data.riskScore < 0 || data.riskScore > 100)) {
-+    throw new TypeError("riskScore must be an integer between 0 and 100");
++function validateRiskScore(riskScore) {
++  if (riskScore !== undefined && (!Number.isInteger(riskScore) || riskScore < 0 || riskScore > 100)) {
++    throw new RangeError("riskScore must be an integer between 0 and 100");
 +  }
 +}
 +
  export async function createAccounts(client, data) {
-+  validateRiskScore(data);
    await ensureSchema(client);
++  validateRiskScore(data.riskScore);
    const doc = { ...data, createdAt: data.createdAt || new Date().toISOString() };
    await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
+   return doc;
 @@ -15,6 +22,7 @@ export async function getAccounts(client, id) {
  export async function updateAccounts(client, id, data) {
    const existing = await getAccounts(client, id);
    if (!existing) return null;
-+  validateRiskScore(data);
++  validateRiskScore(data.riskScore);
    const updated = { ...existing, ...data };
    await client.query('UPDATE accounts SET doc = $1 WHERE account_id = $2 RETURNING doc', [JSON.stringify(updated), id]);
    return updated;
 diff --git a/src/schema.mjs b/src/schema.mjs
-index 1c7406e..03c4553 100644
+index 1c7406e..fa4f237 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -5,9 +5,30 @@ export async function ensureSchema(client) {
+@@ -5,9 +5,35 @@ export async function ensureSchema(client) {
      CREATE TABLE IF NOT EXISTS accounts (
        account_id TEXT PRIMARY KEY,
        doc        JSONB NOT NULL,
 -      CONSTRAINT accounts_doc_key_match CHECK (doc->>'accountId' = account_id)
 +      CONSTRAINT accounts_doc_key_match CHECK (doc->>'accountId' = account_id),
-+      CONSTRAINT accounts_doc_risk_score_valid CHECK (
-+        NOT (doc ? 'riskScore')
-+        OR (jsonb_typeof(doc->'riskScore') = 'number' AND doc->>'riskScore' ~ '^(0|[1-9][0-9]?|100)$')
++      CONSTRAINT accounts_doc_risk_score CHECK (
++        NOT (doc ? 'riskScore') OR (
++          jsonb_typeof(doc->'riskScore') = 'number'
++          AND doc->>'riskScore' ~ '^(?:[0-9]|[1-9][0-9]|100)$'
++        )
 +      )
      )
    `);
@@ -46,16 +49,19 @@ index 1c7406e..03c4553 100644
 +      IF NOT EXISTS (
 +        SELECT 1
 +        FROM pg_constraint
-+        WHERE conname = 'accounts_doc_risk_score_valid'
++        WHERE conname = 'accounts_doc_risk_score'
 +          AND conrelid = 'accounts'::regclass
 +      ) THEN
-+        ALTER TABLE accounts ADD CONSTRAINT accounts_doc_risk_score_valid CHECK (
-+          NOT (doc ? 'riskScore')
-+          OR (jsonb_typeof(doc->'riskScore') = 'number' AND doc->>'riskScore' ~ '^(0|[1-9][0-9]?|100)$')
-+        );
++        ALTER TABLE accounts
++          ADD CONSTRAINT accounts_doc_risk_score CHECK (
++            NOT (doc ? 'riskScore') OR (
++              jsonb_typeof(doc->'riskScore') = 'number'
++              AND doc->>'riskScore' ~ '^(?:[0-9]|[1-9][0-9]|100)$'
++            )
++          );
 +      END IF;
 +    END
-+    $$
++    $$;
 +  `);
    await client.query('CREATE INDEX IF NOT EXISTS idx_accounts_doc_gin ON accounts USING GIN (doc jsonb_path_ops)');
  }

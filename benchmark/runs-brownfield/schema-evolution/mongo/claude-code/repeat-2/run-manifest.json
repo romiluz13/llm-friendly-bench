@@ -8,10 +8,10 @@
   "agentId": "claude-code",
   "repeat": 2,
   "model": "sonnet",
-  "agentVersion": "2.1.209 (Claude Code)",
+  "agentVersion": "2.1.210 (Claude Code)",
   "status": "passed",
-  "startedAt": "2026-07-14T11:55:01.137Z",
-  "finishedAt": "2026-07-14T11:56:44.743Z",
+  "startedAt": "2026-07-15T23:36:47.173Z",
+  "finishedAt": "2026-07-15T23:38:22.575Z",
   "artifacts": {
     "workspace": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-2/workspace",
     "prompt": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-2/prompt.md",
@@ -23,18 +23,18 @@
     "dbAfter": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-2/db-after/final.json"
   },
   "metrics": {
-    "elapsedMs": 103608,
-    "transcriptBytes": 205115,
+    "elapsedMs": 95402,
+    "transcriptBytes": 160119,
     "tokens": {
-      "inputTokens": 34,
-      "outputTokens": 161,
-      "cachedInputTokens": 357946,
-      "totalTokens": 195,
-      "tokensRead": 357980,
-      "costUsd": 0.7074672,
+      "inputTokens": 24,
+      "outputTokens": 119,
+      "cachedInputTokens": 248804,
+      "totalTokens": 143,
+      "tokensRead": 248828,
+      "costUsd": 0.4402005,
       "source": "measured"
     },
-    "estimatedTranscriptTokens": 195,
+    "estimatedTranscriptTokens": 143,
     "diffBytes": 1497,
     "filesChanged": 1,
     "changedFiles": [
@@ -43,7 +43,7 @@
     "cheatSignals": [],
     "liveDbWritten": true,
     "fieldExists": true,
-    "retrySignals": 23,
+    "retrySignals": 28,
     "testStatus": "passed",
     "agentExitCode": 0,
     "testsExitCode": 0,
@@ -56,7 +56,7 @@
     },
     {
       "path": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-2/raw-transcript/claude-code.jsonl",
-      "sha256": "c4eeaab7ea155cc862dab2e06deda05e794e28119fca6d5b57cc0467d4194667"
+      "sha256": "316a207f3b19f7029fa1da37a144d74b394df2590e7e08f6d44cea0297a128cd"
     },
     {
       "path": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-2/diff.patch",

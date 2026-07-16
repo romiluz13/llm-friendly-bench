@@ -1,8 +1,13 @@
-Added `riskScore` support in [schema.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-5/workspace/src/schema.mjs) and [accounts.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-5/workspace/src/accounts.mjs):
+Implemented the optional `riskScore` field (integer 0–100).
 
-- Optional JSONB field constrained to integer `0–100`, with an idempotent existing-table migration.
-- Create/update validate `riskScore`; get continues returning the stored document unchanged.
-- No changes to tests or `src/db.mjs`.
+- Added an idempotent JSONB database constraint in `src/schema.mjs`.
+- Validated `riskScore` on account create and update in `src/accounts.mjs`.
+- Preserved existing CRUD behavior; no changes to `src/db.mjs` or tests.
 
-`git diff --check` and Node syntax checks pass. `npm test` is blocked before assertions by this sandbox’s denied connection to the required DB: `connect EPERM 127.0.0.1:5433`. Re-run `npm test` where that Postgres endpoint is accessible to complete live verification.
+Verification:
 
+```text
+$ npm test
+exit=0
+Build-Bench brownfield acceptance passed: postgres-jsonb/schema-evolution
+```

@@ -1,22 +1,23 @@
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index 9ea3403..635e543 100644
+index 9ea3403..729eb39 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
-@@ -1,6 +1,14 @@
+@@ -1,7 +1,15 @@
  import { ensureSchema } from "./schema.mjs";
  
 +function validateRiskScore(data) {
 +  if (data.riskScore === undefined) return;
 +  if (!Number.isInteger(data.riskScore) || data.riskScore < 0 || data.riskScore > 100) {
-+    throw new RangeError("riskScore must be an integer from 0 to 100");
++    throw new TypeError("riskScore must be an integer between 0 and 100");
 +  }
 +}
 +
  export async function createAccounts(client, data) {
-+  validateRiskScore(data);
    await ensureSchema(client);
++  validateRiskScore(data);
    const doc = { ...data, createdAt: data.createdAt || new Date().toISOString() };
    await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
+   return doc;
 @@ -15,6 +23,7 @@ export async function getAccounts(client, id) {
  export async function updateAccounts(client, id, data) {
    const existing = await getAccounts(client, id);
@@ -26,23 +27,19 @@ index 9ea3403..635e543 100644
    await client.query('UPDATE accounts SET doc = $1 WHERE account_id = $2 RETURNING doc', [JSON.stringify(updated), id]);
    return updated;
 diff --git a/src/schema.mjs b/src/schema.mjs
-index 1c7406e..f99965a 100644
+index 1c7406e..e8064b6 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -1,13 +1,44 @@
+@@ -1,13 +1,37 @@
  import { withDb } from "./db.mjs";
  
 +const riskScoreCheck = `
-+  CASE
-+    WHEN doc ? 'riskScore' THEN
-+      CASE
-+        WHEN jsonb_typeof(doc->'riskScore') = 'number' THEN
-+          (doc->>'riskScore')::numeric BETWEEN 0 AND 100
-+          AND (doc->>'riskScore')::numeric = trunc((doc->>'riskScore')::numeric)
-+        ELSE FALSE
-+      END
-+    ELSE TRUE
-+  END
++  CHECK (
++    NOT (doc ? 'riskScore') OR (
++      jsonb_typeof(doc->'riskScore') = 'number'
++      AND doc->>'riskScore' ~ '^(0|[1-9][0-9]?|100)$'
++    )
++  )
 +`;
 +
  export async function ensureSchema(client) {
@@ -52,7 +49,7 @@ index 1c7406e..f99965a 100644
        doc        JSONB NOT NULL,
 -      CONSTRAINT accounts_doc_key_match CHECK (doc->>'accountId' = account_id)
 +      CONSTRAINT accounts_doc_key_match CHECK (doc->>'accountId' = account_id),
-+      CONSTRAINT accounts_doc_risk_score_valid CHECK (${riskScoreCheck})
++      CONSTRAINT accounts_risk_score_valid ${riskScoreCheck}
      )
    `);
 +  await client.query(`
@@ -61,16 +58,13 @@ index 1c7406e..f99965a 100644
 +      IF NOT EXISTS (
 +        SELECT 1
 +        FROM pg_constraint
-+        WHERE conname = 'accounts_doc_risk_score_valid'
++        WHERE conname = 'accounts_risk_score_valid'
 +          AND conrelid = 'accounts'::regclass
 +      ) THEN
-+        BEGIN
-+          ALTER TABLE accounts ADD CONSTRAINT accounts_doc_risk_score_valid CHECK (${riskScoreCheck}) NOT VALID;
-+        EXCEPTION
-+          WHEN duplicate_object THEN NULL;
-+        END;
++        ALTER TABLE accounts ADD CONSTRAINT accounts_risk_score_valid ${riskScoreCheck};
 +      END IF;
-+    END $$;
++    END
++    $$;
 +  `);
    await client.query('CREATE INDEX IF NOT EXISTS idx_accounts_doc_gin ON accounts USING GIN (doc jsonb_path_ops)');
  }

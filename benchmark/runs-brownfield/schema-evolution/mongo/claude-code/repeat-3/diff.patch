@@ -1,11 +1,11 @@
 diff --git a/src/schema.mjs b/src/schema.mjs
-index e72f2c3..44ddb36 100644
+index e72f2c3..2ef0182 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
 @@ -1,23 +1,26 @@
  import { withDb } from "./db.mjs";
  
-+const validator = {
++const accountsValidator = {
 +  $jsonSchema: {
 +    bsonType: "object",
 +    required: ["accountId", "name", "tier", "status", "createdAt"],
@@ -15,7 +15,7 @@ index e72f2c3..44ddb36 100644
 +      tier: { enum: ["strategic", "midmarket", "standard"] },
 +      status: { enum: ["active", "at-risk", "churned"] },
 +      createdAt: { bsonType: "date" },
-+      riskScore: { bsonType: ["int", "double"], minimum: 0, maximum: 100 },
++      riskScore: { bsonType: "int", minimum: 0, maximum: 100 },
 +    },
 +  },
 +};
@@ -38,9 +38,9 @@ index e72f2c3..44ddb36 100644
 -        },
 -      },
 -    });
-+    await db.createCollection("accounts", { validator });
++    await db.createCollection("accounts", { validator: accountsValidator });
 +  } else {
-+    await db.command({ collMod: "accounts", validator });
++    await db.command({ collMod: "accounts", validator: accountsValidator });
    }
  }
  

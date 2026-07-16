@@ -1,16 +1,9 @@
-Implemented the brownfield schema evolution:
+Inspection confirms `accounts.mjs` already preserves a supplied `riskScore` on create, returns it on get, and applies it on update.
 
-- [schema.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/mongo/codex/repeat-5/workspace/src/schema.mjs): optional `riskScore` BSON `int` constrained to 0–100; migrates existing collections via `collMod`.
-- [accounts.mjs](/Users/rom.iluz/Dev/sql-hidden-cost/benchmark/runs-brownfield/schema-evolution/mongo/codex/repeat-5/workspace/src/accounts.mjs): updates now ensure the migrated validator before writing. Existing generic create/get/update paths already persist and return `riskScore`.
+Recommended minimal design:
 
-Static validation passed: `node --check` for both files and `git diff --check`.
+- Add optional `riskScore` to the JSON Schema as BSON `int`, minimum `0`, maximum `100`.
+- Update the live collection validator with `collMod` when `accounts` already exists; otherwise the change only affects newly created databases.
+- Leave the existing CRUD implementation intact and run the acceptance suite.
 
-Live acceptance remains blocked by the sandbox:
-
-```text
-$ npm test
-exit=1
-MongoServerSelectionError: connect EPERM 127.0.0.1:27018
-```
-
-The test needs to be rerun where access to the benchmark’s local MongoDB endpoint is permitted.
+Approve this design and I’ll implement and verify it.

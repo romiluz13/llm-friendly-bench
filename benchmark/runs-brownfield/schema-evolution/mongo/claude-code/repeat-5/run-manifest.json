@@ -8,10 +8,10 @@
   "agentId": "claude-code",
   "repeat": 5,
   "model": "sonnet",
-  "agentVersion": "2.1.209 (Claude Code)",
+  "agentVersion": "2.1.210 (Claude Code)",
   "status": "passed",
-  "startedAt": "2026-07-14T13:17:05.715Z",
-  "finishedAt": "2026-07-14T13:21:43.426Z",
+  "startedAt": "2026-07-16T00:40:39.654Z",
+  "finishedAt": "2026-07-16T00:43:07.035Z",
   "artifacts": {
     "workspace": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/workspace",
     "prompt": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/prompt.md",
@@ -23,19 +23,19 @@
     "dbAfter": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/db-after/final.json"
   },
   "metrics": {
-    "elapsedMs": 277711,
-    "transcriptBytes": 481726,
+    "elapsedMs": 147381,
+    "transcriptBytes": 266890,
     "tokens": {
-      "inputTokens": 69,
-      "outputTokens": 444,
-      "cachedInputTokens": 1016536,
-      "totalTokens": 513,
-      "tokensRead": 1016605,
-      "costUsd": 1.1875392000000002,
+      "inputTokens": 53,
+      "outputTokens": 342,
+      "cachedInputTokens": 727128,
+      "totalTokens": 395,
+      "tokensRead": 727181,
+      "costUsd": 1.1033066999999999,
       "source": "measured"
     },
-    "estimatedTranscriptTokens": 513,
-    "diffBytes": 1485,
+    "estimatedTranscriptTokens": 395,
+    "diffBytes": 1505,
     "filesChanged": 1,
     "changedFiles": [
       "src/schema.mjs"
@@ -43,7 +43,7 @@
     "cheatSignals": [],
     "liveDbWritten": true,
     "fieldExists": true,
-    "retrySignals": 72,
+    "retrySignals": 48,
     "testStatus": "passed",
     "agentExitCode": 0,
     "testsExitCode": 0,
@@ -56,11 +56,11 @@
     },
     {
       "path": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/raw-transcript/claude-code.jsonl",
-      "sha256": "c8a4abcd3d16b79c311d9c0fa76f8df3ad5b5a1ec8eda9a4330d1de2de3970ec"
+      "sha256": "d112afc72a831eb9a87711f156defe4eda49f04d74049ec9cd3e5738f5864fdf"
     },
     {
       "path": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/diff.patch",
-      "sha256": "a193951c76290459015f0b8a36376bc04be736045db8ba1d04f88b45477a1cd3"
+      "sha256": "6167d880d0def0c01a2173c352805ba1585be993231f1fa766463bd7177fad0a"
     },
     {
       "path": "benchmark/runs-brownfield/schema-evolution/mongo/claude-code/repeat-5/tests.log",

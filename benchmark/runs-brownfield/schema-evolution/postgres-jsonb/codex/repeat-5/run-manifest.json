@@ -10,8 +10,8 @@
   "model": "gpt-5.6-terra",
   "agentVersion": "codex-cli 0.144.0-alpha.4",
   "status": "passed",
-  "startedAt": "2026-07-14T13:44:14.103Z",
-  "finishedAt": "2026-07-14T13:51:51.838Z",
+  "startedAt": "2026-07-16T00:51:40.868Z",
+  "finishedAt": "2026-07-16T00:52:40.730Z",
   "artifacts": {
     "workspace": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-5/workspace",
     "prompt": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-5/prompt.md",
@@ -23,19 +23,19 @@
     "dbAfter": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-5/db-after/final.json"
   },
   "metrics": {
-    "elapsedMs": 457735,
-    "transcriptBytes": 624977,
+    "elapsedMs": 59862,
+    "transcriptBytes": 384926,
     "tokens": {
-      "inputTokens": 1295981,
-      "outputTokens": 14693,
-      "cachedInputTokens": 1232896,
-      "totalTokens": 1310674,
-      "tokensRead": 1295981,
-      "costUsd": 3.3868825000000005,
+      "inputTokens": 194341,
+      "outputTokens": 4324,
+      "cachedInputTokens": 161280,
+      "totalTokens": 198665,
+      "tokensRead": 194341,
+      "costUsd": 0.5290925,
       "source": "measured"
     },
-    "estimatedTranscriptTokens": 1310674,
-    "diffBytes": 1952,
+    "estimatedTranscriptTokens": 198665,
+    "diffBytes": 2194,
     "filesChanged": 2,
     "changedFiles": [
       "src/accounts.mjs",
@@ -44,7 +44,7 @@
     "cheatSignals": [],
     "liveDbWritten": true,
     "fieldExists": true,
-    "retrySignals": 100,
+    "retrySignals": 20,
     "testStatus": "passed",
     "agentExitCode": 0,
     "testsExitCode": 0,
@@ -57,11 +57,11 @@
     },
     {
       "path": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-5/raw-transcript/codex.jsonl",
-      "sha256": "8905a31827fcea462cafcc4af6f4120eb70bed2b700712dbb890bf6bbd2fc06c"
+      "sha256": "312b83717754fbdce2b32098b45551084c9a5326c67a29931e680d20f2ef1da9"
     },
     {
       "path": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-5/diff.patch",
-      "sha256": "43bf5d1565aade54811676fd5a00769d988b33bc8db2acb7fbe9f93ade6e63ff"
+      "sha256": "6a9242312fced23a80f1af7f7e7a33aefe239d7c1bac66b193ad4812cf806740"
     },
     {
       "path": "benchmark/runs-brownfield/schema-evolution/postgres-jsonb/codex/repeat-5/tests.log",
