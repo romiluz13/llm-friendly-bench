@@ -27,3 +27,4 @@ benchmark/.prove-buildbench/
 benchmark/runs-brownfield/**/workspace/
 benchmark/.prove-brownfield/
 benchmark/runs-complex/**/workspace/
+benchmark/runs-enterprise/**/workspace/
