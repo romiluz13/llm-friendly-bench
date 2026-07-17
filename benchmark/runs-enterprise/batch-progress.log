@@ -1,0 +1,32 @@
+2026-07-16 22:03:30 BATCH START 2026-07-16 22:03:30 — 30 cells (3 lanes × 2 agents × 5 repeats), pace=5000ms
+2026-07-16 22:07:25 [1/30] PASS schema-evolution-enterprise/mongo/claude-code/r1 tok=763067 model=sonnet
+2026-07-16 22:09:04 [2/30] PASS schema-evolution-enterprise/mongo/codex/r1 tok=360255 model=gpt-5.6-terra
+2026-07-16 22:17:16 [3/30] PASS schema-evolution-enterprise/postgres-norm/claude-code/r1 tok=1513298 model=sonnet
+2026-07-16 22:20:55 [4/30] PASS schema-evolution-enterprise/postgres-norm/codex/r1 tok=872797 model=gpt-5.6-terra
+2026-07-16 22:25:36 [5/30] PASS schema-evolution-enterprise/postgres-jsonb/claude-code/r1 tok=1308858 model=sonnet
+2026-07-16 22:28:01 [6/30] PASS schema-evolution-enterprise/postgres-jsonb/codex/r1 tok=463408 model=gpt-5.6-terra
+2026-07-16 22:37:36 [7/30] PASS schema-evolution-enterprise/mongo/claude-code/r2 tok=1189924 model=sonnet
+2026-07-16 22:39:27 [8/30] PASS schema-evolution-enterprise/mongo/codex/r2 tok=400255 model=gpt-5.6-terra
+2026-07-16 22:54:34 [9/30] FAIL schema-evolution-enterprise/postgres-norm/claude-code/r2 (status=failed)
+2026-07-16 22:56:43 [10/30] PASS schema-evolution-enterprise/postgres-norm/codex/r2 tok=565424 model=gpt-5.6-terra
+2026-07-16 23:09:49 [11/30] FAIL schema-evolution-enterprise/postgres-jsonb/claude-code/r2 (status=failed)
+2026-07-16 23:12:42 [12/30] PASS schema-evolution-enterprise/postgres-jsonb/codex/r2 tok=661805 model=gpt-5.6-terra
+2026-07-16 23:19:17 [13/30] PASS schema-evolution-enterprise/mongo/claude-code/r3 tok=2090038 model=sonnet
+2026-07-16 23:21:36 [14/30] PASS schema-evolution-enterprise/mongo/codex/r3 tok=299717 model=gpt-5.6-terra
+2026-07-16 23:28:06 [15/30] PASS schema-evolution-enterprise/postgres-norm/claude-code/r3 tok=2333622 model=sonnet
+2026-07-16 23:31:31 [16/30] PASS schema-evolution-enterprise/postgres-norm/codex/r3 tok=827248 model=gpt-5.6-terra
+2026-07-16 23:38:01 [17/30] FAIL schema-evolution-enterprise/postgres-jsonb/claude-code/r3 (status=failed)
+2026-07-16 23:40:03 [18/30] PASS schema-evolution-enterprise/postgres-jsonb/codex/r3 tok=479071 model=gpt-5.6-terra
+2026-07-16 23:44:33 [19/30] PASS schema-evolution-enterprise/mongo/claude-code/r4 tok=923309 model=sonnet
+2026-07-16 23:45:56 [20/30] PASS schema-evolution-enterprise/mongo/codex/r4 tok=273181 model=gpt-5.6-terra
+2026-07-16 23:54:57 [21/30] PASS schema-evolution-enterprise/postgres-norm/claude-code/r4 tok=1394667 model=sonnet
+2026-07-16 23:57:30 [22/30] PASS schema-evolution-enterprise/postgres-norm/codex/r4 tok=482408 model=gpt-5.6-terra
+2026-07-17 00:00:37 [23/30] PASS schema-evolution-enterprise/postgres-jsonb/claude-code/r4 tok=748857 model=sonnet
+2026-07-17 00:02:19 [24/30] PASS schema-evolution-enterprise/postgres-jsonb/codex/r4 tok=447497 model=gpt-5.6-terra
+2026-07-17 00:05:52 [25/30] PASS schema-evolution-enterprise/mongo/claude-code/r5 tok=534655 model=sonnet
+2026-07-17 00:06:59 [26/30] FAIL schema-evolution-enterprise/mongo/codex/r5 (status=failed)
+2026-07-17 00:17:46 [27/30] PASS schema-evolution-enterprise/postgres-norm/claude-code/r5 tok=1862277 model=sonnet
+2026-07-17 00:19:39 [28/30] PASS schema-evolution-enterprise/postgres-norm/codex/r5 tok=454003 model=gpt-5.6-terra
+2026-07-17 00:24:38 [29/30] PASS schema-evolution-enterprise/postgres-jsonb/claude-code/r5 tok=910224 model=sonnet
+2026-07-17 00:26:01 [30/30] PASS schema-evolution-enterprise/postgres-jsonb/codex/r5 tok=280393 model=gpt-5.6-terra
+2026-07-17 00:26:01 BATCH DONE — passed=26 failed=4 skipped=0 of 30

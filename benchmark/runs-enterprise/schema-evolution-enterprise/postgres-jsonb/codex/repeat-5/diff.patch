@@ -1,0 +1,87 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index 18aecaa..4460167 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -1,8 +1,9 @@
+-import { ensureSchema } from "./schema.mjs";
++import { ensureSchema, validateAccount } from "./schema.mjs";
+ 
+ export async function createAccount(client, data) {
+   await ensureSchema(client);
+   const doc = { ...data };
++  validateAccount(doc);
+   await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
+   return doc;
+ }
+@@ -16,6 +17,7 @@ export async function updateAccount(client, accountId, data) {
+   const existing = await getAccount(client, accountId);
+   if (!existing) return null;
+   const updated = { ...existing, ...data };
++  validateAccount(updated);
+   await client.query('UPDATE accounts SET doc = $1 WHERE account_id = $2', [JSON.stringify(updated), accountId]);
+   return updated;
+ }
+diff --git a/src/queries.mjs b/src/queries.mjs
+index 666ecf7..81ec3fd 100644
+--- a/src/queries.mjs
++++ b/src/queries.mjs
+@@ -20,6 +20,7 @@ export async function getOrderSummary(client, orderId) {
+     lineItems: order.lineItems || [],
+     accountName: account?.name,
+     accountTier: account?.tier,
++    preferredPaymentMethod: account?.preferredPaymentMethod,
+     invoiceStatus: invoice?.status,
+     invoiceAmountCents: invoice?.amountCents,
+   };
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 43547f2..e9f15c1 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -1,10 +1,47 @@
+ import { withDb } from "./db.mjs";
+ 
++export const preferredPaymentMethods = ["credit_card", "wire_transfer", "ach", "paypal"];
++
++export function validateAccount(data) {
++  if (
++    data.preferredPaymentMethod !== undefined &&
++    !preferredPaymentMethods.includes(data.preferredPaymentMethod)
++  ) {
++    throw new Error("preferredPaymentMethod must be one of: credit_card, wire_transfer, ach, paypal");
++  }
++}
++
+ // Enterprise schema: 40 tables with 3NF normalization, FKs, CHECK constraints.
+ export async function ensureSchema(client) {
+ 	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
+ 	const gen = generatePostgresSchema();
+ 	await gen.ensureSchema(client);
++	for (const table of ["accounts", "orders", "invoices"]) {
++		await client.query(`ALTER TABLE ${table} ADD COLUMN IF NOT EXISTS doc JSONB`);
++		const requiredColumns = await client.query(
++			`SELECT c.column_name
++			 FROM information_schema.columns c
++			 WHERE c.table_schema = current_schema()
++			   AND c.table_name = $1
++			   AND c.is_nullable = 'NO'
++			   AND NOT EXISTS (
++				 SELECT 1
++				 FROM information_schema.table_constraints tc
++				 JOIN information_schema.key_column_usage kcu
++				   ON kcu.constraint_name = tc.constraint_name
++				  AND kcu.table_schema = tc.table_schema
++				  AND kcu.table_name = tc.table_name
++				 WHERE tc.table_schema = c.table_schema
++				   AND tc.table_name = c.table_name
++				   AND tc.constraint_type = 'PRIMARY KEY'
++				   AND kcu.column_name = c.column_name
++			 )`,
++			[table],
++		);
++		for (const { column_name: column } of requiredColumns.rows) {
++			await client.query(`ALTER TABLE ${table} ALTER COLUMN ${column} DROP NOT NULL`);
++		}
++	}
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

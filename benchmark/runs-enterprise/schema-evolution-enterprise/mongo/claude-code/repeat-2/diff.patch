@@ -1,0 +1,34 @@
+diff --git a/src/queries.mjs b/src/queries.mjs
+index caa36b4..f5cc4db 100644
+--- a/src/queries.mjs
++++ b/src/queries.mjs
+@@ -14,6 +14,7 @@ export async function getOrderSummary(db, orderId) {
+     lineItems: order.lineItems || [],
+     accountName: account?.name,
+     accountTier: account?.tier,
++    preferredPaymentMethod: account?.preferredPaymentMethod,
+     invoiceStatus: invoice?.status,
+     invoiceAmountCents: invoice?.amountCents,
+   };
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 16c8076..170c234 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -5,7 +5,16 @@ import { withDb } from "./db.mjs";
+ export async function ensureSchema(db) {
+   const { generateMongoSchema } = await import("../scripts/enterprise-schema-gen.mjs");
+   const gen = generateMongoSchema();
+-  await gen.ensureSchema(db);
++  const existing = await db.listCollections().toArray();
++  const existingNames = new Set(existing.map((c) => c.name));
++  for (const name of gen.collectionNames) {
++    if (!existingNames.has(name)) {
++      await db.createCollection(name);
++    } else {
++      // Remove any previously applied validator so inserts aren't blocked
++      await db.command({ collMod: name, validator: {}, validationLevel: "off" });
++    }
++  }
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

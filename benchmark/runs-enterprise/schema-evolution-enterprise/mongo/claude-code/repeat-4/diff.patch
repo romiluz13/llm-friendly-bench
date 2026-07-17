@@ -1,0 +1,37 @@
+diff --git a/scripts/enterprise-schema-gen.mjs b/scripts/enterprise-schema-gen.mjs
+index 0f43416..9fa68cb 100644
+--- a/scripts/enterprise-schema-gen.mjs
++++ b/scripts/enterprise-schema-gen.mjs
+@@ -29,6 +29,10 @@ const ENTITIES = {
+ 				required: true,
+ 			},
+ 			createdAt: { type: "date", required: true },
++			preferredPaymentMethod: {
++				type: "enum",
++				values: ["credit_card", "wire_transfer", "ach", "paypal"],
++			},
+ 		},
+ 	},
+ 	account_details: {
+@@ -760,7 +764,9 @@ export function generateMongoSchema() {
+ 			const existingNames = new Set(existing.map((c) => c.name));
+ 			for (const [name, validator] of Object.entries(validators)) {
+ 				if (!existingNames.has(name)) {
+-					await db.createCollection(name, { validator });
++					await db.createCollection(name, { validator, validationAction: "warn" });
++				} else {
++					await db.command({ collMod: name, validator, validationAction: "warn" });
+ 				}
+ 			}
+ 		},
+diff --git a/src/queries.mjs b/src/queries.mjs
+index caa36b4..e5de460 100644
+--- a/src/queries.mjs
++++ b/src/queries.mjs
+@@ -16,5 +16,6 @@ export async function getOrderSummary(db, orderId) {
+     accountTier: account?.tier,
+     invoiceStatus: invoice?.status,
+     invoiceAmountCents: invoice?.amountCents,
++    preferredPaymentMethod: account?.preferredPaymentMethod,
+   };
+ }

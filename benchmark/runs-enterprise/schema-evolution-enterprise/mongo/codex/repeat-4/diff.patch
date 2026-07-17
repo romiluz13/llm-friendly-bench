@@ -1,0 +1,70 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index 162db11..aba837c 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -1,9 +1,19 @@
+ import { ensureSchema } from "./schema.mjs";
+ 
++const PAYMENT_METHODS = new Set(["credit_card", "wire_transfer", "ach", "paypal"]);
++
++function validatePreferredPaymentMethod(data) {
++  if (data.preferredPaymentMethod !== undefined && !PAYMENT_METHODS.has(data.preferredPaymentMethod)) {
++    throw new Error("preferredPaymentMethod must be credit_card, wire_transfer, ach, or paypal");
++  }
++}
++
+ export async function createAccount(db, data) {
+   await ensureSchema(db);
+-  const result = await db.collection("accounts").insertOne(data);
+-  return { _id: result.insertedId, ...data };
++  validatePreferredPaymentMethod(data);
++  const account = { ...data, createdAt: data.createdAt ?? new Date() };
++  const result = await db.collection("accounts").insertOne(account);
++  return { _id: result.insertedId, ...account };
+ }
+ 
+ export async function getAccount(db, accountId) {
+@@ -11,6 +21,7 @@ export async function getAccount(db, accountId) {
+ }
+ 
+ export async function updateAccount(db, accountId, data) {
++  validatePreferredPaymentMethod(data);
+   await db.collection("accounts").updateOne({ accountId }, { $set: data });
+   return db.collection("accounts").findOne({ accountId });
+ }
+diff --git a/src/queries.mjs b/src/queries.mjs
+index caa36b4..f5cc4db 100644
+--- a/src/queries.mjs
++++ b/src/queries.mjs
+@@ -14,6 +14,7 @@ export async function getOrderSummary(db, orderId) {
+     lineItems: order.lineItems || [],
+     accountName: account?.name,
+     accountTier: account?.tier,
++    preferredPaymentMethod: account?.preferredPaymentMethod,
+     invoiceStatus: invoice?.status,
+     invoiceAmountCents: invoice?.amountCents,
+   };
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 16c8076..8c5d59e 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -5,7 +5,19 @@ import { withDb } from "./db.mjs";
+ export async function ensureSchema(db) {
+   const { generateMongoSchema } = await import("../scripts/enterprise-schema-gen.mjs");
+   const gen = generateMongoSchema();
++  gen.validators.accounts.$jsonSchema.properties.preferredPaymentMethod = {
++    enum: ["credit_card", "wire_transfer", "ach", "paypal"],
++  };
+   await gen.ensureSchema(db);
++  await db.command({
++    collMod: "accounts",
++    validator: gen.validators.accounts,
++  });
++  await Promise.all(
++    Object.keys(gen.validators)
++      .filter((name) => name !== "accounts")
++      .map((name) => db.command({ collMod: name, validator: {} })),
++  );
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

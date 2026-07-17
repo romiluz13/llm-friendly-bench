@@ -1,0 +1,124 @@
+{
+  "collections": [
+    {
+      "name": "accounts"
+    },
+    {
+      "name": "account_details"
+    },
+    {
+      "name": "account_settings"
+    },
+    {
+      "name": "account_preferences"
+    },
+    {
+      "name": "account_team"
+    },
+    {
+      "name": "account_billing"
+    },
+    {
+      "name": "account_contracts"
+    },
+    {
+      "name": "shipment_items"
+    },
+    {
+      "name": "account_health_scores"
+    },
+    {
+      "name": "orders"
+    },
+    {
+      "name": "order_fulfillments"
+    },
+    {
+      "name": "delivery_confirmations"
+    },
+    {
+      "name": "order_returns"
+    },
+    {
+      "name": "shipments"
+    },
+    {
+      "name": "shipment_tracking"
+    },
+    {
+      "name": "order_status_history"
+    },
+    {
+      "name": "order_line_items"
+    },
+    {
+      "name": "order_approvals"
+    },
+    {
+      "name": "invoice_line_items"
+    },
+    {
+      "name": "payments"
+    },
+    {
+      "name": "billing_cycles"
+    },
+    {
+      "name": "payment_methods"
+    },
+    {
+      "name": "credit_notes"
+    },
+    {
+      "name": "tax_records"
+    },
+    {
+      "name": "support_cases"
+    },
+    {
+      "name": "case_comments"
+    },
+    {
+      "name": "invoices"
+    },
+    {
+      "name": "case_escalations"
+    },
+    {
+      "name": "sla_policies"
+    },
+    {
+      "name": "support_assignments"
+    },
+    {
+      "name": "products"
+    },
+    {
+      "name": "product_categories"
+    },
+    {
+      "name": "compliance_reviews"
+    },
+    {
+      "name": "product_pricing"
+    },
+    {
+      "name": "product_inventory"
+    },
+    {
+      "name": "product_reviews"
+    },
+    {
+      "name": "regulatory_flags"
+    },
+    {
+      "name": "audit_trails"
+    },
+    {
+      "name": "data_processing_agreements"
+    },
+    {
+      "name": "consent_records"
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "build-bench-brownfield",
+  "executionMode": "live-db",
+  "dbNamespace": "buildbench_enterprise_mongo_claude-code_r4",
+  "taskType": "schema-evolution-enterprise",
+  "lane": "mongo",
+  "agentId": "claude-code",
+  "repeat": 4,
+  "model": "sonnet",
+  "agentVersion": "2.1.211 (Claude Code)",
+  "status": "passed",
+  "startedAt": "2026-07-16T23:40:09.440Z",
+  "finishedAt": "2026-07-16T23:44:32.579Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/claude-code/repeat-4/workspace",
+    "prompt": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/claude-code/repeat-4/prompt.md",
+    "rawTranscript": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/claude-code/repeat-4/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/claude-code/repeat-4/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/claude-code/repeat-4/diff.patch",
+    "tests": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/claude-code/repeat-4/tests.log",
+    "dbBefore": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/claude-code/repeat-4/db-before/seed.json",
+    "dbAfter": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/claude-code/repeat-4/db-after/final.json"
+  },
+  "metrics": {
+    "elapsedMs": 263139,
+    "transcriptBytes": 377268,
+    "tokens": {
+      "inputTokens": 48,
+      "outputTokens": 326,
+      "cachedInputTokens": 923261,
+      "totalTokens": 374,
+      "tokensRead": 923309,
+      "costUsd": 1.338585,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 374,
+    "diffBytes": 1314,
+    "filesChanged": 2,
+    "changedFiles": [
+      "scripts/enterprise-schema-gen.mjs",
+      "src/queries.mjs"
+    ],
+    "cheatSignals": [],
+    "liveDbWritten": true,
+    "fieldExists": true,
+    "retrySignals": 102,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0,
+    "timedOut": false
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/claude-code/repeat-4/prompt.md",
+      "sha256": "15f2243f466c4c90b78af5bb4a5c72adc77d8738897b652484b5482b73a475aa"
+    },
+    {
+      "path": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/claude-code/repeat-4/raw-transcript/claude-code.jsonl",
+      "sha256": "75299d48510bacdaa6ac724fe11b6218c475ac5bd9489e487615c7b6c6eeac83"
+    },
+    {
+      "path": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/claude-code/repeat-4/diff.patch",
+      "sha256": "94d1de754870849f187b24579e427ff698a897fb58203f5f71be632fb28714fe"
+    },
+    {
+      "path": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/claude-code/repeat-4/tests.log",
+      "sha256": "9e643479aa6212f049e998c629972bcfae452b71153532018c575a7aa830148a"
+    },
+    {
+      "path": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/claude-code/repeat-4/db-before/seed.json",
+      "sha256": "35e0a4001fceea33a02fbb598a97f9550d7a83d19601ad9735f99af8c2a67c8a"
+    },
+    {
+      "path": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/claude-code/repeat-4/db-after/final.json",
+      "sha256": "60300922973c07e59f4ff8e672f82273c282cb182ba6b15e275aa7b930d86cb0"
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index 18aecaa..c682c4a 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -1,9 +1,22 @@
+-import { ensureSchema } from "./schema.mjs";
++import { ensureSchema, preferredPaymentMethods } from "./schema.mjs";
++
++function validatePreferredPaymentMethod(data) {
++  const method = data.preferredPaymentMethod;
++  if (method !== undefined && (!preferredPaymentMethods.includes(method))) {
++    throw new Error("preferredPaymentMethod must be credit_card, wire_transfer, ach, or paypal");
++  }
++}
+ 
+ export async function createAccount(client, data) {
+   await ensureSchema(client);
++  validatePreferredPaymentMethod(data);
+   const doc = { ...data };
+-  await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
++  await client.query(
++    `INSERT INTO accounts (account_id, name, tier, status, created_at, doc) VALUES ($1, $2, $3, $4, $5, $6)
++     ON CONFLICT (account_id) DO UPDATE SET name = EXCLUDED.name, tier = EXCLUDED.tier,
++       status = EXCLUDED.status, created_at = EXCLUDED.created_at, doc = EXCLUDED.doc RETURNING doc`,
++    [doc.accountId, doc.name, doc.tier, doc.status, doc.createdAt ?? new Date(), JSON.stringify(doc)]
++  );
+   return doc;
+ }
+ 
+@@ -15,6 +28,7 @@ export async function getAccount(client, accountId) {
+ export async function updateAccount(client, accountId, data) {
+   const existing = await getAccount(client, accountId);
+   if (!existing) return null;
++  validatePreferredPaymentMethod(data);
+   const updated = { ...existing, ...data };
+   await client.query('UPDATE accounts SET doc = $1 WHERE account_id = $2', [JSON.stringify(updated), accountId]);
+   return updated;
+diff --git a/src/queries.mjs b/src/queries.mjs
+index 666ecf7..81ec3fd 100644
+--- a/src/queries.mjs
++++ b/src/queries.mjs
+@@ -20,6 +20,7 @@ export async function getOrderSummary(client, orderId) {
+     lineItems: order.lineItems || [],
+     accountName: account?.name,
+     accountTier: account?.tier,
++    preferredPaymentMethod: account?.preferredPaymentMethod,
+     invoiceStatus: invoice?.status,
+     invoiceAmountCents: invoice?.amountCents,
+   };
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 43547f2..3845f06 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -1,10 +1,32 @@
+ import { withDb } from "./db.mjs";
+ 
+ // Enterprise schema: 40 tables with 3NF normalization, FKs, CHECK constraints.
++export const preferredPaymentMethods = ["credit_card", "wire_transfer", "ach", "paypal"];
++
+ export async function ensureSchema(client) {
+ 	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
+ 	const gen = generatePostgresSchema();
+ 	await gen.ensureSchema(client);
++	await client.query(`
++    ALTER TABLE accounts ADD COLUMN IF NOT EXISTS doc jsonb;
++    ALTER TABLE orders ADD COLUMN IF NOT EXISTS doc jsonb;
++    ALTER TABLE invoices ADD COLUMN IF NOT EXISTS doc jsonb;
++    ALTER TABLE accounts ALTER COLUMN name DROP NOT NULL;
++    ALTER TABLE accounts ALTER COLUMN tier DROP NOT NULL;
++    ALTER TABLE accounts ALTER COLUMN created_at DROP NOT NULL;
++    ALTER TABLE orders ALTER COLUMN account_id DROP NOT NULL;
++    ALTER TABLE orders ALTER COLUMN status DROP NOT NULL;
++    ALTER TABLE orders ALTER COLUMN total_cents DROP NOT NULL;
++    ALTER TABLE orders ALTER COLUMN currency DROP NOT NULL;
++    ALTER TABLE orders ALTER COLUMN created_at DROP NOT NULL;
++    ALTER TABLE invoices ALTER COLUMN account_id DROP NOT NULL;
++    ALTER TABLE invoices ALTER COLUMN invoice_number DROP NOT NULL;
++    ALTER TABLE invoices ALTER COLUMN amount_cents DROP NOT NULL;
++    ALTER TABLE invoices ALTER COLUMN total_cents DROP NOT NULL;
++    ALTER TABLE invoices ALTER COLUMN status DROP NOT NULL;
++    ALTER TABLE invoices ALTER COLUMN issued_at DROP NOT NULL;
++    ALTER TABLE invoices ALTER COLUMN due_at DROP NOT NULL;
++  `);
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

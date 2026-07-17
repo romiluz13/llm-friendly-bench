@@ -1,0 +1,4 @@
+Reading additional input from stdin...
+2026-07-16T23:38:11.923924Z ERROR codex_models_manager::manager: failed to refresh available models: timeout waiting for child process to exit
+2026-07-16T23:38:12.016775Z ERROR codex_models_manager::manager: failed to refresh available models: timeout waiting for child process to exit
+2026-07-16T23:38:41.580157Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[server]: Failed to connect to MongoDB instance using the connection string from the config: connect ENETUNREACH 65.63.93.232:27017")

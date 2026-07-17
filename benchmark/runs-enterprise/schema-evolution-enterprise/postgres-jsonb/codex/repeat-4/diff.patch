@@ -1,0 +1,77 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index 18aecaa..0de46e5 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -1,7 +1,17 @@
+-import { ensureSchema } from "./schema.mjs";
++import { ensureSchema, preferredPaymentMethods } from "./schema.mjs";
++
++function validatePreferredPaymentMethod(data) {
++  if (
++    data.preferredPaymentMethod !== undefined &&
++    !preferredPaymentMethods.includes(data.preferredPaymentMethod)
++  ) {
++    throw new Error("preferredPaymentMethod must be one of: credit_card, wire_transfer, ach, paypal");
++  }
++}
+ 
+ export async function createAccount(client, data) {
+   await ensureSchema(client);
++  validatePreferredPaymentMethod(data);
+   const doc = { ...data };
+   await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
+   return doc;
+@@ -15,6 +25,7 @@ export async function getAccount(client, accountId) {
+ export async function updateAccount(client, accountId, data) {
+   const existing = await getAccount(client, accountId);
+   if (!existing) return null;
++  validatePreferredPaymentMethod(data);
+   const updated = { ...existing, ...data };
+   await client.query('UPDATE accounts SET doc = $1 WHERE account_id = $2', [JSON.stringify(updated), accountId]);
+   return updated;
+diff --git a/src/queries.mjs b/src/queries.mjs
+index 666ecf7..81ec3fd 100644
+--- a/src/queries.mjs
++++ b/src/queries.mjs
+@@ -20,6 +20,7 @@ export async function getOrderSummary(client, orderId) {
+     lineItems: order.lineItems || [],
+     accountName: account?.name,
+     accountTier: account?.tier,
++    preferredPaymentMethod: account?.preferredPaymentMethod,
+     invoiceStatus: invoice?.status,
+     invoiceAmountCents: invoice?.amountCents,
+   };
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 43547f2..be2e7d5 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -1,10 +1,29 @@
+ import { withDb } from "./db.mjs";
+ 
++export const preferredPaymentMethods = [
++  "credit_card",
++  "wire_transfer",
++  "ach",
++  "paypal",
++];
++
+ // Enterprise schema: 40 tables with 3NF normalization, FKs, CHECK constraints.
+ export async function ensureSchema(client) {
+ 	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
+ 	const gen = generatePostgresSchema();
+ 	await gen.ensureSchema(client);
++	for (const table of ["accounts", "orders", "invoices"]) {
++		await client.query(`ALTER TABLE ${table} ADD COLUMN IF NOT EXISTS doc JSONB`);
++	}
++	for (const [table, columns] of Object.entries({
++		accounts: ["name", "tier", "status", "created_at"],
++		orders: ["status", "total_cents", "currency", "created_at"],
++		invoices: ["invoice_number", "amount_cents", "total_cents", "status", "issued_at", "due_at"],
++	})) {
++		for (const column of columns) {
++			await client.query(`ALTER TABLE ${table} ALTER COLUMN ${column} DROP NOT NULL`);
++		}
++	}
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

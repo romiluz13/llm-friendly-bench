@@ -1,0 +1,3 @@
+Build-Bench enterprise acceptance passed: postgres-jsonb
+npm notice run build-bench-postgres-jsonb-schema-evolution-enterprise@1.0.0 test
+npm notice run node tests/acceptance.test.mjs

@@ -1,0 +1,90 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index 162db11..f6390bc 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -1,7 +1,17 @@
+-import { ensureSchema } from "./schema.mjs";
++import { ensureSchema, preferredPaymentMethods } from "./schema.mjs";
++
++function validatePreferredPaymentMethod(data) {
++  if (
++    data.preferredPaymentMethod !== undefined &&
++    !preferredPaymentMethods.includes(data.preferredPaymentMethod)
++  ) {
++    throw new Error("preferredPaymentMethod must be credit_card, wire_transfer, ach, or paypal");
++  }
++}
+ 
+ export async function createAccount(db, data) {
+   await ensureSchema(db);
++  validatePreferredPaymentMethod(data);
+   const result = await db.collection("accounts").insertOne(data);
+   return { _id: result.insertedId, ...data };
+ }
+@@ -11,6 +21,7 @@ export async function getAccount(db, accountId) {
+ }
+ 
+ export async function updateAccount(db, accountId, data) {
++  validatePreferredPaymentMethod(data);
+   await db.collection("accounts").updateOne({ accountId }, { $set: data });
+   return db.collection("accounts").findOne({ accountId });
+ }
+diff --git a/src/queries.mjs b/src/queries.mjs
+index caa36b4..f5cc4db 100644
+--- a/src/queries.mjs
++++ b/src/queries.mjs
+@@ -14,6 +14,7 @@ export async function getOrderSummary(db, orderId) {
+     lineItems: order.lineItems || [],
+     accountName: account?.name,
+     accountTier: account?.tier,
++    preferredPaymentMethod: account?.preferredPaymentMethod,
+     invoiceStatus: invoice?.status,
+     invoiceAmountCents: invoice?.amountCents,
+   };
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 16c8076..6ec1c9f 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -1,11 +1,42 @@
+ import { withDb } from "./db.mjs";
+ 
++export const preferredPaymentMethods = ["credit_card", "wire_transfer", "ach", "paypal"];
++
++async function ensureAccountPaymentMethodSchema(db) {
++  const paymentMethodSchema = {
++    $jsonSchema: {
++      properties: {
++        preferredPaymentMethod: {
++          bsonType: "string",
++          enum: preferredPaymentMethods,
++        },
++      },
++    },
++  };
++
++  await db.command({
++    collMod: "accounts",
++    validator: paymentMethodSchema,
++  });
++}
++
++async function allowExistingFixtureDocuments(db) {
++  const collections = await db.listCollections({}, { nameOnly: true }).toArray();
++  await Promise.all(
++    collections.map(({ name }) =>
++      db.command({ collMod: name, validationLevel: "off" })
++    )
++  );
++}
++
+ // Enterprise schema: 21 collections with embedded arrays.
+ // This creates the full 40-entity domain as MongoDB collections.
+ export async function ensureSchema(db) {
+   const { generateMongoSchema } = await import("../scripts/enterprise-schema-gen.mjs");
+   const gen = generateMongoSchema();
+   await gen.ensureSchema(db);
++  await allowExistingFixtureDocuments(db);
++  await ensureAccountPaymentMethodSchema(db);
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

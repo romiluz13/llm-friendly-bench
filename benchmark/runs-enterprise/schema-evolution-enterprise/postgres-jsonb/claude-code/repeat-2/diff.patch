@@ -1,0 +1,49 @@
+diff --git a/src/queries.mjs b/src/queries.mjs
+index 666ecf7..81ec3fd 100644
+--- a/src/queries.mjs
++++ b/src/queries.mjs
+@@ -20,6 +20,7 @@ export async function getOrderSummary(client, orderId) {
+     lineItems: order.lineItems || [],
+     accountName: account?.name,
+     accountTier: account?.tier,
++    preferredPaymentMethod: account?.preferredPaymentMethod,
+     invoiceStatus: invoice?.status,
+     invoiceAmountCents: invoice?.amountCents,
+   };
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 43547f2..a97d9a8 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -1,10 +1,28 @@
+ import { withDb } from "./db.mjs";
+ 
+-// Enterprise schema: 40 tables with 3NF normalization, FKs, CHECK constraints.
++// JSONB schema: three tables storing documents as JSONB blobs.
+ export async function ensureSchema(client) {
+-	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
+-	const gen = generatePostgresSchema();
+-	await gen.ensureSchema(client);
++  await client.query(`
++    CREATE TABLE IF NOT EXISTS accounts (
++      account_id TEXT PRIMARY KEY,
++      doc JSONB NOT NULL
++    )
++  `);
++  await client.query(`
++    CREATE TABLE IF NOT EXISTS orders (
++      order_id TEXT PRIMARY KEY,
++      account_id TEXT NOT NULL,
++      doc JSONB NOT NULL
++    )
++  `);
++  await client.query(`
++    CREATE TABLE IF NOT EXISTS invoices (
++      invoice_id TEXT PRIMARY KEY,
++      account_id TEXT NOT NULL,
++      order_id TEXT,
++      doc JSONB NOT NULL
++    )
++  `);
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

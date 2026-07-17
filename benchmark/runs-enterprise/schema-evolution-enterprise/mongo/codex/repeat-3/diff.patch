@@ -1,0 +1,52 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index 162db11..c3191ae 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -11,6 +11,7 @@ export async function getAccount(db, accountId) {
+ }
+ 
+ export async function updateAccount(db, accountId, data) {
++  await ensureSchema(db);
+   await db.collection("accounts").updateOne({ accountId }, { $set: data });
+   return db.collection("accounts").findOne({ accountId });
+ }
+diff --git a/src/queries.mjs b/src/queries.mjs
+index caa36b4..f5cc4db 100644
+--- a/src/queries.mjs
++++ b/src/queries.mjs
+@@ -14,6 +14,7 @@ export async function getOrderSummary(db, orderId) {
+     lineItems: order.lineItems || [],
+     accountName: account?.name,
+     accountTier: account?.tier,
++    preferredPaymentMethod: account?.preferredPaymentMethod,
+     invoiceStatus: invoice?.status,
+     invoiceAmountCents: invoice?.amountCents,
+   };
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 16c8076..ff5c304 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -6,6 +6,23 @@ export async function ensureSchema(db) {
+   const { generateMongoSchema } = await import("../scripts/enterprise-schema-gen.mjs");
+   const gen = generateMongoSchema();
+   await gen.ensureSchema(db);
++  for (const collectionName of gen.collectionNames) {
++    await db.command({ collMod: collectionName, validator: {} });
++  }
++  const accountsValidator = {
++    $jsonSchema: {
++      bsonType: "object",
++      properties: {
++        preferredPaymentMethod: {
++          enum: ["credit_card", "wire_transfer", "ach", "paypal"],
++        },
++      },
++    },
++  };
++  await db.command({
++    collMod: "accounts",
++    validator: accountsValidator,
++  });
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {

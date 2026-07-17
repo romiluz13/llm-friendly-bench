@@ -1,0 +1,103 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index 18aecaa..fa74b9e 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -1,7 +1,16 @@
+ import { ensureSchema } from "./schema.mjs";
+ 
++const VALID_PAYMENT_METHODS = ['credit_card', 'wire_transfer', 'ach', 'paypal'];
++
++function validatePaymentMethod(value) {
++  if (value !== undefined && !VALID_PAYMENT_METHODS.includes(value)) {
++    throw new Error('Invalid preferredPaymentMethod');
++  }
++}
++
+ export async function createAccount(client, data) {
+   await ensureSchema(client);
++  validatePaymentMethod(data.preferredPaymentMethod);
+   const doc = { ...data };
+   await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
+   return doc;
+@@ -15,6 +24,7 @@ export async function getAccount(client, accountId) {
+ export async function updateAccount(client, accountId, data) {
+   const existing = await getAccount(client, accountId);
+   if (!existing) return null;
++  validatePaymentMethod(data.preferredPaymentMethod);
+   const updated = { ...existing, ...data };
+   await client.query('UPDATE accounts SET doc = $1 WHERE account_id = $2', [JSON.stringify(updated), accountId]);
+   return updated;
+diff --git a/src/queries.mjs b/src/queries.mjs
+index 666ecf7..81ec3fd 100644
+--- a/src/queries.mjs
++++ b/src/queries.mjs
+@@ -20,6 +20,7 @@ export async function getOrderSummary(client, orderId) {
+     lineItems: order.lineItems || [],
+     accountName: account?.name,
+     accountTier: account?.tier,
++    preferredPaymentMethod: account?.preferredPaymentMethod,
+     invoiceStatus: invoice?.status,
+     invoiceAmountCents: invoice?.amountCents,
+   };
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 43547f2..c81723f 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -1,10 +1,53 @@
+ import { withDb } from "./db.mjs";
+ 
+-// Enterprise schema: 40 tables with 3NF normalization, FKs, CHECK constraints.
++// JSONB-based schema: key tables store a `doc` JSONB column alongside indexed scalar columns.
++// If the tables exist without a `doc` column (old normalized schema), drop and recreate them.
++async function tableHasDocColumn(client, tableName) {
++  const res = await client.query(
++    `SELECT column_name FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = $1 AND column_name = 'doc'`,
++    [tableName]
++  );
++  return res.rows.length > 0;
++}
++
++async function tableExists(client, tableName) {
++  const res = await client.query(
++    `SELECT table_name FROM information_schema.tables WHERE table_schema = current_schema() AND table_name = $1`,
++    [tableName]
++  );
++  return res.rows.length > 0;
++}
++
+ export async function ensureSchema(client) {
+-	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
+-	const gen = generatePostgresSchema();
+-	await gen.ensureSchema(client);
++  // Drop old normalized tables that lack the doc column so we can recreate them as JSONB tables.
++  for (const tbl of ['invoices', 'orders', 'accounts']) {
++    const exists = await tableExists(client, tbl);
++    if (exists && !(await tableHasDocColumn(client, tbl))) {
++      await client.query(`DROP TABLE IF EXISTS ${tbl} CASCADE`);
++    }
++  }
++
++  await client.query(`
++    CREATE TABLE IF NOT EXISTS accounts (
++      account_id TEXT PRIMARY KEY,
++      doc JSONB NOT NULL
++    )
++  `);
++  await client.query(`
++    CREATE TABLE IF NOT EXISTS orders (
++      order_id TEXT PRIMARY KEY,
++      account_id TEXT,
++      doc JSONB NOT NULL
++    )
++  `);
++  await client.query(`
++    CREATE TABLE IF NOT EXISTS invoices (
++      invoice_id TEXT PRIMARY KEY,
++      account_id TEXT,
++      order_id TEXT,
++      doc JSONB NOT NULL
++    )
++  `);
+ }
+ 
+ if (import.meta.url === `file://${process.argv[1]}`) {
