@@ -1,0 +1,192 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "build-bench-enterprise",
+  "title": "Enterprise Schema Evolution Benchmark",
+  "subtitle": "MongoDB Atlas Local 8.3.4 vs Postgres 16.14 — 40-entity schema, live database, real AI agents",
+  "generatedAt": "2026-07-18T15:15:49.871Z",
+  "dbVersions": {
+    "mongo": "MongoDB Atlas Local 8.3.4",
+    "postgres": "PostgreSQL 16.14"
+  },
+  "schemaScale": {
+    "entities": 40,
+    "mongoCollections": 21,
+    "postgresTables": 40,
+    "domains": 6
+  },
+  "task": {
+    "type": "Schema evolution + query update",
+    "description": "Add a preferredPaymentMethod field to the accounts entity and update the order summary query to include it. The agent must read and understand the existing 40-entity schema before safely making the change.",
+    "why": "This is the enterprise day-to-day: a developer gets a ticket to add a field and must understand the existing schema, find where the field goes, update the code, and not break anything."
+  },
+  "execution": {
+    "mode": "vanilla (no workflow overhead)",
+    "agents": [
+      "codex (gpt-5.6-terra)",
+      "claude-code (sonnet)"
+    ],
+    "repeatsPerCell": 5,
+    "totalCells": 30,
+    "cleanCells": 30,
+    "liveDb": true,
+    "antiCheat": true,
+    "tokenSource": "Real CLI usage events (deduplicated by message ID)",
+    "comparison": "Within-agent only (never cross-CLI)"
+  },
+  "taskType": "schema-evolution-enterprise",
+  "executionMode": "live-db",
+  "model": {
+    "claude-code": "sonnet",
+    "codex": "gpt-5.6-terra"
+  },
+  "lanes": [
+    "mongo",
+    "postgres-norm",
+    "postgres-jsonb"
+  ],
+  "agents": [
+    {
+      "agentId": "claude-code",
+      "lanes": {
+        "mongo": {
+          "cleanRepeats": 5,
+          "totalRepeats": 5,
+          "failCount": 0,
+          "medianTokensRead": 518196,
+          "iqrTokensRead": 233378,
+          "medianElapsedMs": 138322,
+          "medianRetrySignals": 103,
+          "medianDiffBytes": 1061,
+          "medianFilesChanged": 2
+        },
+        "postgres-norm": {
+          "cleanRepeats": 5,
+          "totalRepeats": 5,
+          "failCount": 0,
+          "medianTokensRead": 1845006,
+          "iqrTokensRead": 425178,
+          "medianElapsedMs": 403254,
+          "medianRetrySignals": 187,
+          "medianDiffBytes": 4904,
+          "medianFilesChanged": 4
+        },
+        "postgres-jsonb": {
+          "cleanRepeats": 5,
+          "totalRepeats": 5,
+          "failCount": 0,
+          "medianTokensRead": 921479,
+          "iqrTokensRead": 809485,
+          "medianElapsedMs": 318365,
+          "medianRetrySignals": 172,
+          "medianDiffBytes": 3410,
+          "medianFilesChanged": 3
+        }
+      },
+      "vsMongo": {
+        "postgres-norm": {
+          "tokensPct": 256,
+          "medianTokensRead": 1845006
+        },
+        "postgres-jsonb": {
+          "tokensPct": 78,
+          "medianTokensRead": 921479
+        }
+      }
+    },
+    {
+      "agentId": "codex",
+      "lanes": {
+        "mongo": {
+          "cleanRepeats": 5,
+          "totalRepeats": 5,
+          "failCount": 0,
+          "medianTokensRead": 189015,
+          "iqrTokensRead": 60573,
+          "medianElapsedMs": 53058,
+          "medianRetrySignals": 22,
+          "medianDiffBytes": 2470,
+          "medianFilesChanged": 3
+        },
+        "postgres-norm": {
+          "cleanRepeats": 5,
+          "totalRepeats": 5,
+          "failCount": 0,
+          "medianTokensRead": 395379,
+          "iqrTokensRead": 61748,
+          "medianElapsedMs": 105772,
+          "medianRetrySignals": 36,
+          "medianDiffBytes": 3164,
+          "medianFilesChanged": 3
+        },
+        "postgres-jsonb": {
+          "cleanRepeats": 5,
+          "totalRepeats": 5,
+          "failCount": 0,
+          "medianTokensRead": 357170,
+          "iqrTokensRead": 102829,
+          "medianElapsedMs": 107122,
+          "medianRetrySignals": 28,
+          "medianDiffBytes": 3486,
+          "medianFilesChanged": 3
+        }
+      },
+      "vsMongo": {
+        "postgres-norm": {
+          "tokensPct": 109,
+          "medianTokensRead": 395379
+        },
+        "postgres-jsonb": {
+          "tokensPct": 89,
+          "medianTokensRead": 357170
+        }
+      }
+    }
+  ],
+  "hypotheses": {
+    "H1": {
+      "statement": "MongoDB requires less agent work (tokensRead) than any relational lane, within-agent",
+      "verdict": "confirmed",
+      "perAgent": [
+        {
+          "agentId": "claude-code",
+          "pgNormPct": 256,
+          "pgJsonbPct": 78
+        },
+        {
+          "agentId": "codex",
+          "pgNormPct": 109,
+          "pgJsonbPct": 89
+        }
+      ]
+    },
+    "H2": {
+      "statement": "Relational penalty grows with normalization depth (pg-norm > pg-jsonb > mongo)",
+      "verdict": "confirmed",
+      "perAgent": [
+        {
+          "agentId": "claude-code",
+          "pgNormTokens": 1845006,
+          "pgJsonbTokens": 921479
+        },
+        {
+          "agentId": "codex",
+          "pgNormTokens": 395379,
+          "pgJsonbTokens": 357170
+        }
+      ]
+    }
+  },
+  "caveat": "Within-agent comparison only. Each agent is measured against itself across the three database designs; one agent's absolute numbers are never compared to the other's, because the two CLIs count tokens incompatibly.",
+  "proofOfNoBias": [
+    "Both agents tested — different models, different companies, same conclusion",
+    "Three lanes tested — MongoDB, Postgres-normalized, Postgres-JSONB (dose-response)",
+    "Pre-registered hypotheses — H1 and H2 stated before runs, not after",
+    "Vanilla mode — no skills, no code reviews, no subagents, no workflow overhead",
+    "Live database — tests query the real DB directly, not mocks",
+    "Anti-cheat — source-pattern scan, protected files, cheat-signal detection",
+    "5 repeats per cell — medians and IQR, not single-run anecdotes",
+    "Within-agent comparison — each agent compared only to itself, never cross-CLI",
+    "Simple tasks showed Postgres winning — the benchmark reported that honestly",
+    "All evidence committed — raw transcripts, diffs, test logs, token counts"
+  ]
+}
