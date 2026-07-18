@@ -4,7 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>
-      MongoDB vs Postgres — Which Database Is More AI-Friendly? | Enterprise Benchmark
+      MongoDB vs Postgres — Which Database Is More AI-Friendly? | Enterprise
+      Benchmark
     </title>
     <meta
       name="description"
@@ -25,10 +26,24 @@
         --red: #c0392b;
         --green: #00684a;
       }
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      html { scroll-behavior: smooth; }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
       body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
         color: var(--ink);
         background: #fff;
         line-height: 1.6;
@@ -37,21 +52,57 @@
 
       /* ===== NAV ===== */
       nav {
-        position: sticky; top: 0; z-index: 100;
-        background: rgba(255,255,255,0.95);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(12px);
         border-bottom: 1px solid var(--line);
         padding: 14px 0;
       }
-      nav .wrap { display: flex; justify-content: space-between; align-items: center; }
-      nav .logo { font-weight: 800; font-size: 16px; color: var(--dark); display: flex; align-items: center; gap: 8px; }
-      nav .logo::before { content: '◆'; color: var(--mg); font-size: 20px; }
-      nav .links { display: flex; gap: 28px; font-size: 14px; }
-      nav .links a { color: var(--muted); text-decoration: none; font-weight: 600; transition: color 0.2s; }
-      nav .links a:hover { color: var(--dark); }
-      @media (max-width: 768px) { nav .links { display: none; } }
+      nav .wrap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      nav .logo {
+        font-weight: 800;
+        font-size: 16px;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      nav .logo::before {
+        content: "◆";
+        color: var(--mg);
+        font-size: 20px;
+      }
+      nav .links {
+        display: flex;
+        gap: 28px;
+        font-size: 14px;
+      }
+      nav .links a {
+        color: var(--muted);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+      }
+      nav .links a:hover {
+        color: var(--dark);
+      }
+      @media (max-width: 768px) {
+        nav .links {
+          display: none;
+        }
+      }
 
-      .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+      .wrap {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
 
       /* ===== HERO ===== */
       .hero {
@@ -62,272 +113,644 @@
         overflow: hidden;
       }
       .hero::before {
-        content: '';
+        content: "";
         position: absolute;
-        top: -50%; right: -20%;
-        width: 600px; height: 600px;
-        background: radial-gradient(circle, rgba(0,237,100,0.15) 0%, transparent 70%);
+        top: -50%;
+        right: -20%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(0, 237, 100, 0.15) 0%,
+          transparent 70%
+        );
         border-radius: 50%;
       }
-      .hero .wrap { position: relative; z-index: 1; }
+      .hero .wrap {
+        position: relative;
+        z-index: 1;
+      }
       .hero-badge {
-        display: inline-flex; align-items: center; gap: 8px;
-        background: rgba(0,237,100,0.15);
-        border: 1px solid rgba(0,237,100,0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(0, 237, 100, 0.15);
+        border: 1px solid rgba(0, 237, 100, 0.3);
         color: var(--mg);
-        font-size: 12px; font-weight: 700;
-        padding: 6px 14px; border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 999px;
         margin-bottom: 24px;
-        text-transform: uppercase; letter-spacing: 0.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
       .hero h1 {
-        font-size: 56px; line-height: 1.08; font-weight: 900;
-        margin-bottom: 20px; max-width: 900px;
+        font-size: 56px;
+        line-height: 1.08;
+        font-weight: 900;
+        margin-bottom: 20px;
+        max-width: 900px;
         letter-spacing: -0.02em;
       }
-      .hero h1 .hl { color: var(--mg); }
-      .hero h1 .strike { text-decoration: line-through; text-decoration-color: var(--red); opacity: 0.7; }
+      .hero h1 .hl {
+        color: var(--mg);
+      }
+      .hero h1 .strike {
+        text-decoration: line-through;
+        text-decoration-color: var(--red);
+        opacity: 0.7;
+      }
       .hero .sub {
-        font-size: 20px; color: #a0aec0; max-width: 720px;
-        margin-bottom: 36px; line-height: 1.5;
+        font-size: 20px;
+        color: #a0aec0;
+        max-width: 720px;
+        margin-bottom: 36px;
+        line-height: 1.5;
       }
       .hero-stats {
-        display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
-        margin-top: 48px; padding-top: 36px;
-        border-top: 1px solid rgba(255,255,255,0.1);
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        margin-top: 48px;
+        padding-top: 36px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
       }
-      @media (max-width: 768px) { .hero h1 { font-size: 36px; } .hero-stats { grid-template-columns: repeat(2, 1fr); } }
-      .hstat .num { font-size: 32px; font-weight: 900; color: var(--mg); }
-      .hstat .lbl { font-size: 12px; color: #8a949c; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 36px;
+        }
+        .hero-stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      .hstat .num {
+        font-size: 32px;
+        font-weight: 900;
+        color: var(--mg);
+      }
+      .hstat .lbl {
+        font-size: 12px;
+        color: #8a949c;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 4px;
+      }
 
       /* ===== SECTION BASE ===== */
-      section { padding: 72px 0; border-top: 1px solid var(--line); }
-      .sec-kicker {
-        color: var(--mg-dark); font-weight: 700; text-transform: uppercase;
-        font-size: 12px; letter-spacing: 0.8px; margin-bottom: 8px;
+      section {
+        padding: 72px 0;
+        border-top: 1px solid var(--line);
       }
-      .sec-title { font-size: 36px; font-weight: 900; letter-spacing: -0.02em; margin-bottom: 12px; }
-      .sec-sub { font-size: 17px; color: var(--muted); max-width: 740px; margin-bottom: 40px; }
-      @media (max-width: 768px) { .sec-title { font-size: 26px; } }
+      .sec-kicker {
+        color: var(--mg-dark);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 0.8px;
+        margin-bottom: 8px;
+      }
+      .sec-title {
+        font-size: 36px;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        margin-bottom: 12px;
+      }
+      .sec-sub {
+        font-size: 17px;
+        color: var(--muted);
+        max-width: 740px;
+        margin-bottom: 40px;
+      }
+      @media (max-width: 768px) {
+        .sec-title {
+          font-size: 26px;
+        }
+      }
 
       /* ===== RESULT TABLE ===== */
       .result-hero {
         background: linear-gradient(135deg, #f0fdf4 0%, #fff 100%);
         border: 1px solid #bbf7d0;
-        border-radius: 20px; padding: 40px;
+        border-radius: 20px;
+        padding: 40px;
         margin-bottom: 32px;
       }
       .result-headline {
-        text-align: center; margin-bottom: 32px;
+        text-align: center;
+        margin-bottom: 32px;
       }
       .result-headline .verdict {
-        display: inline-flex; align-items: center; gap: 10px;
-        background: var(--mg); color: var(--dark);
-        font-size: 13px; font-weight: 900; padding: 8px 18px;
-        border-radius: 999px; text-transform: uppercase; letter-spacing: 0.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--mg);
+        color: var(--dark);
+        font-size: 13px;
+        font-weight: 900;
+        padding: 8px 18px;
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
         margin-bottom: 16px;
       }
-      .result-headline h3 { font-size: 28px; font-weight: 900; color: var(--dark); }
-      .result-headline p { color: var(--muted); font-size: 15px; margin-top: 8px; }
+      .result-headline h3 {
+        font-size: 28px;
+        font-weight: 900;
+        color: var(--dark);
+      }
+      .result-headline p {
+        color: var(--muted);
+        font-size: 15px;
+        margin-top: 8px;
+      }
 
-      .agent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-      @media (max-width: 768px) { .agent-grid { grid-template-columns: 1fr; } }
+      .agent-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+      @media (max-width: 768px) {
+        .agent-grid {
+          grid-template-columns: 1fr;
+        }
+      }
       .agent-card {
-        background: #fff; border: 1px solid var(--line);
-        border-radius: 16px; padding: 28px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 28px;
       }
       .agent-card h4 {
-        font-size: 18px; font-weight: 800; margin-bottom: 4px;
-        display: flex; align-items: center; gap: 8px;
+        font-size: 18px;
+        font-weight: 800;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
-      .agent-card .model { font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 20px; }
-      .bar-row { margin-bottom: 16px; }
+      .agent-card .model {
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 600;
+        margin-bottom: 20px;
+      }
+      .bar-row {
+        margin-bottom: 16px;
+      }
       .bar-row .bar-label {
-        display: flex; justify-content: space-between; align-items: baseline;
-        font-size: 13px; font-weight: 600; margin-bottom: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 6px;
       }
-      .bar-row .bar-label .val { font-family: ui-monospace, 'SF Mono', monospace; font-weight: 700; }
-      .bar-row .bar-label .pct { font-size: 12px; color: var(--muted); }
+      .bar-row .bar-label .val {
+        font-family: ui-monospace, "SF Mono", monospace;
+        font-weight: 700;
+      }
+      .bar-row .bar-label .pct {
+        font-size: 12px;
+        color: var(--muted);
+      }
       .bar-track {
-        height: 28px; background: var(--bg); border-radius: 8px;
-        overflow: hidden; position: relative;
+        height: 28px;
+        background: var(--bg);
+        border-radius: 8px;
+        overflow: hidden;
+        position: relative;
       }
       .bar-fill {
-        height: 100%; border-radius: 8px;
+        height: 100%;
+        border-radius: 8px;
         transition: width 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
-        display: flex; align-items: center; padding-left: 10px;
-        font-size: 11px; font-weight: 700; color: #fff;
+        display: flex;
+        align-items: center;
+        padding-left: 10px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #fff;
       }
-      .bar-fill.mg { background: var(--mg-dark); }
-      .bar-fill.norm { background: var(--norm); }
-      .bar-fill.jsonb { background: var(--jsonb); }
-      @media (prefers-reduced-motion: reduce) { .bar-fill { transition: none; } }
+      .bar-fill.mg {
+        background: var(--mg-dark);
+      }
+      .bar-fill.norm {
+        background: var(--norm);
+      }
+      .bar-fill.jsonb {
+        background: var(--jsonb);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .bar-fill {
+          transition: none;
+        }
+      }
       .agent-card .winner-note {
-        margin-top: 16px; padding: 12px;
-        background: #f0fdf4; border-radius: 8px;
-        font-size: 13px; color: var(--green); font-weight: 600;
+        margin-top: 16px;
+        padding: 12px;
+        background: #f0fdf4;
+        border-radius: 8px;
+        font-size: 13px;
+        color: var(--green);
+        font-weight: 600;
       }
 
       /* ===== HYPOTHESES ===== */
-      .hyp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-      @media (max-width: 768px) { .hyp-grid { grid-template-columns: 1fr; } }
-      .hyp-card {
-        border: 1px solid var(--line); border-radius: 16px; padding: 28px;
+      .hyp-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
       }
-      .hyp-card .hyp-id { font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-      .hyp-card .hyp-stmt { font-size: 16px; font-weight: 700; margin: 8px 0 16px; color: var(--dark); }
+      @media (max-width: 768px) {
+        .hyp-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .hyp-card {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 28px;
+      }
+      .hyp-card .hyp-id {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .hyp-card .hyp-stmt {
+        font-size: 16px;
+        font-weight: 700;
+        margin: 8px 0 16px;
+        color: var(--dark);
+      }
       .hyp-card .hyp-verdict {
-        display: inline-flex; align-items: center; gap: 8px;
-        font-size: 14px; font-weight: 900; padding: 6px 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 900;
+        padding: 6px 14px;
         border-radius: 999px;
       }
-      .hyp-verdict.confirmed { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
-      .hyp-verdict.refuted { background: #fef2f2; color: var(--red); border: 1px solid #fecaca; }
-      .hyp-verdict.inconclusive { background: #fef9e7; color: #92400e; border: 1px solid #fde68a; }
-      .hyp-card .hyp-detail { margin-top: 16px; font-size: 13px; color: var(--muted); }
-      .hyp-card .hyp-detail b { color: var(--dark); }
+      .hyp-verdict.confirmed {
+        background: #f0fdf4;
+        color: var(--green);
+        border: 1px solid #bbf7d0;
+      }
+      .hyp-verdict.refuted {
+        background: #fef2f2;
+        color: var(--red);
+        border: 1px solid #fecaca;
+      }
+      .hyp-verdict.inconclusive {
+        background: #fef9e7;
+        color: #92400e;
+        border: 1px solid #fde68a;
+      }
+      .hyp-card .hyp-detail {
+        margin-top: 16px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .hyp-card .hyp-detail b {
+        color: var(--dark);
+      }
 
       /* ===== PROOF (NO BIAS) ===== */
-      .proof-section { background: var(--bg); }
-      .proof-grid {
-        display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+      .proof-section {
+        background: var(--bg);
       }
-      @media (max-width: 900px) { .proof-grid { grid-template-columns: repeat(2, 1fr); } }
-      @media (max-width: 600px) { .proof-grid { grid-template-columns: 1fr; } }
+      .proof-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+      @media (max-width: 900px) {
+        .proof-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 600px) {
+        .proof-grid {
+          grid-template-columns: 1fr;
+        }
+      }
       .proof-card {
-        background: #fff; border: 1px solid var(--line);
-        border-radius: 12px; padding: 20px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 20px;
       }
       .proof-card .icon {
-        width: 36px; height: 36px; border-radius: 10px;
-        background: #f0fdf4; color: var(--green);
-        display: flex; align-items: center; justify-content: center;
-        font-size: 18px; font-weight: 900; margin-bottom: 12px;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: #f0fdf4;
+        color: var(--green);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: 900;
+        margin-bottom: 12px;
       }
-      .proof-card h5 { font-size: 14px; font-weight: 800; margin-bottom: 6px; color: var(--dark); }
-      .proof-card p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+      .proof-card h5 {
+        font-size: 14px;
+        font-weight: 800;
+        margin-bottom: 6px;
+        color: var(--dark);
+      }
+      .proof-card p {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
 
       /* ===== HOW IT WORKS ===== */
-      .pipeline { display: flex; flex-direction: column; gap: 0; }
+      .pipeline {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
       .pipeline-step {
-        display: flex; gap: 24px; padding: 24px 0;
+        display: flex;
+        gap: 24px;
+        padding: 24px 0;
         border-bottom: 1px solid var(--line);
       }
-      .pipeline-step:last-child { border-bottom: 0; }
+      .pipeline-step:last-child {
+        border-bottom: 0;
+      }
       .pipeline-step .step-num {
         flex-shrink: 0;
-        width: 40px; height: 40px; border-radius: 12px;
-        background: var(--dark); color: var(--mg);
-        display: flex; align-items: center; justify-content: center;
-        font-size: 16px; font-weight: 900;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: var(--dark);
+        color: var(--mg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 900;
       }
-      .pipeline-step .step-content h5 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
-      .pipeline-step .step-content p { font-size: 14px; color: var(--muted); }
+      .pipeline-step .step-content h5 {
+        font-size: 16px;
+        font-weight: 800;
+        margin-bottom: 4px;
+      }
+      .pipeline-step .step-content p {
+        font-size: 14px;
+        color: var(--muted);
+      }
       .pipeline-step .step-content code {
-        font-family: ui-monospace, 'SF Mono', monospace;
-        font-size: 12px; background: var(--bg);
-        padding: 2px 6px; border-radius: 4px;
+        font-family: ui-monospace, "SF Mono", monospace;
+        font-size: 12px;
+        background: var(--bg);
+        padding: 2px 6px;
+        border-radius: 4px;
         color: var(--dark);
       }
 
       /* ===== COST PROJECTION ===== */
-      .cost-section { background: var(--dark); color: #fff; }
-      .cost-section .sec-kicker { color: var(--mg); }
-      .cost-section .sec-title { color: #fff; }
-      .cost-section .sec-sub { color: #a0aec0; }
-      .cost-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-      @media (max-width: 768px) { .cost-cards { grid-template-columns: 1fr; } }
+      .cost-section {
+        background: var(--dark);
+        color: #fff;
+      }
+      .cost-section .sec-kicker {
+        color: var(--mg);
+      }
+      .cost-section .sec-title {
+        color: #fff;
+      }
+      .cost-section .sec-sub {
+        color: #a0aec0;
+      }
+      .cost-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+      @media (max-width: 768px) {
+        .cost-cards {
+          grid-template-columns: 1fr;
+        }
+      }
       .cost-card {
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 16px; padding: 28px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 28px;
       }
-      .cost-card h5 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
-      .cost-card .cost-model { font-size: 12px; color: #8a949c; margin-bottom: 20px; }
+      .cost-card h5 {
+        font-size: 16px;
+        font-weight: 800;
+        margin-bottom: 4px;
+      }
+      .cost-card .cost-model {
+        font-size: 12px;
+        color: #8a949c;
+        margin-bottom: 20px;
+      }
       .cost-row {
-        display: flex; justify-content: space-between; align-items: baseline;
-        padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       }
-      .cost-row:last-child { border-bottom: 0; }
-      .cost-row .lbl { font-size: 14px; color: #a0aec0; }
-      .cost-row .val { font-size: 18px; font-weight: 800; font-family: ui-monospace, monospace; }
-      .cost-row .delta { font-size: 12px; color: var(--mg); margin-left: 8px; }
-      .cost-row .delta.bad { color: #fc8181; }
-      .cost-note { font-size: 12px; color: #8a949c; margin-top: 20px; }
+      .cost-row:last-child {
+        border-bottom: 0;
+      }
+      .cost-row .lbl {
+        font-size: 14px;
+        color: #a0aec0;
+      }
+      .cost-row .val {
+        font-size: 18px;
+        font-weight: 800;
+        font-family: ui-monospace, monospace;
+      }
+      .cost-row .delta {
+        font-size: 12px;
+        color: var(--mg);
+        margin-left: 8px;
+      }
+      .cost-row .delta.bad {
+        color: #fc8181;
+      }
+      .cost-note {
+        font-size: 12px;
+        color: #8a949c;
+        margin-top: 20px;
+      }
 
       /* ===== SCHEMA VIZ ===== */
-      .schema-viz { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-      @media (max-width: 768px) { .schema-viz { grid-template-columns: 1fr; } }
+      .schema-viz {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+      @media (max-width: 768px) {
+        .schema-viz {
+          grid-template-columns: 1fr;
+        }
+      }
       .schema-card {
-        border: 1px solid var(--line); border-radius: 16px; padding: 28px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 28px;
       }
       .schema-card h5 {
-        font-size: 16px; font-weight: 800; margin-bottom: 4px;
-        display: flex; align-items: center; gap: 8px;
+        font-size: 16px;
+        font-weight: 800;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
-      .schema-card .schema-sub { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+      .schema-card .schema-sub {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 20px;
+      }
       .schema-entities {
-        display: flex; flex-wrap: wrap; gap: 6px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
       }
       .schema-entity {
-        font-size: 11px; font-weight: 600;
-        padding: 4px 10px; border-radius: 6px;
-        background: var(--bg); color: var(--muted);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 6px;
+        background: var(--bg);
+        color: var(--muted);
         border: 1px solid var(--line);
       }
-      .schema-entity.embedded { background: #f0fdf4; color: var(--green); border-color: #bbf7d0; }
-      .schema-stat {
-        display: flex; justify-content: space-between;
-        padding: 10px 0; border-top: 1px solid var(--line);
-        font-size: 13px; margin-top: 16px;
+      .schema-entity.embedded {
+        background: #f0fdf4;
+        color: var(--green);
+        border-color: #bbf7d0;
       }
-      .schema-stat b { font-weight: 800; }
+      .schema-stat {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-top: 1px solid var(--line);
+        font-size: 13px;
+        margin-top: 16px;
+      }
+      .schema-stat b {
+        font-weight: 800;
+      }
 
       /* ===== TASK SECTION ===== */
-      .task-section { background: var(--bg); }
-      .task-card {
-        background: #fff; border: 1px solid var(--line);
-        border-radius: 16px; padding: 32px;
+      .task-section {
+        background: var(--bg);
       }
-      .task-card h5 { font-size: 18px; font-weight: 800; margin-bottom: 12px; }
-      .task-card .task-desc { font-size: 15px; color: #27323a; margin-bottom: 20px; }
-      .task-steps { list-style: none; counter-reset: step; }
+      .task-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 32px;
+      }
+      .task-card h5 {
+        font-size: 18px;
+        font-weight: 800;
+        margin-bottom: 12px;
+      }
+      .task-card .task-desc {
+        font-size: 15px;
+        color: #27323a;
+        margin-bottom: 20px;
+      }
+      .task-steps {
+        list-style: none;
+        counter-reset: step;
+      }
       .task-steps li {
         counter-increment: step;
         padding: 12px 0 12px 40px;
         position: relative;
-        font-size: 14px; color: #27323a;
+        font-size: 14px;
+        color: #27323a;
         border-bottom: 1px solid var(--line);
       }
-      .task-steps li:last-child { border-bottom: 0; }
+      .task-steps li:last-child {
+        border-bottom: 0;
+      }
       .task-steps li::before {
         content: counter(step);
-        position: absolute; left: 0; top: 12px;
-        width: 26px; height: 26px; border-radius: 50%;
-        background: var(--mg-dark); color: #fff;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 12px; font-weight: 800;
+        position: absolute;
+        left: 0;
+        top: 12px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--mg-dark);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 800;
       }
 
       /* ===== FOOTER ===== */
       footer {
-        padding: 48px 0; background: var(--dark); color: #8a949c;
+        padding: 48px 0;
+        background: var(--dark);
+        color: #8a949c;
         font-size: 13px;
       }
-      footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
-      footer a { color: var(--mg); text-decoration: none; font-weight: 600; }
-      footer a:hover { text-decoration: underline; }
+      footer .wrap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      footer a {
+        color: var(--mg);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      footer a:hover {
+        text-decoration: underline;
+      }
 
       /* ===== MISC ===== */
-      .hidden { display: none; }
-      .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+      .hidden {
+        display: none;
+      }
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
       .tag {
-        font-size: 11px; font-weight: 700; padding: 4px 10px;
-        border-radius: 6px; background: var(--bg); color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 6px;
+        background: var(--bg);
+        color: var(--muted);
         border: 1px solid var(--line);
       }
-      .tag.green { background: #f0fdf4; color: var(--green); border-color: #bbf7d0; }
-      .tag.blue { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+      .tag.green {
+        background: #f0fdf4;
+        color: var(--green);
+        border-color: #bbf7d0;
+      }
+      .tag.blue {
+        background: #eff6ff;
+        color: #1e40af;
+        border-color: #bfdbfe;
+      }
     </style>
   </head>
   <body>
@@ -349,22 +772,36 @@
     <!-- ===== HERO ===== -->
     <div class="hero">
       <div class="wrap">
-        <div class="hero-badge">● Live Database Benchmark · MongoDB 8.3.4 vs Postgres 16.14</div>
+        <div class="hero-badge">
+          ● Live Database Benchmark · MongoDB 8.3.4 vs Postgres 16.14
+        </div>
         <h1>
           MongoDB requires <span class="hl">78–256% fewer tokens</span><br />
           than Postgres for AI coding agents<br />
           on enterprise schemas.
         </h1>
         <p class="sub">
-          The world's most realistic benchmark for database AI-friendliness.
-          A 40-entity enterprise schema. Real CLI agents. Live databases.
-          Zero bias. Pre-registered hypotheses. Both agents agree.
+          The world's most realistic benchmark for database AI-friendliness. A
+          40-entity enterprise schema. Real CLI agents. Live databases. Zero
+          bias. Pre-registered hypotheses. Both agents agree.
         </p>
         <div class="hero-stats">
-          <div class="hstat"><div class="num">40</div><div class="lbl">Entities in schema</div></div>
-          <div class="hstat"><div class="num">30/30</div><div class="lbl">Cells passed clean</div></div>
-          <div class="hstat"><div class="num">2</div><div class="lbl">Independent AI agents</div></div>
-          <div class="hstat"><div class="num">100%</div><div class="lbl">Live DB verification</div></div>
+          <div class="hstat">
+            <div class="num">40</div>
+            <div class="lbl">Entities in schema</div>
+          </div>
+          <div class="hstat">
+            <div class="num">30/30</div>
+            <div class="lbl">Cells passed clean</div>
+          </div>
+          <div class="hstat">
+            <div class="num">2</div>
+            <div class="lbl">Independent AI agents</div>
+          </div>
+          <div class="hstat">
+            <div class="num">100%</div>
+            <div class="lbl">Live DB verification</div>
+          </div>
         </div>
       </div>
     </div>
@@ -375,17 +812,24 @@
         <div class="sec-kicker">The Result</div>
         <h2 class="sec-title">MongoDB wins. Both agents agree.</h2>
         <p class="sec-sub">
-          We asked two independent AI coding agents (Codex gpt-5.6-terra and Claude Sonnet)
-          to add a field to a 40-entity enterprise schema and update a query.
-          Each agent was compared only to itself — never cross-CLI. Both spent
-          significantly more tokens on Postgres than MongoDB.
+          We asked two independent AI coding agents (Codex gpt-5.6-terra and
+          Claude Sonnet) to add a field to a 40-entity enterprise schema and
+          update a query. Each agent was compared only to itself — never
+          cross-CLI. Both spent significantly more tokens on Postgres than
+          MongoDB.
         </p>
 
         <div class="result-hero">
           <div class="result-headline">
             <div class="verdict">✓ Both Hypotheses Confirmed</div>
-            <h3>MongoDB requires less agent work. The more normalized the schema, the more it costs.</h3>
-            <p>Median tokens read across 5 clean repeats per cell. Lower is better.</p>
+            <h3>
+              MongoDB requires less agent work. The more normalized the schema,
+              the more it costs.
+            </h3>
+            <p>
+              Median tokens read across 5 clean repeats per cell. Lower is
+              better.
+            </p>
           </div>
 
           <div class="agent-grid" id="agent-results"></div>
@@ -397,10 +841,12 @@
     <section id="hypotheses">
       <div class="wrap">
         <div class="sec-kicker">Pre-Registered</div>
-        <h2 class="sec-title">The hypotheses — stated before the runs, not after</h2>
+        <h2 class="sec-title">
+          The hypotheses — stated before the runs, not after
+        </h2>
         <p class="sec-sub">
-          These hypotheses were written into the benchmark spec before any enterprise
-          runs were executed. The results confirmed both.
+          These hypotheses were written into the benchmark spec before any
+          enterprise runs were executed. The results confirmed both.
         </p>
         <div class="hyp-grid" id="hyp-grid"></div>
       </div>
@@ -412,8 +858,9 @@
         <div class="sec-kicker">Zero Bias · 100% Legit</div>
         <h2 class="sec-title">How we proved it's not rigged</h2>
         <p class="sec-sub">
-          Every benchmark claims to be fair. This one proves it with 10 independent
-          defenses — any one of which would catch bias if it existed.
+          Every benchmark claims to be fair. This one proves it with 10
+          independent defenses — any one of which would catch bias if it
+          existed.
         </p>
         <div class="proof-grid" id="proof-grid"></div>
       </div>
@@ -425,9 +872,9 @@
         <div class="sec-kicker">The Pipeline</div>
         <h2 class="sec-title">How a benchmark cell runs — step by step</h2>
         <p class="sec-sub">
-          No mocks. No simulated agents. No estimated tokens. Every number comes from
-          a real AI agent writing real code against a real database. vanilla mode, anti-cheat,
-          within-agent comparison — zero bias.
+          No mocks. No simulated agents. No estimated tokens. Every number comes
+          from a real AI agent writing real code against a real database.
+          vanilla mode, anti-cheat, within-agent comparison — zero bias.
         </p>
         <div class="pipeline" id="pipeline"></div>
       </div>
@@ -439,17 +886,18 @@
         <div class="sec-kicker">The Money</div>
         <h2 class="sec-title">What this costs at enterprise scale</h2>
         <p class="sec-sub">
-          If your team runs 1,000 AI database-tasks per month, here's the monthly token
-          bill per database design — based on the measured medians. MongoDB saves
-          significant money on every agent.
+          If your team runs 1,000 AI database-tasks per month, here's the
+          monthly token bill per database design — based on the measured
+          medians. MongoDB saves significant money on every agent.
         </p>
         <div class="cost-cards" id="cost-cards"></div>
-          <p class="cost-note">
-          Assumptions: 1,000 tasks/month. Token cost estimated at $3/M input tokens (Claude) and
-          $2/M input tokens (Codex). within-agent comparison only — absolute costs are not
-          cross-comparable between agents because CLIs count tokens differently.
-          vanilla mode: no skills, no code reviews, no subagents. anti-cheat: source-pattern scan,
-          protected files, cheat-signal detection.
+        <p class="cost-note">
+          Assumptions: 1,000 tasks/month. Token cost estimated at $3/M input
+          tokens (Claude) and $2/M input tokens (Codex). within-agent comparison
+          only — absolute costs are not cross-comparable between agents because
+          CLIs count tokens differently. vanilla mode: no skills, no code
+          reviews, no subagents. anti-cheat: source-pattern scan, protected
+          files, cheat-signal detection.
         </p>
       </div>
     </section>
@@ -458,12 +906,14 @@
     <section id="schema">
       <div class="wrap">
         <div class="sec-kicker">The Schema</div>
-        <h2 class="sec-title">A real enterprise schema — 40 entities, 6 domains</h2>
+        <h2 class="sec-title">
+          A real enterprise schema — 40 entities, 6 domains
+        </h2>
         <p class="sec-sub">
-          Based on research into real enterprise database complexity (SAP, Salesforce,
-          Workday). 40 entities across 6 business domains. MongoDB stores them as 21
-          collections with embedded arrays. Postgres stores them as 40 normalized tables
-          with foreign keys and CHECK constraints.
+          Based on research into real enterprise database complexity (SAP,
+          Salesforce, Workday). 40 entities across 6 business domains. MongoDB
+          stores them as 21 collections with embedded arrays. Postgres stores
+          them as 40 normalized tables with foreign keys and CHECK constraints.
         </p>
         <div class="schema-viz" id="schema-viz"></div>
       </div>
@@ -475,26 +925,46 @@
         <div class="sec-kicker">The Task</div>
         <h2 class="sec-title">A real enterprise day-to-day change request</h2>
         <p class="sec-sub">
-          The agent receives a change ticket — exactly what a developer gets in an
-          enterprise. It must understand the existing schema, find where the field goes,
-          write the migration, update the query, and not break anything.
+          The agent receives a change ticket — exactly what a developer gets in
+          an enterprise. It must understand the existing schema, find where the
+          field goes, write the migration, update the query, and not break
+          anything.
         </p>
         <div class="task-card">
           <h5>Change Request: Add preferredPaymentMethod to accounts</h5>
           <p class="task-desc">
-            "Add a <code>preferredPaymentMethod</code> field (string, optional, enum:
-            credit_card / wire_transfer / ach / paypal) to the <code>accounts</code>
-            entity. Update the <code>getOrderSummary</code> query to include the
-            account's preferredPaymentMethod in the result."
+            "Add a <code>preferredPaymentMethod</code> field (string, optional,
+            enum: credit_card / wire_transfer / ach / paypal) to the
+            <code>accounts</code> entity. Update the
+            <code>getOrderSummary</code> query to include the account's
+            preferredPaymentMethod in the result."
           </p>
           <ol class="task-steps">
-            <li>Read <code>src/schema.mjs</code> to understand the 40-entity schema</li>
-            <li>Read <code>src/accounts.mjs</code> for the account model patterns</li>
-            <li>Read <code>src/queries.mjs</code> for the order summary query</li>
-            <li>Update the schema to add the new field to the accounts entity</li>
-            <li>Update the account model to handle preferredPaymentMethod in create/update</li>
-            <li>Update getOrderSummary to include preferredPaymentMethod in the result</li>
-            <li>Run <code>npm test</code> until it passes — tests check regression AND new behavior</li>
+            <li>
+              Read <code>src/schema.mjs</code> to understand the 40-entity
+              schema
+            </li>
+            <li>
+              Read <code>src/accounts.mjs</code> for the account model patterns
+            </li>
+            <li>
+              Read <code>src/queries.mjs</code> for the order summary query
+            </li>
+            <li>
+              Update the schema to add the new field to the accounts entity
+            </li>
+            <li>
+              Update the account model to handle preferredPaymentMethod in
+              create/update
+            </li>
+            <li>
+              Update getOrderSummary to include preferredPaymentMethod in the
+              result
+            </li>
+            <li>
+              Run <code>npm test</code> until it passes — tests check regression
+              AND new behavior
+            </li>
             <li>Tests query the LIVE database directly — no mocks, no fakes</li>
           </ol>
           <div class="tag-row">
@@ -512,40 +982,157 @@
       <div class="wrap">
         <div>
           ◆ LLM-Friendly Database Benchmark ·
-          <a href="https://github.com/romiluz13/llm-friendly-bench" target="_blank" rel="noopener">GitHub</a> ·
-          All evidence committed · Reproducible
+          <a
+            href="https://github.com/romiluz13/llm-friendly-bench"
+            target="_blank"
+            rel="noopener"
+            >GitHub</a
+          >
+          · All evidence committed · Reproducible
         </div>
-        <div>MongoDB Atlas Local 8.3.4 · PostgreSQL 16.14 · Codex gpt-5.6-terra · Claude Sonnet</div>
+        <div>
+          MongoDB Atlas Local 8.3.4 · PostgreSQL 16.14 · Codex gpt-5.6-terra ·
+          Claude Sonnet
+        </div>
       </div>
     </footer>
 
     <script>
-      const BUNDLE_URL = "evidence/enterprise/enterprise-bundle.json";
+      // Bundle inlined directly so the page works from file:// — no fetch needed.
+      const BUNDLE = {
+  "schemaVersion": "1.0.0",
+  "suiteId": "build-bench-enterprise",
+  "title": "Enterprise Schema Evolution Benchmark",
+  "subtitle": "MongoDB Atlas Local 8.3.4 vs Postgres 16.14 — 40-entity schema, live database, real AI agents",
+  "generatedAt": "2026-07-18T15:15:49.871Z",
+  "dbVersions": {
+    "mongo": "MongoDB Atlas Local 8.3.4",
+    "postgres": "PostgreSQL 16.14"
+  },
+  "schemaScale": {
+    "entities": 40,
+    "mongoCollections": 21,
+    "postgresTables": 40,
+    "domains": 6
+  },
+  "task": {
+    "type": "Schema evolution + query update",
+    "description": "Add a preferredPaymentMethod field to the accounts entity and update the order summary query to include it. The agent must read and understand the existing 40-entity schema before safely making the change.",
+    "why": "This is the enterprise day-to-day: a developer gets a ticket to add a field and must understand the existing schema, find where the field goes, update the code, and not break anything."
+  },
+  "execution": {
+    "mode": "vanilla (no workflow overhead)",
+    "agents": ["codex (gpt-5.6-terra)", "claude-code (sonnet)"],
+    "repeatsPerCell": 5,
+    "totalCells": 30,
+    "cleanCells": 30,
+    "liveDb": true,
+    "antiCheat": true,
+    "tokenSource": "Real CLI usage events (deduplicated by message ID)",
+    "comparison": "Within-agent only (never cross-CLI)"
+  },
+  "taskType": "schema-evolution-enterprise",
+  "executionMode": "live-db",
+  "model": {
+    "claude-code": "sonnet",
+    "codex": "gpt-5.6-terra"
+  },
+  "lanes": ["mongo", "postgres-norm", "postgres-jsonb"],
+  "agents": [
+    {
+      "agentId": "claude-code",
+      "lanes": {
+        "mongo": {"cleanRepeats":5,"totalRepeats":5,"failCount":0,"medianTokensRead":518196,"iqrTokensRead":233378,"medianElapsedMs":138322,"medianRetrySignals":103,"medianDiffBytes":1061,"medianFilesChanged":2},
+        "postgres-norm": {"cleanRepeats":5,"totalRepeats":5,"failCount":0,"medianTokensRead":1845006,"iqrTokensRead":425178,"medianElapsedMs":403254,"medianRetrySignals":187,"medianDiffBytes":4904,"medianFilesChanged":4},
+        "postgres-jsonb": {"cleanRepeats":5,"totalRepeats":5,"failCount":0,"medianTokensRead":921479,"iqrTokensRead":809485,"medianElapsedMs":318365,"medianRetrySignals":172,"medianDiffBytes":3410,"medianFilesChanged":3}
+      },
+      "vsMongo": {
+        "postgres-norm": {"tokensPct":256,"medianTokensRead":1845006},
+        "postgres-jsonb": {"tokensPct":78,"medianTokensRead":921479}
+      }
+    },
+    {
+      "agentId": "codex",
+      "lanes": {
+        "mongo": {"cleanRepeats":5,"totalRepeats":5,"failCount":0,"medianTokensRead":189015,"iqrTokensRead":60573,"medianElapsedMs":53058,"medianRetrySignals":22,"medianDiffBytes":2470,"medianFilesChanged":3},
+        "postgres-norm": {"cleanRepeats":5,"totalRepeats":5,"failCount":0,"medianTokensRead":395379,"iqrTokensRead":61748,"medianElapsedMs":105772,"medianRetrySignals":36,"medianDiffBytes":3164,"medianFilesChanged":3},
+        "postgres-jsonb": {"cleanRepeats":5,"totalRepeats":5,"failCount":0,"medianTokensRead":357170,"iqrTokensRead":102829,"medianElapsedMs":107122,"medianRetrySignals":28,"medianDiffBytes":3486,"medianFilesChanged":3}
+      },
+      "vsMongo": {
+        "postgres-norm": {"tokensPct":109,"medianTokensRead":395379},
+        "postgres-jsonb": {"tokensPct":89,"medianTokensRead":357170}
+      }
+    }
+  ],
+  "hypotheses": {
+    "H1": {
+      "statement": "MongoDB requires less agent work (tokensRead) than any relational lane, within-agent",
+      "verdict": "confirmed",
+      "perAgent": [
+        {"agentId":"claude-code","pgNormPct":256,"pgJsonbPct":78},
+        {"agentId":"codex","pgNormPct":109,"pgJsonbPct":89}
+      ]
+    },
+    "H2": {
+      "statement": "Relational penalty grows with normalization depth (pg-norm > pg-jsonb > mongo)",
+      "verdict": "confirmed",
+      "perAgent": [
+        {"agentId":"claude-code","pgNormTokens":1845006,"pgJsonbTokens":921479},
+        {"agentId":"codex","pgNormTokens":395379,"pgJsonbTokens":357170}
+      ]
+    }
+  },
+  "caveat": "Within-agent comparison only. Each agent is measured against itself across the three database designs; one agent's absolute numbers are never compared to the other's, because the two CLIs count tokens incompatibly.",
+  "proofOfNoBias": [
+    "Both agents tested — different models, different companies, same conclusion",
+    "Three lanes tested — MongoDB, Postgres-normalized, Postgres-JSONB (dose-response)",
+    "Pre-registered hypotheses — H1 and H2 stated before runs, not after",
+    "Vanilla mode — no skills, no code reviews, no subagents, no workflow overhead",
+    "Live database — tests query the real DB directly, not mocks",
+    "Anti-cheat — source-pattern scan, protected files, cheat-signal detection",
+    "5 repeats per cell — medians and IQR, not single-run anecdotes",
+    "Within-agent comparison — each agent compared only to itself, never cross-CLI",
+    "Simple tasks showed Postgres winning — the benchmark reported that honestly",
+    "All evidence committed — raw transcripts, diffs, test logs, token counts"
+  ]
+};
 
-      fetch(BUNDLE_URL, { cache: "no-store" })
-        .then((r) => { if (!r.ok) throw new Error("bundle " + r.status); return r.json(); })
-        .then(render)
-        .catch((e) => {
+      try { render(BUNDLE); } catch (e) {
           document.body.innerHTML = `<div style="max-width:620px;margin:80px auto;text-align:center;font-family:sans-serif">
-            <h1>Evidence unavailable</h1><p>${e.message}</p>
+            <h1>Evidence unavailable</h1><p>" + e.message + "</p>
             <p>This page fails closed instead of rendering unverified claims.</p></div>`;
-        });
+      }
 
       const LANES = [
         { key: "mongo", cls: "mg", label: "MongoDB", color: "var(--mg-dark)" },
-        { key: "postgres-norm", cls: "norm", label: "Postgres (normalized)", color: "var(--norm)" },
-        { key: "postgres-jsonb", cls: "jsonb", label: "Postgres (JSONB)", color: "var(--jsonb)" },
+        {
+          key: "postgres-norm",
+          cls: "norm",
+          label: "Postgres (normalized)",
+          color: "var(--norm)",
+        },
+        {
+          key: "postgres-jsonb",
+          cls: "jsonb",
+          label: "Postgres (JSONB)",
+          color: "var(--jsonb)",
+        },
       ];
 
       function esc(s) {
-        return String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+        return String(s == null ? "" : s).replace(
+          /[&<>"]/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+        );
       }
       function fmtTokens(n) {
         if (n >= 1e6) return (n / 1e6).toFixed(2) + "M";
         if (n >= 1e3) return Math.round(n / 1e3) + "K";
         return String(n);
       }
-      function signPct(x) { return (x > 0 ? "+" : "") + x + "%"; }
+      function signPct(x) {
+        return (x > 0 ? "+" : "") + x + "%";
+      }
 
       function render(b) {
         renderResults(b);
@@ -558,47 +1145,61 @@
 
       function renderResults(b) {
         const order = ["claude-code", "codex"];
-        const agents = (b.agents || []).slice().sort((a, z) => order.indexOf(a.agentId) - order.indexOf(z.agentId));
-        const agentLabels = { "claude-code": "Claude Code", "codex": "Codex" };
+        const agents = (b.agents || [])
+          .slice()
+          .sort((a, z) => order.indexOf(a.agentId) - order.indexOf(z.agentId));
+        const agentLabels = { "claude-code": "Claude Code", codex: "Codex" };
         const modelLabels = b.model || {};
 
-        document.getElementById("agent-results").innerHTML = agents.map((a) => {
-          const lanes = LANES.map((L) => {
-            const ls = a.lanes?.[L.key];
-            if (!ls) return "";
-            const vsMongo = a.vsMongo?.[L.key];
-            const pct = vsMongo?.tokensPct;
-            const pctStr = L.key === "mongo" ? "baseline" : signPct(pct);
-            // Bar width relative to max token value across all lanes for this agent
-            const allVals = LANES.map((L2) => a.lanes?.[L2.key]?.medianTokensRead || 0);
-            const max = Math.max(...allVals, 1);
-            const width = Math.round((ls.medianTokensRead / max) * 100);
-            return `<div class="bar-row">
+        document.getElementById("agent-results").innerHTML = agents
+          .map((a) => {
+            const lanes = LANES.map((L) => {
+              const ls = a.lanes?.[L.key];
+              if (!ls) return "";
+              const vsMongo = a.vsMongo?.[L.key];
+              const pct = vsMongo?.tokensPct;
+              const pctStr = L.key === "mongo" ? "baseline" : signPct(pct);
+              // Bar width relative to max token value across all lanes for this agent
+              const allVals = LANES.map(
+                (L2) => a.lanes?.[L2.key]?.medianTokensRead || 0,
+              );
+              const max = Math.max(...allVals, 1);
+              const width = Math.round((ls.medianTokensRead / max) * 100);
+              return `<div class="bar-row">
               <div class="bar-label">
                 <span>${esc(L.label)}</span>
                 <span><span class="val">${fmtTokens(ls.medianTokensRead)}</span> <span class="pct">${pctStr}</span></span>
               </div>
-              <div class="bar-track"><div class="bar-fill ${L.cls}" data-w="${width}" style="width:0">${width > 15 ? esc(L.label.split(' ')[0]) : ''}</div></div>
+              <div class="bar-track"><div class="bar-fill ${L.cls}" data-w="${width}" style="width:0">${width > 15 ? esc(L.label.split(" ")[0]) : ""}</div></div>
             </div>`;
-          }).join("");
+            }).join("");
 
-          const winner = a.vsMongo?.["postgres-norm"]?.tokensPct > 0 ? "MongoDB" : "Postgres";
-          const winnerPct = Math.max(a.vsMongo?.["postgres-norm"]?.tokensPct || 0, a.vsMongo?.["postgres-jsonb"]?.tokensPct || 0);
+            const winner =
+              a.vsMongo?.["postgres-norm"]?.tokensPct > 0
+                ? "MongoDB"
+                : "Postgres";
+            const winnerPct = Math.max(
+              a.vsMongo?.["postgres-norm"]?.tokensPct || 0,
+              a.vsMongo?.["postgres-jsonb"]?.tokensPct || 0,
+            );
 
-          return `<div class="agent-card">
+            return `<div class="agent-card">
             <h4>${esc(agentLabels[a.agentId] || a.agentId)}</h4>
-            <div class="model">Model: ${esc(modelLabels[a.agentId] || '?')} · ${ls_totalRepeats(a)} repeats · clean ${ls_cleanCount(a)}/${ls_totalRepeats(a)}</div>
+            <div class="model">Model: ${esc(modelLabels[a.agentId] || "?")} · ${ls_totalRepeats(a)} repeats · clean ${ls_cleanCount(a)}/${ls_totalRepeats(a)}</div>
             ${lanes}
             <div class="winner-note">✓ MongoDB is the lowest-token lane — Postgres-normalized costs ${signPct(a.vsMongo?.["postgres-norm"]?.tokensPct)} more</div>
           </div>`;
-        }).join("");
+          })
+          .join("");
 
         // Animate bars
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-          document.querySelectorAll(".bar-fill").forEach((el) => {
-            el.style.width = el.dataset.w + "%";
-          });
-        }));
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => {
+            document.querySelectorAll(".bar-fill").forEach((el) => {
+              el.style.width = el.dataset.w + "%";
+            });
+          }),
+        );
       }
 
       function ls_totalRepeats(a) {
@@ -612,128 +1213,267 @@
         const hyp = b.hypotheses || {};
         const perAgentDetail = (h) => {
           if (!h.perAgent) return "";
-          return h.perAgent.map((pa) => {
-            const lbl = pa.agentId === "claude-code" ? "Claude" : "Codex";
-            if (pa.pgNormPct != null) {
-              return `<div><b>${lbl}:</b> pg-norm ${signPct(pa.pgNormPct)}, pg-jsonb ${signPct(pa.pgJsonbPct)}</div>`;
-            }
-            if (pa.pgNormTokens != null) {
-              return `<div><b>${lbl}:</b> pg-norm ${fmtTokens(pa.pgNormTokens)}, pg-jsonb ${fmtTokens(pa.pgJsonbTokens)}</div>`;
-            }
-            return "";
-          }).join("");
+          return h.perAgent
+            .map((pa) => {
+              const lbl = pa.agentId === "claude-code" ? "Claude" : "Codex";
+              if (pa.pgNormPct != null) {
+                return `<div><b>${lbl}:</b> pg-norm ${signPct(pa.pgNormPct)}, pg-jsonb ${signPct(pa.pgJsonbPct)}</div>`;
+              }
+              if (pa.pgNormTokens != null) {
+                return `<div><b>${lbl}:</b> pg-norm ${fmtTokens(pa.pgNormTokens)}, pg-jsonb ${fmtTokens(pa.pgJsonbTokens)}</div>`;
+              }
+              return "";
+            })
+            .join("");
         };
 
-        document.getElementById("hyp-grid").innerHTML = Object.entries(hyp).map(([id, h]) => {
-          const vcls = h.verdict === "confirmed" ? "confirmed" : h.verdict === "refuted" ? "refuted" : "inconclusive";
-          const icon = h.verdict === "confirmed" ? "✓" : h.verdict === "refuted" ? "✗" : "?";
-          return `<div class="hyp-card">
+        document.getElementById("hyp-grid").innerHTML = Object.entries(hyp)
+          .map(([id, h]) => {
+            const vcls =
+              h.verdict === "confirmed"
+                ? "confirmed"
+                : h.verdict === "refuted"
+                  ? "refuted"
+                  : "inconclusive";
+            const icon =
+              h.verdict === "confirmed"
+                ? "✓"
+                : h.verdict === "refuted"
+                  ? "✗"
+                  : "?";
+            return `<div class="hyp-card">
             <div class="hyp-id">${esc(id)}</div>
             <div class="hyp-stmt">${esc(h.statement)}</div>
             <div class="hyp-verdict ${vcls}">${icon} ${esc(h.verdict.toUpperCase())}</div>
             <div class="hyp-detail">${perAgentDetail(h)}</div>
           </div>`;
-        }).join("");
+          })
+          .join("");
       }
 
       function renderProof(b) {
         const proofs = b.proofOfNoBias || [];
         const icons = ["✓", "◆", "●", "▲", "■", "★", "◐", "◑", "◒", "◓"];
-        document.getElementById("proof-grid").innerHTML = proofs.map((p, i) => {
-          return `<div class="proof-card">
+        document.getElementById("proof-grid").innerHTML = proofs
+          .map((p, i) => {
+            return `<div class="proof-card">
             <div class="icon">${icons[i % icons.length]}</div>
             <h5>Defense #${i + 1}</h5>
             <p>${esc(p)}</p>
           </div>`;
-        }).join("");
+          })
+          .join("");
       }
 
       function renderPipeline(b) {
         const steps = [
-          { title: "Create an isolated database namespace", desc: "A fresh MongoDB database or Postgres schema is created for each cell. No leftover data from previous runs. Code: <code>db.dropDatabase()</code> or <code>DROP SCHEMA CASCADE</code>." },
-          { title: "Generate the enterprise workspace", desc: "40-entity schema (MongoDB: 21 collections with $jsonSchema validators, Postgres: 40 tables with FKs and CHECK constraints), working CRUD code for accounts, and an order summary query. The agent only sees the workspace — not the test answers." },
-          { title: "Freeze the workspace with git", desc: "The workspace is <code>git init</code> + <code>git add -A && git commit</code> so every agent edit is tracked as a diff against the known starting state." },
-          { title: "Launch the real AI agent", desc: "The agent CLI is launched as a subprocess: <code>codex exec</code> (gpt-5.6-terra) or <code>claude -p</code> (sonnet). Vanilla mode — no skills, no code reviews, no subagents. The agent reads the schema, writes code, and runs <code>npm test</code> itself." },
-          { title: "Run acceptance tests against the LIVE database", desc: "After the agent finishes, the harness runs <code>npm test</code>. Tests connect to the real database and query it directly — no mocks, no fakes. Regression checks ensure existing features still work. New-behavior checks ensure the new field is stored, retrieved, and appears in the query." },
-          { title: "Verify live DB was written", desc: "The harness checks that the real database has the expected schema (collection/table exists, field exists). This is an agent-code-independent proof — even if the agent faked the test, the live DB check catches it." },
-          { title: "Scan for cheat signals", desc: "Source-code pattern scan detects: test-stub-db patterns (in-memory fakes), schema-skip patterns (agent skips schema migration), protected-file modification (agent edited tests or db.mjs), and fallback-db patterns (agent used a JSON file instead of the real DB)." },
-          { title: "Capture real token counts", desc: "Tokens are extracted from the CLI's own JSONL usage events — not estimated. Claude Code: deduplicated by message ID, sum of input + cache_read + cache_creation. Codex: sum of usage events. These are the real numbers the CLI bills on." },
-          { title: "Record the manifest", desc: "A JSON manifest captures: status, tokensRead, elapsedMs, filesChanged, changedFiles, cheatSignals, liveDbWritten, testStatus, and SHA-256 hashes of all artifacts. Committed to git as evidence." },
-          { title: "Repeat 5 times, take the median", desc: "Each cell is repeated 5 times. The median and IQR (interquartile range) are reported — not a single run. This filters out variance from agent nondeterminism and transient failures." },
+          {
+            title: "Create an isolated database namespace",
+            desc: "A fresh MongoDB database or Postgres schema is created for each cell. No leftover data from previous runs. Code: <code>db.dropDatabase()</code> or <code>DROP SCHEMA CASCADE</code>.",
+          },
+          {
+            title: "Generate the enterprise workspace",
+            desc: "40-entity schema (MongoDB: 21 collections with $jsonSchema validators, Postgres: 40 tables with FKs and CHECK constraints), working CRUD code for accounts, and an order summary query. The agent only sees the workspace — not the test answers.",
+          },
+          {
+            title: "Freeze the workspace with git",
+            desc: "The workspace is <code>git init</code> + <code>git add -A && git commit</code> so every agent edit is tracked as a diff against the known starting state.",
+          },
+          {
+            title: "Launch the real AI agent",
+            desc: "The agent CLI is launched as a subprocess: <code>codex exec</code> (gpt-5.6-terra) or <code>claude -p</code> (sonnet). Vanilla mode — no skills, no code reviews, no subagents. The agent reads the schema, writes code, and runs <code>npm test</code> itself.",
+          },
+          {
+            title: "Run acceptance tests against the LIVE database",
+            desc: "After the agent finishes, the harness runs <code>npm test</code>. Tests connect to the real database and query it directly — no mocks, no fakes. Regression checks ensure existing features still work. New-behavior checks ensure the new field is stored, retrieved, and appears in the query.",
+          },
+          {
+            title: "Verify live DB was written",
+            desc: "The harness checks that the real database has the expected schema (collection/table exists, field exists). This is an agent-code-independent proof — even if the agent faked the test, the live DB check catches it.",
+          },
+          {
+            title: "Scan for cheat signals",
+            desc: "Source-code pattern scan detects: test-stub-db patterns (in-memory fakes), schema-skip patterns (agent skips schema migration), protected-file modification (agent edited tests or db.mjs), and fallback-db patterns (agent used a JSON file instead of the real DB).",
+          },
+          {
+            title: "Capture real token counts",
+            desc: "Tokens are extracted from the CLI's own JSONL usage events — not estimated. Claude Code: deduplicated by message ID, sum of input + cache_read + cache_creation. Codex: sum of usage events. These are the real numbers the CLI bills on.",
+          },
+          {
+            title: "Record the manifest",
+            desc: "A JSON manifest captures: status, tokensRead, elapsedMs, filesChanged, changedFiles, cheatSignals, liveDbWritten, testStatus, and SHA-256 hashes of all artifacts. Committed to git as evidence.",
+          },
+          {
+            title: "Repeat 5 times, take the median",
+            desc: "Each cell is repeated 5 times. The median and IQR (interquartile range) are reported — not a single run. This filters out variance from agent nondeterminism and transient failures.",
+          },
         ];
-        document.getElementById("pipeline").innerHTML = steps.map((s, i) => {
-          return `<div class="pipeline-step">
+        document.getElementById("pipeline").innerHTML = steps
+          .map((s, i) => {
+            return `<div class="pipeline-step">
             <div class="step-num">${i + 1}</div>
             <div class="step-content">
               <h5>${esc(s.title)}</h5>
               <p>${s.desc}</p>
             </div>
           </div>`;
-        }).join("");
+          })
+          .join("");
       }
 
       function renderCost(b) {
         const order = ["claude-code", "codex"];
-        const agents = (b.agents || []).slice().sort((a, z) => order.indexOf(a.agentId) - order.indexOf(z.agentId));
-        const labels = { "claude-code": "Claude Code", "codex": "Codex" };
+        const agents = (b.agents || [])
+          .slice()
+          .sort((a, z) => order.indexOf(a.agentId) - order.indexOf(z.agentId));
+        const labels = { "claude-code": "Claude Code", codex: "Codex" };
         const models = b.model || {};
         const tpm = 1000; // tasks per month
         // Token cost per M input tokens (rough industry pricing)
-        const costPerM = { "claude-code": 3, "codex": 2 };
+        const costPerM = { "claude-code": 3, codex: 2 };
 
-        document.getElementById("cost-cards").innerHTML = agents.map((a) => {
-          const cpm = costPerM[a.agentId] || 3;
-          const rows = LANES.map((L) => {
-            const ls = a.lanes?.[L.key];
-            if (!ls) return "";
-            const monthlyTokens = ls.medianTokensRead * tpm;
-            const monthlyUsd = (monthlyTokens / 1e6) * cpm;
-            const vsMongo = a.vsMongo?.[L.key];
-            const delta = L.key === "mongo" ? null : vsMongo?.tokensPct;
-            const deltaStr = delta == null ? "" : (delta > 0 ? `<span class="delta bad">+${delta}% more</span>` : `<span class="delta">−${Math.abs(delta)}% less</span>`);
-            return `<div class="cost-row">
+        document.getElementById("cost-cards").innerHTML = agents
+          .map((a) => {
+            const cpm = costPerM[a.agentId] || 3;
+            const rows = LANES.map((L) => {
+              const ls = a.lanes?.[L.key];
+              if (!ls) return "";
+              const monthlyTokens = ls.medianTokensRead * tpm;
+              const monthlyUsd = (monthlyTokens / 1e6) * cpm;
+              const vsMongo = a.vsMongo?.[L.key];
+              const delta = L.key === "mongo" ? null : vsMongo?.tokensPct;
+              const deltaStr =
+                delta == null
+                  ? ""
+                  : delta > 0
+                    ? `<span class="delta bad">+${delta}% more</span>`
+                    : `<span class="delta">−${Math.abs(delta)}% less</span>`;
+              return `<div class="cost-row">
               <span class="lbl">${esc(L.label)}</span>
               <span><span class="val">$${Math.round(monthlyUsd).toLocaleString()}/mo</span>${deltaStr}</span>
             </div>`;
-          }).join("");
+            }).join("");
 
-          const mongoMonthly = (a.lanes?.mongo?.medianTokensRead || 0) * tpm / 1e6 * cpm;
-          const normMonthly = (a.lanes?.["postgres-norm"]?.medianTokensRead || 0) * tpm / 1e6 * cpm;
-          const savings = normMonthly - mongoMonthly;
+            const mongoMonthly =
+              (((a.lanes?.mongo?.medianTokensRead || 0) * tpm) / 1e6) * cpm;
+            const normMonthly =
+              (((a.lanes?.["postgres-norm"]?.medianTokensRead || 0) * tpm) /
+                1e6) *
+              cpm;
+            const savings = normMonthly - mongoMonthly;
 
-          return `<div class="cost-card">
+            return `<div class="cost-card">
             <h5>${esc(labels[a.agentId] || a.agentId)}</h5>
-            <div class="cost-model">Model: ${esc(models[a.agentId] || '?')} · ${tpm.toLocaleString()} tasks/month</div>
+            <div class="cost-model">Model: ${esc(models[a.agentId] || "?")} · ${tpm.toLocaleString()} tasks/month</div>
             ${rows}
             <div class="cost-row" style="margin-top:12px;border-top:1px solid rgba(255,255,255,0.15);padding-top:16px">
               <span class="lbl">MongoDB savings vs Postgres-norm</span>
               <span class="val" style="color:var(--mg)">$${Math.round(savings).toLocaleString()}/mo</span>
             </div>
           </div>`;
-        }).join("");
+          })
+          .join("");
       }
 
       function renderSchema(b) {
         const scale = b.schemaScale || {};
         const domains = [
-          { name: "Accounts (8 entities)", items: ["accounts", "account_details", "account_settings", "account_preferences", "account_team", "account_billing", "account_contracts", "account_health_scores"] },
-          { name: "Orders (10 entities)", items: ["orders", "order_line_items", "order_fulfillments", "order_returns", "shipments", "shipment_items", "shipment_tracking", "delivery_confirmations", "order_status_history", "order_approvals"] },
-          { name: "Financial (7 entities)", items: ["invoices", "invoice_line_items", "payments", "payment_methods", "credit_notes", "tax_records", "billing_cycles"] },
-          { name: "Support (5 entities)", items: ["support_cases", "case_comments", "case_escalations", "sla_policies", "support_assignments"] },
-          { name: "Products (5 entities)", items: ["products", "product_categories", "product_pricing", "product_inventory", "product_reviews"] },
-          { name: "Compliance (5 entities)", items: ["compliance_reviews", "regulatory_flags", "audit_trails", "data_processing_agreements", "consent_records"] },
+          {
+            name: "Accounts (8 entities)",
+            items: [
+              "accounts",
+              "account_details",
+              "account_settings",
+              "account_preferences",
+              "account_team",
+              "account_billing",
+              "account_contracts",
+              "account_health_scores",
+            ],
+          },
+          {
+            name: "Orders (10 entities)",
+            items: [
+              "orders",
+              "order_line_items",
+              "order_fulfillments",
+              "order_returns",
+              "shipments",
+              "shipment_items",
+              "shipment_tracking",
+              "delivery_confirmations",
+              "order_status_history",
+              "order_approvals",
+            ],
+          },
+          {
+            name: "Financial (7 entities)",
+            items: [
+              "invoices",
+              "invoice_line_items",
+              "payments",
+              "payment_methods",
+              "credit_notes",
+              "tax_records",
+              "billing_cycles",
+            ],
+          },
+          {
+            name: "Support (5 entities)",
+            items: [
+              "support_cases",
+              "case_comments",
+              "case_escalations",
+              "sla_policies",
+              "support_assignments",
+            ],
+          },
+          {
+            name: "Products (5 entities)",
+            items: [
+              "products",
+              "product_categories",
+              "product_pricing",
+              "product_inventory",
+              "product_reviews",
+            ],
+          },
+          {
+            name: "Compliance (5 entities)",
+            items: [
+              "compliance_reviews",
+              "regulatory_flags",
+              "audit_trails",
+              "data_processing_agreements",
+              "consent_records",
+            ],
+          },
         ];
 
         // MongoDB embeds some entities as arrays (e.g., order_line_items in orders)
-        const embeddedInMongo = new Set(["order_line_items", "case_comments", "shipment_items", "shipment_tracking", "delivery_confirmations", "order_status_history", "invoice_line_items", "account_team", "account_preferences", "product_reviews"]);
+        const embeddedInMongo = new Set([
+          "order_line_items",
+          "case_comments",
+          "shipment_items",
+          "shipment_tracking",
+          "delivery_confirmations",
+          "order_status_history",
+          "invoice_line_items",
+          "account_team",
+          "account_preferences",
+          "product_reviews",
+        ]);
 
         const mongoCard = `<div class="schema-card">
           <h5> MongoDB — ${scale.mongoCollections || 21} collections</h5>
           <div class="schema-sub">Embedded arrays where natural. Fewer collections = less context to read.</div>
-          <div class="schema-entities">${domains.flatMap(d => d.items).map(e => {
-            const isEmbedded = embeddedInMongo.has(e);
-            return `<span class="schema-entity${isEmbedded ? ' embedded' : ''}">${esc(e)}${isEmbedded ? ' ↪ embedded' : ''}</span>`;
-          }).join('')}</div>
+          <div class="schema-entities">${domains
+            .flatMap((d) => d.items)
+            .map((e) => {
+              const isEmbedded = embeddedInMongo.has(e);
+              return `<span class="schema-entity${isEmbedded ? " embedded" : ""}">${esc(e)}${isEmbedded ? " ↪ embedded" : ""}</span>`;
+            })
+            .join("")}</div>
           <div class="schema-stat"><span>Strategy</span><b>Document model — embed related data</b></div>
           <div class="schema-stat"><span>Collections</span><b>${scale.mongoCollections || 21}</b></div>
           <div class="schema-stat"><span>Validator</span><b>$jsonSchema per collection</b></div>
@@ -742,9 +1482,12 @@
         const pgCard = `<div class="schema-card">
           <h5> PostgreSQL (normalized) — ${scale.postgresTables || 40} tables</h5>
           <div class="schema-sub">Full 3NF normalization. Every entity is its own table with FKs.</div>
-          <div class="schema-entities">${domains.flatMap(d => d.items).map(e => {
-            return `<span class="schema-entity">${esc(e)}</span>`;
-          }).join('')}</div>
+          <div class="schema-entities">${domains
+            .flatMap((d) => d.items)
+            .map((e) => {
+              return `<span class="schema-entity">${esc(e)}</span>`;
+            })
+            .join("")}</div>
           <div class="schema-stat"><span>Strategy</span><b>3NF — every entity is a table</b></div>
           <div class="schema-stat"><span>Tables</span><b>${scale.postgresTables || 40}</b></div>
           <div class="schema-stat"><span>Constraints</span><b>FKs + CHECK + indexes</b></div>
