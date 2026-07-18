@@ -1,10 +1,8 @@
-Implemented the account payment preference end to end.
+Implemented the optional `preferredPaymentMethod` enum field and included it in order summaries.
 
-- Added optional enum validation for `preferredPaymentMethod` in the accounts database schema.
-- Added create/update validation in `src/accounts.mjs`.
-- Included `preferredPaymentMethod` in `getOrderSummary`.
-- Preserved account creation behavior by defaulting `createdAt` when omitted.
+Updated:
+- `src/schema.mjs`
+- `src/accounts.mjs`
+- `src/queries.mjs`
 
-Verified with `npm test`:
-
-`Build-Bench enterprise acceptance passed: mongo`
+Verified with `npm test` — acceptance suite passes.

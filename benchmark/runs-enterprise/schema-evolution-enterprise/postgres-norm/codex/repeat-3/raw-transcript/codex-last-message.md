@@ -1,7 +1,8 @@
-Implemented `preferredPaymentMethod` across the account schema, create/update model, and order summary query.
+Implemented the account payment preference end to end.
 
-Also restored legacy schema defaults/constraints needed by the regression fixture.
+- Added optional enum-backed `preferred_payment_method` to `accounts`.
+- Added create, update, and retrieval support in `src/accounts.mjs`.
+- Included `preferredPaymentMethod` in `getOrderSummary`.
+- Added minimal schema compatibility migrations required by the existing acceptance fixture.
 
-Verified with `npm test`:
-
-`Build-Bench enterprise acceptance passed: postgres-norm`
+Verified: `npm test` passes.

@@ -1,8 +1,8 @@
-Implemented the account payment preference migration.
+Implemented the account payment preference support.
 
 - Added optional enum validation for `preferredPaymentMethod`.
-- Added create/update validation and persistence support.
-- Included it in `getOrderSummary`.
-- Kept legacy fixture documents compatible during schema setup.
+- Stored it through account create/update.
+- Added it to `getOrderSummary`.
+- Account creation now supplies the schema-required `createdAt`.
 
-`npm test` passes.
+Verified with `npm test` — passing.

@@ -1,16 +1,16 @@
 {
   "collections": [
     {
-      "name": "accounts"
+      "name": "account_preferences"
+    },
+    {
+      "name": "orders"
     },
     {
       "name": "account_details"
     },
     {
       "name": "account_settings"
-    },
-    {
-      "name": "account_preferences"
     },
     {
       "name": "account_team"
@@ -28,7 +28,7 @@
       "name": "order_line_items"
     },
     {
-      "name": "orders"
+      "name": "accounts"
     },
     {
       "name": "order_fulfillments"
@@ -70,6 +70,9 @@
       "name": "credit_notes"
     },
     {
+      "name": "sla_policies"
+    },
+    {
       "name": "tax_records"
     },
     {
@@ -82,16 +85,13 @@
       "name": "case_comments"
     },
     {
-      "name": "support_assignments"
-    },
-    {
       "name": "case_escalations"
     },
     {
-      "name": "sla_policies"
+      "name": "products"
     },
     {
-      "name": "products"
+      "name": "support_assignments"
     },
     {
       "name": "product_categories"
@@ -106,10 +106,10 @@
       "name": "product_reviews"
     },
     {
-      "name": "data_processing_agreements"
+      "name": "compliance_reviews"
     },
     {
-      "name": "compliance_reviews"
+      "name": "consent_records"
     },
     {
       "name": "regulatory_flags"
@@ -118,7 +118,7 @@
       "name": "audit_trails"
     },
     {
-      "name": "consent_records"
+      "name": "data_processing_agreements"
     }
   ]
 }

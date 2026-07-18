@@ -1,8 +1,8 @@
-Implemented preferred payment methods for accounts and exposed them in order summaries.
+Implemented the account payment preference and order-summary exposure.
 
-- Added optional `preferred_payment_method` with enum validation.
-- Added create/update/retrieval support in `accounts.mjs`.
-- Added `preferredPaymentMethod` to `getOrderSummary`.
-- Preserved compatibility with the enterprise schema’s required defaults.
+- `accounts.preferred_payment_method`: optional DB-enforced enum
+- Create/update/get account support
+- `getOrderSummary` includes `preferredPaymentMethod`
+- Aligned schema bootstrap with the existing acceptance setup
 
 Verified: `npm test` passes.

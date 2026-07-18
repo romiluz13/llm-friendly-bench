@@ -1,103 +1,28 @@
-diff --git a/scripts/enterprise-schema-gen.mjs b/scripts/enterprise-schema-gen.mjs
-index 0f43416..996afca 100644
---- a/scripts/enterprise-schema-gen.mjs
-+++ b/scripts/enterprise-schema-gen.mjs
-@@ -28,7 +28,11 @@ const ENTITIES = {
- 				values: ["active", "at-risk", "churned", "prospect"],
- 				required: true,
- 			},
--			createdAt: { type: "date", required: true },
-+			createdAt: { type: "date" },
-+			preferredPaymentMethod: {
-+				type: "enum",
-+				values: ["credit_card", "wire_transfer", "ach", "paypal"],
-+			},
- 		},
- 	},
- 	account_details: {
-@@ -761,6 +765,8 @@ export function generateMongoSchema() {
- 			for (const [name, validator] of Object.entries(validators)) {
- 				if (!existingNames.has(name)) {
- 					await db.createCollection(name, { validator });
-+				} else {
-+					await db.command({ collMod: name, validator, validationLevel: "moderate" });
- 				}
- 			}
- 		},
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index 162db11..41430bb 100644
+index 162db11..4ce7e01 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
-@@ -1,7 +1,12 @@
- import { ensureSchema } from "./schema.mjs";
+@@ -2,8 +2,9 @@ import { ensureSchema } from "./schema.mjs";
  
-+const VALID_PAYMENT_METHODS = ["credit_card", "wire_transfer", "ach", "paypal"];
-+
  export async function createAccount(db, data) {
    await ensureSchema(db);
-+  if (data.preferredPaymentMethod !== undefined && !VALID_PAYMENT_METHODS.includes(data.preferredPaymentMethod)) {
-+    throw new Error(`Invalid preferredPaymentMethod: ${data.preferredPaymentMethod}`);
-+  }
-   const result = await db.collection("accounts").insertOne(data);
-   return { _id: result.insertedId, ...data };
- }
-@@ -11,6 +16,9 @@ export async function getAccount(db, accountId) {
+-  const result = await db.collection("accounts").insertOne(data);
+-  return { _id: result.insertedId, ...data };
++  const doc = { createdAt: new Date(), ...data };
++  const result = await db.collection("accounts").insertOne(doc);
++  return { _id: result.insertedId, ...doc };
  }
  
- export async function updateAccount(db, accountId, data) {
-+  if (data.preferredPaymentMethod !== undefined && !VALID_PAYMENT_METHODS.includes(data.preferredPaymentMethod)) {
-+    throw new Error(`Invalid preferredPaymentMethod: ${data.preferredPaymentMethod}`);
-+  }
-   await db.collection("accounts").updateOne({ accountId }, { $set: data });
-   return db.collection("accounts").findOne({ accountId });
- }
+ export async function getAccount(db, accountId) {
 diff --git a/src/queries.mjs b/src/queries.mjs
-index caa36b4..c85f24b 100644
+index caa36b4..f5cc4db 100644
 --- a/src/queries.mjs
 +++ b/src/queries.mjs
 @@ -14,6 +14,7 @@ export async function getOrderSummary(db, orderId) {
      lineItems: order.lineItems || [],
      accountName: account?.name,
      accountTier: account?.tier,
-+    preferredPaymentMethod: account?.preferredPaymentMethod ?? null,
++    preferredPaymentMethod: account?.preferredPaymentMethod,
      invoiceStatus: invoice?.status,
      invoiceAmountCents: invoice?.amountCents,
    };
-diff --git a/src/schema.mjs b/src/schema.mjs
-index 16c8076..822cdf0 100644
---- a/src/schema.mjs
-+++ b/src/schema.mjs
-@@ -6,6 +6,33 @@ export async function ensureSchema(db) {
-   const { generateMongoSchema } = await import("../scripts/enterprise-schema-gen.mjs");
-   const gen = generateMongoSchema();
-   await gen.ensureSchema(db);
-+  // Relax validation for orders and invoices so test data without all required fields is accepted
-+  await db.command({ collMod: "orders", validationAction: "warn" });
-+  await db.command({ collMod: "invoices", validationAction: "warn" });
-+
-+  // Add preferredPaymentMethod to accounts validator (optional string enum)
-+  await db.command({
-+    collMod: "accounts",
-+    validator: {
-+      $jsonSchema: {
-+        bsonType: "object",
-+        required: ["name", "tier", "status"],
-+        properties: {
-+          accountId: { bsonType: "string" },
-+          name: { bsonType: "string" },
-+          tier: { enum: ["strategic", "enterprise", "midmarket", "standard"] },
-+          segment: { bsonType: "string" },
-+          region: { bsonType: "string" },
-+          status: { enum: ["active", "at-risk", "churned", "prospect"] },
-+          createdAt: { bsonType: "date" },
-+          preferredPaymentMethod: {
-+            enum: ["credit_card", "wire_transfer", "ach", "paypal", null],
-+          },
-+        },
-+      },
-+    },
-+    validationLevel: "moderate",
-+  });
- }
- 
- if (import.meta.url === `file://${process.argv[1]}`) {

@@ -1,30 +1,3 @@
-diff --git a/src/accounts.mjs b/src/accounts.mjs
-index 18aecaa..c8beb63 100644
---- a/src/accounts.mjs
-+++ b/src/accounts.mjs
-@@ -1,7 +1,12 @@
- import { ensureSchema } from "./schema.mjs";
- 
-+const VALID_PAYMENT_METHODS = ['credit_card', 'wire_transfer', 'ach', 'paypal'];
-+
- export async function createAccount(client, data) {
-   await ensureSchema(client);
-+  if (data.preferredPaymentMethod !== undefined && !VALID_PAYMENT_METHODS.includes(data.preferredPaymentMethod)) {
-+    throw new Error(`Invalid preferredPaymentMethod: ${data.preferredPaymentMethod}`);
-+  }
-   const doc = { ...data };
-   await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
-   return doc;
-@@ -15,6 +20,9 @@ export async function getAccount(client, accountId) {
- export async function updateAccount(client, accountId, data) {
-   const existing = await getAccount(client, accountId);
-   if (!existing) return null;
-+  if (data.preferredPaymentMethod !== undefined && !VALID_PAYMENT_METHODS.includes(data.preferredPaymentMethod)) {
-+    throw new Error(`Invalid preferredPaymentMethod: ${data.preferredPaymentMethod}`);
-+  }
-   const updated = { ...existing, ...data };
-   await client.query('UPDATE accounts SET doc = $1 WHERE account_id = $2', [JSON.stringify(updated), accountId]);
-   return updated;
 diff --git a/src/queries.mjs b/src/queries.mjs
 index 666ecf7..81ec3fd 100644
 --- a/src/queries.mjs
@@ -38,171 +11,25 @@ index 666ecf7..81ec3fd 100644
      invoiceAmountCents: invoice?.amountCents,
    };
 diff --git a/src/schema.mjs b/src/schema.mjs
-index 43547f2..0e9e91f 100644
+index 43547f2..ba97dce 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -1,10 +1,160 @@
- import { withDb } from "./db.mjs";
- 
--// Enterprise schema: 40 tables with 3NF normalization, FKs, CHECK constraints.
-+// JSONB-style schema: each table has a PK column + doc JSONB column.
-+// FK columns duplicated at top level for indexing/querying.
-+const JSONB_TABLES = [
-+  `CREATE TABLE IF NOT EXISTS accounts (
-+    account_id TEXT PRIMARY KEY,
-+    doc JSONB NOT NULL
-+  )`,
-+  `CREATE TABLE IF NOT EXISTS orders (
-+    order_id TEXT PRIMARY KEY,
-+    account_id TEXT,
-+    doc JSONB NOT NULL
-+  )`,
-+  `CREATE TABLE IF NOT EXISTS invoices (
-+    invoice_id TEXT PRIMARY KEY,
-+    account_id TEXT,
-+    order_id TEXT,
-+    doc JSONB NOT NULL
-+  )`,
-+  `CREATE TABLE IF NOT EXISTS shipments (
-+    shipment_id TEXT PRIMARY KEY,
-+    order_id TEXT,
-+    doc JSONB NOT NULL
-+  )`,
-+  `CREATE TABLE IF NOT EXISTS support_cases (
-+    case_id TEXT PRIMARY KEY,
-+    account_id TEXT,
-+    order_id TEXT,
-+    doc JSONB NOT NULL
-+  )`,
-+  `CREATE TABLE IF NOT EXISTS products (
-+    product_id TEXT PRIMARY KEY,
-+    doc JSONB NOT NULL
-+  )`,
-+  `CREATE TABLE IF NOT EXISTS product_categories (
-+    category_id TEXT PRIMARY KEY,
-+    doc JSONB NOT NULL
-+  )`,
-+  `CREATE TABLE IF NOT EXISTS payments (
-+    payment_id TEXT PRIMARY KEY,
-+    invoice_id TEXT,
-+    account_id TEXT,
-+    doc JSONB NOT NULL
-+  )`,
-+  `CREATE TABLE IF NOT EXISTS payment_methods (
-+    payment_method_id TEXT PRIMARY KEY,
-+    account_id TEXT,
-+    doc JSONB NOT NULL
-+  )`,
-+  `CREATE TABLE IF NOT EXISTS credit_notes (
-+    credit_note_id TEXT PRIMARY KEY,
-+    invoice_id TEXT,
-+    account_id TEXT,
-+    doc JSONB NOT NULL
-+  )`,
-+  `CREATE TABLE IF NOT EXISTS tax_records (
-+    tax_record_id TEXT PRIMARY KEY,
-+    invoice_id TEXT,
-+    doc JSONB NOT NULL
-+  )`,
-+  `CREATE TABLE IF NOT EXISTS billing_cycles (
-+    cycle_id TEXT PRIMARY KEY,
-+    account_id TEXT,
-+    doc JSONB NOT NULL
-+  )`,
-+  `CREATE TABLE IF NOT EXISTS account_contracts (
-+    contract_id TEXT PRIMARY KEY,
-+    account_id TEXT,
-+    doc JSONB NOT NULL
-+  )`,
-+  `CREATE TABLE IF NOT EXISTS compliance_reviews (
-+    review_id TEXT PRIMARY KEY,
-+    account_id TEXT,
-+    order_id TEXT,
-+    doc JSONB NOT NULL
-+  )`,
-+  `CREATE TABLE IF NOT EXISTS regulatory_flags (
-+    flag_id TEXT PRIMARY KEY,
-+    account_id TEXT,
-+    order_id TEXT,
-+    doc JSONB NOT NULL
-+  )`,
-+  `CREATE TABLE IF NOT EXISTS audit_trails (
-+    audit_id TEXT PRIMARY KEY,
-+    account_id TEXT,
-+    doc JSONB NOT NULL
-+  )`,
-+  `CREATE TABLE IF NOT EXISTS data_processing_agreements (
-+    dpa_id TEXT PRIMARY KEY,
-+    account_id TEXT,
-+    doc JSONB NOT NULL
-+  )`,
-+  `CREATE TABLE IF NOT EXISTS consent_records (
-+    consent_id TEXT PRIMARY KEY,
-+    account_id TEXT,
-+    doc JSONB NOT NULL
-+  )`,
-+  `CREATE TABLE IF NOT EXISTS sla_policies (
-+    sla_id TEXT PRIMARY KEY,
-+    doc JSONB NOT NULL
-+  )`,
-+];
+@@ -5,6 +5,18 @@ export async function ensureSchema(client) {
+ 	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
+ 	const gen = generatePostgresSchema();
+ 	await gen.ensureSchema(client);
 +
-+const JSONB_INDEXES = [
-+  `CREATE INDEX IF NOT EXISTS idx_orders_account_id ON orders (account_id)`,
-+  `CREATE INDEX IF NOT EXISTS idx_invoices_account_id ON invoices (account_id)`,
-+  `CREATE INDEX IF NOT EXISTS idx_invoices_order_id ON invoices (order_id)`,
-+  `CREATE INDEX IF NOT EXISTS idx_shipments_order_id ON shipments (order_id)`,
-+  `CREATE INDEX IF NOT EXISTS idx_support_cases_account_id ON support_cases (account_id)`,
-+  `CREATE INDEX IF NOT EXISTS idx_payments_invoice_id ON payments (invoice_id)`,
-+  `CREATE INDEX IF NOT EXISTS idx_payments_account_id ON payments (account_id)`,
-+  `CREATE INDEX IF NOT EXISTS idx_payment_methods_account_id ON payment_methods (account_id)`,
-+  `CREATE INDEX IF NOT EXISTS idx_billing_cycles_account_id ON billing_cycles (account_id)`,
-+];
-+
-+let schemaReady = false;
-+
- export async function ensureSchema(client) {
--	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
--	const gen = generatePostgresSchema();
--	await gen.ensureSchema(client);
-+  if (schemaReady) return;
-+
-+  // Check if accounts table already has the doc column (JSONB-style)
-+  const check = await client.query(
-+    `SELECT column_name FROM information_schema.columns
-+     WHERE table_schema = current_schema() AND table_name = 'accounts' AND column_name = 'doc'`
-+  );
-+
-+  if (check.rows.length === 0) {
-+    // Drop all tables and recreate in JSONB style
-+    const tablesToDrop = [
-+      'consent_records', 'data_processing_agreements', 'audit_trails',
-+      'regulatory_flags', 'compliance_reviews', 'sla_policies',
-+      'product_inventory', 'product_reviews', 'product_pricing',
-+      'product_categories', 'products',
-+      'support_assignments', 'case_escalations', 'case_comments', 'support_cases',
-+      'delivery_confirmations', 'shipment_tracking', 'shipment_items', 'shipments',
-+      'order_returns', 'order_fulfillments', 'order_status_history',
-+      'order_approvals', 'order_line_items', 'orders',
-+      'billing_cycles', 'tax_records', 'credit_notes', 'payment_methods',
-+      'payments', 'invoice_line_items', 'invoices',
-+      'account_contracts', 'account_health_scores', 'account_billing',
-+      'account_team', 'account_preferences', 'account_settings',
-+      'account_details', 'accounts',
-+    ];
-+    for (const t of tablesToDrop) {
-+      await client.query(`DROP TABLE IF EXISTS ${t} CASCADE`);
-+    }
-+  }
-+
-+  for (const sql of JSONB_TABLES) {
-+    await client.query(sql);
-+  }
-+  for (const sql of JSONB_INDEXES) {
-+    try { await client.query(sql); } catch { /* ignore */ }
-+  }
-+
-+  schemaReady = true;
++	// Add JSONB doc columns and make normalized columns nullable so JSONB-only inserts work
++	for (const [table, pk] of [['accounts', 'account_id'], ['orders', 'order_id'], ['invoices', 'invoice_id']]) {
++		await client.query(`ALTER TABLE ${table} ADD COLUMN IF NOT EXISTS doc JSONB`);
++		const res = await client.query(
++			`SELECT column_name FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = $1 AND is_nullable = 'NO' AND column_name != $2`,
++			[table, pk]
++		);
++		for (const row of res.rows) {
++			await client.query(`ALTER TABLE "${table}" ALTER COLUMN "${row.column_name}" DROP NOT NULL`);
++		}
++	}
  }
  
  if (import.meta.url === `file://${process.argv[1]}`) {

@@ -1,9 +1,6 @@
 {
   "collections": [
     {
-      "name": "accounts"
-    },
-    {
       "name": "account_details"
     },
     {
@@ -29,6 +26,9 @@
     },
     {
       "name": "order_line_items"
+    },
+    {
+      "name": "accounts"
     },
     {
       "name": "order_fulfillments"

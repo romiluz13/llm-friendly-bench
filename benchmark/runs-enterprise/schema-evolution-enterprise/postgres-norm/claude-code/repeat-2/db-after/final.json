@@ -1,6 +1,9 @@
 {
   "collections": [
     {
+      "name": "account_preferences"
+    },
+    {
       "name": "accounts"
     },
     {
@@ -10,19 +13,16 @@
       "name": "account_settings"
     },
     {
-      "name": "account_preferences"
-    },
-    {
       "name": "account_team"
     },
     {
       "name": "account_billing"
     },
     {
-      "name": "account_health_scores"
+      "name": "account_contracts"
     },
     {
-      "name": "account_contracts"
+      "name": "account_health_scores"
     },
     {
       "name": "orders"

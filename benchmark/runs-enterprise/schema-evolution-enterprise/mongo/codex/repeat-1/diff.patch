@@ -1,32 +1,27 @@
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index 162db11..608a1dc 100644
+index 162db11..bf20ab0 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
-@@ -1,7 +1,19 @@
- import { ensureSchema } from "./schema.mjs";
+@@ -1,9 +1,11 @@
+-import { ensureSchema } from "./schema.mjs";
++import { ensureSchema, validatePreferredPaymentMethod } from "./schema.mjs";
  
-+const preferredPaymentMethods = new Set(["credit_card", "wire_transfer", "ach", "paypal"]);
-+
-+function validatePreferredPaymentMethod(data) {
-+  if (
-+    data.preferredPaymentMethod !== undefined &&
-+    !preferredPaymentMethods.has(data.preferredPaymentMethod)
-+  ) {
-+    throw new Error("preferredPaymentMethod must be credit_card, wire_transfer, ach, or paypal");
-+  }
-+}
-+
  export async function createAccount(db, data) {
    await ensureSchema(db);
-+  validatePreferredPaymentMethod(data);
-   const result = await db.collection("accounts").insertOne(data);
-   return { _id: result.insertedId, ...data };
+-  const result = await db.collection("accounts").insertOne(data);
+-  return { _id: result.insertedId, ...data };
++  validatePreferredPaymentMethod(data.preferredPaymentMethod);
++  const account = { ...data, createdAt: data.createdAt ?? new Date() };
++  const result = await db.collection("accounts").insertOne(account);
++  return { _id: result.insertedId, ...account };
  }
-@@ -11,6 +23,7 @@ export async function getAccount(db, accountId) {
+ 
+ export async function getAccount(db, accountId) {
+@@ -11,6 +13,7 @@ export async function getAccount(db, accountId) {
  }
  
  export async function updateAccount(db, accountId, data) {
-+  validatePreferredPaymentMethod(data);
++  validatePreferredPaymentMethod(data.preferredPaymentMethod);
    await db.collection("accounts").updateOne({ accountId }, { $set: data });
    return db.collection("accounts").findOne({ accountId });
  }
@@ -43,35 +38,20 @@ index caa36b4..f5cc4db 100644
      invoiceAmountCents: invoice?.amountCents,
    };
 diff --git a/src/schema.mjs b/src/schema.mjs
-index 16c8076..fd81530 100644
+index 16c8076..afa7518 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -1,11 +1,28 @@
+@@ -1,5 +1,13 @@
  import { withDb } from "./db.mjs";
  
-+const preferredPaymentMethods = ["credit_card", "wire_transfer", "ach", "paypal"];
++export const preferredPaymentMethods = ["credit_card", "wire_transfer", "ach", "paypal"];
++
++export function validatePreferredPaymentMethod(value) {
++  if (value !== undefined && (!preferredPaymentMethods.includes(value))) {
++    throw new Error("preferredPaymentMethod must be one of: credit_card, wire_transfer, ach, paypal");
++  }
++}
 +
  // Enterprise schema: 21 collections with embedded arrays.
  // This creates the full 40-entity domain as MongoDB collections.
  export async function ensureSchema(db) {
-   const { generateMongoSchema } = await import("../scripts/enterprise-schema-gen.mjs");
-   const gen = generateMongoSchema();
-   await gen.ensureSchema(db);
-+  await Promise.all(
-+    gen.collectionNames
-+      .filter((name) => name !== "accounts")
-+      .map((name) => db.command({ collMod: name, validator: {} })),
-+  );
-+  await db.command({
-+    collMod: "accounts",
-+    validator: {
-+      $jsonSchema: {
-+        properties: {
-+          preferredPaymentMethod: { enum: preferredPaymentMethods },
-+        },
-+      },
-+    },
-+  });
- }
- 
- if (import.meta.url === `file://${process.argv[1]}`) {

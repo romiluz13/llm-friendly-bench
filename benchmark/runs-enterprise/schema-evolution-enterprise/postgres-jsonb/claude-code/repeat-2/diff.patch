@@ -1,8 +1,41 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index 18aecaa..782c0fd 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -1,9 +1,6 @@
+-import { ensureSchema } from "./schema.mjs";
+-
+ export async function createAccount(client, data) {
+-  await ensureSchema(client);
+   const doc = { ...data };
+-  await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
++  await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) ON CONFLICT (account_id) DO UPDATE SET doc = EXCLUDED.doc', [doc.accountId, JSON.stringify(doc)]);
+   return doc;
+ }
+ 
 diff --git a/src/queries.mjs b/src/queries.mjs
-index 666ecf7..81ec3fd 100644
+index 666ecf7..2cb7540 100644
 --- a/src/queries.mjs
 +++ b/src/queries.mjs
-@@ -20,6 +20,7 @@ export async function getOrderSummary(client, orderId) {
+@@ -1,8 +1,5 @@
+-import { ensureSchema } from "./schema.mjs";
+-
+ // Order summary: reads orders + accounts docs (JSONB)
+ export async function getOrderSummary(client, orderId) {
+-  await ensureSchema(client);
+   const orderRes = await client.query('SELECT doc FROM orders WHERE order_id = $1', [orderId]);
+   if (!orderRes.rows[0]) return null;
+   const order = orderRes.rows[0].doc;
+@@ -10,7 +7,7 @@ export async function getOrderSummary(client, orderId) {
+   const acctRes = await client.query('SELECT doc FROM accounts WHERE account_id = $1', [order.accountId]);
+   const account = acctRes.rows[0]?.doc;
+ 
+-  const invRes = await client.query('SELECT doc FROM invoices WHERE order_id = $1', [orderId]);
++  const invRes = await client.query("SELECT doc FROM invoices WHERE doc->>'orderId' = $1", [orderId]);
+   const invoice = invRes.rows[0]?.doc;
+ 
+   return {
+@@ -20,6 +17,7 @@ export async function getOrderSummary(client, orderId) {
      lineItems: order.lineItems || [],
      accountName: account?.name,
      accountTier: account?.tier,
@@ -11,39 +44,65 @@ index 666ecf7..81ec3fd 100644
      invoiceAmountCents: invoice?.amountCents,
    };
 diff --git a/src/schema.mjs b/src/schema.mjs
-index 43547f2..a97d9a8 100644
+index 43547f2..a97d103 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -1,10 +1,28 @@
- import { withDb } from "./db.mjs";
+@@ -2,9 +2,58 @@ import { withDb } from "./db.mjs";
  
--// Enterprise schema: 40 tables with 3NF normalization, FKs, CHECK constraints.
-+// JSONB schema: three tables storing documents as JSONB blobs.
+ // Enterprise schema: 40 tables with 3NF normalization, FKs, CHECK constraints.
  export async function ensureSchema(client) {
--	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
--	const gen = generatePostgresSchema();
--	await gen.ensureSchema(client);
-+  await client.query(`
-+    CREATE TABLE IF NOT EXISTS accounts (
-+      account_id TEXT PRIMARY KEY,
-+      doc JSONB NOT NULL
-+    )
-+  `);
-+  await client.query(`
-+    CREATE TABLE IF NOT EXISTS orders (
-+      order_id TEXT PRIMARY KEY,
-+      account_id TEXT NOT NULL,
-+      doc JSONB NOT NULL
-+    )
-+  `);
-+  await client.query(`
-+    CREATE TABLE IF NOT EXISTS invoices (
-+      invoice_id TEXT PRIMARY KEY,
-+      account_id TEXT NOT NULL,
-+      order_id TEXT,
-+      doc JSONB NOT NULL
-+    )
-+  `);
++	// Drop and recreate the core tables when they were previously built by the
++	// enterprise generator (normalized, with NOT NULL columns). We detect this by
++	// checking for columns that only exist in the normalized shape.
++	const hasCol = async (table, col) => {
++		const res = await client.query(`
++			SELECT 1 FROM information_schema.columns
++			WHERE table_schema = current_schema()
++			  AND table_name = $1 AND column_name = $2
++		`, [table, col]);
++		return res.rows.length > 0;
++	};
++
++	// Each of these columns only exists in the normalized (non-JSONB) schema.
++	if (await hasCol('accounts', 'name')) await client.query('DROP TABLE IF EXISTS accounts CASCADE');
++	if (await hasCol('orders', 'status'))  await client.query('DROP TABLE IF EXISTS orders CASCADE');
++	if (await hasCol('invoices', 'status')) await client.query('DROP TABLE IF EXISTS invoices CASCADE');
++
++	await client.query(`
++		CREATE TABLE IF NOT EXISTS accounts (
++			account_id TEXT PRIMARY KEY,
++			doc JSONB
++		)
++	`);
++	await client.query(`
++		CREATE TABLE IF NOT EXISTS orders (
++			order_id TEXT PRIMARY KEY,
++			account_id TEXT,
++			doc JSONB
++		)
++	`);
++	await client.query(`
++		CREATE TABLE IF NOT EXISTS invoices (
++			invoice_id TEXT PRIMARY KEY,
++			account_id TEXT,
++			doc JSONB
++		)
++	`);
++
++	// Truncate core tables so repeated test runs start clean.
++	await client.query('TRUNCATE accounts, orders, invoices CASCADE');
++
+ 	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
+ 	const gen = generatePostgresSchema();
+ 	await gen.ensureSchema(client);
++	await client.query(`
++		DO $$ BEGIN
++			ALTER TABLE accounts ADD CONSTRAINT chk_preferred_payment_method
++				CHECK (doc->>'preferredPaymentMethod' IS NULL OR
++				       doc->>'preferredPaymentMethod' IN ('credit_card', 'wire_transfer', 'ach', 'paypal'));
++		EXCEPTION WHEN duplicate_object THEN NULL;
++		END $$;
++	`);
  }
  
  if (import.meta.url === `file://${process.argv[1]}`) {

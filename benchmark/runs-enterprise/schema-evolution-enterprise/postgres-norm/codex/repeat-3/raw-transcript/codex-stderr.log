@@ -1,5 +1,5 @@
 Reading additional input from stdin...
-2026-07-16T23:28:13.980739Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7105 column 1; body: {
+2026-07-17T20:01:27.635399Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7105 column 1; body: {
   "data": [
     {
       "status": "succeeded",
@@ -7104,7 +7104,7 @@ Reading additional input from stdin...
   ],
   "object": "list"
 }
-2026-07-16T23:28:14.264463Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7105 column 1; body: {
+2026-07-17T20:01:27.996019Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7105 column 1; body: {
   "data": [
     {
       "status": "succeeded",
@@ -14209,8 +14209,8 @@ Reading additional input from stdin...
   ],
   "object": "list"
 }
-2026-07-16T23:28:43.826262Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[server]: Failed to connect to MongoDB instance using the connection string from the config: connect ENETUNREACH 65.63.93.232:27017")
-2026-07-16T23:31:15.141891Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7105 column 1; body: {
+2026-07-17T20:02:05.409040Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[server]: Failed to connect to MongoDB instance using the connection string from the config: connect ENETUNREACH 65.63.128.3:27017")
+2026-07-17T20:04:29.108768Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7105 column 1; body: {
   "data": [
     {
       "status": "succeeded",

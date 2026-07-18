@@ -1,5 +1,5 @@
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index b272431..0c5ff9d 100644
+index b272431..7aa9ac1 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
 @@ -2,14 +2,20 @@ import { ensureSchema } from "./schema.mjs";
@@ -21,16 +21,19 @@ index b272431..0c5ff9d 100644
    const res = await client.query(
 -    'INSERT INTO accounts (account_id, name, tier, status) VALUES ($1, $2, $3, $4) RETURNING *',
 -    [data.accountId, data.name, data.tier, data.status]
-+    'INSERT INTO accounts (account_id, name, tier, status, created_at, preferred_payment_method) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, $5) RETURNING *',
++    'INSERT INTO accounts (account_id, name, tier, status, created_at, preferred_payment_method) VALUES ($1, $2, $3, $4, NOW(), $5) RETURNING *',
 +    [data.accountId, data.name, data.tier, data.status, data.preferredPaymentMethod]
    );
    return rowToAccount(res.rows[0]);
  }
-@@ -25,6 +31,7 @@ export async function updateAccount(client, accountId, data) {
+@@ -25,6 +31,10 @@ export async function updateAccount(client, accountId, data) {
    if (data.name !== undefined) { sets.push(`name = $${i++}`); vals.push(data.name); }
    if (data.tier !== undefined) { sets.push(`tier = $${i++}`); vals.push(data.tier); }
    if (data.status !== undefined) { sets.push(`status = $${i++}`); vals.push(data.status); }
-+  if (data.preferredPaymentMethod !== undefined) { sets.push(`preferred_payment_method = $${i++}`); vals.push(data.preferredPaymentMethod); }
++  if (data.preferredPaymentMethod !== undefined) {
++    sets.push(`preferred_payment_method = $${i++}`);
++    vals.push(data.preferredPaymentMethod);
++  }
    if (sets.length === 0) return getAccount(client, accountId);
    vals.push(accountId);
    await client.query(`UPDATE accounts SET ${sets.join(', ')} WHERE account_id = $${i}`, vals);
@@ -47,29 +50,28 @@ index d8eedc3..777db2b 100644
        i.amount_cents as "invoiceAmountCents"
      FROM orders o
 diff --git a/src/schema.mjs b/src/schema.mjs
-index 43547f2..d89381c 100644
+index 43547f2..8b6e0d4 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -5,6 +5,22 @@ export async function ensureSchema(client) {
+@@ -5,6 +5,21 @@ export async function ensureSchema(client) {
  	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
  	const gen = generatePostgresSchema();
  	await gen.ensureSchema(client);
 +	await client.query(`
-+    ALTER TABLE accounts
-+    ADD COLUMN IF NOT EXISTS preferred_payment_method TEXT
-+    CHECK (preferred_payment_method IN ('credit_card', 'wire_transfer', 'ach', 'paypal'))
-+  `);
-+	await client.query("ALTER TABLE orders ALTER COLUMN currency SET DEFAULT 'USD'");
-+	await client.query("ALTER TABLE orders ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP");
-+	await client.query("ALTER TABLE order_line_items ALTER COLUMN line_item_id SET DEFAULT md5(random()::text || clock_timestamp()::text)");
-+	await client.query("ALTER TABLE order_line_items ALTER COLUMN product_id SET DEFAULT 'unknown'");
-+	await client.query("ALTER TABLE order_line_items ALTER COLUMN total_cents SET DEFAULT 0");
-+	await client.query("ALTER TABLE invoices ALTER COLUMN invoice_number SET DEFAULT md5(random()::text || clock_timestamp()::text)");
-+	await client.query("ALTER TABLE invoices ALTER COLUMN total_cents SET DEFAULT 0");
-+	await client.query("ALTER TABLE invoices ALTER COLUMN issued_at SET DEFAULT CURRENT_TIMESTAMP");
-+	await client.query("ALTER TABLE invoices ALTER COLUMN due_at SET DEFAULT CURRENT_TIMESTAMP");
-+	await client.query("ALTER TABLE invoices DROP CONSTRAINT IF EXISTS invoices_status_check");
-+	await client.query("ALTER TABLE invoices ADD CONSTRAINT invoices_status_check CHECK (status IN ('draft', 'sent', 'paid', 'overdue', 'void', 'pending'))");
++		ALTER TABLE accounts
++		ADD COLUMN IF NOT EXISTS preferred_payment_method text
++		CHECK (preferred_payment_method IN ('credit_card', 'wire_transfer', 'ach', 'paypal'))
++	`);
++	await client.query(`
++		ALTER TABLE order_line_items
++		ALTER COLUMN line_item_id SET DEFAULT ('line-' || md5(random()::text || clock_timestamp()::text)),
++		ALTER COLUMN product_id SET DEFAULT 'unknown',
++		ALTER COLUMN total_cents SET DEFAULT 0
++	`);
++	await client.query(`
++		ALTER TABLE invoices
++		ADD COLUMN IF NOT EXISTS currency text
++	`);
  }
  
  if (import.meta.url === `file://${process.argv[1]}`) {

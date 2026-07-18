@@ -1,8 +1,8 @@
-Implemented `preferredPaymentMethod` across accounts and order summaries.
+Implemented the account payment-method schema evolution and order-summary field.
 
-- Added optional enum validation and database constraint.
-- Stored/retrieved it through account create/update.
-- Included it in `getOrderSummary`.
-- Preserved the JSONB document workflow required by the existing code.
+- Added optional enum validation for `preferredPaymentMethod`
+- Persisted it in account JSONB documents on create/update
+- Included it in `getOrderSummary`
+- Added compatible live-schema migration support
 
-Verified: `npm test` passes.
+Verification: `npm test` passes.

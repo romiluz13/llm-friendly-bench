@@ -1,8 +1,8 @@
-Implemented `preferredPaymentMethod` across accounts and order summaries.
+Implemented preferred payment methods across accounts and order summaries.
 
-- Added optional enum-checked database column.
-- Added create/update/read support in `accounts.mjs`.
-- Included it in `getOrderSummary`.
-- Added schema compatibility defaults required by the live enterprise fixture schema.
+- Added optional, constrained `preferred_paymentMethod` storage.
+- Updated account create, update, and retrieval mappings.
+- Added `preferredPaymentMethod` to `getOrderSummary`.
+- Restored required live-schema compatibility defaults for existing acceptance fixtures.
 
 Verified: `npm test` passes.

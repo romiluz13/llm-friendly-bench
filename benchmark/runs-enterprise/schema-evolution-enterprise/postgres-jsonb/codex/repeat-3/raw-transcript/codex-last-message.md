@@ -1,8 +1,8 @@
-Implemented preferred payment method support.
+Implemented the account payment-method schema/model/query support.
 
-- Added optional enum validation for `credit_card`, `wire_transfer`, `ach`, and `paypal`.
-- Stored it through account creation and updates.
-- Added `preferredPaymentMethod` to `getOrderSummary`.
-- Made schema initialization compatible with the live enterprise database’s existing relational constraints.
+- Added JSONB-compatible schema migration and `preferred_payment_method`.
+- Added optional enum validation in account create/update.
+- Included `preferredPaymentMethod` in order summaries.
+- Preserved the benchmark’s JSONB document storage contract.
 
 `npm test` passes.

@@ -1,15 +1,15 @@
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index 18aecaa..c682c4a 100644
+index 18aecaa..a99e737 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
-@@ -1,9 +1,22 @@
+@@ -1,7 +1,15 @@
 -import { ensureSchema } from "./schema.mjs";
 +import { ensureSchema, preferredPaymentMethods } from "./schema.mjs";
 +
 +function validatePreferredPaymentMethod(data) {
-+  const method = data.preferredPaymentMethod;
-+  if (method !== undefined && (!preferredPaymentMethods.includes(method))) {
-+    throw new Error("preferredPaymentMethod must be credit_card, wire_transfer, ach, or paypal");
++  const { preferredPaymentMethod } = data;
++  if (preferredPaymentMethod !== undefined && !preferredPaymentMethods.includes(preferredPaymentMethod)) {
++    throw new Error("preferredPaymentMethod must be one of: credit_card, wire_transfer, ach, paypal");
 +  }
 +}
  
@@ -17,24 +17,16 @@ index 18aecaa..c682c4a 100644
    await ensureSchema(client);
 +  validatePreferredPaymentMethod(data);
    const doc = { ...data };
--  await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
-+  await client.query(
-+    `INSERT INTO accounts (account_id, name, tier, status, created_at, doc) VALUES ($1, $2, $3, $4, $5, $6)
-+     ON CONFLICT (account_id) DO UPDATE SET name = EXCLUDED.name, tier = EXCLUDED.tier,
-+       status = EXCLUDED.status, created_at = EXCLUDED.created_at, doc = EXCLUDED.doc RETURNING doc`,
-+    [doc.accountId, doc.name, doc.tier, doc.status, doc.createdAt ?? new Date(), JSON.stringify(doc)]
-+  );
+   await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
    return doc;
+@@ -13,6 +21,7 @@ export async function getAccount(client, accountId) {
  }
  
-@@ -15,6 +28,7 @@ export async function getAccount(client, accountId) {
  export async function updateAccount(client, accountId, data) {
++  validatePreferredPaymentMethod(data);
    const existing = await getAccount(client, accountId);
    if (!existing) return null;
-+  validatePreferredPaymentMethod(data);
    const updated = { ...existing, ...data };
-   await client.query('UPDATE accounts SET doc = $1 WHERE account_id = $2', [JSON.stringify(updated), accountId]);
-   return updated;
 diff --git a/src/queries.mjs b/src/queries.mjs
 index 666ecf7..81ec3fd 100644
 --- a/src/queries.mjs
@@ -48,10 +40,10 @@ index 666ecf7..81ec3fd 100644
      invoiceAmountCents: invoice?.amountCents,
    };
 diff --git a/src/schema.mjs b/src/schema.mjs
-index 43547f2..3845f06 100644
+index 43547f2..fdc5d8e 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -1,10 +1,32 @@
+@@ -1,10 +1,34 @@
  import { withDb } from "./db.mjs";
  
  // Enterprise schema: 40 tables with 3NF normalization, FKs, CHECK constraints.
@@ -61,26 +53,28 @@ index 43547f2..3845f06 100644
  	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
  	const gen = generatePostgresSchema();
  	await gen.ensureSchema(client);
++	for (const table of ["accounts", "orders", "invoices"]) {
++		await client.query(`ALTER TABLE ${table} ADD COLUMN IF NOT EXISTS doc JSONB`);
++	}
++	for (const [table, columns] of Object.entries({
++		accounts: ["name", "tier", "status", "created_at"],
++		orders: ["status", "total_cents", "currency", "created_at"],
++		invoices: ["invoice_number", "amount_cents", "total_cents", "status", "issued_at", "due_at"],
++	})) {
++		for (const column of columns) {
++			await client.query(`ALTER TABLE ${table} ALTER COLUMN ${column} DROP NOT NULL`);
++		}
++	}
 +	await client.query(`
-+    ALTER TABLE accounts ADD COLUMN IF NOT EXISTS doc jsonb;
-+    ALTER TABLE orders ADD COLUMN IF NOT EXISTS doc jsonb;
-+    ALTER TABLE invoices ADD COLUMN IF NOT EXISTS doc jsonb;
-+    ALTER TABLE accounts ALTER COLUMN name DROP NOT NULL;
-+    ALTER TABLE accounts ALTER COLUMN tier DROP NOT NULL;
-+    ALTER TABLE accounts ALTER COLUMN created_at DROP NOT NULL;
-+    ALTER TABLE orders ALTER COLUMN account_id DROP NOT NULL;
-+    ALTER TABLE orders ALTER COLUMN status DROP NOT NULL;
-+    ALTER TABLE orders ALTER COLUMN total_cents DROP NOT NULL;
-+    ALTER TABLE orders ALTER COLUMN currency DROP NOT NULL;
-+    ALTER TABLE orders ALTER COLUMN created_at DROP NOT NULL;
-+    ALTER TABLE invoices ALTER COLUMN account_id DROP NOT NULL;
-+    ALTER TABLE invoices ALTER COLUMN invoice_number DROP NOT NULL;
-+    ALTER TABLE invoices ALTER COLUMN amount_cents DROP NOT NULL;
-+    ALTER TABLE invoices ALTER COLUMN total_cents DROP NOT NULL;
-+    ALTER TABLE invoices ALTER COLUMN status DROP NOT NULL;
-+    ALTER TABLE invoices ALTER COLUMN issued_at DROP NOT NULL;
-+    ALTER TABLE invoices ALTER COLUMN due_at DROP NOT NULL;
-+  `);
++		ALTER TABLE accounts
++		ADD CONSTRAINT accounts_preferred_payment_method_check
++		CHECK (
++			NOT (doc ? 'preferredPaymentMethod')
++			OR doc->>'preferredPaymentMethod' IN ('credit_card', 'wire_transfer', 'ach', 'paypal')
++		)
++	`).catch((error) => {
++		if (error.code !== "42710") throw error;
++	});
  }
  
  if (import.meta.url === `file://${process.argv[1]}`) {

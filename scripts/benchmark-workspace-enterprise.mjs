@@ -3,7 +3,13 @@
 // Task: add preferredPaymentMethod to accounts + update the order summary query.
 // This tests CONTEXT BURDEN — the agent must read and understand a large
 // existing schema before it can safely make a change.
-import { mkdirSync, writeFileSync, symlinkSync, existsSync, readFileSync } from "node:fs";
+import {
+	mkdirSync,
+	writeFileSync,
+	symlinkSync,
+	existsSync,
+	readFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import {
 	generateMongoSchema,
@@ -52,9 +58,15 @@ export function writeEnterpriseWorkspace({
 	writeFileSync(join(workspace, "src", "db.mjs"), dbHelper(lane));
 
 	// Copy the schema generator into the workspace so it can be imported
-	const schemaGenSrc = readFileSync(join(import.meta.dirname, "enterprise-schema-gen.mjs"), "utf8");
+	const schemaGenSrc = readFileSync(
+		join(import.meta.dirname, "enterprise-schema-gen.mjs"),
+		"utf8",
+	);
 	mkdirSync(join(workspace, "scripts"), { recursive: true });
-	writeFileSync(join(workspace, "scripts", "enterprise-schema-gen.mjs"), schemaGenSrc);
+	writeFileSync(
+		join(workspace, "scripts", "enterprise-schema-gen.mjs"),
+		schemaGenSrc,
+	);
 
 	writeFileSync(join(workspace, "src", "schema.mjs"), existingSchema(lane));
 	writeFileSync(
@@ -355,13 +367,13 @@ await withDb(async (db) => {
 
   // Create an order
   await db.collection("orders").insertOne({
-    orderId: "ord-ent-1", accountId: "acct-ent-1", status: "pending", totalCents: 75000,
+    orderId: "ord-ent-1", accountId: "acct-ent-1", status: "pending", totalCents: 75000, currency: "USD", createdAt: new Date(),
     lineItems: [{ productName: "Enterprise License", quantity: 1, unitPriceCents: 75000 }]
   });
 
   // Create an invoice
   await db.collection("invoices").insertOne({
-    invoiceId: "inv-ent-1", orderId: "ord-ent-1", accountId: "acct-ent-1", amountCents: 75000, status: "pending"
+    invoiceId: "inv-ent-1", orderId: "ord-ent-1", accountId: "acct-ent-1", invoiceNumber: "INV-001", amountCents: 75000, totalCents: 75000, status: "sent", currency: "USD", issuedAt: new Date(), dueAt: new Date(),
   });
 
   // Order summary works
@@ -369,7 +381,7 @@ await withDb(async (db) => {
   ok(summary, "regression: order summary returned");
   strictEqual(summary.orderId, "ord-ent-1", "regression: order ID matches");
   strictEqual(summary.accountName, "Enterprise Corp", "regression: account name in summary");
-  strictEqual(summary.invoiceStatus, "pending", "regression: invoice status in summary");
+  strictEqual(summary.invoiceStatus, "sent", "regression: invoice status in summary");
 
   // === NEW: preferredPaymentMethod field ===
   const updated = await updateAccount(db, "acct-ent-1", { preferredPaymentMethod: "wire_transfer" });
@@ -401,9 +413,9 @@ await withDb(async (client) => {
   const acct = await createAccount(client, { accountId: "acct-ent-1", name: "Enterprise Corp", tier: "strategic", status: "active" });
   ok(acct.accountId, "regression: account created");
 
-  await client.query("INSERT INTO orders (order_id, account_id, status, total_cents) VALUES ($1, $2, $3, $4)", ["ord-ent-1", "acct-ent-1", "pending", 75000]);
+  await client.query("INSERT INTO orders (order_id, account_id, status, total_cents, currency, created_at) VALUES ($1, $2, $3, $4, $5, $6)", ["ord-ent-1", "acct-ent-1", "pending", 75000, "USD", new Date()]);
   await client.query("INSERT INTO order_line_items (order_id, product_name, quantity, unit_price_cents) VALUES ($1, $2, $3, $4)", ["ord-ent-1", "Enterprise License", 1, 75000]);
-  await client.query("INSERT INTO invoices (invoice_id, account_id, order_id, amount_cents, status) VALUES ($1, $2, $3, $4, $5)", ["inv-ent-1", "acct-ent-1", "ord-ent-1", 75000, "pending"]);
+  await client.query("INSERT INTO invoices (invoice_id, account_id, order_id, invoice_number, amount_cents, total_cents, status, currency, issued_at, due_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", ["inv-ent-1", "acct-ent-1", "ord-ent-1", "INV-001", 75000, 75000, "sent", "USD", new Date(), new Date()]);
 
   const summary = await getOrderSummary(client, "ord-ent-1");
   ok(summary, "regression: order summary returned");
@@ -440,8 +452,8 @@ await withDb(async (client) => {
   const acct = await createAccount(client, { accountId: "acct-ent-1", name: "Enterprise Corp", tier: "strategic", status: "active" });
   ok(acct.accountId, "regression: account created");
 
-  await client.query("INSERT INTO orders (order_id, account_id, doc) VALUES ($1, $2, $3)", ["ord-ent-1", "acct-ent-1", JSON.stringify({ orderId: "ord-ent-1", accountId: "acct-ent-1", status: "pending", totalCents: 75000, lineItems: [{ productName: "Enterprise License", quantity: 1, unitPriceCents: 75000 }] })]);
-  await client.query("INSERT INTO invoices (invoice_id, account_id, doc) VALUES ($1, $2, $3)", ["inv-ent-1", "acct-ent-1", JSON.stringify({ invoiceId: "inv-ent-1", accountId: "acct-ent-1", orderId: "ord-ent-1", amountCents: 75000, status: "pending" })]);
+  await client.query("INSERT INTO orders (order_id, account_id, doc) VALUES ($1, $2, $3)", ["ord-ent-1", "acct-ent-1", JSON.stringify({ orderId: "ord-ent-1", accountId: "acct-ent-1", status: "pending", totalCents: 75000, currency: "USD", createdAt: new Date().toISOString(), lineItems: [{ productName: "Enterprise License", quantity: 1, unitPriceCents: 75000 }] })]);
+  await client.query("INSERT INTO invoices (invoice_id, account_id, doc) VALUES ($1, $2, $3)", ["inv-ent-1", "acct-ent-1", JSON.stringify({ invoiceId: "inv-ent-1", accountId: "acct-ent-1", orderId: "ord-ent-1", invoiceNumber: "INV-001", amountCents: 75000, totalCents: 75000, status: "sent", currency: "USD", issuedAt: new Date().toISOString(), dueAt: new Date().toISOString() })]);
 
   const summary = await getOrderSummary(client, "ord-ent-1");
   ok(summary, "regression: order summary returned");

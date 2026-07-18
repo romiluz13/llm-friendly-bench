@@ -1,3 +1,7 @@
-Implemented `preferredPaymentMethod` support across the account schema, account create/update validation, and order summaries.
+Implemented the account payment-method schema evolution.
 
-`npm test` passes: “Build-Bench enterprise acceptance passed: mongo.”
+- Added optional enum validation for `preferredPaymentMethod` in `src/schema.mjs`.
+- Ensured account updates apply the schema migration first.
+- Included `preferredPaymentMethod` in `getOrderSummary`.
+
+Verified: `npm test` passes.

@@ -1,12 +1,29 @@
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index 162db11..c3191ae 100644
+index 162db11..6d2a9fb 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
-@@ -11,6 +11,7 @@ export async function getAccount(db, accountId) {
+@@ -1,7 +1,16 @@
+ import { ensureSchema } from "./schema.mjs";
+ 
++const preferredPaymentMethods = new Set(["credit_card", "wire_transfer", "ach", "paypal"]);
++
++function validatePreferredPaymentMethod(data) {
++  if (data.preferredPaymentMethod !== undefined && !preferredPaymentMethods.has(data.preferredPaymentMethod)) {
++    throw new Error("preferredPaymentMethod must be credit_card, wire_transfer, ach, or paypal");
++  }
++}
++
+ export async function createAccount(db, data) {
+   await ensureSchema(db);
++  validatePreferredPaymentMethod(data);
+   const result = await db.collection("accounts").insertOne(data);
+   return { _id: result.insertedId, ...data };
+ }
+@@ -11,6 +20,7 @@ export async function getAccount(db, accountId) {
  }
  
  export async function updateAccount(db, accountId, data) {
-+  await ensureSchema(db);
++  validatePreferredPaymentMethod(data);
    await db.collection("accounts").updateOne({ accountId }, { $set: data });
    return db.collection("accounts").findOne({ accountId });
  }
@@ -23,29 +40,26 @@ index caa36b4..f5cc4db 100644
      invoiceAmountCents: invoice?.amountCents,
    };
 diff --git a/src/schema.mjs b/src/schema.mjs
-index 16c8076..ff5c304 100644
+index 16c8076..1a6af60 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -6,6 +6,23 @@ export async function ensureSchema(db) {
+@@ -6,6 +6,20 @@ export async function ensureSchema(db) {
    const { generateMongoSchema } = await import("../scripts/enterprise-schema-gen.mjs");
    const gen = generateMongoSchema();
    await gen.ensureSchema(db);
-+  for (const collectionName of gen.collectionNames) {
-+    await db.command({ collMod: collectionName, validator: {} });
-+  }
-+  const accountsValidator = {
-+    $jsonSchema: {
-+      bsonType: "object",
-+      properties: {
-+        preferredPaymentMethod: {
-+          enum: ["credit_card", "wire_transfer", "ach", "paypal"],
++  await db.command({
++    collMod: "accounts",
++    validator: {
++      $jsonSchema: {
++        bsonType: "object",
++        properties: {
++          preferredPaymentMethod: {
++            bsonType: "string",
++            enum: ["credit_card", "wire_transfer", "ach", "paypal"],
++          },
 +        },
 +      },
 +    },
-+  };
-+  await db.command({
-+    collMod: "accounts",
-+    validator: accountsValidator,
 +  });
  }
  

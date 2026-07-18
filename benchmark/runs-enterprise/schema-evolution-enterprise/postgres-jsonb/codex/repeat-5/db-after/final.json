@@ -1,13 +1,46 @@
 {
   "collections": [
     {
-      "name": "account_contracts"
+      "name": "invoices"
     },
     {
-      "name": "orders"
+      "name": "invoice_line_items"
     },
     {
-      "name": "account_details"
+      "name": "payments"
+    },
+    {
+      "name": "billing_cycles"
+    },
+    {
+      "name": "payment_methods"
+    },
+    {
+      "name": "credit_notes"
+    },
+    {
+      "name": "support_cases"
+    },
+    {
+      "name": "case_comments"
+    },
+    {
+      "name": "case_escalations"
+    },
+    {
+      "name": "sla_policies"
+    },
+    {
+      "name": "support_assignments"
+    },
+    {
+      "name": "products"
+    },
+    {
+      "name": "tax_records"
+    },
+    {
+      "name": "accounts"
     },
     {
       "name": "account_settings"
@@ -16,34 +49,31 @@
       "name": "account_preferences"
     },
     {
-      "name": "account_team"
-    },
-    {
       "name": "account_billing"
     },
     {
-      "name": "account_health_scores"
+      "name": "account_team"
+    },
+    {
+      "name": "account_contracts"
+    },
+    {
+      "name": "account_details"
     },
     {
       "name": "order_line_items"
     },
     {
-      "name": "accounts"
-    },
-    {
       "name": "order_fulfillments"
     },
     {
-      "name": "invoices"
+      "name": "shipment_items"
     },
     {
       "name": "order_returns"
     },
     {
       "name": "shipments"
-    },
-    {
-      "name": "shipment_items"
     },
     {
       "name": "shipment_tracking"
@@ -58,43 +88,7 @@
       "name": "order_approvals"
     },
     {
-      "name": "invoice_line_items"
-    },
-    {
-      "name": "payments"
-    },
-    {
-      "name": "payment_methods"
-    },
-    {
-      "name": "sla_policies"
-    },
-    {
-      "name": "credit_notes"
-    },
-    {
-      "name": "tax_records"
-    },
-    {
-      "name": "billing_cycles"
-    },
-    {
-      "name": "products"
-    },
-    {
-      "name": "support_cases"
-    },
-    {
-      "name": "case_comments"
-    },
-    {
-      "name": "case_escalations"
-    },
-    {
-      "name": "support_assignments"
-    },
-    {
-      "name": "product_categories"
+      "name": "orders"
     },
     {
       "name": "product_pricing"
@@ -106,19 +100,25 @@
       "name": "product_reviews"
     },
     {
-      "name": "consent_records"
-    },
-    {
       "name": "compliance_reviews"
     },
     {
       "name": "regulatory_flags"
     },
     {
+      "name": "data_processing_agreements"
+    },
+    {
       "name": "audit_trails"
     },
     {
-      "name": "data_processing_agreements"
+      "name": "consent_records"
+    },
+    {
+      "name": "account_health_scores"
+    },
+    {
+      "name": "product_categories"
     }
   ]
 }

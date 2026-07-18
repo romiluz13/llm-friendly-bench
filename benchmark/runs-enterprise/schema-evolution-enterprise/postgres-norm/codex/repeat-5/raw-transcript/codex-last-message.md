@@ -1,8 +1,5 @@
-Implemented the account payment preference and order-summary exposure.
+Implemented `preferredPaymentMethod` across the account schema, account create/update/read mapping, and order summary query.
 
-- `accounts.preferred_payment_method`: nullable, constrained to the four requested values.
-- Account create, read, and update handle `preferredPaymentMethod`.
-- `getOrderSummary` returns `preferredPaymentMethod`.
-- Aligned live-schema defaults/constraints needed by the existing acceptance fixture.
+Also aligned schema initialization with the live acceptance fixture requirements. Verification passed:
 
-Verified: `npm test` passes.
+`npm test` → `Build-Bench enterprise acceptance passed: postgres-norm`

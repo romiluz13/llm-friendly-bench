@@ -1,8 +1,8 @@
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index b272431..ad4aeca 100644
+index b272431..7c5778d 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
-@@ -2,14 +2,20 @@ import { ensureSchema } from "./schema.mjs";
+@@ -2,14 +2,28 @@ import { ensureSchema } from "./schema.mjs";
  
  function rowToAccount(r) {
    if (!r) return null;
@@ -21,12 +21,20 @@ index b272431..ad4aeca 100644
    const res = await client.query(
 -    'INSERT INTO accounts (account_id, name, tier, status) VALUES ($1, $2, $3, $4) RETURNING *',
 -    [data.accountId, data.name, data.tier, data.status]
-+    'INSERT INTO accounts (account_id, name, tier, status, created_at, preferred_payment_method) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, $5) RETURNING *',
++    `INSERT INTO accounts (
++      account_id, name, tier, status, preferred_payment_method, created_at
++    ) VALUES ($1, $2, $3, $4, $5, NOW())
++    ON CONFLICT (account_id) DO UPDATE SET
++      name = EXCLUDED.name,
++      tier = EXCLUDED.tier,
++      status = EXCLUDED.status,
++      preferred_payment_method = EXCLUDED.preferred_payment_method
++    RETURNING *`,
 +    [data.accountId, data.name, data.tier, data.status, data.preferredPaymentMethod]
    );
    return rowToAccount(res.rows[0]);
  }
-@@ -25,6 +31,10 @@ export async function updateAccount(client, accountId, data) {
+@@ -25,6 +39,10 @@ export async function updateAccount(client, accountId, data) {
    if (data.name !== undefined) { sets.push(`name = $${i++}`); vals.push(data.name); }
    if (data.tier !== undefined) { sets.push(`tier = $${i++}`); vals.push(data.tier); }
    if (data.status !== undefined) { sets.push(`status = $${i++}`); vals.push(data.status); }
@@ -50,36 +58,34 @@ index d8eedc3..777db2b 100644
        i.amount_cents as "invoiceAmountCents"
      FROM orders o
 diff --git a/src/schema.mjs b/src/schema.mjs
-index 43547f2..cc739f8 100644
+index 43547f2..ccd47cd 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -5,6 +5,30 @@ export async function ensureSchema(client) {
+@@ -5,6 +5,28 @@ export async function ensureSchema(client) {
  	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
  	const gen = generatePostgresSchema();
  	await gen.ensureSchema(client);
 +	await client.query(`
 +		ALTER TABLE accounts
-+		ADD COLUMN IF NOT EXISTS preferred_payment_method text
++		ADD COLUMN IF NOT EXISTS preferred_payment_method TEXT
 +		CHECK (preferred_payment_method IN ('credit_card', 'wire_transfer', 'ach', 'paypal'))
 +	`);
 +	await client.query(`
-+		ALTER TABLE orders
-+		ALTER COLUMN currency SET DEFAULT 'USD',
-+		ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP
++		ALTER TABLE order_line_items
++		ALTER COLUMN line_item_id
++		SET DEFAULT ('line-' || md5(random()::text || clock_timestamp()::text))
 +	`);
 +	await client.query(`
 +		ALTER TABLE order_line_items
-+		ALTER COLUMN line_item_id SET DEFAULT '',
-+		ALTER COLUMN product_id DROP NOT NULL,
++		ALTER COLUMN product_id DROP NOT NULL
++	`);
++	await client.query(`
++		ALTER TABLE order_line_items
 +		ALTER COLUMN total_cents SET DEFAULT 0
 +	`);
 +	await client.query(`
 +		ALTER TABLE invoices
-+		DROP CONSTRAINT IF EXISTS invoices_status_check,
-+		ALTER COLUMN invoice_number SET DEFAULT '',
-+		ALTER COLUMN total_cents SET DEFAULT 0,
-+		ALTER COLUMN issued_at SET DEFAULT CURRENT_TIMESTAMP,
-+		ALTER COLUMN due_at SET DEFAULT CURRENT_TIMESTAMP
++		ADD COLUMN IF NOT EXISTS currency TEXT
 +	`);
  }
  
