@@ -142,40 +142,6 @@
       }
     }
   ],
-  "hypotheses": {
-    "H1": {
-      "statement": "MongoDB requires less agent work (tokensRead) than any relational lane, within-agent",
-      "verdict": "confirmed",
-      "perAgent": [
-        {
-          "agentId": "claude-code",
-          "pgNormPct": 256,
-          "pgJsonbPct": 78
-        },
-        {
-          "agentId": "codex",
-          "pgNormPct": 109,
-          "pgJsonbPct": 89
-        }
-      ]
-    },
-    "H2": {
-      "statement": "Relational penalty grows with normalization depth (pg-norm > pg-jsonb > mongo)",
-      "verdict": "confirmed",
-      "perAgent": [
-        {
-          "agentId": "claude-code",
-          "pgNormTokens": 1845006,
-          "pgJsonbTokens": 921479
-        },
-        {
-          "agentId": "codex",
-          "pgNormTokens": 395379,
-          "pgJsonbTokens": 357170
-        }
-      ]
-    }
-  },
   "caveat": "Within-agent comparison only. Each agent is measured against itself across the three database designs; one agent's absolute numbers are never compared to the other's, because the two CLIs count tokens incompatibly.",
   "proofOfNoBias": [
     "Both agents tested — different models, different companies, same conclusion",

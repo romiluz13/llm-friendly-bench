@@ -2,6 +2,7 @@
 
 // Enterprise benchmark UI test — verifies the marketing page renders
 // the enterprise results, proof-of-no-bias, and technical details.
+// No hypotheses are tested — the benchmark presents raw data only.
 
 import { existsSync, readFileSync } from "node:fs";
 
@@ -19,27 +20,33 @@ requireCheck(existsSync(bundlePath), `Missing enterprise bundle: ${bundlePath}`)
 if (existsSync(pagePath)) {
   const page = readFileSync(pagePath, "utf8");
 
-  // Required surfaces (new enterprise UI)
+  // Required surfaces (enterprise UI — no hypotheses section)
   for (const id of [
-    "results", "hypotheses", "proof", "how", "cost", "schema", "task",
-    "agent-results", "hyp-grid", "proof-grid", "pipeline", "cost-cards", "schema-viz",
+    "results", "proof", "how", "cost", "schema", "task",
+    "agent-results", "proof-grid", "pipeline", "cost-cards", "schema-viz",
   ]) {
     requireCheck(page.includes(`id="${id}"`), `Enterprise UI missing surface: ${id}`);
   }
 
-  // Required copy — enterprise framing
+  // Required copy — enterprise framing, no claims
   for (const text of [
     "MongoDB",
     "Postgres",
     "40-entity",
     "Zero Bias",
     "live database",
-    "within-agent",           // the fairness discipline
-    "vanilla",                // no workflow overhead
-    "anti-cheat",             // integrity defense
+    "vanilla",
+    "anti-cheat",
+    "within-agent",
   ]) {
     requireCheck(page.includes(text), `Enterprise UI missing required copy: ${text}`);
   }
+
+  // No hypotheses, no verdicts, no claims — just raw data
+  requireCheck(!page.includes("CONFIRMED"), "Page must not contain hypothesis verdicts");
+  requireCheck(!page.includes("REFUTED"), "Page must not contain hypothesis verdicts");
+  requireCheck(!page.includes("Pre-Registered"), "Page must not claim pre-registered hypotheses");
+  requireCheck(!page.includes("renderHypotheses"), "Page must not have hypothesis rendering code");
 
   // Forbidden copy — no internal names, no overclaims
   for (const forbidden of [
@@ -55,9 +62,8 @@ if (existsSync(pagePath)) {
   // Accessibility
   requireCheck(/prefers-reduced-motion/.test(page), "Animated bars must respect prefers-reduced-motion");
 
-  // Required render functions
+  // Required render functions (no renderHypotheses)
   requireCheck(/function renderResults/.test(page), "Page must render the agent results");
-  requireCheck(/function renderHypotheses/.test(page), "Page must render the hypothesis verdicts");
   requireCheck(/function renderProof/.test(page), "Page must render the zero-bias proof grid");
   requireCheck(/function renderPipeline/.test(page), "Page must render the pipeline steps");
   requireCheck(/function renderCost/.test(page), "Page must render the cost projection");
@@ -83,10 +89,8 @@ if (existsSync(bundlePath)) {
     }
   }
 
-  // Hypotheses
-  requireCheck(bundle.hypotheses && bundle.hypotheses.H1 && bundle.hypotheses.H2, "Both hypotheses required");
-  requireCheck(bundle.hypotheses.H1.verdict === "confirmed", "H1 must be confirmed");
-  requireCheck(bundle.hypotheses.H2.verdict === "confirmed", "H2 must be confirmed");
+  // No hypotheses in the bundle
+  requireCheck(!bundle.hypotheses, "Bundle must NOT contain hypotheses — raw data only");
 
   // Within-agent caveat
   requireCheck(/within-agent/i.test(bundle.caveat || ""), "Within-agent-only caveat must be present");

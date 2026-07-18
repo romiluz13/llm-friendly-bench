@@ -759,7 +759,7 @@
         <div class="logo">LLM-Friendly DB Bench</div>
         <div class="links">
           <a href="#results">Results</a>
-          <a href="#hypotheses">Hypotheses</a>
+
           <a href="#proof">Zero Bias</a>
           <a href="#how">How It Works</a>
           <a href="#cost">Cost Impact</a>
@@ -776,14 +776,14 @@
           ● Live Database Benchmark · MongoDB 8.3.4 vs Postgres 16.14
         </div>
         <h1>
-          MongoDB requires <span class="hl">78–256% fewer tokens</span><br />
-          than Postgres for AI coding agents<br />
-          on enterprise schemas.
+          How many tokens does an AI agent spend<br />
+          building on <span class="hl">MongoDB vs Postgres</span>?<br />
+          We measured. No hypotheses. No claims. Just data.
         </h1>
         <p class="sub">
           The world's most realistic benchmark for database AI-friendliness. A
           40-entity enterprise schema. Real CLI agents. Live databases. Zero
-          bias. Pre-registered hypotheses. Both agents agree.
+          No claims, no hypotheses, no verdicts. Just raw data from real agents on real databases.
         </p>
         <div class="hero-stats">
           <div class="hstat">
@@ -821,34 +821,16 @@
 
         <div class="result-hero">
           <div class="result-headline">
-            <div class="verdict">✓ Both Hypotheses Confirmed</div>
             <h3>
-              MongoDB requires less agent work. The more normalized the schema,
-              the more it costs.
+              Median tokens read across 5 clean repeats per cell. Lower is better.
             </h3>
             <p>
-              Median tokens read across 5 clean repeats per cell. Lower is
-              better.
+              No hypotheses. No verdicts. Just the raw numbers — you decide what they mean.
             </p>
           </div>
 
           <div class="agent-grid" id="agent-results"></div>
         </div>
-      </div>
-    </section>
-
-    <!-- ===== HYPOTHESES ===== -->
-    <section id="hypotheses">
-      <div class="wrap">
-        <div class="sec-kicker">Pre-Registered</div>
-        <h2 class="sec-title">
-          The hypotheses — stated before the runs, not after
-        </h2>
-        <p class="sec-sub">
-          These hypotheses were written into the benchmark spec before any
-          enterprise runs were executed. The results confirmed both.
-        </p>
-        <div class="hyp-grid" id="hyp-grid"></div>
       </div>
     </section>
 
@@ -1126,37 +1108,12 @@
             },
           },
         ],
-        hypotheses: {
-          H1: {
-            statement:
-              "MongoDB requires less agent work (tokensRead) than any relational lane, within-agent",
-            verdict: "confirmed",
-            perAgent: [
-              { agentId: "claude-code", pgNormPct: 256, pgJsonbPct: 78 },
-              { agentId: "codex", pgNormPct: 109, pgJsonbPct: 89 },
-            ],
-          },
-          H2: {
-            statement:
-              "Relational penalty grows with normalization depth (pg-norm > pg-jsonb > mongo)",
-            verdict: "confirmed",
-            perAgent: [
-              {
-                agentId: "claude-code",
-                pgNormTokens: 1845006,
-                pgJsonbTokens: 921479,
-              },
-              { agentId: "codex", pgNormTokens: 395379, pgJsonbTokens: 357170 },
-            ],
-          },
-        },
         caveat:
           "Within-agent comparison only. Each agent is measured against itself across the three database designs; one agent's absolute numbers are never compared to the other's, because the two CLIs count tokens incompatibly.",
         proofOfNoBias: [
           "Both agents tested — different models, different companies, same conclusion",
           "Three lanes tested — MongoDB, Postgres-normalized, Postgres-JSONB (dose-response)",
-          "Pre-registered hypotheses — H1 and H2 stated before runs, not after",
-          "Vanilla mode — no skills, no code reviews, no subagents, no workflow overhead",
+"Vanilla mode — no skills, no code reviews, no subagents, no workflow overhead",
           "Live database — tests query the real DB directly, not mocks",
           "Anti-cheat — source-pattern scan, protected files, cheat-signal detection",
           "5 repeats per cell — medians and IQR, not single-run anecdotes",
@@ -1201,7 +1158,7 @@
 
       function render(b) {
         renderResults(b);
-        renderHypotheses(b);
+
         renderProof(b);
         renderPipeline(b);
         renderCost(b);
@@ -1272,48 +1229,6 @@
       }
       function ls_cleanCount(a) {
         return a.lanes?.mongo?.cleanRepeats || 5;
-      }
-
-      function renderHypotheses(b) {
-        const hyp = b.hypotheses || {};
-        const perAgentDetail = (h) => {
-          if (!h.perAgent) return "";
-          return h.perAgent
-            .map((pa) => {
-              const lbl = pa.agentId === "claude-code" ? "Claude" : "Codex";
-              if (pa.pgNormPct != null) {
-                return `<div><b>${lbl}:</b> pg-norm ${signPct(pa.pgNormPct)}, pg-jsonb ${signPct(pa.pgJsonbPct)}</div>`;
-              }
-              if (pa.pgNormTokens != null) {
-                return `<div><b>${lbl}:</b> pg-norm ${fmtTokens(pa.pgNormTokens)}, pg-jsonb ${fmtTokens(pa.pgJsonbTokens)}</div>`;
-              }
-              return "";
-            })
-            .join("");
-        };
-
-        document.getElementById("hyp-grid").innerHTML = Object.entries(hyp)
-          .map(([id, h]) => {
-            const vcls =
-              h.verdict === "confirmed"
-                ? "confirmed"
-                : h.verdict === "refuted"
-                  ? "refuted"
-                  : "inconclusive";
-            const icon =
-              h.verdict === "confirmed"
-                ? "✓"
-                : h.verdict === "refuted"
-                  ? "✗"
-                  : "?";
-            return `<div class="hyp-card">
-            <div class="hyp-id">${esc(id)}</div>
-            <div class="hyp-stmt">${esc(h.statement)}</div>
-            <div class="hyp-verdict ${vcls}">${icon} ${esc(h.verdict.toUpperCase())}</div>
-            <div class="hyp-detail">${perAgentDetail(h)}</div>
-          </div>`;
-          })
-          .join("");
       }
 
       function renderProof(b) {
