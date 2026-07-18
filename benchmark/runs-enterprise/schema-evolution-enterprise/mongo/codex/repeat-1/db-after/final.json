@@ -1,23 +1,7 @@
 {
   "collections": [
     {
-      "name": "compliance_reviews",
-      "count": 0
-    },
-    {
-      "name": "support_cases",
-      "count": 0
-    },
-    {
-      "name": "billing_cycles",
-      "count": 0
-    },
-    {
-      "name": "payments",
-      "count": 0
-    },
-    {
-      "name": "payment_methods",
+      "name": "data_processing_agreements",
       "count": 0
     },
     {
@@ -25,11 +9,7 @@
       "count": 0
     },
     {
-      "name": "data_processing_agreements",
-      "count": 0
-    },
-    {
-      "name": "product_categories",
+      "name": "compliance_reviews",
       "count": 0
     },
     {
@@ -37,11 +17,11 @@
       "count": 1
     },
     {
-      "name": "consent_records",
+      "name": "support_cases",
       "count": 0
     },
     {
-      "name": "tax_records",
+      "name": "product_categories",
       "count": 0
     },
     {
@@ -49,23 +29,7 @@
       "count": 0
     },
     {
-      "name": "products",
-      "count": 0
-    },
-    {
-      "name": "order_fulfillments",
-      "count": 0
-    },
-    {
-      "name": "audit_trails",
-      "count": 0
-    },
-    {
-      "name": "accounts",
-      "count": 1
-    },
-    {
-      "name": "order_returns",
+      "name": "billing_cycles",
       "count": 0
     },
     {
@@ -73,7 +37,39 @@
       "count": 0
     },
     {
+      "name": "tax_records",
+      "count": 0
+    },
+    {
+      "name": "consent_records",
+      "count": 0
+    },
+    {
+      "name": "audit_trails",
+      "count": 0
+    },
+    {
+      "name": "payment_methods",
+      "count": 0
+    },
+    {
+      "name": "orders",
+      "count": 1
+    },
+    {
+      "name": "order_returns",
+      "count": 0
+    },
+    {
       "name": "sla_policies",
+      "count": 0
+    },
+    {
+      "name": "accounts",
+      "count": 1
+    },
+    {
+      "name": "products",
       "count": 0
     },
     {
@@ -81,8 +77,12 @@
       "count": 0
     },
     {
-      "name": "orders",
-      "count": 1
+      "name": "order_fulfillments",
+      "count": 0
+    },
+    {
+      "name": "payments",
+      "count": 0
     }
   ]
 }

@@ -1,49 +1,19 @@
 {
   "collections": [
     {
-      "name": "account_preferences"
-    },
-    {
-      "name": "account_details"
-    },
-    {
-      "name": "account_settings"
-    },
-    {
-      "name": "account_team"
-    },
-    {
-      "name": "account_billing"
-    },
-    {
-      "name": "account_contracts"
-    },
-    {
-      "name": "account_health_scores"
-    },
-    {
-      "name": "orders"
-    },
-    {
-      "name": "order_line_items"
-    },
-    {
-      "name": "accounts"
-    },
-    {
       "name": "order_fulfillments"
     },
     {
       "name": "order_returns"
     },
     {
-      "name": "invoice_line_items"
-    },
-    {
       "name": "shipments"
     },
     {
       "name": "shipment_items"
+    },
+    {
+      "name": "order_approvals"
     },
     {
       "name": "shipment_tracking"
@@ -55,7 +25,7 @@
       "name": "order_status_history"
     },
     {
-      "name": "order_approvals"
+      "name": "invoice_line_items"
     },
     {
       "name": "invoices"
@@ -64,13 +34,43 @@
       "name": "payments"
     },
     {
+      "name": "account_details"
+    },
+    {
+      "name": "account_settings"
+    },
+    {
+      "name": "account_preferences"
+    },
+    {
+      "name": "account_health_scores"
+    },
+    {
+      "name": "account_team"
+    },
+    {
+      "name": "account_billing"
+    },
+    {
+      "name": "account_contracts"
+    },
+    {
+      "name": "orders"
+    },
+    {
+      "name": "order_line_items"
+    },
+    {
+      "name": "accounts"
+    },
+    {
       "name": "payment_methods"
     },
     {
       "name": "credit_notes"
     },
     {
-      "name": "sla_policies"
+      "name": "support_assignments"
     },
     {
       "name": "tax_records"
@@ -88,10 +88,10 @@
       "name": "case_escalations"
     },
     {
-      "name": "products"
+      "name": "sla_policies"
     },
     {
-      "name": "support_assignments"
+      "name": "products"
     },
     {
       "name": "product_categories"
@@ -109,9 +109,6 @@
       "name": "compliance_reviews"
     },
     {
-      "name": "consent_records"
-    },
-    {
       "name": "regulatory_flags"
     },
     {
@@ -119,6 +116,9 @@
     },
     {
       "name": "data_processing_agreements"
+    },
+    {
+      "name": "consent_records"
     }
   ]
 }

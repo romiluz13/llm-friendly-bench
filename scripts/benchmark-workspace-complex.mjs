@@ -9,41 +9,77 @@
 import { mkdirSync, writeFileSync, symlinkSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
-export function writeComplexBrownfieldWorkspace({ workspace, lane, taskType, ns, dbHandle }) {
-  mkdirSync(join(workspace, "src"), { recursive: true });
-  mkdirSync(join(workspace, "tests"), { recursive: true });
+export function writeComplexBrownfieldWorkspace({
+	workspace,
+	lane,
+	taskType,
+	ns,
+	dbHandle,
+}) {
+	mkdirSync(join(workspace, "src"), { recursive: true });
+	mkdirSync(join(workspace, "tests"), { recursive: true });
 
-  writeFileSync(join(workspace, "package.json"), JSON.stringify({
-    name: `build-bench-${lane}-${taskType}`,
-    version: "1.0.0",
-    private: true,
-    type: "module",
-    scripts: { test: "node tests/acceptance.test.mjs" },
-  }, null, 2) + "\n");
+	writeFileSync(
+		join(workspace, "package.json"),
+		JSON.stringify(
+			{
+				name: `build-bench-${lane}-${taskType}`,
+				version: "1.0.0",
+				private: true,
+				type: "module",
+				scripts: { test: "node tests/acceptance.test.mjs" },
+			},
+			null,
+			2,
+		) + "\n",
+	);
 
-  writeFileSync(join(workspace, "db-config.json"), JSON.stringify(dbConfig({ lane, ns, dbHandle }), null, 2) + "\n");
-  writeFileSync(join(workspace, "RULES.md"), rulesDoc());
-  writeFileSync(join(workspace, "README.md"), readmeDoc({ lane, taskType }));
-  writeFileSync(join(workspace, "AGENTS.md"), `# Agent Guidelines — ${lane} (complex brownfield)\n\nMulti-entity database with existing code. Read the source files first.\nOnly edit files under \`src/\` except \`src/db.mjs\` (protected).\nDo not edit anything under \`tests/\`.\n`);
+	writeFileSync(
+		join(workspace, "db-config.json"),
+		JSON.stringify(dbConfig({ lane, ns, dbHandle }), null, 2) + "\n",
+	);
+	writeFileSync(join(workspace, "RULES.md"), rulesDoc());
+	writeFileSync(join(workspace, "README.md"), readmeDoc({ lane, taskType }));
+	writeFileSync(
+		join(workspace, "AGENTS.md"),
+		`# Agent Guidelines — ${lane} (complex brownfield)\n\nMulti-entity database with existing code. Read the source files first.\nOnly edit files under \`src/\` except \`src/db.mjs\` (protected).\nDo not edit anything under \`tests/\`.\n`,
+	);
 
-  writeFileSync(join(workspace, "src", "db.mjs"), dbHelper(lane));
-  writeFileSync(join(workspace, "src", "schema.mjs"), existingSchema(lane));
-  writeFileSync(join(workspace, "src", "orders.mjs"), existingOrdersModel(lane));
-  writeFileSync(join(workspace, "src", "accounts.mjs"), existingAccountsModel(lane));
+	writeFileSync(join(workspace, "src", "db.mjs"), dbHelper(lane));
+	writeFileSync(join(workspace, "src", "schema.mjs"), existingSchema(lane));
+	writeFileSync(
+		join(workspace, "src", "orders.mjs"),
+		existingOrdersModel(lane),
+	);
+	writeFileSync(
+		join(workspace, "src", "accounts.mjs"),
+		existingAccountsModel(lane),
+	);
 
-  writeFileSync(join(workspace, "tests", "acceptance.test.mjs"), acceptanceTest({ lane }));
+	writeFileSync(
+		join(workspace, "tests", "acceptance.test.mjs"),
+		acceptanceTest({ lane }),
+	);
 
-  linkDrivers(workspace);
+	linkDrivers(workspace);
 }
 
 function dbConfig({ lane, ns, dbHandle }) {
-  if (lane === "mongo") return { uri: dbHandle.uri, db: dbHandle.db, namespace: ns };
-  return { host: dbHandle.host || "127.0.0.1", port: dbHandle.port || 5433, user: dbHandle.user || "lab", password: dbHandle.password || "lab", database: dbHandle.database || "sql_hidden_cost", schema: ns };
+	if (lane === "mongo")
+		return { uri: dbHandle.uri, db: dbHandle.db, namespace: ns };
+	return {
+		host: dbHandle.host || "127.0.0.1",
+		port: dbHandle.port || 5433,
+		user: dbHandle.user || "lab",
+		password: dbHandle.password || "lab",
+		database: dbHandle.database || "sql_hidden_cost",
+		schema: ns,
+	};
 }
 
 function dbHelper(lane) {
-  if (lane === "mongo") {
-    return `import { readFileSync } from "node:fs";
+	if (lane === "mongo") {
+		return `import { readFileSync } from "node:fs";
 import { MongoClient } from "mongodb";
 const cfg = JSON.parse(readFileSync(new URL("../db-config.json", import.meta.url), "utf8"));
 export async function withDb(fn) {
@@ -53,8 +89,8 @@ export async function withDb(fn) {
 }
 export { cfg };
 `;
-  }
-  return `import { readFileSync } from "node:fs";
+	}
+	return `import { readFileSync } from "node:fs";
 import pg from "pg";
 const cfg = JSON.parse(readFileSync(new URL("../db-config.json", import.meta.url), "utf8"));
 export async function withDb(fn) {
@@ -69,8 +105,8 @@ export { cfg };
 
 // EXISTING schema: accounts, orders, line_items, invoices, support_cases
 function existingSchema(lane) {
-  if (lane === "mongo") {
-    return `import { withDb } from "./db.mjs";
+	if (lane === "mongo") {
+		return `import { withDb } from "./db.mjs";
 
 export async function ensureSchema(db) {
   const cols = await db.listCollections().toArray();
@@ -127,9 +163,9 @@ if (import.meta.url === \`file://\${process.argv[1]}\`) {
   withDb((db) => ensureSchema(db)).then(() => console.log("schema ready")).catch((e) => { console.error(e); process.exit(1); });
 }
 `;
-  }
-  if (lane === "postgres-norm") {
-    return `import { withDb } from "./db.mjs";
+	}
+	if (lane === "postgres-norm") {
+		return `import { withDb } from "./db.mjs";
 
 export async function ensureSchema(client) {
   await client.query(\`
@@ -179,9 +215,9 @@ if (import.meta.url === \`file://\${process.argv[1]}\`) {
   withDb((client) => ensureSchema(client)).then(() => console.log("schema ready")).catch((e) => { console.error(e); process.exit(1); });
 }
 `;
-  }
-  if (lane === "postgres-jsonb") {
-    return `import { withDb } from "./db.mjs";
+	}
+	if (lane === "postgres-jsonb") {
+		return `import { withDb } from "./db.mjs";
 
 export async function ensureSchema(client) {
   await client.query(\`
@@ -226,13 +262,13 @@ if (import.meta.url === \`file://\${process.argv[1]}\`) {
   withDb((client) => ensureSchema(client)).then(() => console.log("schema ready")).catch((e) => { console.error(e); process.exit(1); });
 }
 `;
-  }
-  throw new Error(`No schema for lane ${lane}`);
+	}
+	throw new Error(`No schema for lane ${lane}`);
 }
 
 function existingOrdersModel(lane) {
-  if (lane === "mongo") {
-    return `import { ensureSchema } from "./schema.mjs";
+	if (lane === "mongo") {
+		return `import { ensureSchema } from "./schema.mjs";
 
 export async function createOrder(db, data) {
   await ensureSchema(db);
@@ -253,9 +289,9 @@ export async function updateOrderStatus(db, orderId, status) {
   return db.collection("orders").findOne({ orderId });
 }
 `;
-  }
-  if (lane === "postgres-norm") {
-    return `import { ensureSchema } from "./schema.mjs";
+	}
+	if (lane === "postgres-norm") {
+		return `import { ensureSchema } from "./schema.mjs";
 
 function rowToOrder(r) {
   return { orderId: r.order_id, accountId: r.account_id, status: r.status, totalCents: r.total_cents };
@@ -299,9 +335,9 @@ export async function updateOrderStatus(client, orderId, status) {
   return res.rows[0] ? rowToOrder(res.rows[0]) : null;
 }
 `;
-  }
-  if (lane === "postgres-jsonb") {
-    return `import { ensureSchema } from "./schema.mjs";
+	}
+	if (lane === "postgres-jsonb") {
+		return `import { ensureSchema } from "./schema.mjs";
 
 export async function createOrder(client, data) {
   await ensureSchema(client);
@@ -328,13 +364,13 @@ export async function updateOrderStatus(client, orderId, status) {
   return updated;
 }
 `;
-  }
-  throw new Error(`No orders model for lane ${lane}`);
+	}
+	throw new Error(`No orders model for lane ${lane}`);
 }
 
 function existingAccountsModel(lane) {
-  if (lane === "mongo") {
-    return `import { ensureSchema } from "./schema.mjs";
+	if (lane === "mongo") {
+		return `import { ensureSchema } from "./schema.mjs";
 
 export async function createAccount(db, data) {
   await ensureSchema(db);
@@ -351,9 +387,9 @@ export async function updateAccount(db, accountId, data) {
   return db.collection("accounts").findOne({ accountId });
 }
 `;
-  }
-  if (lane === "postgres-norm") {
-    return `import { ensureSchema } from "./schema.mjs";
+	}
+	if (lane === "postgres-norm") {
+		return `import { ensureSchema } from "./schema.mjs";
 
 function rowToAccount(r) {
   return { accountId: r.account_id, name: r.name, tier: r.tier, status: r.status };
@@ -386,9 +422,9 @@ export async function updateAccount(client, accountId, data) {
   return res.rows[0] ? rowToAccount(res.rows[0]) : null;
 }
 `;
-  }
-  if (lane === "postgres-jsonb") {
-    return `import { ensureSchema } from "./schema.mjs";
+	}
+	if (lane === "postgres-jsonb") {
+		return `import { ensureSchema } from "./schema.mjs";
 
 export async function createAccount(client, data) {
   await ensureSchema(client);
@@ -410,14 +446,14 @@ export async function updateAccount(client, accountId, data) {
   return updated;
 }
 `;
-  }
-  throw new Error(`No accounts model for lane ${lane}`);
+	}
+	throw new Error(`No accounts model for lane ${lane}`);
 }
 
 // Acceptance test: regression (existing entities work) + new (shipments entity works)
 function acceptanceTest({ lane }) {
-  if (lane === "mongo") {
-    return `import { strictEqual, ok } from "node:assert";
+	if (lane === "mongo") {
+		return `import { strictEqual, ok } from "node:assert";
 import { withDb } from "../src/db.mjs";
 import { ensureSchema } from "../src/schema.mjs";
 import { createAccount, getAccount } from "../src/accounts.mjs";
@@ -471,9 +507,9 @@ await withDb(async (db) => {
 
 console.log("Build-Bench complex brownfield acceptance passed: ${lane}/new-entity");
 `;
-  }
-  if (lane === "postgres-norm") {
-    return `import { strictEqual, ok } from "node:assert";
+	}
+	if (lane === "postgres-norm") {
+		return `import { strictEqual, ok } from "node:assert";
 import { withDb } from "../src/db.mjs";
 import { ensureSchema } from "../src/schema.mjs";
 import { createAccount } from "../src/accounts.mjs";
@@ -527,9 +563,9 @@ await withDb(async (client) => {
 
 console.log("Build-Bench complex brownfield acceptance passed: ${lane}/new-entity");
 `;
-  }
-  if (lane === "postgres-jsonb") {
-    return `import { strictEqual, ok } from "node:assert";
+	}
+	if (lane === "postgres-jsonb") {
+		return `import { strictEqual, ok } from "node:assert";
 import { withDb } from "../src/db.mjs";
 import { ensureSchema } from "../src/schema.mjs";
 import { createAccount } from "../src/accounts.mjs";
@@ -582,12 +618,12 @@ await withDb(async (client) => {
 
 console.log("Build-Bench complex brownfield acceptance passed: ${lane}/new-entity");
 `;
-  }
-  throw new Error(`No acceptance test for lane ${lane}`);
+	}
+	throw new Error(`No acceptance test for lane ${lane}`);
 }
 
 function rulesDoc() {
-  return `# Build-Bench Complex Brownfield — new-entity task
+	return `# Build-Bench Complex Brownfield — new-entity task
 
 ## Existing system
 
@@ -619,7 +655,7 @@ Add a **shipments** entity with a relationship to orders:
 }
 
 function readmeDoc({ lane, taskType }) {
-  return `# Build-Bench Complex Brownfield — ${lane} / ${taskType}
+	return `# Build-Bench Complex Brownfield — ${lane} / ${taskType}
 
 Multi-entity database (accounts, orders, invoices, support_cases) with working code.
 Your task: add a **shipments** entity related to orders. Create \`src/shipments.mjs\` and update \`src/schema.mjs\`.
@@ -633,8 +669,12 @@ Edit \`src/schema.mjs\` and create \`src/shipments.mjs\`. Do not edit \`src/db.m
 }
 
 function linkDrivers(workspace) {
-  const repoModules = join(import.meta.dirname, "..", "node_modules");
-  if (existsSync(repoModules)) {
-    try { symlinkSync(repoModules, join(workspace, "node_modules"), "dir"); } catch { /* already exists */ }
-  }
+	const repoModules = join(import.meta.dirname, "..", "node_modules");
+	if (existsSync(repoModules)) {
+		try {
+			symlinkSync(repoModules, join(workspace, "node_modules"), "dir");
+		} catch {
+			/* already exists */
+		}
+	}
 }

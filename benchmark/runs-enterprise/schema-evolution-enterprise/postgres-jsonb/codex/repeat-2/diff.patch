@@ -1,25 +1,41 @@
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index 18aecaa..a99e737 100644
+index 18aecaa..53c4b54 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
-@@ -1,7 +1,15 @@
--import { ensureSchema } from "./schema.mjs";
-+import { ensureSchema, preferredPaymentMethods } from "./schema.mjs";
+@@ -1,21 +1,56 @@
+ import { ensureSchema } from "./schema.mjs";
+ 
++const preferredPaymentMethods = new Set(["credit_card", "wire_transfer", "ach", "paypal"]);
 +
 +function validatePreferredPaymentMethod(data) {
-+  const { preferredPaymentMethod } = data;
-+  if (preferredPaymentMethod !== undefined && !preferredPaymentMethods.includes(preferredPaymentMethod)) {
-+    throw new Error("preferredPaymentMethod must be one of: credit_card, wire_transfer, ach, paypal");
++  if (data.preferredPaymentMethod !== undefined && !preferredPaymentMethods.has(data.preferredPaymentMethod)) {
++    throw new Error("preferredPaymentMethod must be credit_card, wire_transfer, ach, or paypal");
 +  }
 +}
- 
++
  export async function createAccount(client, data) {
    await ensureSchema(client);
+-  const doc = { ...data };
+-  await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
+-  return doc;
 +  validatePreferredPaymentMethod(data);
-   const doc = { ...data };
-   await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
-   return doc;
-@@ -13,6 +21,7 @@ export async function getAccount(client, accountId) {
++  const res = await client.query(
++    `INSERT INTO accounts (account_id, name, tier, segment, region, status, created_at, preferred_payment_method, doc)
++     VALUES ($1, $2, $3, $4, $5, $6, COALESCE($7, NOW()), $8, $9)
++     RETURNING account_id, name, tier, segment, region, status, created_at, preferred_payment_method`,
++    [data.accountId, data.name, data.tier, data.segment, data.region, data.status, data.createdAt, data.preferredPaymentMethod, JSON.stringify(data)],
++  );
++  return toAccount(res.rows[0]);
+ }
+ 
+ export async function getAccount(client, accountId) {
+-  const res = await client.query('SELECT doc FROM accounts WHERE account_id = $1', [accountId]);
+-  return res.rows[0]?.doc || null;
++  const res = await client.query(
++    'SELECT account_id, name, tier, segment, region, status, created_at, preferred_payment_method FROM accounts WHERE account_id = $1',
++    [accountId],
++  );
++  return res.rows[0] ? toAccount(res.rows[0]) : null;
  }
  
  export async function updateAccount(client, accountId, data) {
@@ -27,6 +43,29 @@ index 18aecaa..a99e737 100644
    const existing = await getAccount(client, accountId);
    if (!existing) return null;
    const updated = { ...existing, ...data };
+-  await client.query('UPDATE accounts SET doc = $1 WHERE account_id = $2', [JSON.stringify(updated), accountId]);
+-  return updated;
++  const res = await client.query(
++    `UPDATE accounts SET name = $1, tier = $2, segment = $3, region = $4, status = $5, preferred_payment_method = $6, doc = $7
++     WHERE account_id = $8
++     RETURNING account_id, name, tier, segment, region, status, created_at, preferred_payment_method`,
++    [updated.name, updated.tier, updated.segment, updated.region, updated.status, updated.preferredPaymentMethod, JSON.stringify(updated), accountId],
++  );
++  return toAccount(res.rows[0]);
++}
++
++function toAccount(row) {
++  return {
++    accountId: row.account_id,
++    name: row.name,
++    tier: row.tier,
++    segment: row.segment,
++    region: row.region,
++    status: row.status,
++    createdAt: row.created_at,
++    preferredPaymentMethod: row.preferred_payment_method,
++  };
+ }
 diff --git a/src/queries.mjs b/src/queries.mjs
 index 666ecf7..81ec3fd 100644
 --- a/src/queries.mjs
@@ -40,41 +79,37 @@ index 666ecf7..81ec3fd 100644
      invoiceAmountCents: invoice?.amountCents,
    };
 diff --git a/src/schema.mjs b/src/schema.mjs
-index 43547f2..fdc5d8e 100644
+index 43547f2..0f3c117 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -1,10 +1,34 @@
- import { withDb } from "./db.mjs";
- 
- // Enterprise schema: 40 tables with 3NF normalization, FKs, CHECK constraints.
-+export const preferredPaymentMethods = ["credit_card", "wire_transfer", "ach", "paypal"];
-+
- export async function ensureSchema(client) {
+@@ -5,6 +5,30 @@ export async function ensureSchema(client) {
  	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
  	const gen = generatePostgresSchema();
  	await gen.ensureSchema(client);
-+	for (const table of ["accounts", "orders", "invoices"]) {
-+		await client.query(`ALTER TABLE ${table} ADD COLUMN IF NOT EXISTS doc JSONB`);
-+	}
-+	for (const [table, columns] of Object.entries({
-+		accounts: ["name", "tier", "status", "created_at"],
-+		orders: ["status", "total_cents", "currency", "created_at"],
-+		invoices: ["invoice_number", "amount_cents", "total_cents", "status", "issued_at", "due_at"],
-+	})) {
-+		for (const column of columns) {
-+			await client.query(`ALTER TABLE ${table} ALTER COLUMN ${column} DROP NOT NULL`);
-+		}
-+	}
 +	await client.query(`
 +		ALTER TABLE accounts
-+		ADD CONSTRAINT accounts_preferred_payment_method_check
-+		CHECK (
-+			NOT (doc ? 'preferredPaymentMethod')
-+			OR doc->>'preferredPaymentMethod' IN ('credit_card', 'wire_transfer', 'ach', 'paypal')
-+		)
-+	`).catch((error) => {
-+		if (error.code !== "42710") throw error;
-+	});
++		ADD COLUMN IF NOT EXISTS preferred_payment_method TEXT
++		CHECK (preferred_payment_method IN ('credit_card', 'wire_transfer', 'ach', 'paypal'))
++	`);
++	await client.query('ALTER TABLE accounts ADD COLUMN IF NOT EXISTS doc JSONB');
++	await client.query('ALTER TABLE orders ADD COLUMN IF NOT EXISTS doc JSONB');
++	await client.query('ALTER TABLE invoices ADD COLUMN IF NOT EXISTS doc JSONB');
++	await client.query(`
++		ALTER TABLE orders
++		ALTER COLUMN status SET DEFAULT 'pending',
++		ALTER COLUMN total_cents SET DEFAULT 0,
++		ALTER COLUMN currency SET DEFAULT 'USD',
++		ALTER COLUMN created_at SET DEFAULT NOW()
++	`);
++	await client.query(`
++		ALTER TABLE invoices
++		ALTER COLUMN invoice_number SET DEFAULT '',
++		ALTER COLUMN amount_cents SET DEFAULT 0,
++		ALTER COLUMN total_cents SET DEFAULT 0,
++		ALTER COLUMN status SET DEFAULT 'draft',
++		ALTER COLUMN issued_at SET DEFAULT NOW(),
++		ALTER COLUMN due_at SET DEFAULT NOW()
++	`);
  }
  
  if (import.meta.url === `file://${process.argv[1]}`) {

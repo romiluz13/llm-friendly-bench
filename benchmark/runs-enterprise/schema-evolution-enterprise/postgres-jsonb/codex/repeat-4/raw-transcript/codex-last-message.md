@@ -1,10 +1,7 @@
-Implemented `preferredPaymentMethod` end-to-end:
+Implemented preferred payment method support.
 
-- Added nullable enum-constrained account column in schema migration.
-- Updated account create/read/update handling.
-- Included it in `getOrderSummary`.
-- Preserved JSONB order/invoice compatibility.
+- `accounts` JSONB schema accepts optional `credit_card`, `wire_transfer`, `ach`, or `paypal`.
+- Account create/update validates and stores it.
+- Order summaries now include `preferredPaymentMethod`.
 
-Verified with `npm test`:
-
-`Build-Bench enterprise acceptance passed: postgres-jsonb`
+Verified with `npm test` — all acceptance tests pass.

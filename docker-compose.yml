@@ -1,6 +1,6 @@
 services:
   mongodb:
-    image: mongo:8
+    image: mongodb/mongodb-atlas-local:latest
     container_name: sql-hidden-cost-mongodb
     ports:
       - "127.0.0.1:27018:27017"

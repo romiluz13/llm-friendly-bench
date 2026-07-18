@@ -1,13 +1,19 @@
 {
   "collections": [
     {
+      "name": "account_contracts"
+    },
+    {
+      "name": "order_line_items"
+    },
+    {
+      "name": "account_details"
+    },
+    {
       "name": "account_settings"
     },
     {
       "name": "account_preferences"
-    },
-    {
-      "name": "account_details"
     },
     {
       "name": "account_team"
@@ -16,28 +22,13 @@
       "name": "account_billing"
     },
     {
-      "name": "account_contracts"
-    },
-    {
       "name": "account_health_scores"
-    },
-    {
-      "name": "orders"
-    },
-    {
-      "name": "order_line_items"
-    },
-    {
-      "name": "accounts"
     },
     {
       "name": "order_fulfillments"
     },
     {
       "name": "order_returns"
-    },
-    {
-      "name": "invoice_line_items"
     },
     {
       "name": "shipments"
@@ -55,10 +46,13 @@
       "name": "order_status_history"
     },
     {
+      "name": "invoices"
+    },
+    {
       "name": "order_approvals"
     },
     {
-      "name": "invoices"
+      "name": "invoice_line_items"
     },
     {
       "name": "payments"
@@ -67,16 +61,19 @@
       "name": "payment_methods"
     },
     {
-      "name": "credit_notes"
+      "name": "sla_policies"
     },
     {
-      "name": "sla_policies"
+      "name": "credit_notes"
     },
     {
       "name": "tax_records"
     },
     {
       "name": "billing_cycles"
+    },
+    {
+      "name": "products"
     },
     {
       "name": "support_cases"
@@ -86,9 +83,6 @@
     },
     {
       "name": "case_escalations"
-    },
-    {
-      "name": "products"
     },
     {
       "name": "support_assignments"
@@ -106,10 +100,10 @@
       "name": "product_reviews"
     },
     {
-      "name": "compliance_reviews"
+      "name": "consent_records"
     },
     {
-      "name": "consent_records"
+      "name": "compliance_reviews"
     },
     {
       "name": "regulatory_flags"
@@ -119,6 +113,12 @@
     },
     {
       "name": "data_processing_agreements"
+    },
+    {
+      "name": "orders"
+    },
+    {
+      "name": "accounts"
     }
   ]
 }

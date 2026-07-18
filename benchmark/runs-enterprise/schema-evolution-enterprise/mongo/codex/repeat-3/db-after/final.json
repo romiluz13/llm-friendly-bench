@@ -1,15 +1,23 @@
 {
   "collections": [
     {
-      "name": "payment_methods",
+      "name": "sla_policies",
       "count": 0
     },
     {
-      "name": "product_categories",
+      "name": "support_cases",
       "count": 0
     },
     {
-      "name": "account_contracts",
+      "name": "tax_records",
+      "count": 0
+    },
+    {
+      "name": "order_returns",
+      "count": 0
+    },
+    {
+      "name": "audit_trails",
       "count": 0
     },
     {
@@ -21,19 +29,11 @@
       "count": 1
     },
     {
-      "name": "credit_notes",
+      "name": "order_fulfillments",
       "count": 0
     },
     {
-      "name": "consent_records",
-      "count": 0
-    },
-    {
-      "name": "orders",
-      "count": 1
-    },
-    {
-      "name": "tax_records",
+      "name": "product_categories",
       "count": 0
     },
     {
@@ -41,31 +41,19 @@
       "count": 0
     },
     {
-      "name": "shipments",
-      "count": 0
-    },
-    {
-      "name": "compliance_reviews",
-      "count": 0
-    },
-    {
-      "name": "audit_trails",
-      "count": 0
-    },
-    {
-      "name": "order_fulfillments",
-      "count": 0
-    },
-    {
-      "name": "order_returns",
-      "count": 0
-    },
-    {
       "name": "accounts",
       "count": 1
     },
     {
-      "name": "support_cases",
+      "name": "orders",
+      "count": 1
+    },
+    {
+      "name": "credit_notes",
+      "count": 0
+    },
+    {
+      "name": "shipments",
       "count": 0
     },
     {
@@ -73,7 +61,19 @@
       "count": 0
     },
     {
-      "name": "sla_policies",
+      "name": "compliance_reviews",
+      "count": 0
+    },
+    {
+      "name": "payment_methods",
+      "count": 0
+    },
+    {
+      "name": "products",
+      "count": 0
+    },
+    {
+      "name": "consent_records",
       "count": 0
     },
     {
@@ -81,7 +81,7 @@
       "count": 0
     },
     {
-      "name": "products",
+      "name": "account_contracts",
       "count": 0
     }
   ]

@@ -1,8 +1,8 @@
-Implemented the account payment preference and order-summary exposure.
+Implemented `preferredPaymentMethod` end-to-end:
 
-- `accounts.preferred_payment_method`: optional DB-enforced enum
-- Create/update/get account support
-- `getOrderSummary` includes `preferredPaymentMethod`
-- Aligned schema bootstrap with the existing acceptance setup
+- Added nullable, constrained `accounts.preferred_payment_method`.
+- Added account create/update/read support.
+- Included it in `getOrderSummary` as `preferredPaymentMethod`.
+- Made schema setup compatible with the existing acceptance fixtures.
 
-Verified: `npm test` passes.
+`npm test` passes.

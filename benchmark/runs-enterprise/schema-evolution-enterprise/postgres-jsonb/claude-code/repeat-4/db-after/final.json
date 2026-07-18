@@ -1,70 +1,10 @@
 {
   "collections": [
     {
-      "name": "orders"
-    },
-    {
-      "name": "account_details"
-    },
-    {
-      "name": "account_settings"
-    },
-    {
-      "name": "account_preferences"
-    },
-    {
-      "name": "account_team"
-    },
-    {
-      "name": "account_billing"
-    },
-    {
-      "name": "account_health_scores"
-    },
-    {
-      "name": "account_contracts"
-    },
-    {
-      "name": "order_line_items"
-    },
-    {
-      "name": "accounts"
-    },
-    {
-      "name": "order_returns"
-    },
-    {
-      "name": "order_fulfillments"
-    },
-    {
-      "name": "shipments"
-    },
-    {
-      "name": "shipment_items"
-    },
-    {
-      "name": "shipment_tracking"
-    },
-    {
-      "name": "delivery_confirmations"
-    },
-    {
-      "name": "order_status_history"
-    },
-    {
-      "name": "order_approvals"
-    },
-    {
-      "name": "invoice_line_items"
-    },
-    {
       "name": "payments"
     },
     {
       "name": "payment_methods"
-    },
-    {
-      "name": "billing_cycles"
     },
     {
       "name": "credit_notes"
@@ -73,22 +13,10 @@
       "name": "tax_records"
     },
     {
-      "name": "case_comments"
+      "name": "accounts"
     },
     {
-      "name": "support_cases"
-    },
-    {
-      "name": "invoices"
-    },
-    {
-      "name": "case_escalations"
-    },
-    {
-      "name": "sla_policies"
-    },
-    {
-      "name": "support_assignments"
+      "name": "billing_cycles"
     },
     {
       "name": "products"
@@ -97,19 +25,16 @@
       "name": "product_categories"
     },
     {
-      "name": "compliance_reviews"
-    },
-    {
-      "name": "product_pricing"
-    },
-    {
       "name": "product_inventory"
     },
     {
-      "name": "product_reviews"
+      "name": "shipments"
     },
     {
-      "name": "regulatory_flags"
+      "name": "support_cases"
+    },
+    {
+      "name": "compliance_reviews"
     },
     {
       "name": "audit_trails"
@@ -119,6 +44,15 @@
     },
     {
       "name": "consent_records"
+    },
+    {
+      "name": "account_contracts"
+    },
+    {
+      "name": "orders"
+    },
+    {
+      "name": "invoices"
     }
   ]
 }

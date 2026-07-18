@@ -1,3 +1,29 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index 18aecaa..0ded1ec 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -2,6 +2,10 @@ import { ensureSchema } from "./schema.mjs";
+ 
+ export async function createAccount(client, data) {
+   await ensureSchema(client);
++  const VALID_PAYMENT_METHODS = ['credit_card', 'wire_transfer', 'ach', 'paypal'];
++  if (data.preferredPaymentMethod !== undefined && !VALID_PAYMENT_METHODS.includes(data.preferredPaymentMethod)) {
++    throw new Error(`Invalid preferredPaymentMethod: ${data.preferredPaymentMethod}`);
++  }
+   const doc = { ...data };
+   await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
+   return doc;
+@@ -13,6 +17,10 @@ export async function getAccount(client, accountId) {
+ }
+ 
+ export async function updateAccount(client, accountId, data) {
++  const VALID_PAYMENT_METHODS = ['credit_card', 'wire_transfer', 'ach', 'paypal'];
++  if (data.preferredPaymentMethod !== undefined && !VALID_PAYMENT_METHODS.includes(data.preferredPaymentMethod)) {
++    throw new Error(`Invalid preferredPaymentMethod: ${data.preferredPaymentMethod}`);
++  }
+   const existing = await getAccount(client, accountId);
+   if (!existing) return null;
+   const updated = { ...existing, ...data };
 diff --git a/src/queries.mjs b/src/queries.mjs
 index 666ecf7..81ec3fd 100644
 --- a/src/queries.mjs
@@ -11,62 +37,44 @@ index 666ecf7..81ec3fd 100644
      invoiceAmountCents: invoice?.amountCents,
    };
 diff --git a/src/schema.mjs b/src/schema.mjs
-index 43547f2..d9eb322 100644
+index 43547f2..4c36c0c 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -1,10 +1,51 @@
+@@ -1,10 +1,37 @@
  import { withDb } from "./db.mjs";
  
--// Enterprise schema: 40 tables with 3NF normalization, FKs, CHECK constraints.
-+// JSONB schema: accounts, orders, invoices stored as JSONB doc columns.
-+// accounts.preferredPaymentMethod: optional enum (credit_card, wire_transfer, ach, paypal)
-+
-+let _schemaEnsured = false;
-+
+ // Enterprise schema: 40 tables with 3NF normalization, FKs, CHECK constraints.
++// Additionally, accounts/orders/invoices carry a `doc` JSONB column for the
++// JSONB-store access pattern used by accounts.mjs and queries.mjs.
  export async function ensureSchema(client) {
--	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
--	const gen = generatePostgresSchema();
--	await gen.ensureSchema(client);
-+  if (_schemaEnsured) return;
+ 	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
+ 	const gen = generatePostgresSchema();
+ 	await gen.ensureSchema(client);
 +
-+  // Check if accounts table exists with a doc column; if not, drop and recreate
-+  const check = await client.query(`
-+    SELECT column_name FROM information_schema.columns
-+    WHERE table_name = 'accounts' AND column_name = 'doc'
-+  `);
-+  if (check.rows.length === 0) {
-+    await client.query(`DROP TABLE IF EXISTS invoices`);
-+    await client.query(`DROP TABLE IF EXISTS orders`);
-+    await client.query(`DROP TABLE IF EXISTS accounts`);
-+  }
++	// Add doc JSONB column to the three tables used by the application layer.
++	// ALTER TABLE … ADD COLUMN IF NOT EXISTS is idempotent.
++	for (const table of ["accounts", "orders", "invoices"]) {
++		await client.query(
++			`ALTER TABLE ${table} ADD COLUMN IF NOT EXISTS doc JSONB`
++		);
++	}
 +
-+  await client.query(`
-+    CREATE TABLE IF NOT EXISTS accounts (
-+      account_id TEXT PRIMARY KEY,
-+      doc JSONB NOT NULL,
-+      CONSTRAINT chk_accounts_preferred_payment_method CHECK (
-+        doc->>'preferredPaymentMethod' IS NULL OR
-+        doc->>'preferredPaymentMethod' IN ('credit_card', 'wire_transfer', 'ach', 'paypal')
-+      )
-+    )
-+  `);
-+  await client.query(`
-+    CREATE TABLE IF NOT EXISTS orders (
-+      order_id TEXT PRIMARY KEY,
-+      account_id TEXT,
-+      doc JSONB NOT NULL
-+    )
-+  `);
-+  await client.query(`
-+    CREATE TABLE IF NOT EXISTS invoices (
-+      invoice_id TEXT PRIMARY KEY,
-+      account_id TEXT,
-+      order_id TEXT,
-+      doc JSONB NOT NULL
-+    )
-+  `);
-+
-+  _schemaEnsured = true;
++	// The application inserts only (pk, [fk], doc) into these tables and stores
++	// everything else in the JSONB doc.  Drop NOT NULL on all generated 3NF columns
++	// (except PKs) so those inserts don't violate constraints.
++	const dropNotNull = {
++		accounts: ["name", "tier", "status", "created_at"],
++		orders:   ["status", "total_cents", "currency", "created_at"],
++		invoices: ["invoice_number", "amount_cents", "total_cents", "status",
++		           "issued_at", "due_at"],
++	};
++	for (const [table, cols] of Object.entries(dropNotNull)) {
++		for (const col of cols) {
++			await client.query(
++				`ALTER TABLE ${table} ALTER COLUMN ${col} DROP NOT NULL`
++			);
++		}
++	}
  }
  
  if (import.meta.url === `file://${process.argv[1]}`) {

@@ -20,7 +20,7 @@ function dropNs(lane, ns) {
 	if (lane === "mongo") {
 		try {
 			execSync(
-				`mongosh --quiet mongodb://127.0.0.1:27018/${ns} --eval 'db.dropDatabase()'`,
+				`mongosh --quiet mongodb://127.0.0.1:27018/${ns}?directConnection=true?directConnection=true --eval 'db.dropDatabase()'`,
 				{ stdio: "pipe" },
 			);
 		} catch {

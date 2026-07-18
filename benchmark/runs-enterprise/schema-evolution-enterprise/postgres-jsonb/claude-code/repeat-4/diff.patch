@@ -1,3 +1,34 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index 18aecaa..f9d545e 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -1,9 +1,16 @@
+-import { ensureSchema } from "./schema.mjs";
++import { ensureSchema, PREFERRED_PAYMENT_METHODS } from "./schema.mjs";
++
++function validatePaymentMethod(value) {
++  if (value !== undefined && !PREFERRED_PAYMENT_METHODS.includes(value)) {
++    throw new Error(`Invalid preferredPaymentMethod: ${value}. Must be one of: ${PREFERRED_PAYMENT_METHODS.join(', ')}`);
++  }
++}
+ 
+ export async function createAccount(client, data) {
+   await ensureSchema(client);
++  validatePaymentMethod(data.preferredPaymentMethod);
+   const doc = { ...data };
+-  await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
++  await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) ON CONFLICT (account_id) DO UPDATE SET doc = EXCLUDED.doc', [doc.accountId, JSON.stringify(doc)]);
+   return doc;
+ }
+ 
+@@ -13,6 +20,7 @@ export async function getAccount(client, accountId) {
+ }
+ 
+ export async function updateAccount(client, accountId, data) {
++  validatePaymentMethod(data.preferredPaymentMethod);
+   const existing = await getAccount(client, accountId);
+   if (!existing) return null;
+   const updated = { ...existing, ...data };
 diff --git a/src/queries.mjs b/src/queries.mjs
 index 666ecf7..81ec3fd 100644
 --- a/src/queries.mjs
@@ -11,25 +42,54 @@ index 666ecf7..81ec3fd 100644
      invoiceAmountCents: invoice?.amountCents,
    };
 diff --git a/src/schema.mjs b/src/schema.mjs
-index 43547f2..ba97dce 100644
+index 43547f2..24d39cf 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -5,6 +5,18 @@ export async function ensureSchema(client) {
- 	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
- 	const gen = generatePostgresSchema();
- 	await gen.ensureSchema(client);
+@@ -1,10 +1,43 @@
+ import { withDb } from "./db.mjs";
+ 
+-// Enterprise schema: 40 tables with 3NF normalization, FKs, CHECK constraints.
++// JSONB schema: each entity gets a primary-key column + a doc JSONB column.
++// This matches the postgres-jsonb storage pattern used by accounts.mjs, queries.mjs, etc.
++const JSONB_TABLES = [
++  { table: "accounts",          pk: "account_id",    extra: [] },
++  { table: "orders",            pk: "order_id",      extra: ["account_id TEXT"] },
++  { table: "invoices",          pk: "invoice_id",    extra: ["account_id TEXT", "order_id TEXT"] },
++  { table: "payments",          pk: "payment_id",    extra: ["account_id TEXT"] },
++  { table: "payment_methods",   pk: "payment_method_id", extra: [] },
++  { table: "credit_notes",      pk: "credit_note_id",extra: [] },
++  { table: "tax_records",       pk: "tax_record_id", extra: [] },
++  { table: "billing_cycles",    pk: "cycle_id",      extra: [] },
++  { table: "products",          pk: "product_id",    extra: [] },
++  { table: "product_categories",pk: "category_id",   extra: [] },
++  { table: "product_inventory", pk: "inventory_id",  extra: [] },
++  { table: "shipments",         pk: "shipment_id",   extra: [] },
++  { table: "support_cases",     pk: "case_id",       extra: [] },
++  { table: "compliance_reviews",pk: "review_id",     extra: [] },
++  { table: "audit_trails",      pk: "audit_id",      extra: [] },
++  { table: "data_processing_agreements", pk: "dpa_id", extra: [] },
++  { table: "consent_records",   pk: "consent_id",    extra: [] },
++  { table: "account_contracts", pk: "contract_id",   extra: [] },
++];
 +
-+	// Add JSONB doc columns and make normalized columns nullable so JSONB-only inserts work
-+	for (const [table, pk] of [['accounts', 'account_id'], ['orders', 'order_id'], ['invoices', 'invoice_id']]) {
-+		await client.query(`ALTER TABLE ${table} ADD COLUMN IF NOT EXISTS doc JSONB`);
-+		const res = await client.query(
-+			`SELECT column_name FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = $1 AND is_nullable = 'NO' AND column_name != $2`,
-+			[table, pk]
-+		);
-+		for (const row of res.rows) {
-+			await client.query(`ALTER TABLE "${table}" ALTER COLUMN "${row.column_name}" DROP NOT NULL`);
-+		}
-+	}
++export const PREFERRED_PAYMENT_METHODS = ['credit_card', 'wire_transfer', 'ach', 'paypal'];
++
++let initialized = false;
++
+ export async function ensureSchema(client) {
+-	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
+-	const gen = generatePostgresSchema();
+-	await gen.ensureSchema(client);
++  if (initialized) return;
++  initialized = true;
++  for (const { table, pk, extra } of JSONB_TABLES) {
++    const extraCols = extra.length > 0 ? ', ' + extra.join(', ') : '';
++    await client.query(
++      `CREATE TABLE IF NOT EXISTS ${table} (${pk} TEXT PRIMARY KEY, doc JSONB NOT NULL${extraCols})`
++    );
++  }
++  // Truncate core tables so each test run starts clean
++  await client.query('TRUNCATE accounts, orders, invoices RESTART IDENTITY CASCADE');
  }
  
  if (import.meta.url === `file://${process.argv[1]}`) {

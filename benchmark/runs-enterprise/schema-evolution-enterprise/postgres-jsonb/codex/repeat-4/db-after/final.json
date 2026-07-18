@@ -1,9 +1,6 @@
 {
   "collections": [
     {
-      "name": "orders"
-    },
-    {
       "name": "account_details"
     },
     {
@@ -19,10 +16,13 @@
       "name": "account_billing"
     },
     {
-      "name": "account_health_scores"
+      "name": "account_contracts"
     },
     {
-      "name": "account_contracts"
+      "name": "orders"
+    },
+    {
+      "name": "account_health_scores"
     },
     {
       "name": "order_line_items"
@@ -31,16 +31,10 @@
       "name": "accounts"
     },
     {
-      "name": "order_fulfillments"
-    },
-    {
-      "name": "order_returns"
-    },
-    {
-      "name": "invoice_line_items"
-    },
-    {
       "name": "shipments"
+    },
+    {
+      "name": "payments"
     },
     {
       "name": "shipment_items"
@@ -61,19 +55,19 @@
       "name": "invoices"
     },
     {
-      "name": "payments"
+      "name": "invoice_line_items"
     },
     {
-      "name": "payment_methods"
+      "name": "order_fulfillments"
     },
     {
-      "name": "credit_notes"
-    },
-    {
-      "name": "sla_policies"
+      "name": "order_returns"
     },
     {
       "name": "tax_records"
+    },
+    {
+      "name": "support_assignments"
     },
     {
       "name": "billing_cycles"
@@ -88,28 +82,25 @@
       "name": "case_escalations"
     },
     {
-      "name": "products"
-    },
-    {
-      "name": "support_assignments"
+      "name": "sla_policies"
     },
     {
       "name": "product_categories"
     },
     {
-      "name": "product_pricing"
+      "name": "products"
     },
     {
-      "name": "product_inventory"
+      "name": "payment_methods"
+    },
+    {
+      "name": "credit_notes"
     },
     {
       "name": "product_reviews"
     },
     {
       "name": "compliance_reviews"
-    },
-    {
-      "name": "consent_records"
     },
     {
       "name": "regulatory_flags"
@@ -119,6 +110,15 @@
     },
     {
       "name": "data_processing_agreements"
+    },
+    {
+      "name": "consent_records"
+    },
+    {
+      "name": "product_inventory"
+    },
+    {
+      "name": "product_pricing"
     }
   ]
 }

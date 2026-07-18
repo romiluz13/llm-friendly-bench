@@ -1,88 +1,134 @@
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index 18aecaa..4460167 100644
+index 18aecaa..c825ed9 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
-@@ -1,8 +1,9 @@
--import { ensureSchema } from "./schema.mjs";
-+import { ensureSchema, validateAccount } from "./schema.mjs";
+@@ -1,21 +1,40 @@
+ import { ensureSchema } from "./schema.mjs";
  
- export async function createAccount(client, data) {
-   await ensureSchema(client);
-   const doc = { ...data };
-+  validateAccount(doc);
-   await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
-   return doc;
- }
-@@ -16,6 +17,7 @@ export async function updateAccount(client, accountId, data) {
-   const existing = await getAccount(client, accountId);
-   if (!existing) return null;
-   const updated = { ...existing, ...data };
-+  validateAccount(updated);
-   await client.query('UPDATE accounts SET doc = $1 WHERE account_id = $2', [JSON.stringify(updated), accountId]);
-   return updated;
- }
-diff --git a/src/queries.mjs b/src/queries.mjs
-index 666ecf7..81ec3fd 100644
---- a/src/queries.mjs
-+++ b/src/queries.mjs
-@@ -20,6 +20,7 @@ export async function getOrderSummary(client, orderId) {
-     lineItems: order.lineItems || [],
-     accountName: account?.name,
-     accountTier: account?.tier,
-+    preferredPaymentMethod: account?.preferredPaymentMethod,
-     invoiceStatus: invoice?.status,
-     invoiceAmountCents: invoice?.amountCents,
-   };
-diff --git a/src/schema.mjs b/src/schema.mjs
-index 43547f2..0579b04 100644
---- a/src/schema.mjs
-+++ b/src/schema.mjs
-@@ -1,10 +1,48 @@
- import { withDb } from "./db.mjs";
- 
-+export const accountSchema = {
-+  preferredPaymentMethod: {
-+    type: "string",
-+    enum: ["credit_card", "wire_transfer", "ach", "paypal"],
-+    required: false,
-+  },
-+};
++const preferredPaymentMethods = new Set(["credit_card", "wire_transfer", "ach", "paypal"]);
 +
-+export function validateAccount(data) {
-+  const method = data.preferredPaymentMethod;
-+  if (method !== undefined && !accountSchema.preferredPaymentMethod.enum.includes(method)) {
++function validatePreferredPaymentMethod(data) {
++  if (
++    data.preferredPaymentMethod !== undefined
++    && (typeof data.preferredPaymentMethod !== "string" || !preferredPaymentMethods.has(data.preferredPaymentMethod))
++  ) {
 +    throw new Error("preferredPaymentMethod must be one of: credit_card, wire_transfer, ach, paypal");
 +  }
 +}
 +
- // Enterprise schema: 40 tables with 3NF normalization, FKs, CHECK constraints.
- export async function ensureSchema(client) {
+ export async function createAccount(client, data) {
+   await ensureSchema(client);
+-  const doc = { ...data };
+-  await client.query('INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc', [doc.accountId, JSON.stringify(doc)]);
+-  return doc;
++  validatePreferredPaymentMethod(data);
++  await client.query(
++    `INSERT INTO accounts (account_id, name, tier, segment, region, status, created_at, preferred_payment_method) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
++     ON CONFLICT (account_id) DO UPDATE SET name = EXCLUDED.name, tier = EXCLUDED.tier, segment = EXCLUDED.segment,
++       region = EXCLUDED.region, status = EXCLUDED.status, preferred_payment_method = EXCLUDED.preferred_payment_method`,
++    [data.accountId, data.name, data.tier, data.segment, data.region, data.status, data.createdAt || new Date(), data.preferredPaymentMethod]
++  );
++  return { ...data };
+ }
+ 
+ export async function getAccount(client, accountId) {
+-  const res = await client.query('SELECT doc FROM accounts WHERE account_id = $1', [accountId]);
+-  return res.rows[0]?.doc || null;
++  const res = await client.query(`SELECT account_id AS "accountId", name, tier, segment, region, status,
++    preferred_payment_method AS "preferredPaymentMethod" FROM accounts WHERE account_id = $1`, [accountId]);
++  return res.rows[0] || null;
+ }
+ 
+ export async function updateAccount(client, accountId, data) {
+   const existing = await getAccount(client, accountId);
+   if (!existing) return null;
++  validatePreferredPaymentMethod(data);
+   const updated = { ...existing, ...data };
+-  await client.query('UPDATE accounts SET doc = $1 WHERE account_id = $2', [JSON.stringify(updated), accountId]);
++  await client.query(`UPDATE accounts SET name = $1, tier = $2, segment = $3, region = $4, status = $5,
++    preferred_payment_method = $6 WHERE account_id = $7`, [updated.name, updated.tier, updated.segment, updated.region, updated.status, updated.preferredPaymentMethod, accountId]);
+   return updated;
+ }
+diff --git a/src/queries.mjs b/src/queries.mjs
+index 666ecf7..4bfe1ed 100644
+--- a/src/queries.mjs
++++ b/src/queries.mjs
+@@ -3,24 +3,26 @@ import { ensureSchema } from "./schema.mjs";
+ // Order summary: reads orders + accounts docs (JSONB)
+ export async function getOrderSummary(client, orderId) {
+   await ensureSchema(client);
+-  const orderRes = await client.query('SELECT doc FROM orders WHERE order_id = $1', [orderId]);
++  const orderRes = await client.query('SELECT order_id, account_id, status, total_cents FROM orders WHERE order_id = $1', [orderId]);
+   if (!orderRes.rows[0]) return null;
+-  const order = orderRes.rows[0].doc;
++  const order = orderRes.rows[0];
+ 
+-  const acctRes = await client.query('SELECT doc FROM accounts WHERE account_id = $1', [order.accountId]);
+-  const account = acctRes.rows[0]?.doc;
++  const acctRes = await client.query('SELECT name, tier, preferred_payment_method FROM accounts WHERE account_id = $1', [order.account_id]);
++  const account = acctRes.rows[0];
+ 
+-  const invRes = await client.query('SELECT doc FROM invoices WHERE order_id = $1', [orderId]);
+-  const invoice = invRes.rows[0]?.doc;
++  const invRes = await client.query('SELECT status, amount_cents FROM invoices WHERE order_id = $1', [orderId]);
++  const invoice = invRes.rows[0];
++  const itemsRes = await client.query('SELECT product_id, product_name, quantity, unit_price_cents, discount_cents, tax_cents, total_cents FROM order_line_items WHERE order_id = $1', [orderId]);
+ 
+   return {
+-    orderId: order.orderId,
++    orderId: order.order_id,
+     status: order.status,
+-    totalCents: order.totalCents,
+-    lineItems: order.lineItems || [],
++    totalCents: order.total_cents,
++    lineItems: itemsRes.rows,
+     accountName: account?.name,
+     accountTier: account?.tier,
++    preferredPaymentMethod: account?.preferred_payment_method,
+     invoiceStatus: invoice?.status,
+-    invoiceAmountCents: invoice?.amountCents,
++    invoiceAmountCents: invoice?.amount_cents,
+   };
+ }
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 43547f2..6345993 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -5,6 +5,37 @@ export async function ensureSchema(client) {
  	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
  	const gen = generatePostgresSchema();
  	await gen.ensureSchema(client);
-+
-+  // The application stores each entity as a JSONB document while retaining
-+  // the generated identifier columns for joins and foreign keys.
-+  const tables = await client.query(
-+    "SELECT table_name FROM information_schema.tables WHERE table_schema = current_schema() AND table_type = 'BASE TABLE'",
-+  );
-+  for (const { table_name: tableName } of tables.rows) {
-+    await client.query(`ALTER TABLE ${tableName} ADD COLUMN IF NOT EXISTS doc JSONB`);
-+    const columns = await client.query(
-+      "SELECT column_name FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = $1 AND is_nullable = 'NO'",
-+      [tableName],
-+    );
-+    const primaryKeys = await client.query(
-+      "SELECT a.attname AS column_name FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = $1::regclass AND i.indisprimary",
-+      [tableName],
-+    );
-+    const primaryKeyNames = new Set(primaryKeys.rows.map((row) => row.column_name));
-+    for (const { column_name: columnName } of columns.rows) {
-+      if (!primaryKeyNames.has(columnName)) {
-+        await client.query(`ALTER TABLE ${tableName} ALTER COLUMN ${columnName} DROP NOT NULL`);
-+      }
-+    }
-+  }
++	await client.query("ALTER TABLE accounts ADD COLUMN IF NOT EXISTS preferred_payment_method text");
++	await client.query("ALTER TABLE orders ADD COLUMN IF NOT EXISTS doc jsonb");
++	await client.query("ALTER TABLE invoices ADD COLUMN IF NOT EXISTS doc jsonb");
++	await client.query(`CREATE OR REPLACE FUNCTION buildbench_order_doc_sync() RETURNS trigger AS $$
++	BEGIN
++		IF NEW.doc IS NOT NULL THEN
++			NEW.account_id := COALESCE(NEW.account_id, NEW.doc->>'accountId');
++			NEW.status := COALESCE(NEW.status, NEW.doc->>'status');
++			NEW.total_cents := COALESCE(NEW.total_cents, (NEW.doc->>'totalCents')::integer);
++			NEW.currency := COALESCE(NEW.currency, NEW.doc->>'currency', 'USD');
++			NEW.created_at := COALESCE(NEW.created_at, now());
++		END IF;
++		RETURN NEW;
++	END; $$ LANGUAGE plpgsql`);
++	await client.query("DROP TRIGGER IF EXISTS buildbench_order_doc_sync_trigger ON orders");
++	await client.query("CREATE TRIGGER buildbench_order_doc_sync_trigger BEFORE INSERT OR UPDATE ON orders FOR EACH ROW EXECUTE FUNCTION buildbench_order_doc_sync()");
++	await client.query(`CREATE OR REPLACE FUNCTION buildbench_invoice_doc_sync() RETURNS trigger AS $$
++	BEGIN
++		IF NEW.doc IS NOT NULL THEN
++			NEW.account_id := COALESCE(NEW.account_id, NEW.doc->>'accountId'); NEW.order_id := COALESCE(NEW.order_id, NEW.doc->>'orderId');
++			NEW.invoice_number := COALESCE(NEW.invoice_number, NEW.doc->>'invoiceNumber', NEW.invoice_id);
++			NEW.amount_cents := COALESCE(NEW.amount_cents, (NEW.doc->>'amountCents')::integer, 0); NEW.tax_cents := COALESCE(NEW.tax_cents, 0); NEW.total_cents := COALESCE(NEW.total_cents, (NEW.doc->>'totalCents')::integer, (NEW.doc->>'amountCents')::integer, 0);
++			NEW.status := COALESCE(NEW.status, NEW.doc->>'status'); NEW.issued_at := COALESCE(NEW.issued_at, now()); NEW.due_at := COALESCE(NEW.due_at, now());
++		END IF; RETURN NEW;
++	END; $$ LANGUAGE plpgsql`);
++	await client.query("DROP TRIGGER IF EXISTS buildbench_invoice_doc_sync_trigger ON invoices");
++	await client.query("CREATE TRIGGER buildbench_invoice_doc_sync_trigger BEFORE INSERT OR UPDATE ON invoices FOR EACH ROW EXECUTE FUNCTION buildbench_invoice_doc_sync()");
++	await client.query(`ALTER TABLE accounts ADD CONSTRAINT accounts_preferred_payment_method_check
++		CHECK (preferred_payment_method IS NULL OR preferred_payment_method IN ('credit_card', 'wire_transfer', 'ach', 'paypal'))`).catch((error) => {
++		if (error.code !== "42710") throw error;
++	});
  }
  
  if (import.meta.url === `file://${process.argv[1]}`) {

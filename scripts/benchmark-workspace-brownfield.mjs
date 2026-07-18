@@ -13,53 +13,72 @@
 import { mkdirSync, writeFileSync, symlinkSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
-export function writeBrownfieldWorkspace({ workspace, lane, taskType, ns, dbHandle }) {
-  mkdirSync(join(workspace, "src"), { recursive: true });
-  mkdirSync(join(workspace, "tests"), { recursive: true });
+export function writeBrownfieldWorkspace({
+	workspace,
+	lane,
+	taskType,
+	ns,
+	dbHandle,
+}) {
+	mkdirSync(join(workspace, "src"), { recursive: true });
+	mkdirSync(join(workspace, "tests"), { recursive: true });
 
-  writeFileSync(join(workspace, "package.json"), JSON.stringify({
-    name: `build-bench-${lane}-${taskType}`,
-    version: "1.0.0",
-    private: true,
-    type: "module",
-    scripts: { test: "node tests/acceptance.test.mjs" },
-  }, null, 2) + "\n");
+	writeFileSync(
+		join(workspace, "package.json"),
+		JSON.stringify(
+			{
+				name: `build-bench-${lane}-${taskType}`,
+				version: "1.0.0",
+				private: true,
+				type: "module",
+				scripts: { test: "node tests/acceptance.test.mjs" },
+			},
+			null,
+			2,
+		) + "\n",
+	);
 
-  writeFileSync(join(workspace, "db-config.json"), JSON.stringify(dbConfig({ lane, ns, dbHandle }), null, 2) + "\n");
-  writeFileSync(join(workspace, "RULES.md"), rulesDoc({ taskType }));
-  writeFileSync(join(workspace, "README.md"), readmeDoc({ lane, taskType }));
-  writeFileSync(join(workspace, "AGENTS.md"), agentsDoc({ lane }));
+	writeFileSync(
+		join(workspace, "db-config.json"),
+		JSON.stringify(dbConfig({ lane, ns, dbHandle }), null, 2) + "\n",
+	);
+	writeFileSync(join(workspace, "RULES.md"), rulesDoc({ taskType }));
+	writeFileSync(join(workspace, "README.md"), readmeDoc({ lane, taskType }));
+	writeFileSync(join(workspace, "AGENTS.md"), agentsDoc({ lane }));
 
-  // Protected: connection helper
-  writeFileSync(join(workspace, "src", "db.mjs"), dbHelper(lane));
+	// Protected: connection helper
+	writeFileSync(join(workspace, "src", "db.mjs"), dbHelper(lane));
 
-  // EXISTING working code (not stubs — the agent reads and modifies these)
-  writeFileSync(join(workspace, "src", "schema.mjs"), existingSchema(lane));
-  writeFileSync(join(workspace, "src", "accounts.mjs"), existingModel(lane));
+	// EXISTING working code (not stubs — the agent reads and modifies these)
+	writeFileSync(join(workspace, "src", "schema.mjs"), existingSchema(lane));
+	writeFileSync(join(workspace, "src", "accounts.mjs"), existingModel(lane));
 
-  // Protected: acceptance test (regression + new behavior)
-  writeFileSync(join(workspace, "tests", "acceptance.test.mjs"), acceptanceTest({ lane }));
+	// Protected: acceptance test (regression + new behavior)
+	writeFileSync(
+		join(workspace, "tests", "acceptance.test.mjs"),
+		acceptanceTest({ lane }),
+	);
 
-  linkDrivers(workspace);
+	linkDrivers(workspace);
 }
 
 function dbConfig({ lane, ns, dbHandle }) {
-  if (lane === "mongo") {
-    return { uri: dbHandle.uri, db: dbHandle.db, namespace: ns };
-  }
-  return {
-    host: dbHandle.host || "127.0.0.1",
-    port: dbHandle.port || 5433,
-    user: dbHandle.user || "lab",
-    password: dbHandle.password || "lab",
-    database: dbHandle.database || "sql_hidden_cost",
-    schema: ns,
-  };
+	if (lane === "mongo") {
+		return { uri: dbHandle.uri, db: dbHandle.db, namespace: ns };
+	}
+	return {
+		host: dbHandle.host || "127.0.0.1",
+		port: dbHandle.port || 5433,
+		user: dbHandle.user || "lab",
+		password: dbHandle.password || "lab",
+		database: dbHandle.database || "sql_hidden_cost",
+		schema: ns,
+	};
 }
 
 function dbHelper(lane) {
-  if (lane === "mongo") {
-    return `import { readFileSync } from "node:fs";
+	if (lane === "mongo") {
+		return `import { readFileSync } from "node:fs";
 import { MongoClient } from "mongodb";
 
 const cfg = JSON.parse(readFileSync(new URL("../db-config.json", import.meta.url), "utf8"));
@@ -71,8 +90,8 @@ export async function withDb(fn) {
 }
 export { cfg };
 `;
-  }
-  return `import { readFileSync } from "node:fs";
+	}
+	return `import { readFileSync } from "node:fs";
 import pg from "pg";
 
 const cfg = JSON.parse(readFileSync(new URL("../db-config.json", import.meta.url), "utf8"));
@@ -89,8 +108,8 @@ export { cfg };
 
 // EXISTING schema (working code — the agent must evolve this)
 function existingSchema(lane) {
-  if (lane === "mongo") {
-    return `import { withDb } from "./db.mjs";
+	if (lane === "mongo") {
+		return `import { withDb } from "./db.mjs";
 
 export async function ensureSchema(db) {
   const collections = await db.listCollections({ name: "accounts" }).toArray();
@@ -117,9 +136,9 @@ if (import.meta.url === \`file://\${process.argv[1]}\`) {
   withDb((db) => ensureSchema(db)).then(() => console.log("schema ready")).catch((e) => { console.error(e); process.exit(1); });
 }
 `;
-  }
-  if (lane === "postgres-norm") {
-    return `import { withDb } from "./db.mjs";
+	}
+	if (lane === "postgres-norm") {
+		return `import { withDb } from "./db.mjs";
 
 export async function ensureSchema(client) {
   await client.query(\`
@@ -137,9 +156,9 @@ if (import.meta.url === \`file://\${process.argv[1]}\`) {
   withDb((client) => ensureSchema(client)).then(() => console.log("schema ready")).catch((e) => { console.error(e); process.exit(1); });
 }
 `;
-  }
-  if (lane === "postgres-jsonb") {
-    return `import { withDb } from "./db.mjs";
+	}
+	if (lane === "postgres-jsonb") {
+		return `import { withDb } from "./db.mjs";
 
 export async function ensureSchema(client) {
   await client.query(\`
@@ -156,14 +175,14 @@ if (import.meta.url === \`file://\${process.argv[1]}\`) {
   withDb((client) => ensureSchema(client)).then(() => console.log("schema ready")).catch((e) => { console.error(e); process.exit(1); });
 }
 `;
-  }
-  throw new Error(`No existing schema for lane ${lane}`);
+	}
+	throw new Error(`No existing schema for lane ${lane}`);
 }
 
 // EXISTING model (working CRUD — the agent must evolve this)
 function existingModel(lane) {
-  if (lane === "mongo") {
-    return `import { ensureSchema } from "./schema.mjs";
+	if (lane === "mongo") {
+		return `import { ensureSchema } from "./schema.mjs";
 
 export async function createAccounts(db, data) {
   await ensureSchema(db);
@@ -186,9 +205,9 @@ export async function deleteAccounts(db, id) {
   return result.deletedCount > 0;
 }
 `;
-  }
-  if (lane === "postgres-norm") {
-    return `import { ensureSchema } from "./schema.mjs";
+	}
+	if (lane === "postgres-norm") {
+		return `import { ensureSchema } from "./schema.mjs";
 
 function rowToAccount(r) {
   return { accountId: r.account_id, name: r.name, tier: r.tier, status: r.status, createdAt: r.created_at };
@@ -226,9 +245,9 @@ export async function deleteAccounts(client, id) {
   return res.rowCount > 0;
 }
 `;
-  }
-  if (lane === "postgres-jsonb") {
-    return `import { ensureSchema } from "./schema.mjs";
+	}
+	if (lane === "postgres-jsonb") {
+		return `import { ensureSchema } from "./schema.mjs";
 
 export async function createAccounts(client, data) {
   await ensureSchema(client);
@@ -255,14 +274,14 @@ export async function deleteAccounts(client, id) {
   return res.rowCount > 0;
 }
 `;
-  }
-  throw new Error(`No existing model for lane ${lane}`);
+	}
+	throw new Error(`No existing model for lane ${lane}`);
 }
 
 // Acceptance test: regression (existing CRUD works) + new (riskScore field)
 function acceptanceTest({ lane }) {
-  if (lane === "mongo") {
-    return `import { strictEqual, ok } from "node:assert";
+	if (lane === "mongo") {
+		return `import { strictEqual, ok } from "node:assert";
 import { withDb } from "../src/db.mjs";
 import { ensureSchema } from "../src/schema.mjs";
 import { createAccounts, getAccounts, updateAccounts, deleteAccounts } from "../src/accounts.mjs";
@@ -321,9 +340,9 @@ await withDb(async (db) => {
 
 console.log("Build-Bench brownfield acceptance passed: ${lane}/schema-evolution");
 `;
-  }
-  if (lane === "postgres-norm") {
-    return `import { strictEqual, ok } from "node:assert";
+	}
+	if (lane === "postgres-norm") {
+		return `import { strictEqual, ok } from "node:assert";
 import { withDb } from "../src/db.mjs";
 import { ensureSchema } from "../src/schema.mjs";
 import { createAccounts, getAccounts, updateAccounts, deleteAccounts } from "../src/accounts.mjs";
@@ -382,9 +401,9 @@ await withDb(async (client) => {
 
 console.log("Build-Bench brownfield acceptance passed: ${lane}/schema-evolution");
 `;
-  }
-  if (lane === "postgres-jsonb") {
-    return `import { strictEqual, ok } from "node:assert";
+	}
+	if (lane === "postgres-jsonb") {
+		return `import { strictEqual, ok } from "node:assert";
 import { withDb } from "../src/db.mjs";
 import { ensureSchema } from "../src/schema.mjs";
 import { createAccounts, getAccounts, updateAccounts, deleteAccounts } from "../src/accounts.mjs";
@@ -443,12 +462,12 @@ await withDb(async (client) => {
 
 console.log("Build-Bench brownfield acceptance passed: ${lane}/schema-evolution");
 `;
-  }
-  throw new Error(`No acceptance test for lane ${lane}`);
+	}
+	throw new Error(`No acceptance test for lane ${lane}`);
 }
 
 function rulesDoc({ taskType }) {
-  return `# Build-Bench Brownfield — ${taskType}
+	return `# Build-Bench Brownfield — ${taskType}
 
 ## Existing system
 
@@ -475,7 +494,7 @@ Add a **riskScore** field to the accounts entity:
 }
 
 function readmeDoc({ lane, taskType }) {
-  return `# Build-Bench Brownfield — ${lane} / ${taskType}
+	return `# Build-Bench Brownfield — ${lane} / ${taskType}
 
 The database has an existing accounts entity with working code.
 Your task: add a **riskScore** field (0-100 integer) without breaking existing CRUD.
@@ -489,7 +508,7 @@ Edit \`src/schema.mjs\` and \`src/accounts.mjs\`. Do not edit \`src/db.mjs\` or 
 }
 
 function agentsDoc({ lane }) {
-  return `# Agent Guidelines — ${lane} (brownfield)
+	return `# Agent Guidelines — ${lane} (brownfield)
 
 The database has EXISTING schema and code. Read \`src/schema.mjs\` and \`src/accounts.mjs\` first.
 Your task is to ADD a riskScore field without breaking existing functionality.
@@ -500,8 +519,12 @@ Do not edit anything under \`tests/\`.
 }
 
 function linkDrivers(workspace) {
-  const repoModules = join(import.meta.dirname, "..", "node_modules");
-  if (existsSync(repoModules)) {
-    try { symlinkSync(repoModules, join(workspace, "node_modules"), "dir"); } catch { /* already exists */ }
-  }
+	const repoModules = join(import.meta.dirname, "..", "node_modules");
+	if (existsSync(repoModules)) {
+		try {
+			symlinkSync(repoModules, join(workspace, "node_modules"), "dir");
+		} catch {
+			/* already exists */
+		}
+	}
 }

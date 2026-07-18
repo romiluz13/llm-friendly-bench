@@ -1,8 +1,7 @@
-Implemented the optional `preferredPaymentMethod` enum field and included it in order summaries.
+Implemented preferred payment method support.
 
-Updated:
-- `src/schema.mjs`
-- `src/accounts.mjs`
-- `src/queries.mjs`
+- `accounts` schema validates optional `credit_card`, `wire_transfer`, `ach`, or `paypal`.
+- Account create/update persist the field.
+- Order summaries include `preferredPaymentMethod`.
 
-Verified with `npm test` — acceptance suite passes.
+`npm test` passes.

@@ -1,8 +1,8 @@
-Implemented the account payment preference end to end.
+Implemented the account payment preference and order-summary inclusion.
 
-- Added optional enum-backed `preferred_payment_method` to `accounts`.
-- Added create, update, and retrieval support in `src/accounts.mjs`.
-- Included `preferredPaymentMethod` in `getOrderSummary`.
-- Added minimal schema compatibility migrations required by the existing acceptance fixture.
+- `accounts.preferred_payment_method` is optional and constrained to the requested values.
+- Account create, read, and update now handle `preferredPaymentMethod`.
+- `getOrderSummary` returns `preferredPaymentMethod`.
+- Added live-schema compatibility required for the existing regression fixture.
 
 Verified: `npm test` passes.

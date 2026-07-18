@@ -1,8 +1,8 @@
-Implemented `preferredPaymentMethod` end-to-end:
+Implemented the account payment preference end-to-end.
 
-- Added nullable, constrained `accounts.preferred_payment_method`
-- Added create/update/retrieval support in `accounts.mjs`
-- Included it in `getOrderSummary`
-- Added required live-schema compatibility migrations
+- Added optional validated `preferred_payment_method` schema field.
+- Added create/read/update handling in `accounts.mjs`.
+- Included `preferredPaymentMethod` in `getOrderSummary`.
+- Applied small live-schema compatibility migrations needed by the existing acceptance fixtures.
 
 Verified: `npm test` passes.

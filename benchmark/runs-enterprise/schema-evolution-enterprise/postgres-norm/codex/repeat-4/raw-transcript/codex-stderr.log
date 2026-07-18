@@ -1,5 +1,5 @@
 Reading additional input from stdin...
-2026-07-17T20:28:13.927645Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7105 column 1; body: {
+2026-07-18T14:30:24.598768Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7105 column 1; body: {
   "data": [
     {
       "status": "succeeded",
@@ -4759,7 +4759,7 @@ Reading additional input from stdin...
       },
       "lifecycle_status": "deprecated",
       "deprecation": {
-        "inference": 1784073600
+        "inference": 1784505600
       },
       "id": "mistral-document-ai-2505",
       "created_at": 1727740800,
@@ -7104,7 +7104,7 @@ Reading additional input from stdin...
   ],
   "object": "list"
 }
-2026-07-17T20:28:14.022556Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7105 column 1; body: {
+2026-07-18T14:30:24.889166Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `models` at line 7105 column 1; body: {
   "data": [
     {
       "status": "succeeded",
@@ -11864,7 +11864,7 @@ Reading additional input from stdin...
       },
       "lifecycle_status": "deprecated",
       "deprecation": {
-        "inference": 1784073600
+        "inference": 1784505600
       },
       "id": "mistral-document-ai-2505",
       "created_at": 1727740800,
@@ -14209,4 +14209,4 @@ Reading additional input from stdin...
   ],
   "object": "list"
 }
-2026-07-17T20:28:47.722839Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[server]: Failed to connect to MongoDB instance using the connection string from the config: connect ENETUNREACH 65.63.93.232:27017")
+2026-07-18T14:30:52.490844Z ERROR codex_rmcp_client::logging_client_handler: MCP server log message (level: Error, logger: None, data: "[server]: Failed to connect to MongoDB instance using the connection string from the config: connect ENETUNREACH 65.63.93.232:27017")

@@ -10,8 +10,8 @@
   "model": "gpt-5.6-terra",
   "agentVersion": "codex-cli 0.144.0-alpha.4",
   "status": "passed",
-  "startedAt": "2026-07-17T19:52:48.775Z",
-  "finishedAt": "2026-07-17T19:53:42.886Z",
+  "startedAt": "2026-07-18T14:05:40.612Z",
+  "finishedAt": "2026-07-18T14:06:31.733Z",
   "artifacts": {
     "workspace": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/codex/repeat-3/workspace",
     "prompt": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/codex/repeat-3/prompt.md",
@@ -23,19 +23,19 @@
     "dbAfter": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/codex/repeat-3/db-after/final.json"
   },
   "metrics": {
-    "elapsedMs": 54111,
-    "transcriptBytes": 374259,
+    "elapsedMs": 51122,
+    "transcriptBytes": 378244,
     "tokens": {
-      "inputTokens": 84293,
-      "outputTokens": 1161,
-      "cachedInputTokens": 61184,
-      "totalTokens": 85454,
-      "tokensRead": 84293,
-      "costUsd": 0.22234250000000003,
+      "inputTokens": 131203,
+      "outputTokens": 1777,
+      "cachedInputTokens": 83968,
+      "totalTokens": 132980,
+      "tokensRead": 131203,
+      "costUsd": 0.3457775,
       "source": "measured"
     },
-    "estimatedTranscriptTokens": 85454,
-    "diffBytes": 2278,
+    "estimatedTranscriptTokens": 132980,
+    "diffBytes": 2470,
     "filesChanged": 3,
     "changedFiles": [
       "src/accounts.mjs",
@@ -45,7 +45,7 @@
     "cheatSignals": [],
     "liveDbWritten": true,
     "fieldExists": true,
-    "retrySignals": 11,
+    "retrySignals": 22,
     "testStatus": "passed",
     "agentExitCode": 0,
     "testsExitCode": 0,
@@ -58,11 +58,11 @@
     },
     {
       "path": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/codex/repeat-3/raw-transcript/codex.jsonl",
-      "sha256": "14e84548955a27f45ba5106e43026433c294562f13d41950b3b2a94c1d365c48"
+      "sha256": "fc7adf2aa5a7041217a80169d57794c84120e63afdee44621ea29139aa4386ce"
     },
     {
       "path": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/codex/repeat-3/diff.patch",
-      "sha256": "cb8dbf190e512ca7f5e6f22c271756672f2e08e2cb23d2362bb200151a25fd76"
+      "sha256": "5c9278da3d7694aefc60e91a637ad4b7ae4343eaa5606846831ddd7e5919b0bf"
     },
     {
       "path": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/codex/repeat-3/tests.log",
@@ -74,7 +74,7 @@
     },
     {
       "path": "benchmark/runs-enterprise/schema-evolution-enterprise/mongo/codex/repeat-3/db-after/final.json",
-      "sha256": "169c443229cc75bf8a184f9d9f1242dde415c32c0867c50ea4ec99f850282f6a"
+      "sha256": "20ac7ef29704afde4fb680bb4b0137016f19e7727c1ded5e95837c6fc7c78505"
     }
   ]
 }

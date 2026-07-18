@@ -15,14 +15,13 @@ index 162db11..4ce7e01 100644
  
  export async function getAccount(db, accountId) {
 diff --git a/src/queries.mjs b/src/queries.mjs
-index caa36b4..f5cc4db 100644
+index caa36b4..e5de460 100644
 --- a/src/queries.mjs
 +++ b/src/queries.mjs
-@@ -14,6 +14,7 @@ export async function getOrderSummary(db, orderId) {
-     lineItems: order.lineItems || [],
-     accountName: account?.name,
+@@ -16,5 +16,6 @@ export async function getOrderSummary(db, orderId) {
      accountTier: account?.tier,
-+    preferredPaymentMethod: account?.preferredPaymentMethod,
      invoiceStatus: invoice?.status,
      invoiceAmountCents: invoice?.amountCents,
++    preferredPaymentMethod: account?.preferredPaymentMethod,
    };
+ }

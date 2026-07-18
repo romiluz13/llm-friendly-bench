@@ -1,8 +1,10 @@
-Implemented preferred payment methods across accounts and order summaries.
+Implemented the account payment preference end-to-end.
 
-- Added optional, constrained `preferred_paymentMethod` storage.
-- Updated account create, update, and retrieval mappings.
-- Added `preferredPaymentMethod` to `getOrderSummary`.
-- Restored required live-schema compatibility defaults for existing acceptance fixtures.
+- Added nullable `preferred_payment_method` with enum validation.
+- Added create/update/retrieval support in accounts.
+- Included `preferredPaymentMethod` in order summaries.
+- Aligned schema compatibility for existing acceptance fixtures.
 
-Verified: `npm test` passes.
+Verified with `npm test`:
+
+`Build-Bench enterprise acceptance passed: postgres-norm`

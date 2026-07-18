@@ -10,8 +10,8 @@
   "model": "gpt-5.6-terra",
   "agentVersion": "codex-cli 0.144.0-alpha.4",
   "status": "passed",
-  "startedAt": "2026-07-17T20:39:17.236Z",
-  "finishedAt": "2026-07-17T20:47:32.516Z",
+  "startedAt": "2026-07-18T15:12:20.390Z",
+  "finishedAt": "2026-07-18T15:13:56.657Z",
   "artifacts": {
     "workspace": "benchmark/runs-enterprise/schema-evolution-enterprise/postgres-jsonb/codex/repeat-4/workspace",
     "prompt": "benchmark/runs-enterprise/schema-evolution-enterprise/postgres-jsonb/codex/repeat-4/prompt.md",
@@ -23,19 +23,19 @@
     "dbAfter": "benchmark/runs-enterprise/schema-evolution-enterprise/postgres-jsonb/codex/repeat-4/db-after/final.json"
   },
   "metrics": {
-    "elapsedMs": 495280,
-    "transcriptBytes": 785058,
+    "elapsedMs": 96267,
+    "transcriptBytes": 402604,
     "tokens": {
-      "inputTokens": 854883,
-      "outputTokens": 10365,
-      "cachedInputTokens": 786688,
-      "totalTokens": 865248,
-      "tokensRead": 854883,
-      "costUsd": 2.2408575,
+      "inputTokens": 312201,
+      "outputTokens": 3765,
+      "cachedInputTokens": 247296,
+      "totalTokens": 315966,
+      "tokensRead": 312201,
+      "costUsd": 0.8181525000000001,
       "source": "measured"
     },
-    "estimatedTranscriptTokens": 865248,
-    "diffBytes": 5413,
+    "estimatedTranscriptTokens": 315966,
+    "diffBytes": 3430,
     "filesChanged": 3,
     "changedFiles": [
       "src/accounts.mjs",
@@ -45,7 +45,7 @@
     "cheatSignals": [],
     "liveDbWritten": true,
     "fieldExists": true,
-    "retrySignals": 62,
+    "retrySignals": 24,
     "testStatus": "passed",
     "agentExitCode": 0,
     "testsExitCode": 0,
@@ -58,11 +58,11 @@
     },
     {
       "path": "benchmark/runs-enterprise/schema-evolution-enterprise/postgres-jsonb/codex/repeat-4/raw-transcript/codex.jsonl",
-      "sha256": "fd09f21b5c5c03c12b8c60ae6d17a96c1f11d6b369bdcc99b4689a1f30c60423"
+      "sha256": "b8fa185b6d5082eab0a6e20f348ab85fe56de31961acad0bb05ba7dcd37721cd"
     },
     {
       "path": "benchmark/runs-enterprise/schema-evolution-enterprise/postgres-jsonb/codex/repeat-4/diff.patch",
-      "sha256": "85de0aa0fc37841230ab5529e5af949a542e8c95457ae6ba461116b3e6f5c636"
+      "sha256": "07309a0e8f4b44257a4c2c0f25fd8f8030783ff68ba5838bf5b7f723dabf8a77"
     },
     {
       "path": "benchmark/runs-enterprise/schema-evolution-enterprise/postgres-jsonb/codex/repeat-4/tests.log",
@@ -74,7 +74,7 @@
     },
     {
       "path": "benchmark/runs-enterprise/schema-evolution-enterprise/postgres-jsonb/codex/repeat-4/db-after/final.json",
-      "sha256": "89d0d8a8697dc123450071b1a807705b5350578b79eb5101ad7b7718ff56b0cd"
+      "sha256": "fbd8264a7aa3eb1127be3a8824c392da3b60dec5f6bb021abdf1598da7478617"
     }
   ]
 }

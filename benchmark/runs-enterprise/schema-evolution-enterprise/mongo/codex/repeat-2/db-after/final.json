@@ -1,23 +1,15 @@
 {
   "collections": [
     {
-      "name": "product_categories",
+      "name": "product_inventory",
       "count": 0
     },
     {
-      "name": "invoices",
+      "name": "orders",
       "count": 1
     },
     {
-      "name": "support_cases",
-      "count": 0
-    },
-    {
-      "name": "order_returns",
-      "count": 0
-    },
-    {
-      "name": "order_fulfillments",
+      "name": "payments",
       "count": 0
     },
     {
@@ -25,55 +17,7 @@
       "count": 1
     },
     {
-      "name": "sla_policies",
-      "count": 0
-    },
-    {
       "name": "payment_methods",
-      "count": 0
-    },
-    {
-      "name": "audit_trails",
-      "count": 0
-    },
-    {
-      "name": "payments",
-      "count": 0
-    },
-    {
-      "name": "shipments",
-      "count": 0
-    },
-    {
-      "name": "products",
-      "count": 0
-    },
-    {
-      "name": "consent_records",
-      "count": 0
-    },
-    {
-      "name": "account_contracts",
-      "count": 0
-    },
-    {
-      "name": "compliance_reviews",
-      "count": 0
-    },
-    {
-      "name": "billing_cycles",
-      "count": 0
-    },
-    {
-      "name": "tax_records",
-      "count": 0
-    },
-    {
-      "name": "credit_notes",
-      "count": 0
-    },
-    {
-      "name": "product_inventory",
       "count": 0
     },
     {
@@ -81,8 +25,64 @@
       "count": 0
     },
     {
-      "name": "orders",
+      "name": "audit_trails",
+      "count": 0
+    },
+    {
+      "name": "tax_records",
+      "count": 0
+    },
+    {
+      "name": "product_categories",
+      "count": 0
+    },
+    {
+      "name": "credit_notes",
+      "count": 0
+    },
+    {
+      "name": "sla_policies",
+      "count": 0
+    },
+    {
+      "name": "products",
+      "count": 0
+    },
+    {
+      "name": "order_returns",
+      "count": 0
+    },
+    {
+      "name": "compliance_reviews",
+      "count": 0
+    },
+    {
+      "name": "consent_records",
+      "count": 0
+    },
+    {
+      "name": "order_fulfillments",
+      "count": 0
+    },
+    {
+      "name": "invoices",
       "count": 1
+    },
+    {
+      "name": "shipments",
+      "count": 0
+    },
+    {
+      "name": "support_cases",
+      "count": 0
+    },
+    {
+      "name": "account_contracts",
+      "count": 0
+    },
+    {
+      "name": "billing_cycles",
+      "count": 0
     }
   ]
 }

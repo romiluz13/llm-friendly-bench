@@ -1,31 +1,7 @@
 {
   "collections": [
     {
-      "name": "orders",
-      "count": 1
-    },
-    {
-      "name": "accounts",
-      "count": 1
-    },
-    {
-      "name": "support_cases",
-      "count": 0
-    },
-    {
-      "name": "product_inventory",
-      "count": 0
-    },
-    {
-      "name": "consent_records",
-      "count": 0
-    },
-    {
-      "name": "data_processing_agreements",
-      "count": 0
-    },
-    {
-      "name": "products",
+      "name": "payments",
       "count": 0
     },
     {
@@ -33,15 +9,7 @@
       "count": 0
     },
     {
-      "name": "shipments",
-      "count": 0
-    },
-    {
-      "name": "payment_methods",
-      "count": 0
-    },
-    {
-      "name": "sla_policies",
+      "name": "account_contracts",
       "count": 0
     },
     {
@@ -49,15 +17,23 @@
       "count": 0
     },
     {
-      "name": "compliance_reviews",
+      "name": "consent_records",
       "count": 0
     },
     {
-      "name": "payments",
+      "name": "order_returns",
       "count": 0
     },
     {
-      "name": "account_contracts",
+      "name": "product_inventory",
+      "count": 0
+    },
+    {
+      "name": "sla_policies",
+      "count": 0
+    },
+    {
+      "name": "payment_methods",
       "count": 0
     },
     {
@@ -65,11 +41,19 @@
       "count": 0
     },
     {
+      "name": "compliance_reviews",
+      "count": 0
+    },
+    {
+      "name": "shipments",
+      "count": 0
+    },
+    {
       "name": "invoices",
       "count": 1
     },
     {
-      "name": "order_returns",
+      "name": "support_cases",
       "count": 0
     },
     {
@@ -77,11 +61,27 @@
       "count": 0
     },
     {
-      "name": "credit_notes",
+      "name": "order_fulfillments",
       "count": 0
     },
     {
-      "name": "order_fulfillments",
+      "name": "products",
+      "count": 0
+    },
+    {
+      "name": "data_processing_agreements",
+      "count": 0
+    },
+    {
+      "name": "accounts",
+      "count": 1
+    },
+    {
+      "name": "orders",
+      "count": 1
+    },
+    {
+      "name": "credit_notes",
       "count": 0
     }
   ]

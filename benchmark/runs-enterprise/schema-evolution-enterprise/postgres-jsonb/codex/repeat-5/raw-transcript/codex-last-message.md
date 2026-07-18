@@ -1,5 +1,3 @@
-Implemented `preferredPaymentMethod` for accounts with enum validation and added it to order summaries.
+Implemented `preferredPaymentMethod` support across schema, account create/update, and order summaries.
 
-Also aligned schema setup with the project’s existing JSONB document storage contract.
-
-Verified: `npm test` passes.
+`npm test` passes.

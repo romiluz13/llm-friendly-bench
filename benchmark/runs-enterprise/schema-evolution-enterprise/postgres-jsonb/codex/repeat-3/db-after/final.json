@@ -1,6 +1,9 @@
 {
   "collections": [
     {
+      "name": "orders"
+    },
+    {
       "name": "account_details"
     },
     {
@@ -16,28 +19,22 @@
       "name": "account_billing"
     },
     {
-      "name": "accounts"
+      "name": "account_health_scores"
     },
     {
       "name": "account_contracts"
     },
     {
-      "name": "account_health_scores"
-    },
-    {
       "name": "order_line_items"
     },
     {
-      "name": "orders"
-    },
-    {
-      "name": "order_fulfillments"
+      "name": "accounts"
     },
     {
       "name": "order_returns"
     },
     {
-      "name": "invoice_line_items"
+      "name": "order_fulfillments"
     },
     {
       "name": "shipments"
@@ -58,7 +55,7 @@
       "name": "order_approvals"
     },
     {
-      "name": "invoices"
+      "name": "invoice_line_items"
     },
     {
       "name": "payments"
@@ -67,22 +64,22 @@
       "name": "payment_methods"
     },
     {
+      "name": "billing_cycles"
+    },
+    {
       "name": "credit_notes"
     },
     {
       "name": "tax_records"
     },
     {
-      "name": "billing_cycles"
+      "name": "case_comments"
     },
     {
       "name": "support_cases"
     },
     {
-      "name": "case_comments"
-    },
-    {
-      "name": "support_assignments"
+      "name": "invoices"
     },
     {
       "name": "case_escalations"
@@ -91,10 +88,16 @@
       "name": "sla_policies"
     },
     {
+      "name": "support_assignments"
+    },
+    {
       "name": "products"
     },
     {
       "name": "product_categories"
+    },
+    {
+      "name": "compliance_reviews"
     },
     {
       "name": "product_pricing"
@@ -104,9 +107,6 @@
     },
     {
       "name": "product_reviews"
-    },
-    {
-      "name": "compliance_reviews"
     },
     {
       "name": "regulatory_flags"

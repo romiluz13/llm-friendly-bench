@@ -1,13 +1,32 @@
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index 162db11..c3191ae 100644
+index 162db11..bbc4697 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
-@@ -11,6 +11,7 @@ export async function getAccount(db, accountId) {
+@@ -2,8 +2,12 @@ import { ensureSchema } from "./schema.mjs";
+ 
+ export async function createAccount(db, data) {
+   await ensureSchema(db);
+-  const result = await db.collection("accounts").insertOne(data);
+-  return { _id: result.insertedId, ...data };
++  const { preferredPaymentMethod, ...account } = data;
++  const document = preferredPaymentMethod === undefined
++    ? account
++    : { ...account, preferredPaymentMethod };
++  const result = await db.collection("accounts").insertOne(document);
++  return { _id: result.insertedId, ...document };
+ }
+ 
+ export async function getAccount(db, accountId) {
+@@ -11,6 +15,10 @@ export async function getAccount(db, accountId) {
  }
  
  export async function updateAccount(db, accountId, data) {
-+  await ensureSchema(db);
-   await db.collection("accounts").updateOne({ accountId }, { $set: data });
+-  await db.collection("accounts").updateOne({ accountId }, { $set: data });
++  const { preferredPaymentMethod, ...account } = data;
++  const update = preferredPaymentMethod === undefined
++    ? account
++    : { ...account, preferredPaymentMethod };
++  await db.collection("accounts").updateOne({ accountId }, { $set: update });
    return db.collection("accounts").findOne({ accountId });
  }
 diff --git a/src/queries.mjs b/src/queries.mjs
@@ -23,21 +42,20 @@ index caa36b4..f5cc4db 100644
      invoiceAmountCents: invoice?.amountCents,
    };
 diff --git a/src/schema.mjs b/src/schema.mjs
-index 16c8076..7a79e68 100644
+index 16c8076..7087df3 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -6,6 +6,20 @@ export async function ensureSchema(db) {
+@@ -6,6 +6,19 @@ export async function ensureSchema(db) {
    const { generateMongoSchema } = await import("../scripts/enterprise-schema-gen.mjs");
    const gen = generateMongoSchema();
    await gen.ensureSchema(db);
-+
 +  await db.command({
 +    collMod: "accounts",
 +    validator: {
 +      $jsonSchema: {
-+        bsonType: "object",
 +        properties: {
 +          preferredPaymentMethod: {
++            bsonType: "string",
 +            enum: ["credit_card", "wire_transfer", "ach", "paypal"],
 +          },
 +        },

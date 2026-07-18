@@ -6,31 +6,61 @@ import { join } from "node:path";
 import { spawnSync, execSync } from "node:child_process";
 import { writeBrownfieldWorkspace } from "./benchmark-workspace-brownfield.mjs";
 
-const TMP = join(import.meta.dirname, "..", "benchmark", "_tmp-prove-brownfield");
+const TMP = join(
+	import.meta.dirname,
+	"..",
+	"benchmark",
+	"_tmp-prove-brownfield",
+);
 const LANES = ["mongo", "postgres-norm", "postgres-jsonb"];
 
 function dropNs(lane, ns) {
-  if (lane === "mongo") {
-    try { execSync(`mongosh --quiet mongodb://127.0.0.1:27018/${ns} --eval 'db.dropDatabase()'`, { stdio: "pipe" }); } catch { /* ignore */ }
-  } else {
-    try { execSync(`docker exec sql-hidden-cost-postgres psql -U lab -d sql_hidden_cost -c 'DROP SCHEMA IF EXISTS "${ns}" CASCADE; CREATE SCHEMA "${ns}";'`, { stdio: "pipe" }); } catch { /* ignore */ }
-  }
+	if (lane === "mongo") {
+		try {
+			execSync(
+				`mongosh --quiet mongodb://127.0.0.1:27018/${ns}?directConnection=true?directConnection=true --eval 'db.dropDatabase()'`,
+				{ stdio: "pipe" },
+			);
+		} catch {
+			/* ignore */
+		}
+	} else {
+		try {
+			execSync(
+				`docker exec sql-hidden-cost-postgres psql -U lab -d sql_hidden_cost -c 'DROP SCHEMA IF EXISTS "${ns}" CASCADE; CREATE SCHEMA "${ns}";'`,
+				{ stdio: "pipe" },
+			);
+		} catch {
+			/* ignore */
+		}
+	}
 }
 
 function dbHandleFor(lane, ns) {
-  if (lane === "mongo") return { uri: "mongodb://127.0.0.1:27018", db: ns };
-  return { host: "127.0.0.1", port: 5433, user: "lab", password: "lab", database: "sql_hidden_cost", schema: ns };
+	if (lane === "mongo") return { uri: "mongodb://127.0.0.1:27018", db: ns };
+	return {
+		host: "127.0.0.1",
+		port: 5433,
+		user: "lab",
+		password: "lab",
+		database: "sql_hidden_cost",
+		schema: ns,
+	};
 }
 
 function runTest(workspace) {
-  return spawnSync("npm", ["test"], { cwd: workspace, encoding: "utf8", maxBuffer: 16 * 1024 * 1024 });
+	return spawnSync("npm", ["test"], {
+		cwd: workspace,
+		encoding: "utf8",
+		maxBuffer: 16 * 1024 * 1024,
+	});
 }
 
 // Reference solutions: existing code + riskScore field added
 function referenceFiles(lane) {
-  if (lane === "mongo") {
-    return {
-      "src/schema.mjs": `import { withDb } from "./db.mjs";
+	if (lane === "mongo") {
+		return {
+			"src/schema.mjs": `import { withDb } from "./db.mjs";
 
 export async function ensureSchema(db) {
   const collections = await db.listCollections({ name: "accounts" }).toArray();
@@ -58,7 +88,7 @@ if (import.meta.url === \`file://\${process.argv[1]}\`) {
   withDb((db) => ensureSchema(db)).then(() => console.log("schema ready")).catch((e) => { console.error(e); process.exit(1); });
 }
 `,
-      "src/accounts.mjs": `import { ensureSchema } from "./schema.mjs";
+			"src/accounts.mjs": `import { ensureSchema } from "./schema.mjs";
 
 export async function createAccounts(db, data) {
   await ensureSchema(db);
@@ -82,11 +112,11 @@ export async function deleteAccounts(db, id) {
   return result.deletedCount > 0;
 }
 `,
-    };
-  }
-  if (lane === "postgres-norm") {
-    return {
-      "src/schema.mjs": `import { withDb } from "./db.mjs";
+		};
+	}
+	if (lane === "postgres-norm") {
+		return {
+			"src/schema.mjs": `import { withDb } from "./db.mjs";
 
 export async function ensureSchema(client) {
   await client.query(\`
@@ -105,7 +135,7 @@ if (import.meta.url === \`file://\${process.argv[1]}\`) {
   withDb((client) => ensureSchema(client)).then(() => console.log("schema ready")).catch((e) => { console.error(e); process.exit(1); });
 }
 `,
-      "src/accounts.mjs": `import { ensureSchema } from "./schema.mjs";
+			"src/accounts.mjs": `import { ensureSchema } from "./schema.mjs";
 
 function rowToAccount(r) {
   const acc = { accountId: r.account_id, name: r.name, tier: r.tier, status: r.status, createdAt: r.created_at };
@@ -146,11 +176,11 @@ export async function deleteAccounts(client, id) {
   return res.rowCount > 0;
 }
 `,
-    };
-  }
-  if (lane === "postgres-jsonb") {
-    return {
-      "src/schema.mjs": `import { withDb } from "./db.mjs";
+		};
+	}
+	if (lane === "postgres-jsonb") {
+		return {
+			"src/schema.mjs": `import { withDb } from "./db.mjs";
 
 export async function ensureSchema(client) {
   await client.query(\`
@@ -168,7 +198,7 @@ if (import.meta.url === \`file://\${process.argv[1]}\`) {
   withDb((client) => ensureSchema(client)).then(() => console.log("schema ready")).catch((e) => { console.error(e); process.exit(1); });
 }
 `,
-      "src/accounts.mjs": `import { ensureSchema } from "./schema.mjs";
+			"src/accounts.mjs": `import { ensureSchema } from "./schema.mjs";
 
 export async function createAccounts(client, data) {
   await ensureSchema(client);
@@ -195,56 +225,78 @@ export async function deleteAccounts(client, id) {
   return res.rowCount > 0;
 }
 `,
-    };
-  }
-  throw new Error(`No reference for lane ${lane}`);
+		};
+	}
+	throw new Error(`No reference for lane ${lane}`);
 }
 
 let failures = 0;
 
 for (const lane of LANES) {
-  const ns = `buildbench_brownfield_prove_${lane}`;
-  const workspace = join(TMP, lane);
+	const ns = `buildbench_brownfield_prove_${lane}`;
+	const workspace = join(TMP, lane);
 
-  // 1) EXISTING CODE (no change) — check if it passes or fails
-  // If it passes, the task is TRIVIAL for this lane (MongoDB's schema-flexibility advantage)
-  // If it fails, the task is NON-TRIVIAL (agent must make changes)
-  rmSync(workspace, { recursive: true, force: true });
-  dropNs(lane, ns);
-  writeBrownfieldWorkspace({ workspace, lane, taskType: "schema-evolution", ns, dbHandle: dbHandleFor(lane, ns) });
-  dropNs(lane, ns);
-  const stubResult = runTest(workspace);
-  if (stubResult.status === 0) {
-    console.log(`✓ [${lane}/existing] passes npm test (TRIVIAL — schema is flexible enough, no change needed)`);
-  } else {
-    console.log(`✓ [${lane}/existing] fails npm test (NON-TRIVIAL — agent must make changes)`);
-  }
+	// 1) EXISTING CODE (no change) — check if it passes or fails
+	// If it passes, the task is TRIVIAL for this lane (MongoDB's schema-flexibility advantage)
+	// If it fails, the task is NON-TRIVIAL (agent must make changes)
+	rmSync(workspace, { recursive: true, force: true });
+	dropNs(lane, ns);
+	writeBrownfieldWorkspace({
+		workspace,
+		lane,
+		taskType: "schema-evolution",
+		ns,
+		dbHandle: dbHandleFor(lane, ns),
+	});
+	dropNs(lane, ns);
+	const stubResult = runTest(workspace);
+	if (stubResult.status === 0) {
+		console.log(
+			`✓ [${lane}/existing] passes npm test (TRIVIAL — schema is flexible enough, no change needed)`,
+		);
+	} else {
+		console.log(
+			`✓ [${lane}/existing] fails npm test (NON-TRIVIAL — agent must make changes)`,
+		);
+	}
 
-  // 2) REFERENCE (with change) must PASS both regression + new tests
-  rmSync(workspace, { recursive: true, force: true });
-  dropNs(lane, ns);
-  writeBrownfieldWorkspace({ workspace, lane, taskType: "schema-evolution", ns, dbHandle: dbHandleFor(lane, ns) });
-  const files = referenceFiles(lane);
-  for (const [rel, content] of Object.entries(files)) {
-    writeFileSync(join(workspace, rel), content);
-  }
-  dropNs(lane, ns);
-  const refResult = runTest(workspace);
-  if (refResult.status !== 0) {
-    console.error(`✗ FAIL [${lane}/reference]: failed — contract is unsatisfiable`);
-    console.error((refResult.stdout || refResult.stderr || "").slice(-1000));
-    failures++;
-  } else {
-    console.log(`✓ [${lane}/reference] passes npm test (regression + new field)`);
-  }
+	// 2) REFERENCE (with change) must PASS both regression + new tests
+	rmSync(workspace, { recursive: true, force: true });
+	dropNs(lane, ns);
+	writeBrownfieldWorkspace({
+		workspace,
+		lane,
+		taskType: "schema-evolution",
+		ns,
+		dbHandle: dbHandleFor(lane, ns),
+	});
+	const files = referenceFiles(lane);
+	for (const [rel, content] of Object.entries(files)) {
+		writeFileSync(join(workspace, rel), content);
+	}
+	dropNs(lane, ns);
+	const refResult = runTest(workspace);
+	if (refResult.status !== 0) {
+		console.error(
+			`✗ FAIL [${lane}/reference]: failed — contract is unsatisfiable`,
+		);
+		console.error((refResult.stdout || refResult.stderr || "").slice(-1000));
+		failures++;
+	} else {
+		console.log(
+			`✓ [${lane}/reference] passes npm test (regression + new field)`,
+		);
+	}
 
-  dropNs(lane, ns);
+	dropNs(lane, ns);
 }
 
 rmSync(TMP, { recursive: true, force: true });
 
 if (failures > 0) {
-  console.error(`\nBuild-Bench brownfield proof: ${failures} failure(s).`);
-  process.exit(1);
+	console.error(`\nBuild-Bench brownfield proof: ${failures} failure(s).`);
+	process.exit(1);
 }
-console.log(`\nBuild-Bench brownfield proof: ${LANES.length} lanes — existing fails, reference passes. Contract is good.`);
+console.log(
+	`\nBuild-Bench brownfield proof: ${LANES.length} lanes — existing fails, reference passes. Contract is good.`,
+);

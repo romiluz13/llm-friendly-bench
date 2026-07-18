@@ -1,35 +1,14 @@
-diff --git a/scripts/enterprise-schema-gen.mjs b/scripts/enterprise-schema-gen.mjs
-index 0f43416..6bf1f5d 100644
---- a/scripts/enterprise-schema-gen.mjs
-+++ b/scripts/enterprise-schema-gen.mjs
-@@ -29,6 +29,10 @@ const ENTITIES = {
- 				required: true,
- 			},
- 			createdAt: { type: "date", required: true },
-+			preferredPaymentMethod: {
-+				type: "enum",
-+				values: ["credit_card", "wire_transfer", "ach", "paypal"],
-+			},
- 		},
- 	},
- 	account_details: {
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index 162db11..ee4608a 100644
+index 162db11..4ce7e01 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
-@@ -1,9 +1,15 @@
- import { ensureSchema } from "./schema.mjs";
+@@ -2,8 +2,9 @@ import { ensureSchema } from "./schema.mjs";
  
-+const VALID_PAYMENT_METHODS = ["credit_card", "wire_transfer", "ach", "paypal"];
-+
  export async function createAccount(db, data) {
    await ensureSchema(db);
 -  const result = await db.collection("accounts").insertOne(data);
 -  return { _id: result.insertedId, ...data };
 +  const doc = { createdAt: new Date(), ...data };
-+  if (doc.preferredPaymentMethod !== undefined && !VALID_PAYMENT_METHODS.includes(doc.preferredPaymentMethod)) {
-+    throw new Error(`Invalid preferredPaymentMethod: ${doc.preferredPaymentMethod}`);
-+  }
 +  const result = await db.collection("accounts").insertOne(doc);
 +  return { _id: result.insertedId, ...doc };
  }

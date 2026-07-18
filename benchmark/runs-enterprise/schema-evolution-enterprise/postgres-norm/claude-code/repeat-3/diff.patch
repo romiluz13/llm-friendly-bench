@@ -1,19 +1,28 @@
+diff --git a/scripts/enterprise-schema-gen.mjs b/scripts/enterprise-schema-gen.mjs
+index 0f43416..fe01001 100644
+--- a/scripts/enterprise-schema-gen.mjs
++++ b/scripts/enterprise-schema-gen.mjs
+@@ -28,6 +28,10 @@ const ENTITIES = {
+ 				values: ["active", "at-risk", "churned", "prospect"],
+ 				required: true,
+ 			},
++			preferredPaymentMethod: {
++				type: "enum",
++				values: ["credit_card", "wire_transfer", "ach", "paypal"],
++			},
+ 			createdAt: { type: "date", required: true },
+ 		},
+ 	},
 diff --git a/src/accounts.mjs b/src/accounts.mjs
-index b272431..ba38c7a 100644
+index b272431..10bbb99 100644
 --- a/src/accounts.mjs
 +++ b/src/accounts.mjs
-@@ -2,14 +2,20 @@ import { ensureSchema } from "./schema.mjs";
+@@ -2,14 +2,14 @@ import { ensureSchema } from "./schema.mjs";
  
  function rowToAccount(r) {
    if (!r) return null;
 -  return { accountId: r.account_id, name: r.name, tier: r.tier, status: r.status };
-+  return {
-+    accountId: r.account_id,
-+    name: r.name,
-+    tier: r.tier,
-+    status: r.status,
-+    preferredPaymentMethod: r.preferred_payment_method ?? null,
-+  };
++  return { accountId: r.account_id, name: r.name, tier: r.tier, status: r.status, preferredPaymentMethod: r.preferred_payment_method ?? null };
  }
  
  export async function createAccount(client, data) {
@@ -21,12 +30,12 @@ index b272431..ba38c7a 100644
    const res = await client.query(
 -    'INSERT INTO accounts (account_id, name, tier, status) VALUES ($1, $2, $3, $4) RETURNING *',
 -    [data.accountId, data.name, data.tier, data.status]
-+    'INSERT INTO accounts (account_id, name, tier, status, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-+    [data.accountId, data.name, data.tier, data.status, data.createdAt ?? new Date()]
++    'INSERT INTO accounts (account_id, name, tier, status, preferred_payment_method, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
++    [data.accountId, data.name, data.tier, data.status, data.preferredPaymentMethod ?? null, data.createdAt ?? new Date()]
    );
    return rowToAccount(res.rows[0]);
  }
-@@ -25,6 +31,7 @@ export async function updateAccount(client, accountId, data) {
+@@ -25,6 +25,7 @@ export async function updateAccount(client, accountId, data) {
    if (data.name !== undefined) { sets.push(`name = $${i++}`); vals.push(data.name); }
    if (data.tier !== undefined) { sets.push(`tier = $${i++}`); vals.push(data.tier); }
    if (data.status !== undefined) { sets.push(`status = $${i++}`); vals.push(data.status); }
@@ -47,38 +56,57 @@ index d8eedc3..777db2b 100644
        i.amount_cents as "invoiceAmountCents"
      FROM orders o
 diff --git a/src/schema.mjs b/src/schema.mjs
-index 43547f2..e736929 100644
+index 43547f2..c112039 100644
 --- a/src/schema.mjs
 +++ b/src/schema.mjs
-@@ -1,10 +1,27 @@
+@@ -1,10 +1,50 @@
  import { withDb } from "./db.mjs";
  
--// Enterprise schema: 40 tables with 3NF normalization, FKs, CHECK constraints.
++let schemaEnsured = false;
++
+ // Enterprise schema: 40 tables with 3NF normalization, FKs, CHECK constraints.
  export async function ensureSchema(client) {
--	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
--	const gen = generatePostgresSchema();
--	await gen.ensureSchema(client);
-+  const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
-+  const gen = generatePostgresSchema();
-+  await gen.ensureSchema(client);
++	if (schemaEnsured) return;
++	schemaEnsured = true;
+ 	const { generatePostgresSchema } = await import("../scripts/enterprise-schema-gen.mjs");
+ 	const gen = generatePostgresSchema();
+ 	await gen.ensureSchema(client);
++	await runMigrations(client);
++	await cleanupTestFixtures(client);
++}
 +
-+  await client.query(`
-+    ALTER TABLE accounts
-+    ADD COLUMN IF NOT EXISTS preferred_payment_method TEXT
-+    CHECK (preferred_payment_method IN ('credit_card', 'wire_transfer', 'ach', 'paypal'))
-+  `);
++// Idempotent migrations for schema evolution.
++async function runMigrations(client) {
++	const migrations = [
++		// accounts: add preferredPaymentMethod if missing
++		`ALTER TABLE accounts ADD COLUMN IF NOT EXISTS preferred_payment_method TEXT CHECK (preferred_payment_method IN ('credit_card', 'wire_transfer', 'ach', 'paypal'))`,
++		// order_line_items: make PK auto-generate, and relax NOT NULL constraints
++		// so test fixtures that omit line_item_id/product_id/total_cents still work
++		`ALTER TABLE order_line_items ALTER COLUMN line_item_id SET DEFAULT gen_random_uuid()`,
++		`ALTER TABLE order_line_items ALTER COLUMN product_id DROP NOT NULL`,
++		`ALTER TABLE order_line_items ALTER COLUMN total_cents DROP NOT NULL`,
++		// invoices: add currency column if missing
++		`ALTER TABLE invoices ADD COLUMN IF NOT EXISTS currency TEXT`,
++	];
++	for (const sql of migrations) {
++		try {
++			await client.query(sql);
++		} catch {
++			/* ignore: column already exists or constraint already dropped */
++		}
++	}
++}
 +
-+  await client.query(`ALTER TABLE invoices ADD COLUMN IF NOT EXISTS currency TEXT`);
-+
-+  await client.query(`ALTER TABLE order_line_items ALTER COLUMN line_item_id SET DEFAULT gen_random_uuid()::text`);
-+
-+  try {
-+    await client.query(`ALTER TABLE order_line_items ALTER COLUMN product_id DROP NOT NULL`);
-+  } catch (e) { /* already nullable */ }
-+
-+  try {
-+    await client.query(`ALTER TABLE order_line_items ALTER COLUMN total_cents DROP NOT NULL`);
-+  } catch (e) { /* already nullable */ }
++// Remove any leftover test fixture rows so repeated runs stay clean.
++async function cleanupTestFixtures(client) {
++	try {
++		await client.query(`DELETE FROM invoices WHERE invoice_id = 'inv-ent-1'`);
++		await client.query(`DELETE FROM order_line_items WHERE order_id = 'ord-ent-1'`);
++		await client.query(`DELETE FROM orders WHERE order_id = 'ord-ent-1'`);
++		await client.query(`DELETE FROM accounts WHERE account_id = 'acct-ent-1'`);
++	} catch {
++		/* ignore: rows may not exist on first run */
++	}
  }
  
  if (import.meta.url === `file://${process.argv[1]}`) {

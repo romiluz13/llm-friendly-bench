@@ -239,7 +239,7 @@ export function runCellBrownfield({
 }
 
 function dbHandleFor(lane, ns) {
-	if (lane === "mongo") return { uri: "mongodb://127.0.0.1:27018", db: ns };
+	if (lane === "mongo") return { uri: "mongodb://127.0.0.1:27018/?directConnection=true", db: ns };
 	return {
 		host: "127.0.0.1",
 		port: 5433,
@@ -376,7 +376,7 @@ function verifyLiveWrite(lane, ns) {
 	if (lane === "mongo") {
 		try {
 			const result = execSync(
-				`mongosh --quiet mongodb://127.0.0.1:27018/${ns} --eval 'JSON.stringify(db.getCollectionNames())'`,
+				`mongosh --quiet mongodb://127.0.0.1:27018/${ns}?directConnection=true --eval 'JSON.stringify(db.getCollectionNames())'`,
 				{ encoding: "utf8", timeout: 10000 },
 			);
 			const collections = JSON.parse(result.trim());
@@ -403,7 +403,7 @@ function dropNs(lane, ns) {
 	if (lane === "mongo") {
 		try {
 			execSync(
-				`mongosh --quiet mongodb://127.0.0.1:27018/${ns} --eval 'db.dropDatabase()'`,
+				`mongosh --quiet mongodb://127.0.0.1:27018/${ns}?directConnection=true --eval 'db.dropDatabase()'`,
 				{ stdio: "pipe", timeout: 10000 },
 			);
 		} catch {
@@ -425,7 +425,7 @@ function dumpNs(lane, ns) {
 	if (lane === "mongo") {
 		try {
 			const result = execSync(
-				`mongosh --quiet mongodb://127.0.0.1:27018/${ns} --eval 'JSON.stringify({collections: db.getCollectionNames().map(n => ({name: n, count: db.getCollection(n).countDocuments()}))})'`,
+				`mongosh --quiet mongodb://127.0.0.1:27018/${ns}?directConnection=true --eval 'JSON.stringify({collections: db.getCollectionNames().map(n => ({name: n, count: db.getCollection(n).countDocuments()}))})'`,
 				{ encoding: "utf8", timeout: 10000 },
 			);
 			return JSON.parse(result.trim());
