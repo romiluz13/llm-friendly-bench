@@ -28,3 +28,4 @@ benchmark/runs-brownfield/**/workspace/
 benchmark/.prove-brownfield/
 benchmark/runs-complex/**/workspace/
 benchmark/runs-enterprise/**/workspace/
+benchmark/runs-enterprise-full/**/workspace/
