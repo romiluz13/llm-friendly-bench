@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "build-bench-brownfield",
+  "executionMode": "live-db",
+  "dbNamespace": "buildbench_ent_full_postgres-jsonb_claude-code_r5",
+  "taskType": "schema-evolution-enterprise",
+  "lane": "postgres-jsonb",
+  "agentId": "claude-code",
+  "repeat": 5,
+  "model": "sonnet",
+  "agentVersion": "2.1.215 (Claude Code)",
+  "status": "passed",
+  "startedAt": "2026-07-19T11:04:34.154Z",
+  "finishedAt": "2026-07-19T11:07:14.501Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/claude-code/repeat-5/workspace",
+    "prompt": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/claude-code/repeat-5/prompt.md",
+    "rawTranscript": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/claude-code/repeat-5/raw-transcript/claude-code.jsonl",
+    "stderr": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/claude-code/repeat-5/raw-transcript/claude-code-stderr.log",
+    "diff": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/claude-code/repeat-5/diff.patch",
+    "tests": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/claude-code/repeat-5/tests.log",
+    "dbBefore": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/claude-code/repeat-5/db-before/seed.json",
+    "dbAfter": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/claude-code/repeat-5/db-after/final.json"
+  },
+  "metrics": {
+    "elapsedMs": 160347,
+    "transcriptBytes": 263781,
+    "tokens": {
+      "inputTokens": 34,
+      "outputTokens": 156,
+      "cachedInputTokens": 510108,
+      "totalTokens": 190,
+      "tokensRead": 510142,
+      "costUsd": 0.8818629000000001,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 190,
+    "diffBytes": 4604,
+    "filesChanged": 3,
+    "changedFiles": [
+      "src/accounts.mjs",
+      "src/queries.mjs",
+      "src/schema.mjs"
+    ],
+    "cheatSignals": [],
+    "liveDbWritten": true,
+    "fieldExists": true,
+    "retrySignals": 83,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0,
+    "timedOut": false
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/claude-code/repeat-5/prompt.md",
+      "sha256": "15f2243f466c4c90b78af5bb4a5c72adc77d8738897b652484b5482b73a475aa"
+    },
+    {
+      "path": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/claude-code/repeat-5/raw-transcript/claude-code.jsonl",
+      "sha256": "42307e5f9453517a62445914adaf6168f5ab697dfcfa5b69fa881a05a1244ba3"
+    },
+    {
+      "path": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/claude-code/repeat-5/diff.patch",
+      "sha256": "d1b8fe6a2364ef3108b0aa7dc64d6ae219ed52f663fb30d09847c8f4bed9c6d1"
+    },
+    {
+      "path": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/claude-code/repeat-5/tests.log",
+      "sha256": "721a084c9ee26259c026411c1cdbe5a22d3bc75d2da413fb1909c5846334e6d3"
+    },
+    {
+      "path": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/claude-code/repeat-5/db-before/seed.json",
+      "sha256": "f5b402ca0cd1ee4ae7d91e429bf6a6b01f3acccff97f14236f99f123a0759e58"
+    },
+    {
+      "path": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/claude-code/repeat-5/db-after/final.json",
+      "sha256": "8c0ef559f08ea4bc1bbf7dbe996389addd34dbeb5707843498f1202daca92dc0"
+    }
+  ]
+}

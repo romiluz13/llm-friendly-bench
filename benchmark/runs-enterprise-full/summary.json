@@ -1,37 +1,6 @@
 {
   "schemaVersion": "1.0.0",
   "suiteId": "build-bench-enterprise",
-  "title": "Enterprise Schema Evolution Benchmark",
-  "subtitle": "MongoDB Atlas Local 8.3.4 vs Postgres 16.14 — 40-entity schema, 854 lines of code, live database, real AI agents",
-  "dbVersions": {
-    "mongo": "MongoDB Atlas Local 8.3.4",
-    "postgres": "PostgreSQL 16.14"
-  },
-  "schemaScale": {
-    "entities": 40,
-    "mongoCollections": 21,
-    "postgresTables": 40,
-    "domains": 6,
-    "linesOfCode": 854
-  },
-  "task": {
-    "type": "Schema evolution + query update",
-    "description": "Add a preferredPaymentMethod field to the accounts entity and update the order summary query. The agent must read 854 lines across 8 files (700-line inline schema + 5 model files + query) before making changes."
-  },
-  "execution": {
-    "mode": "vanilla (no workflow overhead)",
-    "agents": [
-      "codex (gpt-5.6-terra)",
-      "claude-code (sonnet)"
-    ],
-    "repeatsPerCell": 5,
-    "totalCells": 30,
-    "cleanCells": 30,
-    "liveDb": true,
-    "antiCheat": true,
-    "tokenSource": "Real CLI usage events",
-    "comparison": "Within-agent only (never cross-CLI)"
-  },
   "taskType": "schema-evolution-enterprise",
   "generatedAt": "2026-07-19T12:11:24.638Z",
   "executionMode": "live-db",
@@ -142,18 +111,39 @@
       }
     }
   ],
-  "caveat": "Within-agent comparison only. Each agent is measured against itself across the three database designs; one agent's absolute numbers are never compared to the other's, because the two CLIs count tokens incompatibly.",
-  "proofOfNoBias": [
-    "Both agents tested — different models, different companies",
-    "Three lanes tested — MongoDB, Postgres-normalized, Postgres-JSONB",
-    "No hypotheses — raw data only, no claims, no verdicts",
-    "Vanilla mode — no skills, no code reviews, no subagents",
-    "Live database — tests query the real DB directly, not mocks",
-    "Anti-cheat — source-pattern scan, protected files, cheat-signal detection",
-    "5 repeats per cell — medians and IQR, not single-run anecdotes",
-    "Within-agent comparison — each agent compared only to itself",
-    "854 lines of real code — not a thin wrapper calling a generator",
-    "All evidence committed — raw transcripts, diffs, test logs, token counts",
-    "Previous run with 86-line workspace showed MongoDB winning — the full 854-line workspace shows different results. That is the point."
-  ]
+  "hypotheses": {
+    "H1": {
+      "statement": "MongoDB requires less agent work (tokensRead) than any relational lane, within-agent",
+      "verdict": "refuted",
+      "perAgent": [
+        {
+          "agentId": "claude-code",
+          "pgNormPct": -3,
+          "pgJsonbPct": 37
+        },
+        {
+          "agentId": "codex",
+          "pgNormPct": -20,
+          "pgJsonbPct": 51
+        }
+      ]
+    },
+    "H2": {
+      "statement": "Relational penalty grows with normalization depth (pg-norm > pg-jsonb > mongo)",
+      "verdict": "refuted",
+      "perAgent": [
+        {
+          "agentId": "claude-code",
+          "pgNormTokens": 590265,
+          "pgJsonbTokens": 837271
+        },
+        {
+          "agentId": "codex",
+          "pgNormTokens": 94577,
+          "pgJsonbTokens": 178401
+        }
+      ]
+    }
+  },
+  "caveat": "Within-agent comparison only. Each agent is measured against itself across the three database designs; one agent's absolute numbers are never compared to the other's, because the two CLIs count tokens incompatibly."
 }

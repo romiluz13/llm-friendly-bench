@@ -1,0 +1,60 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index ab3c962..1474abf 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -5,7 +5,14 @@ import { ensureSchema, preferredPaymentMethods } from "./schema.mjs";
+ // It also has embedded arrays: account_details, account_settings, account_preferences,
+ // account_team, account_billing, account_health_scores.
+ 
++function validatePreferredPaymentMethod(data) {
++	if (data.preferredPaymentMethod !== undefined && !preferredPaymentMethods.includes(data.preferredPaymentMethod)) {
++		throw new Error(`Invalid preferredPaymentMethod: ${data.preferredPaymentMethod}`);
++	}
++}
++
+ export async function createAccount(db, data) {
++	validatePreferredPaymentMethod(data);
+ 	await ensureSchema(db);
+ 	const result = await db.collection("accounts").insertOne(data);
+ 	return { _id: result.insertedId, ...data };
+@@ -16,6 +23,7 @@ export async function getAccount(db, accountId) {
+ }
+ 
+ export async function updateAccount(db, accountId, data) {
++	validatePreferredPaymentMethod(data);
+ 	await db.collection("accounts").updateOne({ accountId }, { $set: data });
+ 	return db.collection("accounts").findOne({ accountId });
+ }
+diff --git a/src/queries.mjs b/src/queries.mjs
+index 71c89b3..71d6965 100644
+--- a/src/queries.mjs
++++ b/src/queries.mjs
+@@ -19,6 +19,7 @@ export async function getOrderSummary(db, orderId) {
+ 		lineItems: order.lineItems || [],
+ 		accountName: account?.name,
+ 		accountTier: account?.tier,
++		preferredPaymentMethod: account?.preferredPaymentMethod,
+ 		invoiceStatus: invoice?.status,
+ 		invoiceAmountCents: invoice?.amountCents,
+ 		shipmentStatus: shipment?.status,
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 9d83ba3..9819f6e 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -4,7 +4,7 @@ import { withDb } from "./db.mjs";
+ // This file contains the FULL schema inline. Read it to understand the data model.
+ // The schema covers 6 domains: Accounts, Orders, Financial, Support, Products, Compliance.
+ 
+-export const preferredPaymentMethods = [];
++export const preferredPaymentMethods = ["credit_card", "wire_transfer", "ach", "paypal"];
+ 
+ export async function ensureSchema(db) {
+ 	// ─── accounts ──────────────────────────────────────
+@@ -19,6 +19,7 @@ export async function ensureSchema(db) {
+ 				segment: { bsonType: "string" },
+ 				region: { bsonType: "string" },
+ 				status: { bsonType: "string", enum: ["active", "at-risk", "churned", "prospect"] },
++				preferredPaymentMethod: { bsonType: "string", enum: preferredPaymentMethods },
+ 				createdAt: { bsonType: "date" },
+ 				account_details: {
+ 					bsonType: "array",

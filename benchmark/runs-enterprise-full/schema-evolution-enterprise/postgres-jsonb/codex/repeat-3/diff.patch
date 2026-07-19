@@ -1,0 +1,93 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index 9a36deb..39f20f3 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -8,6 +8,7 @@ import { ensureSchema, preferredPaymentMethods } from "./schema.mjs";
+ export async function createAccount(client, data) {
+ 	await ensureSchema(client);
+ 	const doc = { ...data };
++	validatePreferredPaymentMethod(doc.preferredPaymentMethod);
+ 	await client.query(
+ 		'INSERT INTO accounts (account_id, doc) VALUES ($1, $2) RETURNING doc',
+ 		[doc.accountId, JSON.stringify(doc)]
+@@ -24,10 +25,17 @@ export async function updateAccount(client, accountId, data) {
+ 	const existing = await getAccount(client, accountId);
+ 	if (!existing) return null;
+ 	const updated = { ...existing, ...data };
++	validatePreferredPaymentMethod(updated.preferredPaymentMethod);
+ 	await client.query('UPDATE accounts SET doc = $1 WHERE account_id = $2', [JSON.stringify(updated), accountId]);
+ 	return updated;
+ }
+ 
++function validatePreferredPaymentMethod(preferredPaymentMethod) {
++	if (preferredPaymentMethod !== undefined && !preferredPaymentMethods.includes(preferredPaymentMethod)) {
++		throw new Error("preferredPaymentMethod must be one of: credit_card, wire_transfer, ach, paypal");
++	}
++}
++
+ export async function deleteAccount(client, accountId) {
+ 	await client.query('DELETE FROM accounts WHERE account_id = $1', [accountId]);
+ }
+diff --git a/src/queries.mjs b/src/queries.mjs
+index 8e601c3..41860f5 100644
+--- a/src/queries.mjs
++++ b/src/queries.mjs
+@@ -21,6 +21,7 @@ export async function getOrderSummary(client, orderId) {
+ 		lineItems: order.lineItems || [],
+ 		accountName: account?.name,
+ 		accountTier: account?.tier,
++		preferredPaymentMethod: account?.preferredPaymentMethod,
+ 		invoiceStatus: invoice?.status,
+ 		invoiceAmountCents: invoice?.amountCents,
+ 		shipmentStatus: shipment?.status,
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 96a0078..8f62c9c 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -4,7 +4,7 @@ import { withDb } from "./db.mjs";
+ // This file contains the FULL schema inline. Read it to understand the data model.
+ // The schema covers 6 domains: Accounts, Orders, Financial, Support, Products, Compliance.
+ 
+-export const preferredPaymentMethods = [];
++export const preferredPaymentMethods = ["credit_card", "wire_transfer", "ach", "paypal"];
+ 
+ export async function ensureSchema(client) {
+ 	// ─── accounts ──────────────────────────────────────
+@@ -178,18 +178,6 @@ export async function ensureSchema(client) {
+ 	)`);
+ 	await client.query(`CREATE INDEX IF NOT EXISTS idx_sla_policies_doc ON sla_policies USING GIN (doc jsonb_path_ops)`);
+ 
+-	// ─── products ──────────────────────────────────────
+-	await client.query(`
+-		CREATE TABLE IF NOT EXISTS products (
+-			product_id TEXT PRIMARY KEY,
+-			category_id TEXT,
+-			doc JSONB NOT NULL,
+-			FOREIGN KEY (category_id) REFERENCES product_categories(category_id),
+-			CONSTRAINT chk_products_doc CHECK (doc IS NOT NULL)
+-	)`);
+-	await client.query(`CREATE INDEX IF NOT EXISTS idx_products_doc ON products USING GIN (doc jsonb_path_ops)`);
+-	await client.query(`CREATE INDEX IF NOT EXISTS idx_products_category_id ON products (category_id)`);
+-
+ 	// ─── product_categories ──────────────────────────────────────
+ 	await client.query(`
+ 		CREATE TABLE IF NOT EXISTS product_categories (
+@@ -202,6 +190,18 @@ export async function ensureSchema(client) {
+ 	await client.query(`CREATE INDEX IF NOT EXISTS idx_product_categories_doc ON product_categories USING GIN (doc jsonb_path_ops)`);
+ 	await client.query(`CREATE INDEX IF NOT EXISTS idx_product_categories_parent_id ON product_categories (parent_id)`);
+ 
++	// ─── products ──────────────────────────────────────
++	await client.query(`
++		CREATE TABLE IF NOT EXISTS products (
++			product_id TEXT PRIMARY KEY,
++			category_id TEXT,
++			doc JSONB NOT NULL,
++			FOREIGN KEY (category_id) REFERENCES product_categories(category_id),
++			CONSTRAINT chk_products_doc CHECK (doc IS NOT NULL)
++		)`);
++	await client.query(`CREATE INDEX IF NOT EXISTS idx_products_doc ON products USING GIN (doc jsonb_path_ops)`);
++	await client.query(`CREATE INDEX IF NOT EXISTS idx_products_category_id ON products (category_id)`);
++
+ 	// ─── product_inventory ──────────────────────────────────────
+ 	await client.query(`
+ 		CREATE TABLE IF NOT EXISTS product_inventory (

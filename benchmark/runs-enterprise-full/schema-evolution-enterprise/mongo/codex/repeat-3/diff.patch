@@ -1,0 +1,33 @@
+diff --git a/src/queries.mjs b/src/queries.mjs
+index 71c89b3..71d6965 100644
+--- a/src/queries.mjs
++++ b/src/queries.mjs
+@@ -19,6 +19,7 @@ export async function getOrderSummary(db, orderId) {
+ 		lineItems: order.lineItems || [],
+ 		accountName: account?.name,
+ 		accountTier: account?.tier,
++		preferredPaymentMethod: account?.preferredPaymentMethod,
+ 		invoiceStatus: invoice?.status,
+ 		invoiceAmountCents: invoice?.amountCents,
+ 		shipmentStatus: shipment?.status,
+diff --git a/src/schema.mjs b/src/schema.mjs
+index 9d83ba3..d07dace 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -4,7 +4,7 @@ import { withDb } from "./db.mjs";
+ // This file contains the FULL schema inline. Read it to understand the data model.
+ // The schema covers 6 domains: Accounts, Orders, Financial, Support, Products, Compliance.
+ 
+-export const preferredPaymentMethods = [];
++export const preferredPaymentMethods = ["credit_card", "wire_transfer", "ach", "paypal"];
+ 
+ export async function ensureSchema(db) {
+ 	// ─── accounts ──────────────────────────────────────
+@@ -15,6 +15,7 @@ export async function ensureSchema(db) {
+ 			properties: {
+ 				accountId: { bsonType: "string" },
+ 				name: { bsonType: "string" },
++				preferredPaymentMethod: { bsonType: "string", enum: preferredPaymentMethods },
+ 				tier: { bsonType: "string", enum: ["strategic", "enterprise", "midmarket", "standard"] },
+ 				segment: { bsonType: "string" },
+ 				region: { bsonType: "string" },

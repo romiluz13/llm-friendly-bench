@@ -1,0 +1,76 @@
+diff --git a/src/accounts.mjs b/src/accounts.mjs
+index 523aa7e..689c777 100644
+--- a/src/accounts.mjs
++++ b/src/accounts.mjs
+@@ -7,14 +7,14 @@ import { ensureSchema, preferredPaymentMethods } from "./schema.mjs";
+ 
+ function rowToAccount(r) {
+ 	if (!r) return null;
+-	return { accountId: r.account_id, name: r.name, tier: r.tier, segment: r.segment, region: r.region, status: r.status, createdAt: r.created_at };
++	return { accountId: r.account_id, name: r.name, tier: r.tier, segment: r.segment, region: r.region, preferredPaymentMethod: r.preferred_payment_method, status: r.status, createdAt: r.created_at };
+ }
+ 
+ export async function createAccount(client, data) {
+ 	await ensureSchema(client);
+ 	const res = await client.query(
+-		'INSERT INTO accounts (account_id, name, tier, segment, region, status, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+-		[data.accountId, data.name, data.tier, data.segment || null, data.region || null, data.status, data.createdAt || new Date()]
++		'INSERT INTO accounts (account_id, name, tier, segment, region, preferred_payment_method, status, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
++		[data.accountId, data.name, data.tier, data.segment || null, data.region || null, data.preferredPaymentMethod ?? null, data.status, data.createdAt || new Date()]
+ 	);
+ 	return rowToAccount(res.rows[0]);
+ }
+@@ -31,6 +31,7 @@ export async function updateAccount(client, accountId, data) {
+ 	if (data.tier !== undefined) { sets.push(`tier = $${i++}`); vals.push(data.tier); }
+ 	if (data.segment !== undefined) { sets.push(`segment = $${i++}`); vals.push(data.segment); }
+ 	if (data.region !== undefined) { sets.push(`region = $${i++}`); vals.push(data.region); }
++	if (data.preferredPaymentMethod !== undefined) { sets.push(`preferred_payment_method = $${i++}`); vals.push(data.preferredPaymentMethod); }
+ 	if (data.status !== undefined) { sets.push(`status = $${i++}`); vals.push(data.status); }
+ 	if (sets.length === 0) return getAccount(client, accountId);
+ 	vals.push(accountId);
+diff --git a/src/queries.mjs b/src/queries.mjs
+index cc61ec0..6a1f710 100644
+--- a/src/queries.mjs
++++ b/src/queries.mjs
+@@ -14,6 +14,7 @@ export async function getOrderSummary(client, orderId) {
+ 			o.currency,
+ 			a.name AS "accountName",
+ 			a.tier AS "accountTier",
++			a.preferred_payment_method AS "preferredPaymentMethod",
+ 			i.status AS "invoiceStatus",
+ 			i.amount_cents AS "invoiceAmountCents",
+ 			s.status AS "shipmentStatus",
+diff --git a/src/schema.mjs b/src/schema.mjs
+index c76bb73..2d056d6 100644
+--- a/src/schema.mjs
++++ b/src/schema.mjs
+@@ -4,7 +4,7 @@ import { withDb } from "./db.mjs";
+ // This file contains the FULL schema inline. Read it to understand the data model.
+ // The schema covers 6 domains: Accounts, Orders, Financial, Support, Products, Compliance.
+ 
+-export const preferredPaymentMethods = [];
++export const preferredPaymentMethods = ["credit_card", "wire_transfer", "ach", "paypal"];
+ 
+ export async function ensureSchema(client) {
+ 	// ─── accounts ──────────────────────────────────────
+@@ -16,10 +16,20 @@ export async function ensureSchema(client) {
+ 			CONSTRAINT chk_accounts_tier CHECK (tier IN ('strategic', 'enterprise', 'midmarket', 'standard')),
+ 			segment TEXT,
+ 			region TEXT,
++			preferred_payment_method TEXT,
++			CONSTRAINT chk_accounts_preferred_payment_method CHECK (preferred_payment_method IN ('credit_card', 'wire_transfer', 'ach', 'paypal')),
+ 			status TEXT NOT NULL,
+ 			CONSTRAINT chk_accounts_status CHECK (status IN ('active', 'at-risk', 'churned', 'prospect')),
+ 			created_at TIMESTAMPTZ NOT NULL
+ 	)`);
++	await client.query(`ALTER TABLE accounts ADD COLUMN IF NOT EXISTS preferred_payment_method TEXT`);
++	await client.query(`
++		DO $$ BEGIN
++			ALTER TABLE accounts ADD CONSTRAINT chk_accounts_preferred_payment_method
++			CHECK (preferred_payment_method IN ('credit_card', 'wire_transfer', 'ach', 'paypal'));
++		EXCEPTION WHEN duplicate_object THEN NULL;
++		END $$
++	`);
+ 
+ 	// ─── account_details ──────────────────────────────────────
+ 	await client.query(`

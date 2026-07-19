@@ -1,0 +1,67 @@
+{
+  "collections": [
+    {
+      "name": "accounts"
+    },
+    {
+      "name": "account_contracts"
+    },
+    {
+      "name": "order_returns"
+    },
+    {
+      "name": "orders"
+    },
+    {
+      "name": "order_fulfillments"
+    },
+    {
+      "name": "shipments"
+    },
+    {
+      "name": "invoices"
+    },
+    {
+      "name": "tax_records"
+    },
+    {
+      "name": "payments"
+    },
+    {
+      "name": "payment_methods"
+    },
+    {
+      "name": "credit_notes"
+    },
+    {
+      "name": "billing_cycles"
+    },
+    {
+      "name": "support_cases"
+    },
+    {
+      "name": "sla_policies"
+    },
+    {
+      "name": "products"
+    },
+    {
+      "name": "product_categories"
+    },
+    {
+      "name": "product_inventory"
+    },
+    {
+      "name": "compliance_reviews"
+    },
+    {
+      "name": "audit_trails"
+    },
+    {
+      "name": "data_processing_agreements"
+    },
+    {
+      "name": "consent_records"
+    }
+  ]
+}

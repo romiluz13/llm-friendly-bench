@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "1.0.0",
+  "suiteId": "build-bench-brownfield",
+  "executionMode": "live-db",
+  "dbNamespace": "buildbench_ent_full_postgres-jsonb_codex_r3",
+  "taskType": "schema-evolution-enterprise",
+  "lane": "postgres-jsonb",
+  "agentId": "codex",
+  "repeat": 3,
+  "model": "gpt-5.6-terra",
+  "agentVersion": "codex-cli 0.144.0-alpha.4",
+  "status": "passed",
+  "startedAt": "2026-07-19T10:42:36.228Z",
+  "finishedAt": "2026-07-19T10:43:26.904Z",
+  "artifacts": {
+    "workspace": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/codex/repeat-3/workspace",
+    "prompt": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/codex/repeat-3/prompt.md",
+    "rawTranscript": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/codex/repeat-3/raw-transcript/codex.jsonl",
+    "stderr": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/codex/repeat-3/raw-transcript/codex-stderr.log",
+    "diff": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/codex/repeat-3/diff.patch",
+    "tests": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/codex/repeat-3/tests.log",
+    "dbBefore": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/codex/repeat-3/db-before/seed.json",
+    "dbAfter": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/codex/repeat-3/db-after/final.json"
+  },
+  "metrics": {
+    "elapsedMs": 50676,
+    "transcriptBytes": 397974,
+    "tokens": {
+      "inputTokens": 176166,
+      "outputTokens": 1733,
+      "cachedInputTokens": 146944,
+      "totalTokens": 177899,
+      "tokensRead": 176166,
+      "costUsd": 0.45774500000000007,
+      "source": "measured"
+    },
+    "estimatedTranscriptTokens": 177899,
+    "diffBytes": 4736,
+    "filesChanged": 3,
+    "changedFiles": [
+      "src/accounts.mjs",
+      "src/queries.mjs",
+      "src/schema.mjs"
+    ],
+    "cheatSignals": [],
+    "liveDbWritten": true,
+    "fieldExists": true,
+    "retrySignals": 15,
+    "testStatus": "passed",
+    "agentExitCode": 0,
+    "testsExitCode": 0,
+    "timedOut": false
+  },
+  "evidenceSha256": [
+    {
+      "path": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/codex/repeat-3/prompt.md",
+      "sha256": "15f2243f466c4c90b78af5bb4a5c72adc77d8738897b652484b5482b73a475aa"
+    },
+    {
+      "path": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/codex/repeat-3/raw-transcript/codex.jsonl",
+      "sha256": "4bba734fcb863051129b5c34ba2f86e5e88dcd38772bb08d963a8493e50f3512"
+    },
+    {
+      "path": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/codex/repeat-3/diff.patch",
+      "sha256": "fd57e81507a4d427148b614a7ff783fd65468b4b0e2f97155de5571982cbeb6c"
+    },
+    {
+      "path": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/codex/repeat-3/tests.log",
+      "sha256": "721a084c9ee26259c026411c1cdbe5a22d3bc75d2da413fb1909c5846334e6d3"
+    },
+    {
+      "path": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/codex/repeat-3/db-before/seed.json",
+      "sha256": "b7112d3d5dcf0a0fcf3d4daa1828ab2081818a8072ae7ac384f9c0d05054fc9a"
+    },
+    {
+      "path": "benchmark/runs-enterprise-full/schema-evolution-enterprise/postgres-jsonb/codex/repeat-3/db-after/final.json",
+      "sha256": "8c0ef559f08ea4bc1bbf7dbe996389addd34dbeb5707843498f1202daca92dc0"
+    }
+  ]
+}
